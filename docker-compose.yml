@@ -1,0 +1,78 @@
+# Two-stack compose for the WoYou demo:
+#
+#   - `postgres` always runs.
+#   - `app` builds + runs the production Next.js container (use this on the
+#     server). Locally you can also run `npm run dev` instead and only start
+#     the postgres service:  docker compose up -d postgres
+#   - `db-init` is a one-shot service (profiles: ["init"]) that runs
+#     `prisma migrate deploy` and seeds the demo accounts. Trigger it with
+#     `docker compose --profile init run --rm db-init`.
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: woyou_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-woyou}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-woyou}
+      POSTGRES_DB: ${POSTGRES_DB:-woyou}
+    volumes:
+      - woyou_pg:/var/lib/postgresql/data
+    ports:
+      # Default 5444 keeps it out of the way of other local Postgres.
+      - "127.0.0.1:${POSTGRES_HOST_PORT:-5444}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-woyou} -d ${POSTGRES_DB:-woyou}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - woyou_net
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runner
+    image: woyou-app:latest
+    container_name: woyou_app
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-woyou}:${POSTGRES_PASSWORD:-woyou}@postgres:5432/${POSTGRES_DB:-woyou}?schema=public
+      SESSION_PASSWORD: ${SESSION_PASSWORD:?SESSION_PASSWORD required (32+ chars)}
+      DEMO_MODE: ${DEMO_MODE:-true}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+      STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY:-}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      NEXT_PUBLIC_TELEGRAM_BOT_USERNAME: ${NEXT_PUBLIC_TELEGRAM_BOT_USERNAME:-}
+      NEXT_PUBLIC_BASE_URL: ${NEXT_PUBLIC_BASE_URL:-http://localhost:3050}
+    ports:
+      - "127.0.0.1:${APP_HOST_PORT:-3050}:3000"
+    networks:
+      - woyou_net
+
+  db-init:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: builder
+    image: woyou-tools:latest
+    profiles: ["init"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-woyou}:${POSTGRES_PASSWORD:-woyou}@postgres:5432/${POSTGRES_DB:-woyou}?schema=public
+    command: sh -c "npx prisma migrate deploy && (test \"$$DEMO_MODE\" = false || npx tsx scripts/seed.ts)"
+    networks:
+      - woyou_net
+
+volumes:
+  woyou_pg:
+
+networks:
+  woyou_net:

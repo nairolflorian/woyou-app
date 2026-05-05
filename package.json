@@ -4,20 +4,42 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "start": "next start"
+    "build": "prisma generate && next build",
+    "postinstall": "prisma generate",
+    "start": "next start",
+    "vercel-build": "prisma generate && tsx scripts/deploy-prep.ts && next build",
+    "db:up": "docker compose up -d",
+    "db:down": "docker compose down",
+    "db:migrate": "prisma migrate dev",
+    "db:deploy": "prisma migrate deploy",
+    "db:seed": "tsx scripts/seed.ts",
+    "db:studio": "prisma studio",
+    "db:reset": "prisma migrate reset --force && tsx scripts/seed.ts",
+    "telegram:dev": "tsx scripts/telegram-dev.ts",
+    "telegram:set-webhook": "tsx scripts/telegram-set-webhook.ts"
   },
   "dependencies": {
+    "@prisma/client": "^6.19.3",
+    "bcryptjs": "^3.0.3",
+    "grammy": "^1.42.0",
+    "iron-session": "^8.0.4",
     "next": "16.2.4",
+    "prisma": "^6.19.3",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "server-only": "^0.0.1",
+    "stripe": "^22.1.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "dotenv": "^17.4.2",
     "tailwindcss": "^4",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   }
 }

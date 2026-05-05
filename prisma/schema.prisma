@@ -1,0 +1,266 @@
+// WoYou Demo schema — SQLite + Prisma
+// Enums are stored as strings; allowed values live in src/lib/enums.ts
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String   @id @default(cuid())
+  email           String?  @unique
+  phone           String?  @unique
+  telegramId      String?  @unique
+  oauthProvider   String?
+  passwordHash    String?
+  role            String   // CANDIDATE | COMPANY | ADMIN | SUPER_ADMIN
+  locale          String   @default("de")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  candidate       Candidate?
+  company         Company?
+  sentMessages    Message[] @relation("SenderMessages")
+  notifications   Notification[]
+  assignedTasks   AdminTask[] @relation("AssignedAdmin")
+}
+
+model Candidate {
+  id                  String    @id @default(cuid())
+  userId              String    @unique
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Core identity
+  firstName           String?
+  lastName            String?
+  dateOfBirth         DateTime?
+  gender              String?
+  nationality         String?
+  countryOfResidence  String?
+  city                String?
+
+  // Contact channels
+  preferredChannel    String    @default("EMAIL") // EMAIL | TELEGRAM | WHATSAPP | PHONE
+  telegramHandle      String?
+  whatsappNumber      String?
+
+  // Job preferences
+  desiredJobCategory  String?
+  desiredJobTitle     String?
+  alternativeJobs     String?   // JSON array
+  educationLevel      String?
+  yearsExperience     Int?
+  currentJob          String?
+  currentEmployer     String?
+  drivingLicense      Boolean?
+  willingnessToRelocate Boolean?
+  preferredCities     String?   // JSON array
+  earliestStart       DateTime?
+  expectedSalaryMin   Int?
+  expectedSalaryMax   Int?
+
+  // Languages
+  germanLevel         String?   // A1 | A2 | B1 | B2 | C1 | C2 | NONE
+  englishLevel        String?
+  otherLanguages      String?   // JSON array of {lang, level}
+
+  // Language test
+  languageTestScore   Int?
+  languageTestPassed  Boolean?
+  languageTestTakenAt DateTime?
+
+  // About / motivation
+  aboutMe             String?
+  motivation          String?
+
+  // Family
+  familyStatus        String?
+  dependents          Int?
+
+  // Demo: document refs (JSON of filenames)
+  documents           String?
+
+  // Status & consent
+  status              String    @default("REGISTERED") // REGISTERED | INCOMPLETE | COMPLETE | PAID_PLACEABLE | PROPOSED | PLACED
+  consentMode         String    @default("PER_COMPANY") // BLANKET | PER_COMPANY
+  profileCompleteness Int       @default(10)
+
+  // Stats
+  timesViewed         Int       @default(0)
+  timesProposed       Int       @default(0)
+
+  // Payment
+  paidAt              DateTime?
+  stripeSessionId     String?
+
+  placedAt            DateTime?
+
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  matches             Match[]
+  conversations       Conversation[]
+  testAnswers         LanguageTestAnswer[]
+  tasks               AdminTask[]
+}
+
+model LanguageTestAnswer {
+  id           String    @id @default(cuid())
+  candidateId  String
+  candidate    Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  questionId   String
+  answer       String
+  isCorrect    Boolean
+  createdAt    DateTime  @default(now())
+}
+
+model Company {
+  id            String     @id @default(cuid())
+  userId        String     @unique
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  companyName   String
+  industry      String?
+  size          String?
+  country       String     @default("DE")
+  city          String?
+  website       String?
+  description   String?
+  contactName   String?
+  contactPhone  String?
+  verified      Boolean    @default(false)
+
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  jobRequests   JobRequest[]
+  matches       Match[]
+  conversations Conversation[]
+  tasks         AdminTask[]
+}
+
+model JobRequest {
+  id                  String   @id @default(cuid())
+  companyId           String
+  company             Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  jobCategory         String   // matches Candidate.desiredJobCategory
+  customJobTitle      String?  // when "Sonderjob" requested
+  description         String?
+  requiredGermanLevel String?
+  minYearsExperience  Int?
+  salaryMin           Int?
+  salaryMax           Int?
+  location            String?
+  requiredSkills      String?  // JSON
+  status              String   @default("OPEN") // OPEN | PAUSED | FILLED
+
+  isCustomRequest     Boolean  @default(false) // true if jobCategory not in catalog -> goes to admin
+
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  matches             Match[]
+}
+
+model Match {
+  id                    String   @id @default(cuid())
+  candidateId           String
+  candidate             Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  companyId             String
+  company               Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  jobRequestId          String?
+  jobRequest            JobRequest? @relation(fields: [jobRequestId], references: [id])
+
+  matchScore            Int?
+  status                String   @default("DRAFT")
+  // DRAFT | AWAITING_CANDIDATE_CONSENT | CANDIDATE_APPROVED | CANDIDATE_DECLINED |
+  // SHARED_WITH_COMPANY | COMPANY_INTERESTED | COMPANY_DECLINED | IN_CONVERSATION | HIRED
+
+  companyFeedback       String?
+  companyFeedbackRating Int?
+
+  candidateRespondedAt  DateTime?
+  companyRespondedAt    DateTime?
+
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  conversation          Conversation?
+  tasks                 AdminTask[]
+}
+
+model Conversation {
+  id           String    @id @default(cuid())
+  candidateId  String
+  candidate    Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  companyId    String
+  company      Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  matchId      String?   @unique
+  match        Match?    @relation(fields: [matchId], references: [id])
+
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  messages     Message[]
+}
+
+model Message {
+  id              String       @id @default(cuid())
+  conversationId  String
+  conversation    Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderId        String
+  sender          User         @relation("SenderMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  channel         String       @default("PLATFORM") // PLATFORM | EMAIL | TELEGRAM | WHATSAPP
+  body            String
+  createdAt       DateTime     @default(now())
+  readAt          DateTime?
+}
+
+model AdminTask {
+  id            String   @id @default(cuid())
+  candidateId   String?
+  candidate     Candidate? @relation(fields: [candidateId], references: [id])
+  companyId     String?
+  company       Company?   @relation(fields: [companyId], references: [id])
+  matchId       String?
+  match         Match?     @relation(fields: [matchId], references: [id])
+
+  kind          String   // VISA | DOCUMENT_CHECK | VERIFICATION | CONTACT | OTHER
+  title         String
+  description   String?
+  status        String   @default("OPEN") // OPEN | IN_PROGRESS | DONE
+  dueDate       DateTime?
+  assignedToId  String?
+  assignedTo    User?    @relation("AssignedAdmin", fields: [assignedToId], references: [id])
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String
+  title     String
+  body      String?
+  link      String?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model JobCategory {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  nameDe    String
+  nameEn    String
+  nameFr    String
+  nameAr    String
+  group     String   // care, hospitality, construction, it, logistics, other
+  active    Boolean  @default(true)
+}
