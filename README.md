@@ -1,5 +1,7 @@
 # WoYou — klickbarer Demo-Prototyp
 
+🌐 **Live: https://woyou-app.46.225.109.84.nip.io** · 🎬 **Test-Seite: https://woyou-app.46.225.109.84.nip.io/demo**
+
 Eine vollständige Vermittlungsplattform für internationale Fachkräfte (Marokko → Deutschland) im Look von [woyou.de](https://woyou.de).
 
 Dreiseitig:
