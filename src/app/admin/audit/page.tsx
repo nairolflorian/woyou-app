@@ -90,11 +90,11 @@ export default async function AuditLogPage(props: {
                     )}
                   </td>
                   <td className="text-xs">
-                    {meta && (
+                    {meta != null ? (
                       <pre className="max-w-[280px] whitespace-pre-wrap text-[10px] text-[color:var(--color-ink-soft)]">
                         {JSON.stringify(meta, null, 2)}
                       </pre>
-                    )}
+                    ) : null}
                   </td>
                 </tr>
               );
