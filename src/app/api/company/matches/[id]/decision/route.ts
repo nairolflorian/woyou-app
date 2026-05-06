@@ -3,6 +3,7 @@ import { z } from "zod";
 import { getSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { ROLE, MATCH_STATUS, CANDIDATE_STATUS } from "@/lib/enums";
+import { createPlacementChecklist } from "@/lib/visa-workflow";
 
 const schema = z.object({
   action: z.enum(["interested", "decline", "hire"]),
@@ -69,17 +70,12 @@ export async function POST(
       where: { id: match.candidateId },
       data: { status: CANDIDATE_STATUS.PLACED, placedAt: new Date() },
     });
-    // Open admin task — visa support
-    await prisma.adminTask.create({
-      data: {
-        candidateId: match.candidateId,
-        companyId: match.companyId,
-        matchId: match.id,
-        kind: "VISA",
-        title: "Visum & Anerkennungs-Prozess starten",
-        description: "Kandidat wurde eingestellt. Visum, Dokumente, Wohnung organisieren.",
-      },
-    });
+    // Auto-create the full visa / relocation checklist for the back-office.
+    await createPlacementChecklist(
+      match.candidateId,
+      match.companyId,
+      match.id
+    ).catch((err) => console.error("placement checklist failed:", err));
   }
 
   // Notify candidate

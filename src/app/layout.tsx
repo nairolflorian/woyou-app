@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { getT } from "@/lib/i18n";
 import { DemoModeBar } from "@/components/DemoModeBar";
+import { CookieBanner } from "@/components/CookieBanner";
 
 export const metadata: Metadata = {
   title: "WoYou — Deine Zukunft in Deutschland",
@@ -21,6 +22,7 @@ export default async function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-white text-[color:var(--color-ink)]">
         {children}
+        <CookieBanner />
         <DemoModeBar />
       </body>
     </html>

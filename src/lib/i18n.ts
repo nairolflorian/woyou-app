@@ -13,6 +13,9 @@ import dict_de from "@/i18n/de";
 import dict_en from "@/i18n/en";
 import dict_fr from "@/i18n/fr";
 import dict_ar from "@/i18n/ar";
+import dict_es from "@/i18n/es";
+import dict_ru from "@/i18n/ru";
+import dict_uk from "@/i18n/uk";
 
 export { LOCALES, DEFAULT_LOCALE, RTL_LOCALES };
 export type { Locale };
@@ -22,6 +25,9 @@ const DICTS: Record<Locale, Record<string, string>> = {
   en: dict_en,
   fr: dict_fr,
   ar: dict_ar,
+  es: dict_es,
+  ru: dict_ru,
+  uk: dict_uk,
 };
 
 export async function getLocale(): Promise<Locale> {

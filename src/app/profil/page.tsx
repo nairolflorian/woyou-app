@@ -15,6 +15,7 @@ import { APP_CONFIG, formatFee } from "@/lib/config";
 import { jobLabel } from "@/lib/jobs";
 import { UnlockButton } from "@/components/UnlockButton";
 import { ConsentButtons } from "@/components/ConsentButtons";
+import { DocumentUpload } from "@/components/DocumentUpload";
 
 export default async function CandidateDashboardPage() {
   const session = await getSession();
@@ -172,6 +173,18 @@ export default async function CandidateDashboardPage() {
               </div>
             </div>
           )}
+
+          {/* DOCUMENTS */}
+          <div className="mt-10 card">
+            <h2 className="text-xl font-bold">Deine Dokumente</h2>
+            <p className="text-sm text-[color:var(--color-ink-soft)] mt-1">
+              Lebenslauf, Reisepass, Diplome und Zertifikate. Sichtbar für
+              dich und für Unternehmen, mit denen ein aktiver Vorschlag besteht.
+            </p>
+            <div className="mt-4">
+              <DocumentUpload candidateId={candidate.id} />
+            </div>
+          </div>
 
           {/* OTHER MATCHES */}
           <div className="mt-10">

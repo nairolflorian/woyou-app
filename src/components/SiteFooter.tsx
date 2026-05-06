@@ -35,9 +35,9 @@ export async function SiteFooter() {
             {t("footer.contact")}
           </h4>
           <ul className="space-y-2 text-sm">
-            <li><a href="#" className="hover:text-white">{t("footer.legal")}</a></li>
-            <li><a href="#" className="hover:text-white">{t("footer.privacy")}</a></li>
-            <li><a href="#" className="hover:text-white">{t("footer.terms")}</a></li>
+            <li><a href="/impressum" className="hover:text-white">{t("footer.legal")}</a></li>
+            <li><a href="/datenschutz" className="hover:text-white">{t("footer.privacy")}</a></li>
+            <li><a href="/agb" className="hover:text-white">{t("footer.terms")}</a></li>
           </ul>
         </div>
       </div>

@@ -1,6 +1,6 @@
 // Client-safe locale metadata. No server-only imports here.
 
-export const LOCALES = ["de", "en", "fr", "ar"] as const;
+export const LOCALES = ["de", "en", "fr", "ar", "es", "ru", "uk"] as const;
 export type Locale = (typeof LOCALES)[number];
 export const DEFAULT_LOCALE: Locale = "de";
 export const RTL_LOCALES: Locale[] = ["ar"];
@@ -13,4 +13,7 @@ export const LOCALE_META: Record<
   en: { label: "English", flag: "🇬🇧", short: "EN" },
   fr: { label: "Français", flag: "🇫🇷", short: "FR" },
   ar: { label: "العربية", flag: "🇸🇦", short: "AR" },
+  es: { label: "Español", flag: "🇪🇸", short: "ES" },
+  ru: { label: "Русский", flag: "🇷🇺", short: "RU" },
+  uk: { label: "Українська", flag: "🇺🇦", short: "UK" },
 };

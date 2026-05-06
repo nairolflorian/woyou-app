@@ -8,6 +8,7 @@ import {
 } from "@/lib/enums";
 import { jobLabel } from "@/lib/jobs";
 import { CandidateAdminActions } from "@/components/CandidateAdminActions";
+import { parseDocs } from "@/lib/uploads";
 
 export default async function CandidateDetail(props: {
   params: Promise<{ id: string }>;
@@ -30,6 +31,7 @@ export default async function CandidateDetail(props: {
     ? (JSON.parse(candidate.otherLanguages) as { lang: string; level: string }[])
     : [];
   const cities = candidate.preferredCities ? JSON.parse(candidate.preferredCities) as string[] : [];
+  const docs = parseDocs(candidate.documents);
 
   return (
     <div>
@@ -110,6 +112,31 @@ export default async function CandidateDetail(props: {
                   </li>
                 );
               })}
+            </ul>
+          </div>
+
+          <div className="card">
+            <h2 className="font-semibold">Dokumente ({docs.length})</h2>
+            <ul className="mt-3 space-y-2 text-sm">
+              {docs.length === 0 && (
+                <li className="text-[color:var(--color-ink-soft)]">Keine Dokumente hochgeladen.</li>
+              )}
+              {docs.map((d) => (
+                <li key={d.id} className="flex justify-between items-center gap-3">
+                  <div>
+                    <div className="font-semibold capitalize">{d.kind}</div>
+                    <div className="text-xs text-[color:var(--color-ink-soft)]">{d.originalName}</div>
+                  </div>
+                  <a
+                    href={`/api/documents/${candidate.id}/${d.filename}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[color:var(--color-brand)] font-semibold text-xs"
+                  >
+                    Öffnen →
+                  </a>
+                </li>
+              ))}
             </ul>
           </div>
 
