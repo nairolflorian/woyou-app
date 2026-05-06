@@ -38,7 +38,18 @@ Die WoYou-App liegt isoliert in `/var/www/woyou-app/` — alle anderen Sites (`w
 
 Beide hängen am Docker-Netzwerk `woyou_net`. `woyou_app` redet intern via `postgres:5432` mit Postgres.
 
+**Persistente Volumes:**
+- `woyou_pg` — Postgres-Daten
+- `woyou_uploads` — Hochgeladene Dokumente (Lebensläufe, Pässe, Diplome) gemountet auf `/app/uploads` im App-Container
+
 **Nginx:** `/etc/nginx/sites-enabled/woyou-app.conf` proxy-passt `https://woyou-app.46.225.109.84.nip.io` → `http://127.0.0.1:3050` (HTTP→HTTPS-Redirect ist aktiv).
+
+**Cron-Jobs auf dem Host** (`/etc/cron.daily/`):
+
+| Skript | Zweck |
+|---|---|
+| `woyou-postgres-backup` | Tägliches `pg_dump` nach `/var/backups/woyou/`, hält 7 Tage |
+| `woyou-rematch` | Tägliches Re-Matching für vermittelbare Kandidaten und frische Stellen — ruft `/api/cron/re-match` mit `CRON_SECRET` auf |
 
 ## Updates ausrollen
 
@@ -79,6 +90,7 @@ Aktuell läuft die Demo im **DEMO_MODE=true**, d.h. der Rollen-Switcher unter `/
 3. Echtes Stripe-Key-Paar setzen (`STRIPE_SECRET_KEY`, `STRIPE_PUBLISHABLE_KEY`).
 4. Telegram-Bot-Token + Username setzen, Webhook setzen mit `npm run telegram:set-webhook -- https://…/api/telegram/webhook`.
 5. SMTP für E-Mail-Versand ergänzen (in der App noch nicht implementiert — Phase 2).
-6. Postgres-Backup-Cron einrichten (Pattern wie bei `kk_postgres`).
+6. Impressum, Datenschutzerklärung und AGB ausfüllen (aktuell Demo-Platzhalter mit „⚠ Demo-Platzhalter"-Banner).
+7. Backup-Cron läuft bereits (`/etc/cron.daily/woyou-postgres-backup`); für mehr Sicherheit ggf. Backups offsite synchronisieren.
 
 Nach jeder `.env`-Änderung: `docker compose up -d` (kein Rebuild nötig, env wird beim Start gelesen).
