@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { CANDIDATE_STATUS } from "@/lib/enums";
 import { autoMatchForCandidate } from "@/lib/auto-match";
 import { createPlacementChecklist } from "@/lib/visa-workflow";
+import { audit } from "@/lib/audit";
 
 const schema = z.object({
   status: z.enum(Object.values(CANDIDATE_STATUS) as [string, ...string[]]),
@@ -25,6 +26,7 @@ export async function POST(
   if (!parsed.success) {
     return NextResponse.json({ error: "INVALID" }, { status: 400 });
   }
+  const before = await prisma.candidate.findUnique({ where: { id } });
   await prisma.candidate.update({
     where: { id },
     data: {
@@ -35,9 +37,13 @@ export async function POST(
         parsed.data.status === CANDIDATE_STATUS.PAID_PLACEABLE ||
         parsed.data.status === CANDIDATE_STATUS.PROPOSED ||
         parsed.data.status === CANDIDATE_STATUS.PLACED
-          ? (await prisma.candidate.findUnique({ where: { id } }))?.paidAt ?? new Date()
+          ? before?.paidAt ?? new Date()
           : null,
     },
+  });
+  await audit(req, "CANDIDATE_STATUS_CHANGE", { candidateId: id }, {
+    from: before?.status,
+    to: parsed.data.status,
   });
   if (parsed.data.status === CANDIDATE_STATUS.PAID_PLACEABLE) {
     await autoMatchForCandidate(id).catch((err) =>

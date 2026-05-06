@@ -20,6 +20,7 @@ type Allowed = keyof typeof ALLOWED;
 export const MAX_BYTES = 5 * 1024 * 1024;
 
 export const DOC_KINDS = [
+  "avatar",
   "cv",
   "passport",
   "diploma",
@@ -29,6 +30,7 @@ export const DOC_KINDS = [
 export type DocKind = (typeof DOC_KINDS)[number];
 
 export const DOC_KIND_LABEL: Record<DocKind, { de: string; en: string }> = {
+  avatar: { de: "Profilbild", en: "Avatar" },
   cv: { de: "Lebenslauf", en: "CV" },
   passport: { de: "Reisepass", en: "Passport" },
   diploma: { de: "Diplom / Abschluss", en: "Diploma" },
@@ -135,4 +137,10 @@ export function parseDocs(json: string | null | undefined): StoredDocument[] {
   } catch {
     return [];
   }
+}
+
+// Returns the first stored avatar (we keep only one per candidate by
+// convention — the upload route replaces an existing one).
+export function findAvatar(docs: StoredDocument[]): StoredDocument | null {
+  return docs.find((d) => d.kind === "avatar") ?? null;
 }

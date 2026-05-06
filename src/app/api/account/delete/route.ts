@@ -11,6 +11,7 @@ import { prisma } from "@/lib/prisma";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { ROLE } from "@/lib/enums";
+import { audit } from "@/lib/audit";
 
 const schema = z.object({ confirm: z.literal("DELETE") });
 
@@ -43,6 +44,10 @@ export async function POST(req: Request) {
     );
     await fs.rm(dir, { recursive: true, force: true }).catch(() => {});
   }
+
+  // Audit BEFORE delete so we still know who it was; the row stays even
+  // after the user is gone (no FK constraint).
+  await audit(req, "ACCOUNT_SELF_DELETE", { candidateId: candidate?.id });
 
   await prisma.user.delete({ where: { id: session.userId } });
 

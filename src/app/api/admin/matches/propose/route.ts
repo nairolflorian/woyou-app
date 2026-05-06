@@ -5,6 +5,7 @@ import { isAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { CANDIDATE_STATUS, MATCH_STATUS } from "@/lib/enums";
 import { scoreCandidate } from "@/lib/matching";
+import { audit } from "@/lib/audit";
 
 const schema = z.object({
   candidateId: z.string(),
@@ -91,6 +92,13 @@ export async function POST(req: Request) {
       });
     }
   });
+
+  await audit(
+    req,
+    "MATCH_PROPOSE_MANUAL",
+    { candidateId: candidate.id, companyId: jobRequest.companyId },
+    { jobRequestId: jobRequest.id, score, consentMode: candidate.consentMode }
+  );
 
   return NextResponse.json({ ok: true });
 }

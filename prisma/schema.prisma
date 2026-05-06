@@ -264,3 +264,30 @@ model JobCategory {
   group     String   // care, hospitality, construction, it, logistics, other
   active    Boolean  @default(true)
 }
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  // The actor; null for cron / system actions.
+  actorId     String?
+  actorEmail  String?
+  actorRole   String?
+
+  action      String   // e.g. CANDIDATE_STATUS_CHANGE, MATCH_PROPOSE, …
+  // Optional foreign-key-ish references (no FK so we don't break audit on delete).
+  candidateId String?
+  companyId   String?
+  matchId     String?
+  taskId      String?
+
+  // Free-form details: { from: …, to: …, note: … }
+  meta        String?  // JSON
+
+  ip          String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+
+  @@index([actorId, createdAt])
+  @@index([candidateId, createdAt])
+  @@index([companyId, createdAt])
+  @@index([action, createdAt])
+}

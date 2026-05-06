@@ -4,6 +4,7 @@ import { getSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { ROLE } from "@/lib/enums";
 import { createUserWithRole } from "@/lib/auth";
+import { audit } from "@/lib/audit";
 
 const schema = z.object({
   email: z.string().email(),
@@ -25,5 +26,9 @@ export async function POST(req: Request) {
     { email: parsed.data.email, password: parsed.data.password },
     parsed.data.role
   );
+  await audit(req, "TEAM_MEMBER_CREATE", {}, {
+    email: parsed.data.email,
+    role: parsed.data.role,
+  });
   return NextResponse.json({ ok: true });
 }

@@ -12,6 +12,9 @@ import {
 } from "@/lib/enums";
 import { jobLabel } from "@/lib/jobs";
 import { CompanyMatchActions } from "@/components/CompanyMatchActions";
+import { MatchTimeline } from "@/components/MatchTimeline";
+import { parseDocs, findAvatar } from "@/lib/uploads";
+import { AvatarBubble } from "@/components/AvatarUpload";
 
 export default async function CompanyDashboardPage() {
   const session = await getSession();
@@ -100,25 +103,36 @@ export default async function CompanyDashboardPage() {
                 return (
                   <div key={m.id} className="card">
                     <div className="flex flex-wrap items-start justify-between gap-3">
-                      <div>
-                        <div className="font-semibold">
-                          {m.candidate.firstName} {m.candidate.lastName?.[0]}.
-                          <span className={`badge ml-2 ${cs.color}`}>{cs.de}</span>
-                        </div>
-                        <div className="text-sm text-[color:var(--color-ink-soft)]">
-                          {jobLabel(m.candidate.desiredJobCategory ?? "")} · {m.candidate.yearsExperience ?? 0} J. Erfahrung · DE {m.candidate.germanLevel ?? "—"}
-                          {m.candidate.languageTestScore != null && (
-                            <> · Test {m.candidate.languageTestScore}/12</>
+                      <div className="flex items-start gap-3 flex-1 min-w-0">
+                        <AvatarBubble
+                          candidateId={m.candidate.id}
+                          filename={findAvatar(parseDocs(m.candidate.documents))?.filename ?? null}
+                          initials={`${m.candidate.firstName?.[0] ?? ""}${m.candidate.lastName?.[0] ?? ""}`.toUpperCase() || "?"}
+                          size={48}
+                        />
+                        <div className="flex-1 min-w-0">
+                          <div className="font-semibold">
+                            {m.candidate.firstName} {m.candidate.lastName?.[0]}.
+                            <span className={`badge ml-2 ${cs.color}`}>{cs.de}</span>
+                          </div>
+                          <div className="text-sm text-[color:var(--color-ink-soft)]">
+                            {jobLabel(m.candidate.desiredJobCategory ?? "")} · {m.candidate.yearsExperience ?? 0} J. Erfahrung · DE {m.candidate.germanLevel ?? "—"}
+                            {m.candidate.languageTestScore != null && (
+                              <> · Test {m.candidate.languageTestScore}/12</>
+                            )}
+                          </div>
+                          <div className="mt-2 text-sm">{m.candidate.aboutMe}</div>
+                          {m.jobRequest && (
+                            <div className="mt-2 text-xs text-[color:var(--color-ink-soft)]">
+                              Vorgeschlagen für: <strong>{m.jobRequest.customJobTitle ?? jobLabel(m.jobRequest.jobCategory)}</strong>
+                            </div>
                           )}
                         </div>
-                        <div className="mt-2 text-sm">{m.candidate.aboutMe}</div>
-                        {m.jobRequest && (
-                          <div className="mt-2 text-xs text-[color:var(--color-ink-soft)]">
-                            Vorgeschlagen für: <strong>{m.jobRequest.customJobTitle ?? jobLabel(m.jobRequest.jobCategory)}</strong>
-                          </div>
-                        )}
                       </div>
                       <span className={`badge ${ms?.color ?? ""}`}>{ms?.de ?? m.status}</span>
+                    </div>
+                    <div className="mt-4">
+                      <MatchTimeline status={m.status} />
                     </div>
                     <div className="mt-4">
                       <CompanyMatchActions matchId={m.id} status={m.status} />

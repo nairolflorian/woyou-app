@@ -4,6 +4,7 @@ import { getSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { ROLE, MATCH_STATUS, CANDIDATE_STATUS } from "@/lib/enums";
 import { createPlacementChecklist } from "@/lib/visa-workflow";
+import { audit, type AuditAction } from "@/lib/audit";
 
 const schema = z.object({
   action: z.enum(["interested", "decline", "hire"]),
@@ -103,6 +104,19 @@ export async function POST(
       },
     });
   }
+
+  const auditAction: AuditAction =
+    parsed.data.action === "hire"
+      ? "MATCH_DECISION_HIRE"
+      : parsed.data.action === "interested"
+        ? "MATCH_DECISION_INTERESTED"
+        : "MATCH_DECISION_DECLINE";
+  await audit(
+    req,
+    auditAction,
+    { matchId: match.id, candidateId: match.candidateId, companyId: match.companyId },
+    parsed.data.feedback ? { feedback: parsed.data.feedback } : undefined
+  );
 
   return NextResponse.json({ ok: true });
 }

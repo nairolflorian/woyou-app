@@ -4,6 +4,7 @@ import { getSession } from "@/lib/session";
 import { isAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { TASK_KINDS, TASK_STATUS } from "@/lib/enums";
+import { audit } from "@/lib/audit";
 
 const schema = z.object({
   candidateId: z.string().optional(),
@@ -27,6 +28,12 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "INVALID" }, { status: 400 });
   }
   const t = await prisma.adminTask.create({ data: parsed.data });
+  await audit(req, "TASK_CREATE", {
+    taskId: t.id,
+    candidateId: t.candidateId,
+    companyId: t.companyId,
+    matchId: t.matchId,
+  }, { kind: t.kind, title: t.title });
   return NextResponse.json({ ok: true, task: t });
 }
 
@@ -47,5 +54,11 @@ export async function PATCH(req: Request) {
       description: body.description,
     },
   });
+  await audit(
+    req,
+    "TASK_STATUS_CHANGE",
+    { taskId: updated.id, candidateId: updated.candidateId, companyId: updated.companyId },
+    { status: updated.status }
+  );
   return NextResponse.json({ ok: true, task: updated });
 }

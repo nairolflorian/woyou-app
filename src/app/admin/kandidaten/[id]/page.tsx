@@ -8,7 +8,8 @@ import {
 } from "@/lib/enums";
 import { jobLabel } from "@/lib/jobs";
 import { CandidateAdminActions } from "@/components/CandidateAdminActions";
-import { parseDocs } from "@/lib/uploads";
+import { parseDocs, findAvatar } from "@/lib/uploads";
+import { AvatarBubble } from "@/components/AvatarUpload";
 
 export default async function CandidateDetail(props: {
   params: Promise<{ id: string }>;
@@ -39,15 +40,23 @@ export default async function CandidateDetail(props: {
         ← zurück zur Liste
       </Link>
       <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold">
-            {candidate.firstName} {candidate.lastName}
-          </h1>
-          <p className="text-sm text-[color:var(--color-ink-soft)]">
-            {candidate.user.email ?? candidate.user.phone ?? candidate.user.telegramId}
-            {" · "}
-            {candidate.city ?? "—"}, {candidate.countryOfResidence ?? "—"}
-          </p>
+        <div className="flex items-center gap-4">
+          <AvatarBubble
+            candidateId={candidate.id}
+            filename={findAvatar(docs)?.filename ?? null}
+            initials={`${candidate.firstName?.[0] ?? ""}${candidate.lastName?.[0] ?? ""}`.toUpperCase() || "?"}
+            size={56}
+          />
+          <div>
+            <h1 className="text-2xl font-bold">
+              {candidate.firstName} {candidate.lastName}
+            </h1>
+            <p className="text-sm text-[color:var(--color-ink-soft)]">
+              {candidate.user.email ?? candidate.user.phone ?? candidate.user.telegramId}
+              {" · "}
+              {candidate.city ?? "—"}, {candidate.countryOfResidence ?? "—"}
+            </p>
+          </div>
         </div>
         <div className="flex items-center gap-3">
           <Link

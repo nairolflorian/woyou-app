@@ -18,7 +18,9 @@ import { ConsentButtons } from "@/components/ConsentButtons";
 import { DocumentUpload } from "@/components/DocumentUpload";
 import { AccountControls } from "@/components/AccountControls";
 import { OnboardingChecklist } from "@/components/OnboardingChecklist";
-import { parseDocs } from "@/lib/uploads";
+import { parseDocs, findAvatar } from "@/lib/uploads";
+import { AvatarUpload } from "@/components/AvatarUpload";
+import { MatchTimeline } from "@/components/MatchTimeline";
 
 export default async function CandidateDashboardPage() {
   const session = await getSession();
@@ -54,17 +56,34 @@ export default async function CandidateDashboardPage() {
       <SiteHeader />
       <main id="main" className="flex-1 bg-[color:var(--color-surface)]">
         <div className="mx-auto max-w-5xl px-6 py-12">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <h1 className="text-3xl font-bold">
-                Hallo {candidate.firstName ?? "👋"}
-              </h1>
-              <p className="text-sm text-[color:var(--color-ink-soft)]">
-                {candidate.user.email ?? candidate.user.phone}
-              </p>
-            </div>
-            <span className={`badge ${labelInfo.color}`}>{labelInfo.de}</span>
-          </div>
+          {(() => {
+            const docs = parseDocs(candidate.documents);
+            const avatar = findAvatar(docs);
+            const initials =
+              `${candidate.firstName?.[0] ?? ""}${candidate.lastName?.[0] ?? ""}`.toUpperCase() || "👋";
+            return (
+              <>
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex items-center gap-4">
+                    <AvatarUpload
+                      candidateId={candidate.id}
+                      initialFilename={avatar?.filename ?? null}
+                      initials={initials}
+                    />
+                    <div>
+                      <h1 className="text-3xl font-bold">
+                        Hallo {candidate.firstName ?? "👋"}
+                      </h1>
+                      <p className="text-sm text-[color:var(--color-ink-soft)]">
+                        {candidate.user.email ?? candidate.user.phone}
+                      </p>
+                    </div>
+                  </div>
+                  <span className={`badge ${labelInfo.color}`}>{labelInfo.de}</span>
+                </div>
+              </>
+            );
+          })()}
 
           <div className="mt-8">
             <OnboardingChecklist
@@ -213,29 +232,34 @@ export default async function CandidateDashboardPage() {
                       m.status as keyof typeof MATCH_STATUS_LABEL
                     ];
                   return (
-                    <div key={m.id} className="card flex flex-wrap items-center justify-between gap-3">
-                      <div>
-                        <div className="font-semibold">{m.company.companyName}</div>
-                        {m.jobRequest && (
-                          <div className="text-sm text-[color:var(--color-ink-soft)]">
-                            {m.jobRequest.customJobTitle ??
-                              jobLabel(m.jobRequest.jobCategory)}
-                          </div>
-                        )}
+                    <div key={m.id} className="card">
+                      <div className="flex flex-wrap items-center justify-between gap-3">
+                        <div>
+                          <div className="font-semibold">{m.company.companyName}</div>
+                          {m.jobRequest && (
+                            <div className="text-sm text-[color:var(--color-ink-soft)]">
+                              {m.jobRequest.customJobTitle ??
+                                jobLabel(m.jobRequest.jobCategory)}
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className={`badge ${ms?.color ?? ""}`}>
+                            {ms?.de ?? m.status}
+                          </span>
+                          {m.status === MATCH_STATUS.IN_CONVERSATION ||
+                          m.status === MATCH_STATUS.COMPANY_INTERESTED ? (
+                            <Link
+                              href={`/chat/${m.id}`}
+                              className="btn-outline text-xs px-4 py-1.5"
+                            >
+                              Chat öffnen
+                            </Link>
+                          ) : null}
+                        </div>
                       </div>
-                      <div className="flex items-center gap-3">
-                        <span className={`badge ${ms?.color ?? ""}`}>
-                          {ms?.de ?? m.status}
-                        </span>
-                        {m.status === MATCH_STATUS.IN_CONVERSATION ||
-                        m.status === MATCH_STATUS.COMPANY_INTERESTED ? (
-                          <Link
-                            href={`/chat/${m.id}`}
-                            className="btn-outline text-xs px-4 py-1.5"
-                          >
-                            Chat öffnen
-                          </Link>
-                        ) : null}
+                      <div className="mt-4">
+                        <MatchTimeline status={m.status} />
                       </div>
                     </div>
                   );

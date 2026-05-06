@@ -8,6 +8,7 @@ import {
   parseDocs,
   writeUpload,
   deleteUpload,
+  findAvatar,
 } from "@/lib/uploads";
 
 export const runtime = "nodejs";
@@ -44,6 +45,17 @@ export async function POST(req: Request) {
     ? (String(kindRaw) as DocKind)
     : "other";
 
+  // Avatars must be images.
+  if (kind === "avatar") {
+    const lower = file.name.toLowerCase();
+    if (!/\.(jpe?g|png)$/.test(lower)) {
+      return NextResponse.json(
+        { error: "AVATAR_MUST_BE_IMAGE", message: "Profilbild muss JPG oder PNG sein." },
+        { status: 400 }
+      );
+    }
+  }
+
   let stored;
   try {
     stored = await writeUpload(candidate.id, file, kind);
@@ -54,7 +66,16 @@ export async function POST(req: Request) {
     );
   }
 
-  const docs = parseDocs(candidate.documents);
+  let docs = parseDocs(candidate.documents);
+  // Replace existing avatar instead of accumulating: we always show "the"
+  // avatar, so old ones would just clutter the disk.
+  if (kind === "avatar") {
+    const old = findAvatar(docs);
+    if (old) {
+      await deleteUpload(candidate.id, old.filename);
+      docs = docs.filter((d) => d.id !== old.id);
+    }
+  }
   docs.push(stored);
   await prisma.candidate.update({
     where: { id: candidate.id },
