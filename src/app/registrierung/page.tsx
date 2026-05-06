@@ -9,7 +9,7 @@ export default async function RegisterPage() {
   return (
     <>
       <SiteHeader />
-      <main className="flex-1 bg-[color:var(--color-surface)]">
+      <main id="main" className="flex-1 bg-[color:var(--color-surface)]">
         <div className="mx-auto max-w-md px-6 py-16">
           <div className="card">
             <h1 className="text-2xl font-bold">{t("auth.register_title")}</h1>

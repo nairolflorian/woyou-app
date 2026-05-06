@@ -19,7 +19,7 @@ export default function DemoPage() {
     return (
       <>
         <SiteHeader />
-        <main className="flex-1 bg-[color:var(--color-surface)]">
+        <main id="main" className="flex-1 bg-[color:var(--color-surface)]">
           <div className="mx-auto max-w-2xl px-6 py-20 text-center">
             <h1 className="text-2xl font-bold">Demo-Modus deaktiviert</h1>
             <p className="mt-3 text-[color:var(--color-ink-soft)]">
@@ -43,7 +43,7 @@ export default function DemoPage() {
   return (
     <>
       <SiteHeader />
-      <main className="flex-1 bg-[color:var(--color-surface)]">
+      <main id="main" className="flex-1 bg-[color:var(--color-surface)]">
         <div className="mx-auto max-w-5xl px-6 py-12">
           <div className="text-center">
             <span className="section-tag">Demo-Modus</span>

@@ -10,7 +10,7 @@ export default async function ActivatedPage(props: {
   return (
     <>
       <SiteHeader />
-      <main className="flex-1 bg-[color:var(--color-surface)]">
+      <main id="main" className="flex-1 bg-[color:var(--color-surface)]">
         <div className="mx-auto max-w-xl px-6 py-20 text-center">
           <div className="text-6xl">🎉</div>
           <h1 className="mt-4 text-3xl font-bold">Profil freigeschaltet!</h1>

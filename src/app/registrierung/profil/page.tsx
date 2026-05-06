@@ -60,7 +60,7 @@ export default async function ProfileWizardPage() {
   return (
     <>
       <SiteHeader />
-      <main className="flex-1 bg-[color:var(--color-surface)]">
+      <main id="main" className="flex-1 bg-[color:var(--color-surface)]">
         <div className="mx-auto max-w-3xl px-6 py-12">
           <ProfileWizard
             initial={initial}

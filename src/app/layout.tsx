@@ -4,10 +4,43 @@ import { getT } from "@/lib/i18n";
 import { DemoModeBar } from "@/components/DemoModeBar";
 import { CookieBanner } from "@/components/CookieBanner";
 
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
+
 export const metadata: Metadata = {
-  title: "WoYou — Deine Zukunft in Deutschland",
+  metadataBase: new URL(BASE_URL),
+  title: {
+    default: "WoYou — Deine Zukunft in Deutschland",
+    template: "%s · WoYou",
+  },
   description:
-    "WoYou verbindet internationales Talent mit deutschen Unternehmen. Demo-Plattform.",
+    "WoYou verbindet internationales Talent mit deutschen Unternehmen. Erstelle dein Profil, finde die passende Stelle und starte dein Abenteuer in Deutschland.",
+  keywords: [
+    "Arbeit Deutschland",
+    "Ausbildung",
+    "internationale Fachkräfte",
+    "Marokko",
+    "Vermittlung",
+    "Karriere",
+  ],
+  openGraph: {
+    type: "website",
+    siteName: "WoYou",
+    locale: "de_DE",
+    url: BASE_URL,
+    title: "WoYou — Deine Zukunft in Deutschland",
+    description:
+      "Vermittlung internationaler Fachkräfte nach Deutschland — mit Sprachtest, Visa-Unterstützung und persönlicher Begleitung.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "WoYou — Deine Zukunft in Deutschland",
+    description:
+      "Vermittlung internationaler Fachkräfte nach Deutschland.",
+  },
+  robots: {
+    index: process.env.DEMO_MODE === "false",
+    follow: process.env.DEMO_MODE === "false",
+  },
 };
 
 export default async function RootLayout({
@@ -21,6 +54,12 @@ export default async function RootLayout({
       className="h-full antialiased"
     >
       <body className="min-h-full flex flex-col bg-white text-[color:var(--color-ink)]">
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:rounded-full focus:bg-[color:var(--color-brand)] focus:text-white focus:px-4 focus:py-2 focus:shadow-lg"
+        >
+          Zum Inhalt springen
+        </a>
         {children}
         <CookieBanner />
         <DemoModeBar />

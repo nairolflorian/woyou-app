@@ -49,7 +49,16 @@ export default async function CandidateDetail(props: {
             {candidate.city ?? "—"}, {candidate.countryOfResidence ?? "—"}
           </p>
         </div>
-        <span className={`badge ${lbl.color}`}>{lbl.de}</span>
+        <div className="flex items-center gap-3">
+          <Link
+            href={`/druck/kandidat/${candidate.id}`}
+            target="_blank"
+            className="btn-outline text-xs"
+          >
+            🖨 Profil als PDF
+          </Link>
+          <span className={`badge ${lbl.color}`}>{lbl.de}</span>
+        </div>
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-3">

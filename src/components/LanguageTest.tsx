@@ -3,7 +3,15 @@
 import { useState } from "react";
 import type { TestQuestion } from "@/lib/language-test";
 
-export function LanguageTest({ questions }: { questions: TestQuestion[] }) {
+export function LanguageTest({
+  questions,
+  language = "de",
+  languageLabel,
+}: {
+  questions: TestQuestion[];
+  language?: "de" | "fr" | "ar";
+  languageLabel?: string;
+}) {
   const [started, setStarted] = useState(false);
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [submitting, setSubmitting] = useState(false);
@@ -19,7 +27,7 @@ export function LanguageTest({ questions }: { questions: TestQuestion[] }) {
     const res = await fetch("/api/candidate/language-test", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ answers }),
+      body: JSON.stringify({ language, answers }),
     });
     const data = await res.json();
     setSubmitting(false);
@@ -48,10 +56,12 @@ export function LanguageTest({ questions }: { questions: TestQuestion[] }) {
     return (
       <div className="card">
         <span className="section-tag">Sprachtest</span>
-        <h1 className="text-2xl font-bold">Sprachtest Deutsch</h1>
+        <h1 className="text-2xl font-bold">
+          Sprachtest {languageLabel ?? "Deutsch"}
+        </h1>
         <p className="mt-2 text-[color:var(--color-ink-soft)]">
-          12 Multiple-Choice-Fragen — von A1 bis B2. Dauert ca. 5 Minuten.
-          Du kannst den Test später wiederholen.
+          {questions.length} Multiple-Choice-Fragen — von A1 bis B2.
+          Dauert ca. 5 Minuten. Du kannst den Test später wiederholen.
         </p>
         <ul className="mt-6 space-y-2 text-sm text-[color:var(--color-ink-soft)]">
           <li>✓ Deine Punktzahl wird in deinem Profil angezeigt</li>

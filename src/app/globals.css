@@ -151,3 +151,44 @@ body {
 [dir="rtl"] {
   text-align: right;
 }
+
+/* Visible focus ring for keyboard navigation. The default :focus is visually
+   noisy for mouse users, so we use :focus-visible. */
+*:focus {
+  outline: none;
+}
+*:focus-visible {
+  outline: 3px solid var(--color-brand);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+/* Buttons and inputs already have rounded radii — keep them visible. */
+.btn-primary:focus-visible,
+.btn-outline:focus-visible,
+.btn-ghost:focus-visible {
+  outline-offset: 3px;
+}
+
+/* Tailwind sr-only / not-sr-only utilities for the skip link. Tailwind v4
+   ships these but we redeclare here so it works even with future purges. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+.focus\:not-sr-only:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: 0;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}

@@ -4,6 +4,7 @@ import { getT } from "@/lib/i18n";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { JOB_GROUPS } from "@/lib/jobs";
+import { SchemaOrg } from "@/components/SchemaOrg";
 
 export default async function HomePage() {
   const { t, locale } = await getT();
@@ -14,6 +15,7 @@ export default async function HomePage() {
 
   return (
     <>
+      <SchemaOrg />
       <SiteHeader />
 
       {/* DEMO BANNER */}

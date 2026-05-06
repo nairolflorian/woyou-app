@@ -17,6 +17,8 @@ import { UnlockButton } from "@/components/UnlockButton";
 import { ConsentButtons } from "@/components/ConsentButtons";
 import { DocumentUpload } from "@/components/DocumentUpload";
 import { AccountControls } from "@/components/AccountControls";
+import { OnboardingChecklist } from "@/components/OnboardingChecklist";
+import { parseDocs } from "@/lib/uploads";
 
 export default async function CandidateDashboardPage() {
   const session = await getSession();
@@ -50,7 +52,7 @@ export default async function CandidateDashboardPage() {
   return (
     <>
       <SiteHeader />
-      <main className="flex-1 bg-[color:var(--color-surface)]">
+      <main id="main" className="flex-1 bg-[color:var(--color-surface)]">
         <div className="mx-auto max-w-5xl px-6 py-12">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
@@ -62,6 +64,15 @@ export default async function CandidateDashboardPage() {
               </p>
             </div>
             <span className={`badge ${labelInfo.color}`}>{labelInfo.de}</span>
+          </div>
+
+          <div className="mt-8">
+            <OnboardingChecklist
+              profileCompleteness={candidate.profileCompleteness}
+              testTaken={candidate.languageTestPassed != null}
+              hasDocuments={parseDocs(candidate.documents).length > 0}
+              paid={Boolean(candidate.paidAt)}
+            />
           </div>
 
           <div className="grid gap-6 md:grid-cols-3 mt-8">
@@ -176,7 +187,7 @@ export default async function CandidateDashboardPage() {
           )}
 
           {/* DOCUMENTS */}
-          <div className="mt-10 card">
+          <div id="dokumente" className="mt-10 card scroll-mt-20">
             <h2 className="text-xl font-bold">Deine Dokumente</h2>
             <p className="text-sm text-[color:var(--color-ink-soft)] mt-1">
               Lebenslauf, Reisepass, Diplome und Zertifikate. Sichtbar für

@@ -7,7 +7,7 @@ export default function Impressum() {
   return (
     <>
       <SiteHeader />
-      <main className="flex-1 bg-[color:var(--color-surface)]">
+      <main id="main" className="flex-1 bg-[color:var(--color-surface)]">
         <div className="mx-auto max-w-3xl px-6 py-12">
           <span className="section-tag">Rechtliches</span>
           <h1 className="text-3xl font-bold">Impressum</h1>

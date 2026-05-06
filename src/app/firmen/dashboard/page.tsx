@@ -44,7 +44,7 @@ export default async function CompanyDashboardPage() {
   return (
     <>
       <SiteHeader />
-      <main className="flex-1 bg-[color:var(--color-surface)]">
+      <main id="main" className="flex-1 bg-[color:var(--color-surface)]">
         <div className="mx-auto max-w-5xl px-6 py-12">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
