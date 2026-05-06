@@ -35,9 +35,9 @@ const de: Record<string, string> = {
   "home.process_step3_title": "Profil freischalten",
   "home.process_step3_desc":
     "Einmalige Gebühr, dann bist du für Unternehmen sichtbar und vermittelbar.",
-  "home.process_step4_title": "Matching & Start",
+  "home.process_step4_title": "Auto-Matching & Start",
   "home.process_step4_desc":
-    "Wir bringen dich mit passenden Firmen zusammen und helfen bei Visum & Ankunft.",
+    "Sobald dein Profil freigeschaltet ist, schlägt unser System dir automatisch passende Firmen vor. Bei Erfolg helfen wir bei Visum & Ankunft.",
 
   "home.benefits_badge": "WARUM WOYOU",
   "home.benefits_title": "Deine Vorteile",

@@ -4,6 +4,7 @@ import { getSession } from "@/lib/session";
 import { isAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { CANDIDATE_STATUS } from "@/lib/enums";
+import { autoMatchForCandidate } from "@/lib/auto-match";
 
 const schema = z.object({
   status: z.enum(Object.values(CANDIDATE_STATUS) as [string, ...string[]]),
@@ -37,5 +38,10 @@ export async function POST(
           : null,
     },
   });
+  if (parsed.data.status === CANDIDATE_STATUS.PAID_PLACEABLE) {
+    await autoMatchForCandidate(id).catch((err) =>
+      console.error("auto-match failed:", err)
+    );
+  }
   return NextResponse.json({ ok: true });
 }

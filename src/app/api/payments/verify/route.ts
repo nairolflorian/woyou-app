@@ -3,6 +3,7 @@ import { getSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { ROLE, CANDIDATE_STATUS } from "@/lib/enums";
 import { getStripe } from "@/lib/stripe";
+import { autoMatchForCandidate } from "@/lib/auto-match";
 
 export async function POST(req: Request) {
   const session = await getSession();
@@ -38,5 +39,8 @@ export async function POST(req: Request) {
       status: CANDIDATE_STATUS.PAID_PLACEABLE,
     },
   });
+  await autoMatchForCandidate(candidate.id).catch((err) =>
+    console.error("auto-match failed:", err)
+  );
   return NextResponse.json({ ok: true });
 }

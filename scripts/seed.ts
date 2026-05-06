@@ -62,7 +62,7 @@ async function main() {
   await prisma.jobRequest.create({
     data: {
       companyId: companyA.id,
-      jobCategory: "pflegekraft",
+      jobCategory: "krankenpfleger",
       description: "Examinierte Pflegefachkraft für Innere Station, Vollzeit.",
       requiredGermanLevel: "B1",
       minYearsExperience: 2,
@@ -86,7 +86,7 @@ async function main() {
   await prisma.jobRequest.create({
     data: {
       companyId: companyB.id,
-      jobCategory: "sonderwunsch",
+      jobCategory: "__custom__",
       customJobTitle: "Hotelmanager-Trainee mit Französisch",
       description: "Wir suchen einen frankophonen Trainee für unsere Direktion.",
       requiredGermanLevel: "B2",
@@ -104,7 +104,7 @@ async function main() {
       email: "fatima@example.com",
       first: "Fatima",
       last: "Benali",
-      cat: "pflegekraft",
+      cat: "krankenpfleger",
       german: "B1",
       exp: 4,
       city: "Casablanca",
@@ -128,7 +128,7 @@ async function main() {
       email: "aicha@example.com",
       first: "Aicha",
       last: "Tazi",
-      cat: "elektriker",
+      cat: "elektrotechnik",
       german: "A1",
       exp: 2,
       city: "Rabat",
@@ -154,7 +154,7 @@ async function main() {
         city: c.city,
         preferredChannel: "TELEGRAM",
         desiredJobCategory: c.cat,
-        desiredJobTitle: c.cat === "pflegekraft" ? "Pflegefachkraft Klinik" : c.cat === "koch" ? "Koch traditionelle Küche" : "Industrieelektriker",
+        desiredJobTitle: c.cat === "krankenpfleger" ? "Pflegefachkraft Klinik" : c.cat === "koch" ? "Koch traditionelle Küche" : "Industrieelektriker:in",
         alternativeJobs: JSON.stringify([]),
         educationLevel: "apprenticeship",
         yearsExperience: c.exp,
@@ -201,14 +201,18 @@ async function main() {
     },
   });
 
-  // Add JobCategory rows so they show up in any future UI / export
+  // Sync the JobCategory table from src/lib/jobs.ts (single source of truth).
+  const { JOB_CATEGORIES } = await import("../src/lib/jobs");
   await prisma.jobCategory.deleteMany();
   await prisma.jobCategory.createMany({
-    data: [
-      { slug: "pflegekraft", group: "care", nameDe: "Pflegekraft", nameEn: "Nurse", nameFr: "Infirmier", nameAr: "ممرض" },
-      { slug: "koch", group: "hospitality", nameDe: "Koch", nameEn: "Cook", nameFr: "Cuisinier", nameAr: "طاهٍ" },
-      { slug: "elektriker", group: "construction", nameDe: "Elektriker", nameEn: "Electrician", nameFr: "Électricien", nameAr: "كهربائي" },
-    ],
+    data: JOB_CATEGORIES.map((j) => ({
+      slug: j.slug,
+      group: j.group,
+      nameDe: j.de,
+      nameEn: j.en,
+      nameFr: j.fr,
+      nameAr: j.ar,
+    })),
   });
 
   console.log("Done.\n\nDemo accounts (Passwort: woyou1234):");

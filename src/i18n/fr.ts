@@ -34,9 +34,9 @@ const fr: Record<string, string> = {
   "home.process_step3_title": "Activer le profil",
   "home.process_step3_desc":
     "Frais uniques — votre profil devient visible et plaçable.",
-  "home.process_step4_title": "Mise en relation & arrivée",
+  "home.process_step4_title": "Matching auto. & arrivée",
   "home.process_step4_desc":
-    "Nous vous mettons en relation et aidons pour le visa et l'arrivée.",
+    "Dès l'activation de votre profil, notre système vous propose automatiquement les entreprises correspondantes. Nous aidons ensuite pour le visa et l'arrivée.",
 
   "home.benefits_badge": "POURQUOI WOYOU",
   "home.benefits_title": "Vos avantages",

@@ -63,7 +63,11 @@ export default async function MatchingPage(props: {
     <div>
       <h1 className="text-2xl font-bold">Matching</h1>
       <p className="text-sm text-[color:var(--color-ink-soft)]">
-        Wählen Sie eine Stellenanfrage und schlagen Sie passende Kandidaten vor.
+        Matching läuft <strong>automatisch</strong> sobald ein Kandidat
+        vermittelbar wird oder eine neue Stellenanfrage angelegt wird
+        (Schwelle 60/100, Top 5). Diese Seite ist ein <strong>manueller Override</strong>
+        — z.B. um auch unter der Schwelle gezielt vorzuschlagen oder ältere
+        Kandidaten erneut zu matchen.
       </p>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[320px_1fr]">

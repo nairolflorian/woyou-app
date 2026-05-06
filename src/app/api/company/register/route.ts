@@ -5,6 +5,7 @@ import { createUserWithRole } from "@/lib/auth";
 import { getSession } from "@/lib/session";
 import { ROLE } from "@/lib/enums";
 import { JOB_CATEGORIES } from "@/lib/jobs";
+import { autoMatchForJobRequest } from "@/lib/auto-match";
 
 const schema = z.object({
   account: z
@@ -82,12 +83,12 @@ export async function POST(req: Request) {
 
   const isCustomRequest =
     !JOB_CATEGORIES.find((c) => c.slug === jobRequest.jobCategory) ||
-    jobRequest.jobCategory === "sonderwunsch";
+    jobRequest.jobCategory === "__custom__";
 
-  await prisma.jobRequest.create({
+  const newJobRequest = await prisma.jobRequest.create({
     data: {
       companyId: created.id,
-      jobCategory: jobRequest.jobCategory || "sonderwunsch",
+      jobCategory: jobRequest.jobCategory || "__custom__",
       customJobTitle: jobRequest.customJobTitle ?? undefined,
       description: jobRequest.description ?? undefined,
       requiredGermanLevel: jobRequest.requiredGermanLevel ?? undefined,
@@ -114,6 +115,13 @@ export async function POST(req: Request) {
       link: "/admin/anfragen",
     })),
   });
+
+  // Auto-match against all currently placeable candidates (skips custom requests).
+  if (!isCustomRequest) {
+    await autoMatchForJobRequest(newJobRequest.id).catch((err) =>
+      console.error("auto-match failed:", err)
+    );
+  }
 
   return NextResponse.json({ ok: true, next: "/firmen/dashboard" });
 }

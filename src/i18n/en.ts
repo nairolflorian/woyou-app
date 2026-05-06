@@ -34,9 +34,9 @@ const en: Record<string, string> = {
   "home.process_step3_title": "Unlock profile",
   "home.process_step3_desc":
     "One-time fee — then employers see your profile and you become placeable.",
-  "home.process_step4_title": "Match & arrive",
+  "home.process_step4_title": "Auto-match & arrive",
   "home.process_step4_desc":
-    "We match you with the right companies and help with visa & arrival.",
+    "Once your profile is unlocked our system automatically suggests matching companies. We then help with visa & arrival.",
 
   "home.benefits_badge": "WHY WOYOU",
   "home.benefits_title": "Your benefits",

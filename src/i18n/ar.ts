@@ -33,9 +33,9 @@ const ar: Record<string, string> = {
   "home.process_step3_title": "تفعيل الملف",
   "home.process_step3_desc":
     "رسوم لمرة واحدة — ثم تصبح قابلاً للتوظيف.",
-  "home.process_step4_title": "المطابقة والوصول",
+  "home.process_step4_title": "مطابقة آلية ووصول",
   "home.process_step4_desc":
-    "نطابقك مع الشركات المناسبة ونساعد في التأشيرة والوصول.",
+    "بمجرد تفعيل ملفك يقترح نظامنا تلقائياً الشركات المناسبة. ثم نساعدك في التأشيرة والوصول.",
 
   "home.benefits_badge": "لماذا WoYou",
   "home.benefits_title": "مزاياك",

@@ -45,7 +45,7 @@ export function CompanyRegister({
         account: isLoggedIn ? null : { email, password },
         company: { companyName, contactName, industry, city, website, description },
         jobRequest: {
-          jobCategory: jobCategory || "sonderwunsch",
+          jobCategory: jobCategory || "__custom__",
           customJobTitle: customJobTitle || null,
           description: jobDescription,
           requiredGermanLevel,
@@ -130,15 +130,25 @@ export function CompanyRegister({
                 ))}
               </optgroup>
             ))}
+            <option value="__custom__">⚙ Sonderanfrage / anderer Beruf …</option>
           </select>
         </div>
         <div>
-          <label className="label">Genauer Jobtitel (oder Sonderwunsch)</label>
-          <input className="input" placeholder="z.B. Pflegefachkraft Stationsleitung" value={customJobTitle} onChange={(e) => setCustomJobTitle(e.target.value)} />
-          <p className="mt-1 text-xs text-[color:var(--color-ink-soft)]">
-            Falls der Beruf nicht in der Liste steht, wählen Sie „Sonderwunsch"
-            und beschreiben Sie ihn hier — wir nehmen direkt Kontakt mit Ihnen auf.
-          </p>
+          <label className="label">
+            {jobCategory === "__custom__" ? "Bitte Beruf benennen *" : "Genauer Jobtitel (optional)"}
+          </label>
+          <input
+            className="input"
+            placeholder="z.B. Pflegefachkraft Stationsleitung"
+            value={customJobTitle}
+            onChange={(e) => setCustomJobTitle(e.target.value)}
+            required={jobCategory === "__custom__"}
+          />
+          {jobCategory === "__custom__" && (
+            <p className="mt-1 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded p-2">
+              Sonderanfrage — landet direkt bei der Vermittlung, die Sie binnen 1 Werktag kontaktiert.
+            </p>
+          )}
         </div>
         <div>
           <label className="label">Beschreibung der Stelle</label>
