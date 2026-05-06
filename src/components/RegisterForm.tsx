@@ -9,6 +9,7 @@ export function RegisterForm() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+  const [website, setWebsite] = useState(""); // honeypot
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -28,6 +29,7 @@ export function RegisterForm() {
         phone: method === "phone" ? phone : undefined,
         password,
         role: "CANDIDATE",
+        website,
       }),
     });
     const data = await res.json();
@@ -107,6 +109,31 @@ export function RegisterForm() {
           required
           autoComplete="new-password"
         />
+      </div>
+
+      {/* Honeypot: visually hidden, off-screen, autocomplete=off, aria-hidden, tabindex -1.
+          Real users won't fill it. Bots that scan inputs often will. */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          left: "-10000px",
+          top: "auto",
+          width: 1,
+          height: 1,
+          overflow: "hidden",
+        }}
+      >
+        <label>
+          Website (bitte freilassen)
+          <input
+            type="text"
+            tabIndex={-1}
+            autoComplete="off"
+            value={website}
+            onChange={(e) => setWebsite(e.target.value)}
+          />
+        </label>
       </div>
 
       {error && (

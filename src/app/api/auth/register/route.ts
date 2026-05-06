@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { createUserWithRole } from "@/lib/auth";
 import { getSession } from "@/lib/session";
 import { ROLE, CANDIDATE_STATUS } from "@/lib/enums";
+import { rateLimit, clientIp } from "@/lib/rate-limit";
 
 const schema = z.object({
   email: z.string().email().optional().or(z.literal("")),
@@ -11,9 +12,18 @@ const schema = z.object({
   password: z.string().min(6),
   role: z.enum([ROLE.CANDIDATE, ROLE.COMPANY]).default(ROLE.CANDIDATE),
   locale: z.string().optional(),
+  // Honeypot: a hidden field that real users never see and bots usually fill.
+  website: z.string().optional(),
 });
 
 export async function POST(req: Request) {
+  const rl = rateLimit("register", clientIp(req), 5, 60_000);
+  if (!rl.ok) {
+    return NextResponse.json(
+      { error: "RATE_LIMITED", retryInSec: Math.ceil(rl.resetIn / 1000) },
+      { status: 429 }
+    );
+  }
   const body = await req.json().catch(() => ({}));
   const parsed = schema.safeParse(body);
   if (!parsed.success) {
@@ -21,6 +31,10 @@ export async function POST(req: Request) {
       { error: "INVALID", details: parsed.error.flatten() },
       { status: 400 }
     );
+  }
+  // Honeypot tripped → silently succeed-looking 200 so bots don't retry.
+  if (parsed.data.website && parsed.data.website.length > 0) {
+    return NextResponse.json({ ok: true, next: "/" });
   }
   const { email, phone, password, role, locale } = parsed.data;
   if (!email && !phone) {

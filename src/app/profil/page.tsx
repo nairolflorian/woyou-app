@@ -16,6 +16,7 @@ import { jobLabel } from "@/lib/jobs";
 import { UnlockButton } from "@/components/UnlockButton";
 import { ConsentButtons } from "@/components/ConsentButtons";
 import { DocumentUpload } from "@/components/DocumentUpload";
+import { AccountControls } from "@/components/AccountControls";
 
 export default async function CandidateDashboardPage() {
   const session = await getSession();
@@ -230,6 +231,14 @@ export default async function CandidateDashboardPage() {
                 })}
               </div>
             )}
+          </div>
+
+          <div className="mt-10 card">
+            <h2 className="text-xl font-bold">Mein Account</h2>
+            <p className="text-sm text-[color:var(--color-ink-soft)] mt-1 mb-4">
+              Datenexport und Account-Löschung gemäß DSGVO.
+            </p>
+            <AccountControls />
           </div>
 
           {APP_CONFIG.channels.telegramBotEnabled && (

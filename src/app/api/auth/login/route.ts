@@ -3,6 +3,7 @@ import { z } from "zod";
 import { findUserByLogin, verifyPassword } from "@/lib/auth";
 import { getSession } from "@/lib/session";
 import { ROLE, type Role } from "@/lib/enums";
+import { rateLimit, clientIp } from "@/lib/rate-limit";
 
 const schema = z.object({
   login: z.string().min(1),
@@ -10,6 +11,13 @@ const schema = z.object({
 });
 
 export async function POST(req: Request) {
+  const rl = rateLimit("login", clientIp(req), 10, 60_000);
+  if (!rl.ok) {
+    return NextResponse.json(
+      { error: "RATE_LIMITED", retryInSec: Math.ceil(rl.resetIn / 1000) },
+      { status: 429 }
+    );
+  }
   const body = await req.json().catch(() => ({}));
   const parsed = schema.safeParse(body);
   if (!parsed.success) {
