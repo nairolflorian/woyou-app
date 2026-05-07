@@ -51,6 +51,7 @@ Beide hängen am Docker-Netzwerk `woyou_net`. `woyou_app` redet intern via `post
 | `woyou-postgres-backup` | Tägliches `pg_dump` nach `/var/backups/woyou/`, hält 7 Tage |
 | `woyou-rematch` | Tägliches Re-Matching für vermittelbare Kandidaten und frische Stellen — ruft `/api/cron/re-match` mit `CRON_SECRET` auf |
 | `woyou-reminders` | Tägliche Reminder-Notifications: unvollständige Profile (>3 Tage), wartende Consents (>24 h), wartende Firmen (>48 h), überfällige Admin-Aufgaben |
+| `woyou-purge` | Hard-Delete soft-gelöschter User (`User.deletedAt`) nach 30 Tagen Retention |
 
 ## Updates ausrollen
 
