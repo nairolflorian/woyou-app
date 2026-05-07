@@ -10,6 +10,8 @@ import { jobLabel } from "@/lib/jobs";
 import { CandidateAdminActions } from "@/components/CandidateAdminActions";
 import { parseDocs, findAvatar } from "@/lib/uploads";
 import { AvatarBubble } from "@/components/AvatarUpload";
+import { scoreCandidate } from "@/lib/matching";
+import { AUDIT_ACTION_LABEL } from "@/lib/audit";
 
 export default async function CandidateDetail(props: {
   params: Promise<{ id: string }>;
@@ -19,12 +21,22 @@ export default async function CandidateDetail(props: {
     where: { id },
     include: {
       user: true,
-      matches: { include: { company: true, jobRequest: true } },
+      matches: {
+        include: { company: true, jobRequest: true },
+        orderBy: { createdAt: "desc" },
+      },
       tasks: true,
       testAnswers: true,
     },
   });
   if (!candidate) notFound();
+
+  // Audit history scoped to this candidate, newest first.
+  const candidateAudit = await prisma.auditLog.findMany({
+    where: { candidateId: id },
+    orderBy: { createdAt: "desc" },
+    take: 30,
+  });
 
   const lbl = CANDIDATE_STATUS_LABEL[candidate.status as keyof typeof CANDIDATE_STATUS_LABEL];
   const altJobs = candidate.alternativeJobs ? JSON.parse(candidate.alternativeJobs) as string[] : [];
@@ -111,25 +123,100 @@ export default async function CandidateDetail(props: {
           </div>
 
           <div className="card">
-            <h2 className="font-semibold">Vorschläge ({candidate.matches.length})</h2>
-            <ul className="mt-3 space-y-2 text-sm">
-              {candidate.matches.length === 0 && <li className="text-[color:var(--color-ink-soft)]">Keine Vorschläge.</li>}
+            <h2 className="font-semibold">Match-Geschichte ({candidate.matches.length})</h2>
+            <ul className="mt-3 space-y-3 text-sm">
+              {candidate.matches.length === 0 && (
+                <li className="text-[color:var(--color-ink-soft)]">Keine Vorschläge.</li>
+              )}
               {candidate.matches.map((m) => {
                 const ms = MATCH_STATUS_LABEL[m.status as keyof typeof MATCH_STATUS_LABEL];
+                const reasons =
+                  m.jobRequest ? scoreCandidate(candidate, m.jobRequest).reasons : [];
                 return (
-                  <li key={m.id} className="flex justify-between items-start gap-3">
-                    <div>
-                      <div className="font-semibold">{m.company.companyName}</div>
-                      {m.jobRequest && (
-                        <div className="text-xs text-[color:var(--color-ink-soft)]">
-                          {m.jobRequest.customJobTitle ?? jobLabel(m.jobRequest.jobCategory)}
-                        </div>
+                  <li
+                    key={m.id}
+                    className="rounded-lg border border-[color:var(--color-border)] p-3"
+                  >
+                    <div className="flex justify-between items-start gap-3">
+                      <div className="min-w-0">
+                        <div className="font-semibold">{m.company.companyName}</div>
+                        {m.jobRequest && (
+                          <div className="text-xs text-[color:var(--color-ink-soft)]">
+                            {m.jobRequest.customJobTitle ?? jobLabel(m.jobRequest.jobCategory)}
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex flex-col items-end gap-1 flex-shrink-0">
+                        {m.matchScore != null && (
+                          <span className="badge bg-[color:var(--color-brand-soft)] text-[color:var(--color-brand)] font-semibold">
+                            {m.matchScore}/100
+                          </span>
+                        )}
+                        <span className={`badge ${ms?.color ?? ""}`}>{ms?.de ?? m.status}</span>
+                      </div>
+                    </div>
+                    <div className="mt-2 flex flex-wrap gap-3 text-[10px] text-[color:var(--color-ink-soft)]">
+                      <span>
+                        Erstellt {m.createdAt.toLocaleString("de-DE")}
+                      </span>
+                      {m.candidateRespondedAt && (
+                        <span>
+                          Kandidat reagierte {m.candidateRespondedAt.toLocaleString("de-DE")}
+                        </span>
+                      )}
+                      {m.companyRespondedAt && (
+                        <span>
+                          Firma reagierte {m.companyRespondedAt.toLocaleString("de-DE")}
+                        </span>
                       )}
                     </div>
-                    <span className={`badge ${ms?.color ?? ""}`}>{ms?.de ?? m.status}</span>
+                    {reasons.length > 0 && (
+                      <details className="mt-2 text-xs">
+                        <summary className="cursor-pointer text-[color:var(--color-brand)]">
+                          Score-Begründung
+                        </summary>
+                        <ul className="mt-1 list-disc ml-5 text-[color:var(--color-ink-soft)]">
+                          {reasons.map((r, i) => (
+                            <li key={i}>{r}</li>
+                          ))}
+                        </ul>
+                      </details>
+                    )}
+                    {m.companyFeedback && (
+                      <div className="mt-2 text-xs bg-amber-50 border border-amber-200 rounded p-2">
+                        <strong>Firmen-Feedback:</strong> {m.companyFeedback}
+                      </div>
+                    )}
                   </li>
                 );
               })}
+            </ul>
+          </div>
+
+          <div className="card">
+            <h2 className="font-semibold">Verlauf ({candidateAudit.length})</h2>
+            <ul className="mt-3 space-y-1.5 text-xs">
+              {candidateAudit.length === 0 && (
+                <li className="text-[color:var(--color-ink-soft)]">Noch keine Einträge.</li>
+              )}
+              {candidateAudit.map((a) => (
+                <li key={a.id} className="flex flex-wrap items-baseline gap-2">
+                  <span className="text-[10px] text-[color:var(--color-ink-soft)] tabular-nums">
+                    {a.createdAt.toLocaleString("de-DE")}
+                  </span>
+                  <span className="font-semibold">
+                    {AUDIT_ACTION_LABEL[a.action as keyof typeof AUDIT_ACTION_LABEL] ?? a.action}
+                  </span>
+                  {a.actorEmail && (
+                    <span className="text-[color:var(--color-ink-soft)]">· {a.actorEmail}</span>
+                  )}
+                  {a.meta && (
+                    <span className="text-[color:var(--color-ink-soft)] truncate max-w-[260px]">
+                      · {a.meta}
+                    </span>
+                  )}
+                </li>
+              ))}
             </ul>
           </div>
 

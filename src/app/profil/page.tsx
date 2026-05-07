@@ -24,6 +24,7 @@ import { MatchTimeline } from "@/components/MatchTimeline";
 import { scoreCandidate } from "@/lib/matching";
 import { ProfileStrengthTips } from "@/components/ProfileStrengthTips";
 import { profileStrengthTips } from "@/lib/candidate";
+import { LoginEditForm } from "@/components/LoginEditForm";
 
 export default async function CandidateDashboardPage() {
   const session = await getSession();
@@ -311,9 +312,14 @@ export default async function CandidateDashboardPage() {
 
           <div className="mt-10 card">
             <h2 className="text-xl font-bold">{t("dash.account_h")}</h2>
-            <p className="text-sm text-[color:var(--color-ink-soft)] mt-1 mb-4">
+            <p className="text-sm text-[color:var(--color-ink-soft)] mt-1 mb-6">
               {t("dash.account_desc")}
             </p>
+            <LoginEditForm
+              initialEmail={candidate.user.email}
+              initialPhone={candidate.user.phone}
+            />
+            <hr className="my-6 border-[color:var(--color-border)]" />
             <AccountControls />
           </div>
 
