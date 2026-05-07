@@ -1,14 +1,9 @@
+"use client";
+
 // Visual timeline of a Match's lifecycle. We map the granular MATCH_STATUS
 // onto 4 visible stages so non-tech users grasp it at a glance.
 
-type Stage = { key: string; label: string };
-
-const STAGES: Stage[] = [
-  { key: "proposal", label: "Vorschlag" },
-  { key: "consent", label: "Zustimmung" },
-  { key: "review", label: "Firma prüft" },
-  { key: "outcome", label: "Ergebnis" },
-];
+import { useT } from "@/components/TranslationProvider";
 
 type StageState = "done" | "active" | "todo" | "rejected";
 
@@ -36,6 +31,13 @@ function classify(status: string): { reachedUntil: number; ended: boolean; posit
 }
 
 export function MatchTimeline({ status }: { status: string }) {
+  const { t } = useT();
+  const STAGES = [
+    { key: "proposal", label: t("ml.proposal") },
+    { key: "consent", label: t("ml.consent") },
+    { key: "review", label: t("ml.review") },
+    { key: "outcome", label: t("ml.outcome") },
+  ];
   const { reachedUntil, ended, positive } = classify(status);
 
   const stageState = (i: number): StageState => {
@@ -60,10 +62,12 @@ export function MatchTimeline({ status }: { status: string }) {
     }
   };
   const lineColor = (s: StageState) =>
-    s === "done" || (s === "rejected") ? "bg-emerald-300" : "bg-[color:var(--color-border)]";
+    s === "done" || s === "rejected"
+      ? "bg-emerald-300"
+      : "bg-[color:var(--color-border)]";
 
   return (
-    <div className="flex items-center" role="list" aria-label="Match-Verlauf">
+    <div className="flex items-center" role="list" aria-label={t("ml.aria_label")}>
       {STAGES.map((s, i) => {
         const st = stageState(i);
         return (

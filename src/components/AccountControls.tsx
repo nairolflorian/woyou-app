@@ -1,8 +1,21 @@
 "use client";
 
 import { useState } from "react";
+import { useT } from "@/components/TranslationProvider";
+
+const CONFIRM_WORDS: Record<string, string> = {
+  de: "LÖSCHEN",
+  en: "DELETE",
+  fr: "SUPPRIMER",
+  ar: "حذف",
+  es: "ELIMINAR",
+  ru: "УДАЛИТЬ",
+  uk: "ВИДАЛИТИ",
+};
 
 export function AccountControls() {
+  const { t, locale } = useT();
+  const confirmWord = CONFIRM_WORDS[locale] ?? CONFIRM_WORDS.de;
   const [confirm, setConfirm] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -21,45 +34,40 @@ export function AccountControls() {
       return;
     }
     const d = await r.json().catch(() => ({}));
-    setErr(d.error ?? "Fehler beim Löschen.");
+    setErr(d.error ?? t("common.error_generic"));
   }
 
   return (
     <div className="space-y-4">
       <div>
-        <a
-          href="/api/account/export"
-          className="btn-outline"
-          download
-        >
-          📥 Meine Daten als JSON herunterladen
+        <a href="/api/account/export" className="btn-outline" download>
+          {t("acc.export_btn")}
         </a>
         <p className="mt-2 text-xs text-[color:var(--color-ink-soft)]">
-          DSGVO Art. 15 / Art. 20 — vollständiger Export aller über dich gespeicherten Daten.
+          {t("acc.export_hint")}
         </p>
       </div>
 
       <div className="rounded-lg border border-rose-200 bg-rose-50 p-4">
-        <h3 className="font-semibold text-rose-900">Account dauerhaft löschen</h3>
-        <p className="text-sm text-rose-900 mt-1">
-          DSGVO Art. 17 — alle deine Daten und Dokumente werden unwiderruflich
-          entfernt. Aktive Vorschläge gehen verloren.
-        </p>
+        <h3 className="font-semibold text-rose-900">{t("acc.delete_h")}</h3>
+        <p className="text-sm text-rose-900 mt-1">{t("acc.delete_desc")}</p>
         <p className="mt-3 text-sm text-rose-900">
-          Tipp das Wort <code className="bg-white px-1.5 py-0.5 rounded font-mono">LÖSCHEN</code> um zu bestätigen:
+          {t("acc.delete_confirm_prefix")}{" "}
+          <code className="bg-white px-1.5 py-0.5 rounded font-mono">{confirmWord}</code>{" "}
+          {t("acc.delete_confirm_suffix")}
         </p>
         <input
           className="input mt-2 max-w-xs"
           value={confirm}
           onChange={(e) => setConfirm(e.target.value)}
-          placeholder="LÖSCHEN"
+          placeholder={confirmWord}
         />
         <button
           onClick={deleteAccount}
-          disabled={busy || confirm !== "LÖSCHEN"}
+          disabled={busy || confirm !== confirmWord}
           className="mt-3 rounded-full bg-rose-600 hover:bg-rose-700 text-white font-semibold px-5 py-2 text-sm disabled:opacity-40 disabled:cursor-not-allowed"
         >
-          {busy ? "Lösche…" : "Account löschen"}
+          {busy ? t("acc.deleting") : t("acc.delete_btn")}
         </button>
         {err && <p className="mt-2 text-sm text-rose-700">{err}</p>}
       </div>

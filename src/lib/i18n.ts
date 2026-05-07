@@ -40,8 +40,20 @@ export async function getLocale(): Promise<Locale> {
 export async function getT() {
   const locale = await getLocale();
   const dict = DICTS[locale];
-  const t = (key: string, fallback?: string) =>
-    dict[key] ?? fallback ?? DICTS.de[key] ?? key;
+  function t(key: string, fallback?: string): string;
+  function t(key: string, vars: Record<string, string | number>): string;
+  function t(
+    key: string,
+    arg?: string | Record<string, string | number>
+  ): string {
+    const fallback = typeof arg === "string" ? arg : undefined;
+    const vars = arg && typeof arg === "object" ? arg : undefined;
+    const raw = dict[key] ?? fallback ?? DICTS.de[key] ?? key;
+    if (!vars) return raw;
+    return raw.replace(/\{(\w+)\}/g, (_, name) =>
+      vars[name] != null ? String(vars[name]) : `{${name}}`
+    );
+  }
   return { t, locale, isRTL: RTL_LOCALES.includes(locale) };
 }
 
@@ -49,4 +61,16 @@ export function tFor(locale: Locale) {
   const dict = DICTS[locale];
   return (key: string, fallback?: string) =>
     dict[key] ?? fallback ?? DICTS.de[key] ?? key;
+}
+
+// Builds the dict that's shipped to the client via TranslationProvider.
+// Merges the active locale on top of German fallbacks so client components
+// don't see English keys when a translation is missing.
+export async function getDictForClient() {
+  const locale = await getLocale();
+  return {
+    dict: { ...DICTS.de, ...DICTS[locale] },
+    locale,
+    isRTL: RTL_LOCALES.includes(locale),
+  };
 }

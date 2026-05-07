@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getT } from "@/lib/i18n";
 
 type Step = {
   key: string;
@@ -9,7 +10,7 @@ type Step = {
   cta?: string;
 };
 
-export function OnboardingChecklist({
+export async function OnboardingChecklist({
   profileCompleteness,
   testTaken,
   hasDocuments,
@@ -20,35 +21,42 @@ export function OnboardingChecklist({
   hasDocuments: boolean;
   paid: boolean;
 }) {
+  const { t } = await getT();
+  const fmt = (key: string, vars?: Record<string, string | number>) => {
+    let s = t(key);
+    if (vars) for (const [k, v] of Object.entries(vars)) s = s.replaceAll(`{${k}}`, String(v));
+    return s;
+  };
+
   const steps: Step[] = [
     {
       key: "profile",
-      title: "Profil ausfüllen",
-      desc: `Aktuell ${profileCompleteness}% — wir brauchen 100% für die Vermittlung.`,
+      title: t("onb.step1_title"),
+      desc: fmt("onb.step1_desc", { percent: profileCompleteness }),
       done: profileCompleteness >= 100,
       href: "/registrierung/profil",
-      cta: profileCompleteness >= 100 ? "Bearbeiten" : "Weiter ausfüllen",
+      cta: profileCompleteness >= 100 ? t("onb.step1_cta_done") : t("onb.step1_cta"),
     },
     {
       key: "test",
-      title: "Sprachtest absolvieren",
-      desc: "12 Multiple-Choice-Fragen, dauert ca. 5 Minuten. Wir zeigen Unternehmen dein objektives Niveau.",
+      title: t("onb.step2_title"),
+      desc: t("onb.step2_desc"),
       done: testTaken,
       href: "/sprachtest",
-      cta: testTaken ? "Wiederholen" : "Test starten",
+      cta: testTaken ? t("onb.step2_cta_done") : t("onb.step2_cta"),
     },
     {
       key: "docs",
-      title: "Mindestens den Lebenslauf hochladen",
-      desc: "Bewerbungsgespräche werden so 3× schneller — Firmen sehen direkt was du kannst.",
+      title: t("onb.step3_title"),
+      desc: t("onb.step3_desc"),
       done: hasDocuments,
       href: "#dokumente",
-      cta: hasDocuments ? "Dokumente verwalten" : "Hochladen",
+      cta: hasDocuments ? t("onb.step3_cta_done") : t("onb.step3_cta"),
     },
     {
       key: "paid",
-      title: "Profil freischalten",
-      desc: "Einmalige Gebühr — danach bist du für unsere Partnerunternehmen sichtbar und wirst automatisch vorgeschlagen.",
+      title: t("onb.step4_title"),
+      desc: t("onb.step4_desc"),
       done: paid,
     },
   ];
@@ -60,10 +68,10 @@ export function OnboardingChecklist({
     <div className="card">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <h2 className="text-xl font-bold">
-          {allDone ? "Du bist startklar 🎉" : "Bring dein Profil zur Vermittelbarkeit"}
+          {allDone ? t("onb.title_done") : t("onb.title_active")}
         </h2>
         <span className="text-sm font-semibold text-[color:var(--color-brand)]">
-          {doneCount} / {steps.length} erledigt
+          {fmt("onb.progress", { done: doneCount, total: steps.length })}
         </span>
       </div>
       <div className="mt-3 h-2 rounded-full bg-[color:var(--color-border)] overflow-hidden">

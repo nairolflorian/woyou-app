@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useT } from "@/components/TranslationProvider";
 
 const KEY = "woyou_cookie_choice_v1";
 
 export function CookieBanner() {
+  const { t } = useT();
   const [show, setShow] = useState(false);
 
   useEffect(() => {
@@ -29,11 +31,9 @@ export function CookieBanner() {
     <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[color:var(--color-border)] bg-white shadow-xl">
       <div className="mx-auto max-w-5xl px-6 py-4 flex flex-wrap items-center justify-between gap-3">
         <div className="text-sm text-[color:var(--color-ink)] max-w-3xl">
-          <strong>Cookies & Datenschutz.</strong> WoYou nutzt nur technisch
-          notwendige Cookies (Login-Session, Sprachwahl). Wir tracken nicht
-          und betten keine Drittanbieter-Skripte ein. Mehr in unserer{" "}
+          <strong>{t("cookie.title")}</strong> {t("cookie.body")}
           <a href="/datenschutz" className="text-[color:var(--color-brand)] underline">
-            Datenschutzerklärung
+            {t("cookie.privacy_link")}
           </a>.
         </div>
         <div className="flex gap-2">
@@ -41,7 +41,7 @@ export function CookieBanner() {
             onClick={() => decide("essential-only")}
             className="btn-primary text-sm"
           >
-            Verstanden
+            {t("cookie.ok")}
           </button>
         </div>
       </div>

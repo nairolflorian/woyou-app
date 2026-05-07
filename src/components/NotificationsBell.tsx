@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useT } from "@/components/TranslationProvider";
 
 type Notif = {
   id: string;
@@ -13,6 +14,7 @@ type Notif = {
 };
 
 export function NotificationsBell() {
+  const { t, locale } = useT();
   const [items, setItems] = useState<Notif[]>([]);
   const [unread, setUnread] = useState(0);
   const [open, setOpen] = useState(false);
@@ -60,7 +62,7 @@ export function NotificationsBell() {
     <div ref={ref} className="relative">
       <button
         type="button"
-        aria-label="Benachrichtigungen"
+        aria-label={t("bell.aria")}
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
         className="relative inline-flex items-center justify-center w-10 h-10 rounded-full hover:bg-[color:var(--color-brand-soft)]"
@@ -91,19 +93,19 @@ export function NotificationsBell() {
           role="menu"
         >
           <div className="flex items-center justify-between px-4 py-3 border-b border-[color:var(--color-border)]">
-            <span className="font-semibold text-sm">Benachrichtigungen</span>
+            <span className="font-semibold text-sm">{t("bell.title")}</span>
             {unread > 0 && (
               <button
                 onClick={markAll}
                 className="text-xs text-[color:var(--color-brand)] font-semibold hover:underline"
               >
-                Alle als gelesen
+                {t("bell.mark_all")}
               </button>
             )}
           </div>
           {items.length === 0 ? (
             <div className="p-6 text-center text-sm text-[color:var(--color-ink-soft)]">
-              Noch keine Benachrichtigungen.
+              {t("bell.empty")}
             </div>
           ) : (
             <ul>
@@ -128,7 +130,7 @@ export function NotificationsBell() {
                           </div>
                         )}
                         <div className="text-[10px] text-[color:var(--color-ink-soft)] mt-1">
-                          {new Date(n.createdAt).toLocaleString("de-DE")}
+                          {new Date(n.createdAt).toLocaleString(locale)}
                         </div>
                       </div>
                     </div>

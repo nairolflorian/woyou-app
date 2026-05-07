@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useT } from "@/components/TranslationProvider";
 
 type Doc = { id: string; kind: string; filename: string };
 
@@ -13,6 +14,7 @@ export function AvatarUpload({
   initialFilename: string | null;
   initials: string;
 }) {
+  const { t } = useT();
   const [filename, setFilename] = useState<string | null>(initialFilename);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -34,7 +36,7 @@ export function AvatarUpload({
     const d = await r.json();
     setBusy(false);
     if (!r.ok) {
-      setErr(d.message ?? "Upload fehlgeschlagen");
+      setErr(d.message ?? t("doc.upload_failed"));
       return;
     }
     setFilename((d.document as Doc).filename);
@@ -50,7 +52,7 @@ export function AvatarUpload({
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={`/api/documents/${candidateId}/${filename}?v=${version}`}
-            alt="Profilbild"
+            alt={t("doc.kind_avatar")}
             className="w-full h-full object-cover"
           />
         ) : (
@@ -59,7 +61,7 @@ export function AvatarUpload({
       </div>
       <div>
         <label className="btn-outline cursor-pointer text-sm">
-          {busy ? "Lade hoch …" : filename ? "Bild ersetzen" : "Profilbild hochladen"}
+          {busy ? t("avatar.uploading") : filename ? t("avatar.replace") : t("avatar.upload")}
           <input
             ref={inputRef}
             type="file"
@@ -73,7 +75,7 @@ export function AvatarUpload({
           />
         </label>
         <p className="mt-1 text-xs text-[color:var(--color-ink-soft)]">
-          JPG oder PNG, max. 5 MB. Wird nur Unternehmen mit aktivem Match gezeigt.
+          {t("avatar.hint")}
         </p>
         {err && <p className="mt-1 text-xs text-rose-700">{err}</p>}
       </div>

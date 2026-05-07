@@ -8,10 +8,10 @@ import {
   CANDIDATE_STATUS,
   CANDIDATE_STATUS_LABEL,
   MATCH_STATUS,
-  MATCH_STATUS_LABEL,
   ROLE,
 } from "@/lib/enums";
 import { APP_CONFIG, formatFee } from "@/lib/config";
+import { getT } from "@/lib/i18n";
 import { jobLabel } from "@/lib/jobs";
 import { UnlockButton } from "@/components/UnlockButton";
 import { ConsentButtons } from "@/components/ConsentButtons";
@@ -39,10 +39,12 @@ export default async function CandidateDashboardPage() {
   });
   if (!candidate) redirect("/anmelden");
 
+  const { t, locale } = await getT();
   const status = candidate.status as keyof typeof CANDIDATE_STATUS_LABEL;
   const labelInfo = CANDIDATE_STATUS_LABEL[status];
-
-  const fee = formatFee("de");
+  const statusLabel =
+    (labelInfo as Record<string, string>)[locale] ?? labelInfo.de;
+  const fee = formatFee(locale);
 
   const consentRequired = candidate.matches.filter(
     (m) => m.status === MATCH_STATUS.AWAITING_CANDIDATE_CONSENT
@@ -72,14 +74,14 @@ export default async function CandidateDashboardPage() {
                     />
                     <div>
                       <h1 className="text-3xl font-bold">
-                        Hallo {candidate.firstName ?? "👋"}
+                        {t("dash.hello", { name: candidate.firstName ?? "👋" })}
                       </h1>
                       <p className="text-sm text-[color:var(--color-ink-soft)]">
                         {candidate.user.email ?? candidate.user.phone}
                       </p>
                     </div>
                   </div>
-                  <span className={`badge ${labelInfo.color}`}>{labelInfo.de}</span>
+                  <span className={`badge ${labelInfo.color}`}>{statusLabel}</span>
                 </div>
               </>
             );
@@ -96,7 +98,7 @@ export default async function CandidateDashboardPage() {
 
           <div className="grid gap-6 md:grid-cols-3 mt-8">
             <div className="card md:col-span-2">
-              <h2 className="font-semibold">Profil-Vollständigkeit</h2>
+              <h2 className="font-semibold">{t("dash.completeness")}</h2>
               <div className="mt-3 h-3 rounded-full bg-[color:var(--color-border)] overflow-hidden">
                 <div
                   className="h-full bg-[color:var(--color-brand)]"
@@ -104,34 +106,34 @@ export default async function CandidateDashboardPage() {
                 />
               </div>
               <p className="mt-2 text-sm text-[color:var(--color-ink-soft)]">
-                {candidate.profileCompleteness}% ausgefüllt
+                {t("dash.percent_complete", { n: candidate.profileCompleteness })}
               </p>
               <div className="mt-4 flex flex-wrap gap-2">
                 <Link href="/registrierung/profil" className="btn-outline">
-                  Profil bearbeiten
+                  {t("dash.edit_profile")}
                 </Link>
                 <Link href="/sprachtest" className="btn-outline">
                   {candidate.languageTestPassed
-                    ? `Sprachtest erneut machen (Score ${candidate.languageTestScore})`
-                    : "Sprachtest durchführen"}
+                    ? t("dash.do_test_again", { score: candidate.languageTestScore ?? "" })
+                    : t("dash.do_test_first")}
                 </Link>
               </div>
             </div>
 
             <div className="card">
-              <h2 className="font-semibold">Aktivität</h2>
+              <h2 className="font-semibold">{t("dash.activity")}</h2>
               <ul className="mt-3 space-y-2 text-sm">
                 <li className="flex justify-between">
-                  <span>Profilaufrufe</span>
+                  <span>{t("dash.profile_views")}</span>
                   <strong>{candidate.timesViewed}</strong>
                 </li>
                 <li className="flex justify-between">
-                  <span>An Unternehmen vorgeschlagen</span>
+                  <span>{t("dash.proposed_to_companies")}</span>
                   <strong>{candidate.timesProposed}</strong>
                 </li>
                 <li className="flex justify-between">
-                  <span>Gebühr bezahlt</span>
-                  <strong>{candidate.paidAt ? "Ja ✓" : "Noch nicht"}</strong>
+                  <span>{t("dash.fee_paid")}</span>
+                  <strong>{candidate.paidAt ? t("dash.fee_paid_yes") : t("dash.fee_paid_no")}</strong>
                 </li>
               </ul>
             </div>
@@ -142,11 +144,9 @@ export default async function CandidateDashboardPage() {
             (status === CANDIDATE_STATUS.COMPLETE ||
               candidate.profileCompleteness >= 80) && (
               <div className="mt-8 card bg-gradient-to-br from-[color:var(--color-brand)] to-[#3f6f7d] text-white border-transparent">
-                <h2 className="text-xl font-bold">Letzter Schritt: Profil freischalten</h2>
+                <h2 className="text-xl font-bold">{t("dash.unlock_title")}</h2>
                 <p className="mt-2 text-white/90 text-sm">
-                  Mit der einmaligen Gebühr von <strong>{fee}</strong> wird dein
-                  Profil für unsere Partnerunternehmen sichtbar — du wirst
-                  „vermittelbar".
+                  {t("dash.unlock_desc", { fee })}
                 </p>
                 <UnlockButton fee={fee} />
               </div>
@@ -157,11 +157,10 @@ export default async function CandidateDashboardPage() {
             candidate.profileCompleteness < 80 && (
               <div className="mt-8 card bg-amber-50 border-amber-200">
                 <h2 className="font-semibold text-amber-900">
-                  Vervollständige zuerst dein Profil
+                  {t("dash.fill_profile_first_title")}
                 </h2>
                 <p className="mt-2 text-sm text-amber-800">
-                  Sobald dein Profil zu mind. 80 % ausgefüllt ist, kannst du es
-                  freischalten und wirst für Unternehmen sichtbar.
+                  {t("dash.fill_profile_first_desc")}
                 </p>
               </div>
             )}
@@ -170,7 +169,7 @@ export default async function CandidateDashboardPage() {
           {consentRequired.length > 0 && (
             <div className="mt-8">
               <h2 className="text-xl font-bold mb-3">
-                Deine Zustimmung wird gebraucht
+                {t("dash.consent_required_h")}
               </h2>
               <div className="space-y-3">
                 {consentRequired.map((m) => (
@@ -178,19 +177,19 @@ export default async function CandidateDashboardPage() {
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div>
                         <div className="text-xs font-semibold text-amber-800 uppercase tracking-wider">
-                          Anfrage
+                          {t("dash.consent_request")}
                         </div>
                         <h3 className="mt-1 text-lg font-semibold">
                           {m.company.companyName}
                         </h3>
                         {m.jobRequest && (
                           <p className="text-sm text-[color:var(--color-ink-soft)]">
-                            sucht{" "}
+                            {t("dash.searches_for")}{" "}
                             <strong>
                               {m.jobRequest.customJobTitle ??
-                                jobLabel(m.jobRequest.jobCategory)}
+                                jobLabel(m.jobRequest.jobCategory, locale)}
                             </strong>
-                            {m.jobRequest.location && ` in ${m.jobRequest.location}`}
+                            {m.jobRequest.location && " " + t("dash.in_city", { city: m.jobRequest.location })}
                           </p>
                         )}
                         {m.company.description && (
@@ -207,10 +206,9 @@ export default async function CandidateDashboardPage() {
 
           {/* DOCUMENTS */}
           <div id="dokumente" className="mt-10 card scroll-mt-20">
-            <h2 className="text-xl font-bold">Deine Dokumente</h2>
+            <h2 className="text-xl font-bold">{t("dash.documents_h")}</h2>
             <p className="text-sm text-[color:var(--color-ink-soft)] mt-1">
-              Lebenslauf, Reisepass, Diplome und Zertifikate. Sichtbar für
-              dich und für Unternehmen, mit denen ein aktiver Vorschlag besteht.
+              {t("dash.documents_desc")}
             </p>
             <div className="mt-4">
               <DocumentUpload candidateId={candidate.id} />
@@ -219,18 +217,14 @@ export default async function CandidateDashboardPage() {
 
           {/* OTHER MATCHES */}
           <div className="mt-10">
-            <h2 className="text-xl font-bold mb-3">Aktuelle Vorschläge & Status</h2>
+            <h2 className="text-xl font-bold mb-3">{t("dash.proposals_h")}</h2>
             {otherMatches.length === 0 ? (
               <p className="text-[color:var(--color-ink-soft)]">
-                Noch keine weiteren Vorschläge.
+                {t("dash.no_other_proposals")}
               </p>
             ) : (
               <div className="space-y-3">
                 {otherMatches.map((m) => {
-                  const ms =
-                    MATCH_STATUS_LABEL[
-                      m.status as keyof typeof MATCH_STATUS_LABEL
-                    ];
                   return (
                     <div key={m.id} className="card">
                       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -239,13 +233,13 @@ export default async function CandidateDashboardPage() {
                           {m.jobRequest && (
                             <div className="text-sm text-[color:var(--color-ink-soft)]">
                               {m.jobRequest.customJobTitle ??
-                                jobLabel(m.jobRequest.jobCategory)}
+                                jobLabel(m.jobRequest.jobCategory, locale)}
                             </div>
                           )}
                         </div>
                         <div className="flex items-center gap-3">
-                          <span className={`badge ${ms?.color ?? ""}`}>
-                            {ms?.de ?? m.status}
+                          <span className="badge bg-slate-100 text-slate-700">
+                            {t(`matchstatus.${m.status}`)}
                           </span>
                           {m.status === MATCH_STATUS.IN_CONVERSATION ||
                           m.status === MATCH_STATUS.COMPANY_INTERESTED ? (
@@ -253,7 +247,7 @@ export default async function CandidateDashboardPage() {
                               href={`/chat/${m.id}`}
                               className="btn-outline text-xs px-4 py-1.5"
                             >
-                              Chat öffnen
+                              {t("dash.open_chat")}
                             </Link>
                           ) : null}
                         </div>
@@ -269,9 +263,9 @@ export default async function CandidateDashboardPage() {
           </div>
 
           <div className="mt-10 card">
-            <h2 className="text-xl font-bold">Mein Account</h2>
+            <h2 className="text-xl font-bold">{t("dash.account_h")}</h2>
             <p className="text-sm text-[color:var(--color-ink-soft)] mt-1 mb-4">
-              Datenexport und Account-Löschung gemäß DSGVO.
+              {t("dash.account_desc")}
             </p>
             <AccountControls />
           </div>
@@ -280,17 +274,16 @@ export default async function CandidateDashboardPage() {
             <div className="mt-10 card bg-[#229ED9]/5 border-[#229ED9]/30">
               <h3 className="font-semibold flex items-center gap-2">
                 <span className="text-2xl">✈️</span>
-                WoYou-Bot auf Telegram nutzen
+                {t("dash.telegram_h")}
               </h3>
               <p className="text-sm mt-1 text-[color:var(--color-ink-soft)]">
-                Verlinke deinen Telegram-Account, damit wir dich auch dort
-                erreichen können — und Unternehmen direkt mit dir chatten können.
+                {t("dash.telegram_desc")}
               </p>
               <Link
                 href="/registrierung/telegram"
                 className="btn-outline mt-3 inline-flex"
               >
-                Bot öffnen
+                {t("dash.telegram_open")}
               </Link>
             </div>
           )}

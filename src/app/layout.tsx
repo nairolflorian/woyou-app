@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { getT } from "@/lib/i18n";
+import { getDictForClient } from "@/lib/i18n";
 import { DemoModeBar } from "@/components/DemoModeBar";
 import { CookieBanner } from "@/components/CookieBanner";
+import { TranslationProvider } from "@/components/TranslationProvider";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
 
@@ -46,7 +47,7 @@ export const metadata: Metadata = {
 export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const { locale, isRTL } = await getT();
+  const { dict, locale, isRTL } = await getDictForClient();
   return (
     <html
       lang={locale}
@@ -54,15 +55,17 @@ export default async function RootLayout({
       className="h-full antialiased"
     >
       <body className="min-h-full flex flex-col bg-white text-[color:var(--color-ink)]">
-        <a
-          href="#main"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:rounded-full focus:bg-[color:var(--color-brand)] focus:text-white focus:px-4 focus:py-2 focus:shadow-lg"
-        >
-          Zum Inhalt springen
-        </a>
-        {children}
-        <CookieBanner />
-        <DemoModeBar />
+        <TranslationProvider dict={dict} locale={locale} isRTL={isRTL}>
+          <a
+            href="#main"
+            className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:rounded-full focus:bg-[color:var(--color-brand)] focus:text-white focus:px-4 focus:py-2 focus:shadow-lg"
+          >
+            {dict["a11y.skip"] ?? "Zum Inhalt springen"}
+          </a>
+          {children}
+          <CookieBanner />
+          <DemoModeBar />
+        </TranslationProvider>
       </body>
     </html>
   );

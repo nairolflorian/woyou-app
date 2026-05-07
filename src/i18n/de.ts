@@ -188,6 +188,200 @@ const de: Record<string, string> = {
   "common.other": "andere",
   "common.optional": "(optional)",
   "common.required": "(Pflichtfeld)",
+  "common.cancel": "Abbrechen",
+  "common.delete": "Löschen",
+  "common.save": "Speichern",
+  "common.loading": "Lädt …",
+  "common.please_choose": "— bitte wählen —",
+  "common.error_generic": "Etwas ist schiefgelaufen.",
+  "a11y.skip": "Zum Inhalt springen",
+
+  // Reg wizard — additional keys for inline strings & options
+  "reg.section_personal_h": "Über dich",
+  "reg.section_contact_h": "Kontaktwege",
+  "reg.section_job_h": "Wunschberuf",
+  "reg.section_languages_h": "Sprachen",
+  "reg.section_situation_h": "Deine Situation",
+  "reg.section_consent_h": "Motivation & Einwilligung",
+  "reg.first_name_required": "Vorname *",
+  "reg.last_name_required": "Nachname *",
+  "reg.dob_required": "Geburtsdatum *",
+  "reg.nationality_required": "Staatsangehörigkeit *",
+  "reg.country_residence_required": "Aktuelles Wohnland *",
+  "reg.city_required": "Stadt *",
+  "reg.desired_category_required": "Berufsgruppe *",
+  "reg.experience_required": "Berufserfahrung (Jahre) *",
+  "reg.earliest_start_required": "Frühestmöglicher Start *",
+  "reg.about_me_required": "Über dich (kurze Selbstbeschreibung) *",
+  "reg.motivation_required": "Warum möchtest du in Deutschland arbeiten? *",
+  "reg.alternative_jobs_csv":
+    "Welche anderen Berufe wären auch denkbar? (Komma-getrennt)",
+  "reg.preferred_cities_csv": "Wunschstädte (Komma-getrennt)",
+  "reg.education_options.none": "Kein Abschluss",
+  "reg.education_options.school": "Schulabschluss",
+  "reg.education_options.apprenticeship": "Berufsausbildung",
+  "reg.education_options.bachelor": "Bachelor",
+  "reg.education_options.master": "Master",
+  "reg.education_options.phd": "Promotion",
+  "reg.relocate_yes_de": "Ja, deutschlandweit",
+  "reg.relocate_no": "Nein, nur in einer bestimmten Region",
+  "reg.add_language": "+ Sprache hinzufügen",
+  "reg.test_hint":
+    "💡 Du kannst zusätzlich unseren <a>kurzen Sprachtest</a> machen, damit Unternehmen dein Niveau objektiv sehen.",
+  "reg.consent_blanket_strong": "Pauschal-Freigabe.",
+  "reg.consent_blanket_text":
+    "WoYou darf mein Profil passenden Unternehmen direkt vorstellen.",
+  "reg.consent_per_company_strong": "Einzel-Freigabe.",
+  "reg.consent_per_company_text":
+    "Ich möchte zuerst das Unternehmen sehen und einzeln zustimmen.",
+  "reg.cached_at": "Zwischengespeichert {time}",
+  "reg.saving": "Speichere…",
+
+  // Profile dashboard
+  "dash.hello": "Hallo {name}",
+  "dash.activity": "Aktivität",
+  "dash.profile_views": "Profilaufrufe",
+  "dash.proposed_to_companies": "An Unternehmen vorgeschlagen",
+  "dash.fee_paid": "Gebühr bezahlt",
+  "dash.fee_paid_yes": "Ja ✓",
+  "dash.fee_paid_no": "Noch nicht",
+  "dash.percent_complete": "{n}% ausgefüllt",
+  "dash.edit_profile": "Profil bearbeiten",
+  "dash.do_test_again": "Sprachtest erneut machen (Score {score})",
+  "dash.do_test_first": "Sprachtest durchführen",
+  "dash.unlock_title": "Letzter Schritt: Profil freischalten",
+  "dash.fill_profile_first_title": "Vervollständige zuerst dein Profil",
+  "dash.fill_profile_first_desc":
+    "Sobald dein Profil zu mind. 80 % ausgefüllt ist, kannst du es freischalten und wirst für Unternehmen sichtbar.",
+  "dash.consent_required_h": "Deine Zustimmung wird gebraucht",
+  "dash.consent_request": "Anfrage",
+  "dash.searches_for": "sucht",
+  "dash.in_city": "in {city}",
+  "dash.proposals_h": "Aktuelle Vorschläge & Status",
+  "dash.no_other_proposals": "Noch keine weiteren Vorschläge.",
+  "dash.open_chat": "Chat öffnen",
+  "dash.documents_h": "Deine Dokumente",
+  "dash.documents_desc":
+    "Lebenslauf, Reisepass, Diplome und Zertifikate. Sichtbar für dich und für Unternehmen, mit denen ein aktiver Vorschlag besteht.",
+  "dash.account_h": "Mein Account",
+  "dash.account_desc": "Datenexport und Account-Löschung gemäß DSGVO.",
+  "dash.telegram_h": "WoYou-Bot auf Telegram nutzen",
+  "dash.telegram_desc":
+    "Verlinke deinen Telegram-Account, damit wir dich auch dort erreichen können — und Unternehmen direkt mit dir chatten können.",
+  "dash.telegram_open": "Bot öffnen",
+
+  // Onboarding checklist
+  "onb.title_done": "Du bist startklar 🎉",
+  "onb.title_active": "Bring dein Profil zur Vermittelbarkeit",
+  "onb.progress": "{done} / {total} erledigt",
+  "onb.step1_title": "Profil ausfüllen",
+  "onb.step1_desc":
+    "Aktuell {percent}% — wir brauchen 100% für die Vermittlung.",
+  "onb.step1_cta_done": "Bearbeiten",
+  "onb.step1_cta": "Weiter ausfüllen",
+  "onb.step2_title": "Sprachtest absolvieren",
+  "onb.step2_desc":
+    "12 Multiple-Choice-Fragen, dauert ca. 5 Minuten. Wir zeigen Unternehmen dein objektives Niveau.",
+  "onb.step2_cta_done": "Wiederholen",
+  "onb.step2_cta": "Test starten",
+  "onb.step3_title": "Mindestens den Lebenslauf hochladen",
+  "onb.step3_desc":
+    "Bewerbungsgespräche werden so 3× schneller — Firmen sehen direkt was du kannst.",
+  "onb.step3_cta_done": "Dokumente verwalten",
+  "onb.step3_cta": "Hochladen",
+  "onb.step4_title": "Profil freischalten",
+  "onb.step4_desc":
+    "Einmalige Gebühr — danach bist du für unsere Partnerunternehmen sichtbar und wirst automatisch vorgeschlagen.",
+
+  // Documents
+  "doc.kind_label": "Dokumenttyp",
+  "doc.file_label": "Datei (PDF / JPG / PNG, max. 5 MB)",
+  "doc.kind_avatar": "Profilbild",
+  "doc.kind_cv": "Lebenslauf",
+  "doc.kind_passport": "Reisepass",
+  "doc.kind_diploma": "Diplom / Abschluss",
+  "doc.kind_certificate": "Zertifikat",
+  "doc.kind_other": "Sonstiges",
+  "doc.none": "Noch keine Dokumente hochgeladen.",
+  "doc.size_kb": "{kb} KB",
+  "doc.uploaded_at": "hochgeladen {time}",
+  "doc.view": "Ansehen",
+  "doc.delete_confirm": "Wirklich löschen?",
+  "doc.upload_failed": "Upload fehlgeschlagen",
+
+  // Avatar
+  "avatar.upload": "Profilbild hochladen",
+  "avatar.replace": "Bild ersetzen",
+  "avatar.uploading": "Lade hoch …",
+  "avatar.hint": "JPG oder PNG, max. 5 MB. Wird nur Unternehmen mit aktivem Match gezeigt.",
+
+  // Account / DSGVO
+  "acc.export_btn": "📥 Meine Daten als JSON herunterladen",
+  "acc.export_hint":
+    "DSGVO Art. 15 / Art. 20 — vollständiger Export aller über dich gespeicherten Daten.",
+  "acc.delete_h": "Account dauerhaft löschen",
+  "acc.delete_desc":
+    "DSGVO Art. 17 — alle deine Daten und Dokumente werden unwiderruflich entfernt. Aktive Vorschläge gehen verloren.",
+  "acc.delete_confirm_prefix": "Tipp das Wort",
+  "acc.delete_confirm_suffix": "um zu bestätigen:",
+  "acc.delete_btn": "Account löschen",
+  "acc.deleting": "Lösche…",
+
+  // Match timeline
+  "ml.proposal": "Vorschlag",
+  "ml.consent": "Zustimmung",
+  "ml.review": "Firma prüft",
+  "ml.outcome": "Ergebnis",
+  "ml.aria_label": "Match-Verlauf",
+
+  // Match status (visible to candidate + company)
+  "matchstatus.DRAFT": "Entwurf",
+  "matchstatus.AWAITING_CANDIDATE_CONSENT": "Wartet auf Kandidaten-Zustimmung",
+  "matchstatus.CANDIDATE_APPROVED": "Kandidat hat zugestimmt",
+  "matchstatus.CANDIDATE_DECLINED": "Kandidat hat abgelehnt",
+  "matchstatus.SHARED_WITH_COMPANY": "An Unternehmen gesendet",
+  "matchstatus.COMPANY_INTERESTED": "Unternehmen interessiert",
+  "matchstatus.COMPANY_DECLINED": "Unternehmen hat abgelehnt",
+  "matchstatus.IN_CONVERSATION": "Im Gespräch",
+  "matchstatus.HIRED": "Eingestellt",
+
+  // Notifications bell
+  "bell.title": "Benachrichtigungen",
+  "bell.empty": "Noch keine Benachrichtigungen.",
+  "bell.mark_all": "Alle als gelesen",
+  "bell.aria": "Benachrichtigungen",
+
+  // Cookie banner
+  "cookie.title": "Cookies & Datenschutz.",
+  "cookie.body":
+    "WoYou nutzt nur technisch notwendige Cookies (Login-Session, Sprachwahl). Wir tracken nicht und betten keine Drittanbieter-Skripte ein. Mehr in unserer ",
+  "cookie.privacy_link": "Datenschutzerklärung",
+  "cookie.ok": "Verstanden",
+
+  // 404
+  "nf.title": "404 — Seite nicht gefunden",
+  "nf.body": "Die Seite existiert nicht (mehr) oder du hast dich vertippt.",
+  "nf.home": "Zur Startseite",
+  "nf.demo": "Test-Seite",
+
+  // Sprachtest UI
+  "test.choose_lang_h": "Welche Sprache möchtest du testen?",
+  "test.choose_lang_desc":
+    "Du kannst alle drei machen — die Ergebnisse werden in deinem Profil gespeichert. Jeder Test hat 12 Multiple-Choice-Fragen (A1 bis B2), Dauer ca. 5 Minuten.",
+  "test.questions_count": "{n} Fragen",
+  "test.other_lang": "← andere Sprache",
+  "test.title_lang": "Sprachtest {lang}",
+  "test.intro":
+    "{count} Multiple-Choice-Fragen — von A1 bis B2. Dauert ca. 5 Minuten. Du kannst den Test später wiederholen.",
+  "test.bullet1": "✓ Deine Punktzahl wird in deinem Profil angezeigt",
+  "test.bullet2": "✓ Unternehmen sehen dein objektives Niveau",
+  "test.bullet3": "✓ Hilft uns beim passenden Matching",
+  "test.passed_h": "Bestanden!",
+  "test.failed_h": "Noch nicht bestanden",
+  "test.your_result": "Dein Ergebnis: {score} / {total} — Niveau {level}",
+  "test.go_dashboard": "Zum Dashboard",
+  "test.question": "Frage {n} · {level}",
+  "test.answer_all_first": "Bitte beantworte alle Fragen.",
 };
 
 export default de;

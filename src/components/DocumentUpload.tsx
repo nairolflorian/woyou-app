@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useT } from "@/components/TranslationProvider";
 
 type Doc = {
   id: string;
@@ -12,15 +13,10 @@ type Doc = {
   uploadedAt: string;
 };
 
-const KIND_LABEL: Record<string, string> = {
-  cv: "Lebenslauf",
-  passport: "Reisepass",
-  diploma: "Diplom / Abschluss",
-  certificate: "Zertifikat",
-  other: "Sonstiges",
-};
+const KINDS = ["cv", "passport", "diploma", "certificate", "other"] as const;
 
 export function DocumentUpload({ candidateId }: { candidateId: string }) {
+  const { t, locale } = useT();
   const [docs, setDocs] = useState<Doc[]>([]);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -30,7 +26,7 @@ export function DocumentUpload({ candidateId }: { candidateId: string }) {
   async function refresh() {
     const r = await fetch("/api/candidate/documents");
     const d = await r.json();
-    if (d.ok) setDocs(d.documents);
+    if (d.ok) setDocs(d.documents.filter((x: Doc) => x.kind !== "avatar"));
   }
   useEffect(() => {
     refresh();
@@ -46,7 +42,7 @@ export function DocumentUpload({ candidateId }: { candidateId: string }) {
     const d = await r.json();
     setBusy(false);
     if (!r.ok) {
-      setErr(d.message ?? d.error ?? "Upload fehlgeschlagen");
+      setErr(d.message ?? t("doc.upload_failed"));
       return;
     }
     setDocs((cur) => [...cur, d.document]);
@@ -54,7 +50,7 @@ export function DocumentUpload({ candidateId }: { candidateId: string }) {
   }
 
   async function remove(id: string) {
-    if (!confirm("Wirklich löschen?")) return;
+    if (!confirm(t("doc.delete_confirm"))) return;
     const r = await fetch(`/api/candidate/documents?id=${id}`, { method: "DELETE" });
     if (r.ok) setDocs((cur) => cur.filter((d) => d.id !== id));
   }
@@ -63,19 +59,19 @@ export function DocumentUpload({ candidateId }: { candidateId: string }) {
     <div>
       <div className="flex flex-wrap items-end gap-3">
         <div>
-          <label className="label">Dokumenttyp</label>
+          <label className="label">{t("doc.kind_label")}</label>
           <select
             className="select"
             value={kind}
             onChange={(e) => setKind(e.target.value)}
           >
-            {Object.entries(KIND_LABEL).map(([k, l]) => (
-              <option key={k} value={k}>{l}</option>
+            {KINDS.map((k) => (
+              <option key={k} value={k}>{t(`doc.kind_${k}`)}</option>
             ))}
           </select>
         </div>
         <div className="flex-1 min-w-[220px]">
-          <label className="label">Datei (PDF / JPG / PNG, max. 5 MB)</label>
+          <label className="label">{t("doc.file_label")}</label>
           <input
             ref={inputRef}
             type="file"
@@ -98,7 +94,7 @@ export function DocumentUpload({ candidateId }: { candidateId: string }) {
       <div className="mt-4 space-y-2">
         {docs.length === 0 ? (
           <p className="text-sm text-[color:var(--color-ink-soft)]">
-            Noch keine Dokumente hochgeladen.
+            {t("doc.none")}
           </p>
         ) : (
           docs.map((d) => (
@@ -108,11 +104,11 @@ export function DocumentUpload({ candidateId }: { candidateId: string }) {
             >
               <div>
                 <div className="font-semibold">
-                  {KIND_LABEL[d.kind] ?? d.kind} — {d.originalName}
+                  {t(`doc.kind_${d.kind}`)} — {d.originalName}
                 </div>
                 <div className="text-xs text-[color:var(--color-ink-soft)]">
-                  {(d.size / 1024).toFixed(0)} KB · hochgeladen{" "}
-                  {new Date(d.uploadedAt).toLocaleString("de-DE")}
+                  {t("doc.size_kb", { kb: (d.size / 1024).toFixed(0) })} ·{" "}
+                  {t("doc.uploaded_at", { time: new Date(d.uploadedAt).toLocaleString(locale) })}
                 </div>
               </div>
               <div className="flex gap-2">
@@ -122,13 +118,13 @@ export function DocumentUpload({ candidateId }: { candidateId: string }) {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Ansehen
+                  {t("doc.view")}
                 </a>
                 <button
                   onClick={() => remove(d.id)}
                   className="rounded-full border border-rose-300 text-rose-700 hover:bg-rose-50 font-semibold px-3 py-1 text-xs"
                 >
-                  Löschen
+                  {t("common.delete")}
                 </button>
               </div>
             </div>
