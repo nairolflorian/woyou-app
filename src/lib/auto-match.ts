@@ -14,6 +14,7 @@
 import { prisma } from "@/lib/prisma";
 import { CANDIDATE_STATUS, MATCH_STATUS } from "@/lib/enums";
 import { scoreCandidate } from "@/lib/matching";
+import { audit } from "@/lib/audit";
 
 const MIN_SCORE = 60;
 const TOP_N = 5;
@@ -190,6 +191,15 @@ async function createMatches(
         });
         awaitingConsent++;
       }
+    });
+    await audit(null, "MATCH_PROPOSE_AUTO", {
+      candidateId: p.candidateId,
+      companyId: p.companyId,
+    }, {
+      jobRequestId: p.jobRequestId,
+      score: p.score,
+      consent: p.candidateConsent,
+      initialStatus,
     });
   }
 

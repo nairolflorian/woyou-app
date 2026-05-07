@@ -14,6 +14,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { CANDIDATE_STATUS, MATCH_STATUS, ROLE } from "@/lib/enums";
+import { audit } from "@/lib/audit";
 
 const DEDUP_WINDOW_MS = 20 * 60 * 60 * 1000;
 
@@ -150,6 +151,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
   }
   const counts = await run();
+  await audit(null, "CRON_REMINDERS_RUN", {}, counts);
   return NextResponse.json({ ok: true, ...counts });
 }
 

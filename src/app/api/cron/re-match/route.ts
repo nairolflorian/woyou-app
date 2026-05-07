@@ -12,6 +12,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { CANDIDATE_STATUS, MATCH_STATUS } from "@/lib/enums";
 import { autoMatchForCandidate, autoMatchForJobRequest } from "@/lib/auto-match";
+import { audit } from "@/lib/audit";
 
 const MAX_OPEN_MATCHES_PER_CANDIDATE = 5;
 
@@ -76,6 +77,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
   }
   const result = await run();
+  await audit(null, "CRON_REMATCH_RUN", {}, result);
   return NextResponse.json({ ok: true, ...result });
 }
 

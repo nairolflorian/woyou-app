@@ -9,14 +9,18 @@ import { clientIp } from "@/lib/rate-limit";
 export type AuditAction =
   | "CANDIDATE_STATUS_CHANGE"
   | "CANDIDATE_DELETE"
+  | "CANDIDATE_BULK_NOTIFY"
   | "MATCH_PROPOSE_MANUAL"
+  | "MATCH_PROPOSE_AUTO"
   | "MATCH_DECISION_INTERESTED"
   | "MATCH_DECISION_DECLINE"
   | "MATCH_DECISION_HIRE"
   | "TASK_CREATE"
   | "TASK_STATUS_CHANGE"
   | "TEAM_MEMBER_CREATE"
-  | "ACCOUNT_SELF_DELETE";
+  | "ACCOUNT_SELF_DELETE"
+  | "CRON_REMATCH_RUN"
+  | "CRON_REMINDERS_RUN";
 
 type Refs = {
   candidateId?: string | null;
@@ -64,7 +68,9 @@ export async function audit(
 export const AUDIT_ACTION_LABEL: Record<AuditAction, string> = {
   CANDIDATE_STATUS_CHANGE: "Status geändert",
   CANDIDATE_DELETE: "Kandidat:in gelöscht",
+  CANDIDATE_BULK_NOTIFY: "Bulk-Benachrichtigung",
   MATCH_PROPOSE_MANUAL: "Manueller Match-Vorschlag",
+  MATCH_PROPOSE_AUTO: "Auto-Match",
   MATCH_DECISION_INTERESTED: "Firma: Interesse",
   MATCH_DECISION_DECLINE: "Firma: Ablehnung",
   MATCH_DECISION_HIRE: "Firma: Eingestellt",
@@ -72,4 +78,6 @@ export const AUDIT_ACTION_LABEL: Record<AuditAction, string> = {
   TASK_STATUS_CHANGE: "Aufgaben-Status geändert",
   TEAM_MEMBER_CREATE: "Admin-Account angelegt",
   ACCOUNT_SELF_DELETE: "Account-Selbstlöschung",
+  CRON_REMATCH_RUN: "Cron: Re-Matching",
+  CRON_REMINDERS_RUN: "Cron: Reminder-Lauf",
 };
