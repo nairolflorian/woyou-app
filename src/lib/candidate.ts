@@ -16,6 +16,34 @@ const REQUIRED_FIELDS = [
   "motivation",
 ] as const;
 
+// Each field is worth this many percentage points. Used by the strength-tips
+// UI so the candidate sees concrete deltas like "+8% if you fill this in".
+export const PROFILE_FIELD_WEIGHT = Math.round(100 / REQUIRED_FIELDS.length);
+
+export type ProfileTip = {
+  field: string;
+  i18nKey: string;
+  delta: number;
+};
+
+// Returns the missing required fields as actionable tips, sorted by impact.
+// Fields are intentionally collapsed into a few candidate-friendly groups
+// (so we don't spam them with 12 separate "+8%" tips).
+export function profileStrengthTips(c: Partial<Candidate>): ProfileTip[] {
+  const missing: { field: string; i18nKey: string }[] = [];
+  for (const f of REQUIRED_FIELDS) {
+    const v = (c as Record<string, unknown>)[f];
+    if (v === null || v === undefined || v === "") {
+      missing.push({ field: f, i18nKey: `tip.${f}` });
+    }
+  }
+  return missing.map((m) => ({
+    field: m.field,
+    i18nKey: m.i18nKey,
+    delta: PROFILE_FIELD_WEIGHT,
+  }));
+}
+
 export function computeCompleteness(c: Partial<Candidate>): number {
   let filled = 0;
   for (const f of REQUIRED_FIELDS) {

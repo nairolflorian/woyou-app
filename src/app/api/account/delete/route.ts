@@ -1,15 +1,14 @@
 // DSGVO Art. 17 — right to be forgotten.
-// User must POST { confirm: "DELETE" } to confirm. Cascades through Prisma
-// schema (User → Candidate → matches/tasks/etc.; messages keep their FK
-// to user via "Cascade" so they're cleaned up too). Files in /app/uploads
-// are removed best-effort.
+// User must POST { confirm: "DELETE" } to confirm. We soft-delete first
+// (mark User.deletedAt + scrub identifying fields so the email/phone is
+// freed up for re-registration), then a 30-day purge cron permanently
+// removes the row + cascades. Super-admins can restore from
+// /admin/papierkorb within that window.
 
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
-import { promises as fs } from "node:fs";
-import path from "node:path";
 import { ROLE } from "@/lib/enums";
 import { audit } from "@/lib/audit";
 
@@ -32,24 +31,35 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "CONFIRM_REQUIRED" }, { status: 400 });
   }
 
-  const candidate = await prisma.candidate.findUnique({
-    where: { userId: session.userId },
+  const user = await prisma.user.findUnique({
+    where: { id: session.userId },
+    include: { candidate: { select: { id: true } } },
   });
-
-  if (candidate) {
-    const dir = path.join(
-      process.env.UPLOAD_DIR ?? "/app/uploads",
-      "candidates",
-      candidate.id
-    );
-    await fs.rm(dir, { recursive: true, force: true }).catch(() => {});
+  if (!user) {
+    return NextResponse.json({ error: "NOT_FOUND" }, { status: 404 });
   }
 
-  // Audit BEFORE delete so we still know who it was; the row stays even
-  // after the user is gone (no FK constraint).
-  await audit(req, "ACCOUNT_SELF_DELETE", { candidateId: candidate?.id });
+  // Audit BEFORE we scrub identity so the row still has the original email.
+  await audit(req, "ACCOUNT_SELF_DELETE", {
+    candidateId: user.candidate?.id ?? null,
+  });
 
-  await prisma.user.delete({ where: { id: session.userId } });
+  // Free email/phone/telegramId so the user can re-register, and disable
+  // password login. We move identity into a deletedAtMarker prefix so
+  // unique constraints don't bite us if they re-register the same email.
+  const stamp = Date.now();
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      deletedAt: new Date(),
+      email: user.email ? `_deleted_${stamp}_${user.email}` : null,
+      phone: user.phone ? `_deleted_${stamp}_${user.phone}` : null,
+      telegramId: user.telegramId
+        ? `_deleted_${stamp}_${user.telegramId}`
+        : null,
+      passwordHash: null,
+    },
+  });
 
   session.destroy();
   return NextResponse.json({ ok: true });

@@ -22,6 +22,8 @@ import { parseDocs, findAvatar } from "@/lib/uploads";
 import { AvatarUpload } from "@/components/AvatarUpload";
 import { MatchTimeline } from "@/components/MatchTimeline";
 import { scoreCandidate } from "@/lib/matching";
+import { ProfileStrengthTips } from "@/components/ProfileStrengthTips";
+import { profileStrengthTips } from "@/lib/candidate";
 
 export default async function CandidateDashboardPage() {
   const session = await getSession();
@@ -88,13 +90,16 @@ export default async function CandidateDashboardPage() {
             );
           })()}
 
-          <div className="mt-8">
-            <OnboardingChecklist
-              profileCompleteness={candidate.profileCompleteness}
-              testTaken={candidate.languageTestPassed != null}
-              hasDocuments={parseDocs(candidate.documents).length > 0}
-              paid={Boolean(candidate.paidAt)}
-            />
+          <div className="mt-8 grid gap-4 md:gap-6 md:grid-cols-3">
+            <div className="md:col-span-2">
+              <OnboardingChecklist
+                profileCompleteness={candidate.profileCompleteness}
+                testTaken={candidate.languageTestPassed != null}
+                hasDocuments={parseDocs(candidate.documents).length > 0}
+                paid={Boolean(candidate.paidAt)}
+              />
+            </div>
+            <ProfileStrengthTips tips={profileStrengthTips(candidate)} />
           </div>
 
           <div className="grid gap-4 md:gap-6 md:grid-cols-3 mt-6 md:mt-8">

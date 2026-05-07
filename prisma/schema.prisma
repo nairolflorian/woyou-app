@@ -21,6 +21,9 @@ model User {
   locale          String   @default("de")
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+  // Soft-delete: when set, the row is hidden from auth/listings and will
+  // be hard-deleted by a 30-day purge cron. Restorable by super-admins.
+  deletedAt       DateTime?
 
   candidate       Candidate?
   company         Company?
@@ -269,6 +272,25 @@ model JobCategory {
   nameAr    String
   group     String   // care, hospitality, construction, it, logistics, other
   active    Boolean  @default(true)
+}
+
+// Captured server-side errors. Light-weight Sentry replacement so admins
+// can spot patterns without an external service.
+model ErrorLog {
+  id        String   @id @default(cuid())
+  digest    String?
+  level     String   // ERROR | WARN
+  message   String
+  stack     String?
+  path      String?
+  method    String?
+  status    Int?
+  userId    String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([digest])
 }
 
 model AuditLog {

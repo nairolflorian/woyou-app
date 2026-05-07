@@ -45,6 +45,15 @@ export async function GET(
     include: { sender: true },
     orderBy: { createdAt: "asc" },
   });
+  // Mark messages from the OTHER side as read. We never touch our own.
+  await prisma.message.updateMany({
+    where: {
+      conversationId: id,
+      readAt: null,
+      senderId: { not: session.userId },
+    },
+    data: { readAt: new Date() },
+  });
   return NextResponse.json({ ok: true, messages });
 }
 

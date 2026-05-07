@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useT } from "@/components/TranslationProvider";
 
 type Msg = {
   id: string;
@@ -9,6 +10,7 @@ type Msg = {
   isMine: boolean;
   senderEmail: string;
   createdAt: string;
+  readAt?: string | null;
   attachmentFilename?: string | null;
   attachmentOriginalName?: string | null;
   attachmentMime?: string | null;
@@ -31,6 +33,7 @@ export function ChatBox({
   currentUserId: string;
   initialMessages: Msg[];
 }) {
+  const { t, locale } = useT();
   const [messages, setMessages] = useState<Msg[]>(initialMessages);
   const [body, setBody] = useState("");
   const [channel, setChannel] = useState("PLATFORM");
@@ -51,7 +54,7 @@ export function ChatBox({
       setMessages(
         d.messages.map((m: {
           id: string; body: string; channel: string;
-          senderId: string; createdAt: string;
+          senderId: string; createdAt: string; readAt?: string | null;
           sender: { email?: string; phone?: string };
           attachmentFilename?: string | null;
           attachmentOriginalName?: string | null;
@@ -64,6 +67,7 @@ export function ChatBox({
           isMine: m.senderId === currentUserId,
           senderEmail: m.sender.email ?? m.sender.phone ?? "User",
           createdAt: m.createdAt,
+          readAt: m.readAt ?? null,
           attachmentFilename: m.attachmentFilename ?? null,
           attachmentOriginalName: m.attachmentOriginalName ?? null,
           attachmentMime: m.attachmentMime ?? null,
@@ -127,7 +131,17 @@ export function ChatBox({
               <div className="text-[10px] text-[color:var(--color-ink-soft)] mb-1">
                 {!m.isMine && <span>{m.senderEmail} · </span>}
                 <span className={`badge ${CHANNEL_BADGE[m.channel] ?? ""}`}>{m.channel}</span>
-                <span className="ml-1">{new Date(m.createdAt).toLocaleString("de-DE")}</span>
+                <span className="ml-1">{new Date(m.createdAt).toLocaleString(locale)}</span>
+                {m.isMine && m.readAt && (
+                  <span className="ml-1 text-emerald-600">
+                    {t("chat.read_status", {
+                      time: new Date(m.readAt).toLocaleTimeString(locale, {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      }),
+                    })}
+                  </span>
+                )}
               </div>
               <div
                 className={`inline-block rounded-2xl px-4 py-2 text-sm ${

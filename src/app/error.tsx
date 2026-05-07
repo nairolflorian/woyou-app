@@ -15,6 +15,19 @@ export default function ErrorBoundary({
 }) {
   useEffect(() => {
     console.error("[error.tsx]", error.digest ?? "no-digest", error.message);
+    // Best-effort: report to our own error log so admins see it.
+    fetch("/api/errors", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        digest: error.digest,
+        message: error.message,
+        stack: error.stack,
+        path: typeof window !== "undefined" ? window.location.pathname : undefined,
+      }),
+    }).catch(() => {
+      /* swallow */
+    });
   }, [error]);
 
   return (

@@ -71,6 +71,7 @@ export default async function ChatPage(props: {
                 isMine: m.senderId === session.userId,
                 senderEmail: m.sender.email ?? m.sender.phone ?? "User",
                 createdAt: m.createdAt.toISOString(),
+                readAt: m.readAt?.toISOString() ?? null,
                 attachmentFilename: m.attachmentFilename,
                 attachmentOriginalName: m.attachmentOriginalName,
                 attachmentMime: m.attachmentMime,

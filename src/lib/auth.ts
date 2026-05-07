@@ -42,6 +42,7 @@ export async function findUserByLogin(login: string) {
   return prisma.user.findFirst({
     where: {
       OR: [{ email: login }, { phone: login }, { telegramId: login }],
+      deletedAt: null,
     },
     include: { candidate: true, company: true },
   });
