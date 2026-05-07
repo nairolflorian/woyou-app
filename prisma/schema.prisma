@@ -217,6 +217,12 @@ model Message {
   sender          User         @relation("SenderMessages", fields: [senderId], references: [id], onDelete: Cascade)
   channel         String       @default("PLATFORM") // PLATFORM | EMAIL | TELEGRAM | WHATSAPP
   body            String
+  // Optional file attachment. Stored on the woyou_uploads volume under
+  // chats/<conversationId>/<filename>. We keep the original name for display.
+  attachmentFilename     String?
+  attachmentOriginalName String?
+  attachmentMime         String?
+  attachmentSize         Int?
   createdAt       DateTime     @default(now())
   readAt          DateTime?
 }

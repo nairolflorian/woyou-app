@@ -68,6 +68,48 @@ export async function ensureCandidateDir(candidateId: string): Promise<string> {
   return dir;
 }
 
+export async function ensureChatDir(conversationId: string): Promise<string> {
+  const dir = path.join(ROOT, "chats", conversationId);
+  await fs.mkdir(dir, { recursive: true });
+  return dir;
+}
+
+export async function writeChatAttachment(
+  conversationId: string,
+  file: File
+): Promise<{ filename: string; mime: string; size: number; originalName: string }> {
+  const det = detectKind(file);
+  if (!det.ok) throw new Error(det.error);
+  if (file.size > MAX_BYTES) {
+    throw new Error(`Datei zu groß (max. ${Math.round(MAX_BYTES / 1024 / 1024)} MB).`);
+  }
+  const dir = await ensureChatDir(conversationId);
+  const id = crypto.randomBytes(8).toString("hex");
+  const safeName = `${id}.${det.ext}`;
+  const target = path.join(dir, safeName);
+  const buf = Buffer.from(await file.arrayBuffer());
+  await fs.writeFile(target, buf, { mode: 0o600 });
+  return { filename: safeName, mime: det.mime, size: file.size, originalName: file.name };
+}
+
+export async function readChatAttachment(
+  conversationId: string,
+  filename: string
+): Promise<{ data: Buffer; mime: string } | null> {
+  if (filename.includes("/") || filename.includes("..")) return null;
+  const target = path.join(ROOT, "chats", conversationId, filename);
+  try {
+    const data = await fs.readFile(target);
+    const ext = path.extname(filename).slice(1).toLowerCase();
+    const mime =
+      (ALLOWED as Record<string, { mime: string }>)[ext]?.mime ??
+      "application/octet-stream";
+    return { data, mime };
+  } catch {
+    return null;
+  }
+}
+
 export async function writeUpload(
   candidateId: string,
   file: File,

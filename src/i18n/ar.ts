@@ -251,6 +251,9 @@ const ar: Record<string, string> = {
   "dash.proposals_h": "الاقتراحات والحالة الحالية",
   "dash.no_other_proposals": "لا توجد اقتراحات أخرى بعد.",
   "dash.open_chat": "فتح المحادثة",
+  "dash.match_score": "نتيجة المطابقة",
+  "dash.why_match": "لماذا تناسبك هذه الشركة",
+  "dash.why_match_score": "النتيجة {score}/100",
   "dash.documents_h": "وثائقك",
   "dash.documents_desc":
     "السيرة الذاتية وجواز السفر والشهادات. يراها فقط أنت والشركات التي لها اقتراح نشط.",

@@ -21,6 +21,7 @@ import { OnboardingChecklist } from "@/components/OnboardingChecklist";
 import { parseDocs, findAvatar } from "@/lib/uploads";
 import { AvatarUpload } from "@/components/AvatarUpload";
 import { MatchTimeline } from "@/components/MatchTimeline";
+import { scoreCandidate } from "@/lib/matching";
 
 export default async function CandidateDashboardPage() {
   const session = await getSession();
@@ -65,23 +66,23 @@ export default async function CandidateDashboardPage() {
               `${candidate.firstName?.[0] ?? ""}${candidate.lastName?.[0] ?? ""}`.toUpperCase() || "👋";
             return (
               <>
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div className="flex items-center gap-4">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div className="flex items-center gap-4 min-w-0 flex-1">
                     <AvatarUpload
                       candidateId={candidate.id}
                       initialFilename={avatar?.filename ?? null}
                       initials={initials}
                     />
-                    <div>
-                      <h1 className="text-3xl font-bold">
+                    <div className="min-w-0">
+                      <h1 className="text-2xl md:text-3xl font-bold truncate">
                         {t("dash.hello", { name: candidate.firstName ?? "👋" })}
                       </h1>
-                      <p className="text-sm text-[color:var(--color-ink-soft)]">
+                      <p className="text-sm text-[color:var(--color-ink-soft)] truncate">
                         {candidate.user.email ?? candidate.user.phone}
                       </p>
                     </div>
                   </div>
-                  <span className={`badge ${labelInfo.color}`}>{statusLabel}</span>
+                  <span className={`badge ${labelInfo.color} flex-shrink-0`}>{statusLabel}</span>
                 </div>
               </>
             );
@@ -96,7 +97,7 @@ export default async function CandidateDashboardPage() {
             />
           </div>
 
-          <div className="grid gap-6 md:grid-cols-3 mt-8">
+          <div className="grid gap-4 md:gap-6 md:grid-cols-3 mt-6 md:mt-8">
             <div className="card md:col-span-2">
               <h2 className="font-semibold">{t("dash.completeness")}</h2>
               <div className="mt-3 h-3 rounded-full bg-[color:var(--color-border)] overflow-hidden">
@@ -172,34 +173,54 @@ export default async function CandidateDashboardPage() {
                 {t("dash.consent_required_h")}
               </h2>
               <div className="space-y-3">
-                {consentRequired.map((m) => (
-                  <div key={m.id} className="card border-amber-300 bg-amber-50">
-                    <div className="flex flex-wrap items-start justify-between gap-3">
-                      <div>
-                        <div className="text-xs font-semibold text-amber-800 uppercase tracking-wider">
-                          {t("dash.consent_request")}
+                {consentRequired.map((m) => {
+                  const scoreInfo =
+                    m.jobRequest && m.matchScore != null
+                      ? scoreCandidate(candidate, m.jobRequest)
+                      : null;
+                  return (
+                    <div key={m.id} className="card border-amber-300 bg-amber-50">
+                      <div className="flex flex-wrap items-start justify-between gap-3">
+                        <div>
+                          <div className="text-xs font-semibold text-amber-800 uppercase tracking-wider">
+                            {t("dash.consent_request")}
+                          </div>
+                          <h3 className="mt-1 text-lg font-semibold">
+                            {m.company.companyName}
+                          </h3>
+                          {m.jobRequest && (
+                            <p className="text-sm text-[color:var(--color-ink-soft)]">
+                              {t("dash.searches_for")}{" "}
+                              <strong>
+                                {m.jobRequest.customJobTitle ??
+                                  jobLabel(m.jobRequest.jobCategory, locale)}
+                              </strong>
+                              {m.jobRequest.location &&
+                                " " + t("dash.in_city", { city: m.jobRequest.location })}
+                            </p>
+                          )}
+                          {m.company.description && (
+                            <p className="mt-2 text-sm">{m.company.description}</p>
+                          )}
+                          {scoreInfo && scoreInfo.reasons.length > 0 && (
+                            <details className="mt-3 text-sm">
+                              <summary className="cursor-pointer text-amber-900 font-semibold">
+                                {t("dash.why_match")}
+                                {m.matchScore != null && ` · ${m.matchScore}/100`}
+                              </summary>
+                              <ul className="mt-2 list-disc ml-5 text-amber-900 space-y-0.5">
+                                {scoreInfo.reasons.map((r, i) => (
+                                  <li key={i}>{r}</li>
+                                ))}
+                              </ul>
+                            </details>
+                          )}
                         </div>
-                        <h3 className="mt-1 text-lg font-semibold">
-                          {m.company.companyName}
-                        </h3>
-                        {m.jobRequest && (
-                          <p className="text-sm text-[color:var(--color-ink-soft)]">
-                            {t("dash.searches_for")}{" "}
-                            <strong>
-                              {m.jobRequest.customJobTitle ??
-                                jobLabel(m.jobRequest.jobCategory, locale)}
-                            </strong>
-                            {m.jobRequest.location && " " + t("dash.in_city", { city: m.jobRequest.location })}
-                          </p>
-                        )}
-                        {m.company.description && (
-                          <p className="mt-2 text-sm">{m.company.description}</p>
-                        )}
+                        <ConsentButtons matchId={m.id} />
                       </div>
-                      <ConsentButtons matchId={m.id} />
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}
@@ -225,6 +246,10 @@ export default async function CandidateDashboardPage() {
             ) : (
               <div className="space-y-3">
                 {otherMatches.map((m) => {
+                  const scoreInfo =
+                    m.jobRequest && m.matchScore != null
+                      ? scoreCandidate(candidate, m.jobRequest)
+                      : null;
                   return (
                     <div key={m.id} className="card">
                       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -238,6 +263,11 @@ export default async function CandidateDashboardPage() {
                           )}
                         </div>
                         <div className="flex items-center gap-3">
+                          {m.matchScore != null && (
+                            <span className="badge bg-[color:var(--color-brand-soft)] text-[color:var(--color-brand)] font-semibold">
+                              {t("dash.why_match_score", { score: m.matchScore })}
+                            </span>
+                          )}
                           <span className="badge bg-slate-100 text-slate-700">
                             {t(`matchstatus.${m.status}`)}
                           </span>
@@ -255,6 +285,18 @@ export default async function CandidateDashboardPage() {
                       <div className="mt-4">
                         <MatchTimeline status={m.status} />
                       </div>
+                      {scoreInfo && scoreInfo.reasons.length > 0 && (
+                        <details className="mt-3 text-sm">
+                          <summary className="cursor-pointer text-[color:var(--color-brand)] font-semibold">
+                            {t("dash.why_match")}
+                          </summary>
+                          <ul className="mt-2 list-disc ml-5 text-[color:var(--color-ink-soft)] space-y-0.5">
+                            {scoreInfo.reasons.map((r, i) => (
+                              <li key={i}>{r}</li>
+                            ))}
+                          </ul>
+                        </details>
+                      )}
                     </div>
                   );
                 })}

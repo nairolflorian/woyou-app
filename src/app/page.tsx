@@ -43,14 +43,14 @@ export default async function HomePage() {
             className="object-cover"
           />
         </div>
-        <div className="mx-auto max-w-6xl px-6 py-24 md:py-32 text-white">
-          <span className="inline-block rounded-full bg-white/15 px-4 py-1.5 text-xs font-bold tracking-widest backdrop-blur">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 py-16 sm:py-24 md:py-32 text-white">
+          <span className="inline-block rounded-full bg-white/15 px-4 py-1.5 text-[10px] sm:text-xs font-bold tracking-widest backdrop-blur">
             {t("home.hero_badge")}
           </span>
-          <h1 className="mt-6 text-4xl md:text-6xl font-bold leading-tight max-w-3xl">
+          <h1 className="mt-6 text-3xl sm:text-4xl md:text-6xl font-bold leading-tight max-w-3xl">
             {t("home.hero_title")}
           </h1>
-          <p className="mt-6 max-w-2xl text-lg text-white/90 leading-relaxed">
+          <p className="mt-4 sm:mt-6 max-w-2xl text-base sm:text-lg text-white/90 leading-relaxed">
             {t("home.hero_subtitle")}
           </p>
           <div className="mt-10 flex flex-wrap gap-3">
@@ -81,17 +81,17 @@ export default async function HomePage() {
 
       {/* STATS */}
       <section className="bg-white border-b border-[color:var(--color-border)]">
-        <div className="mx-auto max-w-6xl px-6 py-10 grid grid-cols-3 gap-6 text-center">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 py-8 sm:py-10 grid grid-cols-3 gap-3 sm:gap-6 text-center">
           {[
             { n: "500+", k: "home.stats_partners" },
             { n: "50+", k: "home.stats_countries" },
             { n: "1.000+", k: "home.stats_placements" },
           ].map((s) => (
             <div key={s.k}>
-              <div className="text-3xl md:text-4xl font-bold text-[color:var(--color-brand)]">
+              <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-[color:var(--color-brand)]">
                 {s.n}
               </div>
-              <div className="mt-1 text-sm text-[color:var(--color-ink-soft)]">
+              <div className="mt-1 text-xs sm:text-sm text-[color:var(--color-ink-soft)]">
                 {t(s.k)}
               </div>
             </div>

@@ -39,7 +39,7 @@ export function DemoModeBarClient({
 
         {open && (
           <div
-            className="absolute bottom-full right-0 mb-3 w-[320px] max-h-[60vh] overflow-y-auto rounded-2xl bg-white border border-[color:var(--color-border)] shadow-2xl"
+            className="absolute bottom-full right-0 mb-3 w-[min(320px,calc(100vw-2rem))] max-h-[60vh] overflow-y-auto rounded-2xl bg-white border border-[color:var(--color-border)] shadow-2xl"
             role="menu"
           >
             <div className="p-3 border-b border-[color:var(--color-border)]">

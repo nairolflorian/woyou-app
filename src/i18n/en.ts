@@ -252,6 +252,9 @@ const en: Record<string, string> = {
   "dash.proposals_h": "Current proposals & status",
   "dash.no_other_proposals": "No other proposals yet.",
   "dash.open_chat": "Open chat",
+  "dash.match_score": "Match score",
+  "dash.why_match": "Why this company fits you",
+  "dash.why_match_score": "Score {score}/100",
   "dash.documents_h": "Your documents",
   "dash.documents_desc":
     "CV, passport, diplomas and certificates. Visible to you and to companies with an active proposal.",

@@ -254,6 +254,9 @@ const fr: Record<string, string> = {
   "dash.proposals_h": "Propositions actuelles & statut",
   "dash.no_other_proposals": "Pas encore d'autres propositions.",
   "dash.open_chat": "Ouvrir le chat",
+  "dash.match_score": "Score de matching",
+  "dash.why_match": "Pourquoi cette entreprise vous correspond",
+  "dash.why_match_score": "Score {score}/100",
   "dash.documents_h": "Vos documents",
   "dash.documents_desc":
     "CV, passeport, diplômes et certificats. Visibles par vous et les entreprises avec une proposition active.",

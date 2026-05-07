@@ -152,6 +152,25 @@ body {
   text-align: right;
 }
 
+/* Mobile polish — keep cards from blowing up at 320–360px. */
+@media (max-width: 480px) {
+  .card {
+    padding: 16px;
+  }
+  h1 {
+    font-size: 2rem;
+  }
+  h2 {
+    font-size: 1.5rem;
+  }
+  /* Make sure long words / pasted IDs in body text wrap instead of forcing
+     horizontal scroll. */
+  body {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+  }
+}
+
 /* Visible focus ring for keyboard navigation. The default :focus is visually
    noisy for mouse users, so we use :focus-visible. */
 *:focus {
