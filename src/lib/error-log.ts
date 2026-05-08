@@ -1,3 +1,5 @@
+import "server-only";
+
 // Lightweight server-side error capture. Failures here must NOT throw —
 // the original handler's error is what matters.
 

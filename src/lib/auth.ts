@@ -1,3 +1,5 @@
+import "server-only";
+
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { ROLE, type Role } from "@/lib/enums";

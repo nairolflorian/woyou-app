@@ -1,3 +1,5 @@
+import "server-only";
+
 // Auto-matching: triggered when a candidate becomes placeable, or when a new
 // non-custom job request is created. No human in the loop. Custom requests
 // (isCustomRequest = true) deliberately stay manual — they need a vermittler.

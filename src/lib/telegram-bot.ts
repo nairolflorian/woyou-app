@@ -1,3 +1,5 @@
+import "server-only";
+
 // Lightweight bot setup using `grammy`. Designed for webhook delivery so it
 // works on Vercel-like serverless platforms; locally you can use long polling
 // by running `npm run telegram:dev` (see README).
@@ -109,7 +111,36 @@ export function getBot(): Bot<Ctx> | null {
         "/start — Profil anlegen",
         "/status — Dein aktueller Status",
         "/profil — Profil bearbeiten (im Browser)",
+        "/reset — Neues Passwort setzen (per DM)",
       ].join("\n"),
+      { parse_mode: "Markdown" }
+    );
+  });
+
+  bot.command("reset", async (ctx) => {
+    const tgId = String(ctx.from?.id);
+    const user = await prisma.user.findUnique({ where: { telegramId: tgId } });
+    if (!user) {
+      await ctx.reply(
+        "Ich kenne diesen Telegram-Account nicht. Schreib /start um dich anzulegen, oder verlinke deinen Account zuerst über die Website."
+      );
+      return;
+    }
+    if (user.deletedAt) {
+      await ctx.reply("Dieser Account ist gelöscht.");
+      return;
+    }
+    // Generate a friendly random password (lowercase letters + digits, 12 chars).
+    const alphabet = "abcdefghjkmnpqrstuvwxyz23456789";
+    const newPwd = Array.from({ length: 12 })
+      .map(() => alphabet[Math.floor(Math.random() * alphabet.length)])
+      .join("");
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { passwordHash: await hashPassword(newPwd) },
+    });
+    await ctx.reply(
+      `🔑 *Neues Passwort gesetzt.*\n\nDein neues Passwort lautet:\n\`${newPwd}\`\n\nLogin auf der Website: ${process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000"}/anmelden\n\nÄndere es bitte direkt nach dem ersten Login unter „Mein Account".`,
       { parse_mode: "Markdown" }
     );
   });

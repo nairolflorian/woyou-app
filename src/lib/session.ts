@@ -1,3 +1,5 @@
+import "server-only";
+
 import { cookies } from "next/headers";
 import { getIronSession, type SessionOptions } from "iron-session";
 import type { Role } from "@/lib/enums";

@@ -12,6 +12,9 @@ import { parseDocs, findAvatar } from "@/lib/uploads";
 import { AvatarBubble } from "@/components/AvatarUpload";
 import { scoreCandidate } from "@/lib/matching";
 import { AUDIT_ACTION_LABEL } from "@/lib/audit";
+import { AdminPasswordReset } from "@/components/AdminPasswordReset";
+import { getSession } from "@/lib/session";
+import { ROLE } from "@/lib/enums";
 
 export default async function CandidateDetail(props: {
   params: Promise<{ id: string }>;
@@ -37,6 +40,9 @@ export default async function CandidateDetail(props: {
     orderBy: { createdAt: "desc" },
     take: 30,
   });
+
+  const session = await getSession();
+  const isSuperAdmin = session.role === ROLE.SUPER_ADMIN;
 
   const lbl = CANDIDATE_STATUS_LABEL[candidate.status as keyof typeof CANDIDATE_STATUS_LABEL];
   const altJobs = candidate.alternativeJobs ? JSON.parse(candidate.alternativeJobs) as string[] : [];
@@ -120,6 +126,11 @@ export default async function CandidateDetail(props: {
               candidateId={candidate.id}
               currentStatus={candidate.status}
             />
+            {isSuperAdmin && (
+              <div className="mt-4 pt-4 border-t border-[color:var(--color-border)]">
+                <AdminPasswordReset userId={candidate.userId} />
+              </div>
+            )}
           </div>
 
           <div className="card">

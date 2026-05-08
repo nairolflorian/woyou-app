@@ -1,3 +1,5 @@
+import "server-only";
+
 // Local-disk upload helpers. Files live in /app/uploads (Docker volume).
 // We deliberately do NOT serve them from /public; the API route below
 // streams them after a permission check.

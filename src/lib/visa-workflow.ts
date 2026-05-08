@@ -1,3 +1,5 @@
+import "server-only";
+
 // Triggered after a candidate has been hired (status = PLACED).
 // Creates a checklist of tasks for the vermittler / back-office team.
 // Idempotent: skips creation if a task with the same kind already exists for

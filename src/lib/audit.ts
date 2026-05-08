@@ -1,3 +1,5 @@
+import "server-only";
+
 // Audit-log helper. Every administrative action funnels through `audit()`.
 // Failures are logged but never throw — auditing must not break the
 // underlying operation.
