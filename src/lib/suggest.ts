@@ -14,7 +14,7 @@ export type SuggestMeta = {
   externalUrl?: string | null; tasks?: string; requirements?: string; germanRequired?: string | null;
 };
 
-const MAX_DETAILS = 40; // so viele Ausschreibungen werden vollständig geladen
+const MAX_DETAILS = 60; // so viele Ausschreibungen werden vollständig geladen
 const MAX_SAVE = 30; // so viele Vorschläge werden je Lauf gespeichert
 const MAX_AI = 30;
 
@@ -173,7 +173,10 @@ export async function suggestJobs(bookingId: string): Promise<{ added: number; s
   });
 
   scored.sort((a, b) => b.score - a.score);
-  const top = scored.slice(0, MAX_SAVE);
+  // Höchstens zwei Vorschläge je Firma (auch über frühere Läufe), damit sich die 25 Bewerbungen verteilen
+  const perCompany = new Map<string, number>();
+  for (const l of await prisma.jobLead.findMany({ where: { bookingId, status: { not: "HIDDEN" } }, select: { company: true } })) perCompany.set(norm(l.company), (perCompany.get(norm(l.company)) ?? 0) + 1);
+  const top = scored.filter((x) => { const k = norm(x.job.company); const n = perCompany.get(k) ?? 0; if (n >= 2) return false; perCompany.set(k, n + 1); return true; }).slice(0, MAX_SAVE);
 
   const ai = aiEnabled() ? await pool(top.slice(0, MAX_AI), 3, (s) => aiRating(d, s).catch(() => null)) : [];
   let added = 0;
