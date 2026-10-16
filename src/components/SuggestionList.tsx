@@ -63,7 +63,7 @@ export function SuggestionList({ bookingId, items, free: free0, approved, ai }: 
         <div>
           <h2 className="font-semibold">Stellenvorschläge</h2>
           <p className="text-xs text-[color:var(--color-ink-soft)]">
-            Automatisch gesucht (Bundesagentur, Arbeitnow, Adzuna sobald eingerichtet), sortiert nach Passung zur Mappe{ai ? " (Regeln und KI)" : " (nach Regeln, KI noch aus)"}.
+            Automatisch gesucht (Bundesagentur, Arbeitnow, hinterlegte Karriereseiten, Adzuna sobald eingerichtet), sortiert nach Passung zur Mappe{ai ? " (Regeln und KI)" : " (nach Regeln, KI noch aus)"}.
             {!approved && " Die Suche startet automatisch, sobald die Mappe freigegeben ist."}
           </p>
         </div>

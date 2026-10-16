@@ -468,3 +468,19 @@ model MarketingSend {
 
   @@unique([userId, step])
 }
+
+// Karriereseiten einzelner Arbeitgeber mit öffentlichem Stellen-Feed (Personio, Greenhouse, Lever).
+// Das Team hinterlegt Wunscharbeitgeber nach und nach; die Stellen fließen in die automatischen Vorschläge.
+model CareerFeed {
+  id        String   @id @default(cuid())
+  name      String
+  kind      String   // PERSONIO | GREENHOUSE | LEVER
+  slug      String   // Kennung im Feed, z. B. "pflegedienst-xy" aus pflegedienst-xy.jobs.personio.de
+  active    Boolean  @default(true)
+  lastCount Int?
+  lastError String?
+  checkedAt DateTime?
+  createdAt DateTime @default(now())
+
+  @@unique([kind, slug])
+}

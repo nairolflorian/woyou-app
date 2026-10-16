@@ -9,8 +9,9 @@ import { parseProfile, type ProfileData } from "@/lib/application";
 import { withProfile } from "@/lib/mappe";
 import { aiEnabled, callAI } from "@/lib/letters";
 import { searchAdzuna, searchArbeitnow, type ExtraJob } from "@/lib/jobs-extra";
+import { searchFeeds, type FeedJob } from "@/lib/jobs-feeds";
 
-type AnyJob = BaJob & { source?: "BA" | "ADZUNA" | "ARBEITNOW"; description?: string; email?: string | null };
+type AnyJob = BaJob & { source?: "BA" | "ADZUNA" | "ARBEITNOW" | "KARRIERESEITE"; description?: string; email?: string | null };
 
 export type SuggestMeta = {
   distanceKm?: number; fulltime: boolean; parttime: boolean; salary?: number | null; publishedAt?: string; startAt?: string;
@@ -139,9 +140,10 @@ export async function suggestJobs(bookingId: string): Promise<{ added: number; s
     }
   }
   // Weitere Quellen: Adzuna (wenn Schlüssel hinterlegt) und Arbeitnow (offen, ohne Anmeldung)
-  const extra: ExtraJob[] = [];
+  const extra: (ExtraJob | FeedJob)[] = [];
   for (const was of terms) for (const wo of regions.length ? regions : [undefined]) extra.push(...(await searchAdzuna(was, wo).catch((e) => { console.error("[suggest] Adzuna", e instanceof Error ? e.message : e); return []; })));
   extra.push(...(await searchArbeitnow(terms, regions).catch(() => [])));
+  extra.push(...(await searchFeeds(terms, regions).catch(() => [])));
   // Dubletten über Quellen hinweg (gleiche Firma + Titel) nur einmal
   const seen = new Set([...found.values()].map((j) => `${norm(j.company)}|${norm(j.title)}`));
   for (const j of extra) { const k = `${norm(j.company)}|${norm(j.title)}`; if (!found.has(j.ref) && !seen.has(k)) { seen.add(k); found.set(j.ref, j); } }

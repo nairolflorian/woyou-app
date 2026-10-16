@@ -32,7 +32,7 @@ export default async function CandidateDashboardPage(props: { searchParams: Prom
   const booking = await prisma.serviceBooking.findFirst({
     where: { candidateId: candidate.id, status: { not: "CANCELLED" } },
     orderBy: { createdAt: "desc" },
-    include: { leads: { where: { status: { in: Object.keys(OFFER_STATUS) } }, orderBy: [{ sentAt: { sort: "desc", nulls: "last" } }, { score: { sort: "desc", nulls: "last" } }], take: 80, select: { id: true, title: true, company: true, city: true, sentAt: true, status: true, url: true, response: true } } },
+    include: { leads: { where: { status: { in: Object.keys(OFFER_STATUS) } }, orderBy: [{ sentAt: { sort: "desc", nulls: "last" } }, { score: { sort: "desc", nulls: "last" } }], take: 80, select: { id: true, title: true, company: true, city: true, sentAt: true, status: true, url: true, response: true, email: true, applyUrl: true } } },
   });
   // Verschickte und freigegebene zuerst, dann in Vorbereitung, dann Vorschläge
   const rank: Record<string, number> = { SENT: 0, APPLIED_MANUALLY: 0, READY: 1, SELECTED: 2, SUGGESTED: 3 };
@@ -90,6 +90,7 @@ export default async function CandidateDashboardPage(props: { searchParams: Prom
                       <div className="min-w-0 flex-1">
                         {l.url ? <a href={l.url} target="_blank" rel="noreferrer" className="font-semibold text-[color:var(--color-brand)]">{l.title}</a> : <strong>{l.title}</strong>}
                         <div className="text-[color:var(--color-ink-soft)]">{l.company}{l.city ? `, ${l.city}` : ""}</div>
+                        {!l.email && l.applyUrl && <div className="text-xs text-[color:var(--color-ink-soft)]">Bewerbung über die Seite des Arbeitgebers</div>}
                         {l.response && <div className="mt-1 text-xs">Antwort: {l.response}</div>}
                       </div>
                       <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${col}`}>{lbl}{l.sentAt ? ` · ${l.sentAt.toLocaleDateString("de-DE")}` : ""}</span>
