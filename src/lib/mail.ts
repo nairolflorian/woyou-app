@@ -29,7 +29,7 @@ export const teamAddress = () => process.env.MAIL_TEAM || "";
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
 
 // Einfaches, markenkonformes HTML-Layout (Petrol #6F9EAB)
-export function layout(title: string, paragraphs: string[], button?: { label: string; href: string }) {
+export function layout(title: string, paragraphs: string[], button?: { label: string; href: string }, footer?: string) {
   const body = paragraphs.map((p) => `<p style="margin:0 0 14px;line-height:1.5">${esc(p)}</p>`).join("");
   const btn = button ? `<p style="margin:22px 0"><a href="${esc(button.href)}" style="background:#6F9EAB;color:#fff;text-decoration:none;padding:12px 22px;border-radius:999px;font-weight:600;display:inline-block">${esc(button.label)}</a></p>` : "";
   return `<!doctype html><html><body style="margin:0;background:#f4f7f8;font-family:Segoe UI,Arial,sans-serif;color:#1f2a30">
@@ -38,7 +38,7 @@ export function layout(title: string, paragraphs: string[], button?: { label: st
     <div style="background:#fff;border-radius:12px;padding:26px 24px">
       <h1 style="font-size:20px;margin:0 0 16px">${esc(title)}</h1>${body}${btn}
     </div>
-    <p style="font-size:12px;color:#7a8a91;margin-top:16px">WoYou · Deine Zukunft in Deutschland</p>
+    <p style="font-size:12px;color:#7a8a91;margin-top:16px">WoYou · Deine Zukunft in Deutschland</p>${footer ? `<p style="font-size:11px;color:#9aa7ad;margin-top:6px">${esc(footer)}</p>` : ""}
   </div></body></html>`;
 }
 

@@ -113,6 +113,8 @@ const UNSUB: Record<Lang, string> = {
   ar: "لا تريد هذه الرسائل؟ إلغاء الاشتراك:",
 };
 
+const SIGN: Record<Lang, string> = { de: "Dein WoYou-Team", en: "Your WoYou team", fr: "L'équipe WoYou", ar: "فريق WoYou" };
+
 const langOf = (l?: string | null): Lang => (l === "de" || l === "fr" || l === "ar" ? l : l === "en" ? "en" : "de");
 
 export function render(step: Step, lang: Lang, v: Vars, userId: string) {
@@ -121,8 +123,8 @@ export function render(step: Step, lang: Lang, v: Vars, userId: string) {
   const unsub = `${UNSUB[lang]} ${unsubUrl(userId)}`;
   return {
     subject: `WoYou: ${t.subject}`,
-    text: [t.title, ...t.paras, `${t.button}: ${base()}${step.path}`, "", "Dein WoYou-Team", "", unsub].join("\n\n"),
-    html: layout(t.title, [...t.paras, "Dein WoYou-Team", unsub], { label: t.button, href: `${base()}${step.path}` }),
+    text: [t.title, ...t.paras, `${t.button}: ${base()}${step.path}`, SIGN[lang], unsub].join("\n\n"),
+    html: layout(t.title, [...t.paras, SIGN[lang]], { label: t.button, href: `${base()}${step.path}` }, unsub),
   };
 }
 
