@@ -29,7 +29,7 @@ export default async function MappePage() {
       <main id="main" className="flex-1 bg-[color:var(--color-surface)]">
         <div className="mx-auto max-w-4xl px-6 py-12 space-y-6">
           <div>
-            <Link href="/profil" className="text-sm text-[color:var(--color-brand)]">← {tx.back}</Link>
+            <Link href="/profil" className="text-sm text-[color:var(--color-brand)]">{locale === "ar" ? "→" : "←"} {tx.back}</Link>
             <h1 className="mt-2 text-3xl font-bold">{tx.title}</h1>
             <p className="mt-2 text-[color:var(--color-ink-soft)]">{tx.intro}</p>
             {tx.langHint && <p className="mt-3 card bg-[color:var(--color-brand-soft)] text-sm">{tx.langHint}</p>}

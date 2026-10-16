@@ -47,7 +47,7 @@ export default async function AdminLayout({
                 )}
               </nav>
             </aside>
-            <section>{children}</section>
+            <section className="min-w-0">{children}</section>
           </div>
         </div>
       </main>
