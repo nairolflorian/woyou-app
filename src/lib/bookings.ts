@@ -36,7 +36,11 @@ export async function markBookingPaid(bookingId: string, stripeSessionId?: strin
     where: { id: bookingId, paidAt: null },
     data: { paidAt: new Date(), status: BOOKING_STATUS.PAID, ...(stripeSessionId ? { stripeSessionId } : {}) },
   });
-  if (res.count > 0) await bookingMails(bookingId, "paid");
+  if (res.count > 0) {
+    await bookingMails(bookingId, "paid");
+    const b = await prisma.serviceBooking.findUnique({ where: { id: bookingId }, include: { candidate: true } });
+    if (b) await ensureTask(b.candidateId, "CONTACT", `Erstgespräch Bewerbungs-Service: ${[b.candidate.firstName, b.candidate.lastName].filter(Boolean).join(" ")}`, `Bezahlt. Telefon/WhatsApp: ${b.contactPhone ?? "–"}. Berufe: ${b.targetJobs ?? "–"}. Buchung: /admin/buchungen/${b.id}`);
+  }
   return res.count > 0;
 }
 
@@ -71,4 +75,11 @@ export async function bookingMails(bookingId: string, kind: "requested" | "paid"
 
 export function servicePrice(key: ServiceKey) {
   return SERVICES[key];
+}
+
+// Aufgabe im Admin-Bereich anlegen (einmalig je Titel und Kandidat:in)
+export async function ensureTask(candidateId: string, kind: "CONTACT" | "DOCUMENT_CHECK" | "OTHER", title: string, description: string, dueInDays = 2) {
+  const exists = await prisma.adminTask.findFirst({ where: { candidateId, title, status: { in: ["OPEN", "IN_PROGRESS"] } } });
+  if (exists) return exists;
+  return prisma.adminTask.create({ data: { candidateId, kind, title, description, dueDate: new Date(Date.now() + dueInDays * 864e5) } });
 }

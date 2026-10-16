@@ -4,19 +4,21 @@ import { mappeForRequest } from "@/lib/mappe";
 import { missingFields } from "@/lib/application";
 import { ensureAlias } from "@/lib/alias";
 import { sendMail, layout, teamAddress } from "@/lib/mail";
+import { ensureTask } from "@/lib/bookings";
 
 // Kund:in schickt die Mappe ab (SUBMITTED); Admin gibt sie frei (APPROVED)
 export async function POST(req: Request) {
   const m = await mappeForRequest(new URL(req.url).searchParams.get("bookingId"));
   if (!m) return NextResponse.json({ error: "Nicht gefunden" }, { status: 404 });
   const missing = missingFields(m.data);
-  if (missing.length && !m.admin) return NextResponse.json({ error: `Bitte noch ergänzen: ${missing.join(", ")}.` }, { status: 400 });
+  if (missing.length && !m.admin) return NextResponse.json({ error: `Bitte noch ergänzen: ${missing.join(", ")}.`, missing }, { status: 400 });
   await ensureAlias(m.booking.id, m.data.firstName, m.data.lastName);
   if (m.admin) {
     await prisma.applicationProfile.update({ where: { id: m.profile.id }, data: { status: "APPROVED", approvedAt: new Date() } });
     return NextResponse.json({ ok: true, status: "APPROVED" });
   }
   await prisma.applicationProfile.update({ where: { id: m.profile.id }, data: { status: "SUBMITTED", submittedAt: new Date() } });
+  await ensureTask(m.booking.candidateId, "DOCUMENT_CHECK", `Bewerbungsmappe prüfen: ${`${m.data.firstName} ${m.data.lastName}`.trim()}`, `Mappe eingereicht. Prüfen, freigeben, Stellen auswählen: /admin/buchungen/${m.booking.id}`, 2);
   const team = teamAddress();
   if (team) {
     const n = `${m.data.firstName} ${m.data.lastName}`.trim();

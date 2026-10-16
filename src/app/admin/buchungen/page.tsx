@@ -3,6 +3,7 @@ import { BookingRow } from "@/components/BookingRow";
 import { BOOKING_STATUS, BOOKING_STATUS_LABEL, formatPrice } from "@/lib/services";
 import { mailEnabled } from "@/lib/mail";
 import { getStripe } from "@/lib/stripe";
+import { monthlyReport } from "@/lib/report";
 
 export const dynamic = "force-dynamic";
 const d = (x: Date | null) => (x ? x.toLocaleDateString("de-DE") : "");
@@ -12,6 +13,7 @@ export default async function AdminBookingsPage() {
   const mails = await prisma.emailLog.findMany({ orderBy: { createdAt: "desc" }, take: 20 });
   const count = (s: string) => bookings.filter((b) => b.status === s).length;
   const revenue = bookings.filter((b) => b.paidAt).reduce((s, b) => s + b.amountCents, 0);
+  const report = await monthlyReport(6);
 
   return (
     <div className="space-y-6">
@@ -28,6 +30,19 @@ export default async function AdminBookingsPage() {
         ))}
       </div>
       <div className="text-sm">Umsatz bezahlt: <strong>{formatPrice(revenue)}</strong></div>
+      <div className="card overflow-x-auto">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h2 className="font-semibold">Monatsreport</h2>
+          <a href="/api/admin/report" className="btn-outline py-1">CSV (12 Monate)</a>
+        </div>
+        <table className="mt-3 w-full text-sm">
+          <thead><tr className="text-left text-xs text-[color:var(--color-ink-soft)]"><th className="py-1">Monat</th><th>Registrierungen</th><th>Freischaltungen</th><th>Buchungen</th><th>bezahlt</th><th>Umsatz Service</th><th>Mappen</th><th>Bewerbungen</th><th>Antworten</th><th>Buchungsquote</th></tr></thead>
+          <tbody>{report.map((r) => (
+            <tr key={r.month} className="border-t"><td className="py-1 font-semibold">{r.month}</td><td>{r.registrations}</td><td>{r.profileUnlocks}</td><td>{r.bookings}</td><td>{r.bookingsPaid}</td><td>{formatPrice(r.serviceRevenueCents)}</td><td>{r.mappenSubmitted}</td><td>{r.applicationsSent}</td><td>{r.replies}</td><td>{r.conversionPct === null ? "–" : `${r.conversionPct.toLocaleString("de-DE")} %`}</td></tr>
+          ))}</tbody>
+        </table>
+        <p className="mt-2 text-xs text-[color:var(--color-ink-soft)]">Buchungsquote = Buchungen des Bewerbungs-Service je neue Registrierung im Monat. Demo-Zahlungen zählen nicht als Umsatz.</p>
+      </div>
       {bookings.length === 0 && <div className="card text-sm text-[color:var(--color-ink-soft)]">Noch keine Buchungen.</div>}
       <div className="space-y-4">
         {bookings.map((b) => (

@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { ROLE } from "@/lib/enums";
 import { rateLimit, clientIp } from "@/lib/rate-limit";
 import { SERVICES, BOOKING_STATUS } from "@/lib/services";
-import { startCheckout, bookingMails } from "@/lib/bookings";
+import { startCheckout, bookingMails, ensureTask } from "@/lib/bookings";
 
 const Body = z.object({
   packageKey: z.literal("bewerbung-25"),
@@ -62,5 +62,6 @@ export async function POST(req: Request) {
 
   // Noch kein Stripe-Konto: Buchung bleibt "angefragt", Kunde und Team bekommen eine Mail
   await bookingMails(booking.id, "requested");
+  await ensureTask(candidate.id, "CONTACT", `Erstgespräch Bewerbungs-Service: ${[candidate.firstName, candidate.lastName].filter(Boolean).join(" ")}`, `Angefragt (noch ohne Zahlung). Telefon/WhatsApp: ${d.contactPhone}. Berufe: ${d.targetJobs}. Buchung: /admin/buchungen/${booking.id}`);
   return NextResponse.json({ ok: true, url: `/bewerbungsservice/danke?id=${booking.id}` });
 }

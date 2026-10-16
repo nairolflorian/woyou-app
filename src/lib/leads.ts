@@ -93,6 +93,7 @@ export async function sendApplication(leadId: string) {
 
   await prisma.jobLead.update({ where: { id: lead.id }, data: { status: "SENT", sentAt: new Date() } });
   const sent = await recount(booking.id);
+  await prisma.notification.create({ data: { userId: booking.candidate.userId, type: "APPLICATION_SENT", title: `Bewerbung an ${lead.company} verschickt`, body: `${sent} von ${booking.applicationsGoal}`, link: "/bewerbungsmappe" } }).catch(() => {});
 
   if (customer) {
     const paras = [`Hallo ${data.firstName},`, `wir haben deine Bewerbung als ${lead.title} an ${lead.company}${lead.city ? ` in ${lead.city}` : ""} verschickt (${sent} von ${booking.applicationsGoal}).`, "Im Anhang findest du die Unterlagen, wie sie verschickt wurden. Wenn die Firma antwortet, bekommst du die Antwort direkt.", "Viele Grüße", "Dein WoYou-Team"];

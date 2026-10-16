@@ -15,6 +15,8 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { CANDIDATE_STATUS, MATCH_STATUS, ROLE } from "@/lib/enums";
 import { audit } from "@/lib/audit";
+import { sendMail, layout } from "@/lib/mail";
+import { mappeText } from "@/lib/mappe-i18n";
 
 const DEDUP_WINDOW_MS = 20 * 60 * 60 * 1000;
 
@@ -40,7 +42,7 @@ async function notifyOnce(
 }
 
 async function run() {
-  let counts = { incomplete: 0, candidateConsent: 0, companyStale: 0, overdueTasks: 0 };
+  let counts = { incomplete: 0, candidateConsent: 0, companyStale: 0, overdueTasks: 0, mappeReminders: 0 };
 
   // 1. Stale incomplete profiles (>3 days)
   const staleThreshold = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000);
@@ -141,6 +143,26 @@ async function run() {
         }
       }
     }
+  }
+
+  // 5. Bewerbungs-Service gebucht, Mappe nach 3 Tagen noch nicht abgeschickt → Hinweis + Mail (max. alle 3 Tage)
+  const mappeThreshold = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000);
+  const openBookings = await prisma.serviceBooking.findMany({
+    where: { status: { in: ["REQUESTED", "PAID"] }, createdAt: { lt: mappeThreshold }, OR: [{ profile: null }, { profile: { status: "DRAFT" } }] },
+    include: { candidate: { include: { user: true } } },
+  });
+  const base = process.env.NEXT_PUBLIC_BASE_URL || "";
+  for (const b of openBookings) {
+    const u = b.candidate.user;
+    const tx = mappeText(u.locale || "de");
+    await notifyOnce(u.id, `MAPPE_REMINDER:${b.id}`, { title: tx.title, body: tx.intro, link: "/bewerbungsmappe" });
+    const recentMail = await prisma.emailLog.findFirst({ where: { bookingId: b.id, template: "mappe_reminder", createdAt: { gt: mappeThreshold } } });
+    if (!recentMail && u.email) {
+      const name = b.candidate.firstName ?? "";
+      const paras = [`Hallo ${name},`.replace(" ,", ","), "für deinen Bewerbungs-Service fehlt uns noch deine Bewerbungsmappe. Sobald du sie abgeschickt hast, erstellen wir deinen Lebenslauf und starten mit den Bewerbungen.", "Du kannst auch einfach deinen vorhandenen Lebenslauf als PDF hochladen.", "Viele Grüße", "Dein WoYou-Team"];
+      await sendMail({ to: u.email, subject: "WoYou: Deine Bewerbungsmappe wartet", template: "mappe_reminder", bookingId: b.id, text: paras.join("\n\n"), html: layout("Deine Bewerbungsmappe wartet", paras, { label: "Zur Bewerbungsmappe", href: `${base}/bewerbungsmappe` }) });
+    }
+    counts.mappeReminders++;
   }
 
   return counts;
