@@ -389,7 +389,11 @@ model JobLead {
   description   String?
   coverLetter   String?
   lang          String         @default("de") // de | en: Sprache von Anschreiben und Lebenslauf
-  status        String         @default("SELECTED") // SELECTED | READY | SENT | APPLIED_MANUALLY | DISCARDED
+  status        String         @default("SELECTED") // SUGGESTED | HIDDEN | SELECTED | READY | SENT | APPLIED_MANUALLY | DISCARDED
+  score         Int?           // Passung 0–100 (Regeln, ggf. mit KI gemittelt)
+  matchNotes    String?        // JSON: kurze Gründe für/gegen die Stelle
+  aiNote        String?        // Einschätzung der KI in einem Satz
+  meta          String?        // JSON: Entfernung, Arbeitszeit, Gehalt, Aufgaben/Anforderungen (Auszug)
   sentAt        DateTime?
   response      String?        // Rückmeldung der Firma (Notiz / eingehende Mail)
   respondedAt   DateTime?

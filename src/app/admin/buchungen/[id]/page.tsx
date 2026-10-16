@@ -5,6 +5,7 @@ import { MappeEditor } from "@/components/MappeEditor";
 import { JobSearch } from "@/components/JobSearch";
 import { LeadCard } from "@/components/LeadCard";
 import { ManualLead } from "@/components/ManualLead";
+import { SuggestionList, type Suggestion } from "@/components/SuggestionList";
 import { parseProfile, missingFields, prefillFromCandidate } from "@/lib/application";
 import { BOOKING_STATUS_LABEL, type BookingStatus, formatPrice } from "@/lib/services";
 import { aliasAddress, aliasDomain } from "@/lib/alias";
@@ -22,6 +23,11 @@ export default async function AdminBookingDetail(props: { params: Promise<{ id: 
   const data = b.profile ? parseProfile(b.profile.data) : prefillFromCandidate(b.candidate, b);
   const name = [b.candidate.firstName, b.candidate.lastName].filter(Boolean).join(" ") || "(ohne Namen)";
   const active = b.leads.filter((l) => ACTIVE_LEAD.includes(l.status));
+  const listed = b.leads.filter((l) => l.status !== "SUGGESTED" && l.status !== "HIDDEN");
+  const json = <T,>(s: string | null, d: T): T => { try { return s ? JSON.parse(s) : d; } catch { return d; } };
+  const suggestions: Suggestion[] = b.leads.filter((l) => l.status === "SUGGESTED").sort((x, y) => (y.score ?? 0) - (x.score ?? 0)).map((l) => ({
+    id: l.id, title: l.title, company: l.company, city: l.city, url: l.url, email: l.email, score: l.score, notes: json<string[]>(l.matchNotes, []), aiNote: l.aiNote, createdAt: l.createdAt.toISOString(), meta: json(l.meta, {}),
+  }));
   const label = BOOKING_STATUS_LABEL[b.status as BookingStatus];
   const canSend = mailEnabled() && b.profile?.status === "APPROVED" && !!b.consentSendAt;
   const alias = aliasAddress(b.aliasLocal);
@@ -65,15 +71,22 @@ export default async function AdminBookingDetail(props: { params: Promise<{ id: 
         </div>
       </details>
 
+      <SuggestionList bookingId={b.id} items={suggestions} selected={active.length} goal={b.applicationsGoal} approved={b.profile?.status === "APPROVED"} ai={aiEnabled()} />
+
+      <details className="card">
+        <summary className="cursor-pointer font-semibold">Selbst suchen (Jobbörse der Bundesagentur)</summary>
+        <div className="mt-4">
       <JobSearch bookingId={b.id} defaults={{ was: (data.targetJob || b.targetJobs || "").split(",")[0].trim(), wo: (b.targetRegions || "").split(",")[0].trim() }} selectedCount={active.length} goal={b.applicationsGoal} />
+        </div>
+      </details>
 
       <section className="space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-xl font-bold">Ausgewählte Stellen ({active.length} / {b.applicationsGoal})</h2>
           <ManualLead bookingId={b.id} />
         </div>
-        {b.leads.length === 0 && <div className="card text-sm text-[color:var(--color-ink-soft)]">Noch keine Stellen ausgewählt. Oben suchen und „Auswählen“ klicken – Ausschreibung, E-Mail (falls angegeben) und ein erstes Anschreiben werden automatisch übernommen.</div>}
-        {b.leads.map((l, i) => (
+        {listed.length === 0 && <div className="card text-sm text-[color:var(--color-ink-soft)]">Noch keine Stellen ausgewählt. Oben einen Vorschlag übernehmen oder selbst suchen und „Auswählen“ klicken – Ausschreibung, E-Mail (falls angegeben) und ein erstes Anschreiben werden automatisch übernommen.</div>}
+        {listed.map((l, i) => (
           <LeadCard key={l.id} n={i + 1} canSend={canSend} lead={{ id: l.id, title: l.title, company: l.company, city: l.city, url: l.url, applyUrl: l.applyUrl, email: l.email, contactName: l.contactName, coverLetter: l.coverLetter, status: l.status, sentAt: l.sentAt?.toISOString() ?? null, response: l.response, source: l.source, hasDescription: !!l.description, lang: l.lang }} />
         ))}
       </section>

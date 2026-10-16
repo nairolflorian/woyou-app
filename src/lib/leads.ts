@@ -26,6 +26,11 @@ async function bookingWithProfile(bookingId: string) {
 }
 
 export async function addLead(bookingId: string, job: { ref?: string | null; title: string; company: string; city?: string | null; url?: string | null; applyUrl?: string | null; email?: string | null; source?: "BA" | "MANUAL" }) {
+  // Stelle steht schon als Vorschlag in der Liste? Dann diesen übernehmen
+  if (job.ref) {
+    const existing = await prisma.jobLead.findFirst({ where: { bookingId, sourceRef: job.ref, status: { in: ["SUGGESTED", "HIDDEN"] } } });
+    if (existing) return selectSuggestion(existing.id);
+  }
   const b = await bookingWithProfile(bookingId);
   const active = await prisma.jobLead.count({ where: { bookingId, status: { in: ACTIVE_LEAD } } });
   if (active >= b.applicationsGoal) throw new Error(`Es sind bereits ${b.applicationsGoal} Stellen ausgewählt.`);
@@ -43,6 +48,18 @@ export async function addLead(bookingId: string, job: { ref?: string | null; tit
       url: job.url ?? (job.ref && job.source !== "MANUAL" ? jobUrl(job.ref) : null), applyUrl: job.applyUrl ?? null, email, description, coverLetter: letter.text,
     },
   });
+}
+
+// Vorschlag übernehmen: zählt dann zu den 25, Anschreiben wird mit der Ausschreibung erstellt
+export async function selectSuggestion(leadId: string) {
+  const l = await prisma.jobLead.findUniqueOrThrow({ where: { id: leadId } });
+  if (ACTIVE_LEAD.includes(l.status)) return l;
+  const b = await bookingWithProfile(l.bookingId);
+  const active = await prisma.jobLead.count({ where: { bookingId: l.bookingId, status: { in: ACTIVE_LEAD } } });
+  if (active >= b.applicationsGoal) throw new Error(`Es sind bereits ${b.applicationsGoal} Stellen ausgewählt.`);
+  const lang = l.lang as DocLang;
+  const letter = await letterForJob(profileFor(b.profile, lang), { title: l.title, company: l.company, city: l.city, ref: l.sourceRef, contactName: l.contactName, description: l.description }, lang);
+  return prisma.jobLead.update({ where: { id: leadId }, data: { status: "SELECTED", coverLetter: letter.text } });
 }
 
 export async function regenerateLetter(leadId: string) {

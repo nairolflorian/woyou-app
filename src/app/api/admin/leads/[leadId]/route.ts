@@ -9,7 +9,7 @@ const Body = z.object({
   email: z.union([z.string().email().max(200), z.literal("")]).optional(),
   contactName: z.string().max(120).optional(),
   coverLetter: z.string().max(6000).optional(),
-  status: z.enum(["SELECTED", "READY", "APPLIED_MANUALLY", "DISCARDED"]).optional(),
+  status: z.enum(["SELECTED", "READY", "APPLIED_MANUALLY", "DISCARDED", "HIDDEN", "SUGGESTED"]).optional(),
   response: z.string().max(4000).optional(),
   lang: z.enum(["de", "en"]).optional(),
 });

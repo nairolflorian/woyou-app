@@ -113,7 +113,7 @@ Rules:
 
 export const aiEnabled = () => !!(process.env.AI_PROVIDER && process.env.AI_API_KEY);
 
-async function callAI(prompt: string, system = STYLE_RULES): Promise<string | null> {
+export async function callAI(prompt: string, system = STYLE_RULES): Promise<string | null> {
   const provider = process.env.AI_PROVIDER, key = process.env.AI_API_KEY;
   if (!provider || !key) return null;
   const ctrl = AbortSignal.timeout(30000);

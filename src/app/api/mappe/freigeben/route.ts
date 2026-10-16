@@ -5,6 +5,7 @@ import { missingFields } from "@/lib/application";
 import { ensureAlias } from "@/lib/alias";
 import { sendMail, layout, teamAddress } from "@/lib/mail";
 import { ensureTask } from "@/lib/bookings";
+import { suggestJobs } from "@/lib/suggest";
 
 // Kund:in schickt die Mappe ab (SUBMITTED); Admin gibt sie frei (APPROVED)
 export async function POST(req: Request) {
@@ -15,6 +16,9 @@ export async function POST(req: Request) {
   await ensureAlias(m.booking.id, m.data.firstName, m.data.lastName);
   if (m.admin) {
     await prisma.applicationProfile.update({ where: { id: m.profile.id }, data: { status: "APPROVED", approvedAt: new Date() } });
+    // Erste Stellenvorschläge im Hintergrund suchen (dauert je nach Anzahl 20–60 Sekunden)
+    if (!(await prisma.jobLead.count({ where: { bookingId: m.booking.id, status: "SUGGESTED" } })))
+      suggestJobs(m.booking.id).catch((e) => console.error("[suggest]", e instanceof Error ? e.message : e));
     return NextResponse.json({ ok: true, status: "APPROVED" });
   }
   await prisma.applicationProfile.update({ where: { id: m.profile.id }, data: { status: "SUBMITTED", submittedAt: new Date() } });
