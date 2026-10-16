@@ -31,7 +31,7 @@ export default async function AdminBookingDetail(props: { params: Promise<{ id: 
   const listed = b.leads.filter((l) => l.status !== "SUGGESTED" && l.status !== "HIDDEN");
   const json = <T,>(s: string | null, d: T): T => { try { return s ? JSON.parse(s) : d; } catch { return d; } };
   const suggestions: Suggestion[] = b.leads.filter((l) => l.status === "SUGGESTED").sort((x, y) => (y.score ?? 0) - (x.score ?? 0)).map((l) => ({
-    id: l.id, title: l.title, company: l.company, city: l.city, url: l.url, email: l.email, score: l.score, notes: json<string[]>(l.matchNotes, []), aiNote: l.aiNote, createdAt: l.createdAt.toISOString(), meta: json(l.meta, {}),
+    id: l.id, source: l.source, title: l.title, company: l.company, city: l.city, url: l.url, email: l.email, score: l.score, notes: json<string[]>(l.matchNotes, []), aiNote: l.aiNote, createdAt: l.createdAt.toISOString(), meta: json(l.meta, {}),
   }));
   const label = BOOKING_STATUS_LABEL[b.status as BookingStatus];
   const canSend = mailEnabled() && b.profile?.status === "APPROVED" && !!b.consentSendAt;

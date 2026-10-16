@@ -9,7 +9,7 @@ export const PORTALS = {
   MANUAL: "Sonstige",
 } as const;
 export type Portal = keyof typeof PORTALS;
-export const SOURCE_LABEL: Record<string, string> = { BA: "Bundesagentur", ...PORTALS };
+export const SOURCE_LABEL: Record<string, string> = { BA: "Bundesagentur", ADZUNA: "Adzuna", ARBEITNOW: "Arbeitnow", ...PORTALS };
 
 const slug = (s: string) => s.toLowerCase().normalize("NFKD").replace(/[̀-ͯ]/g, "").replace(/ß/g, "ss").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 

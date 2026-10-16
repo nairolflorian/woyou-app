@@ -26,6 +26,9 @@ async function main() {
   await prisma.user.create({
     data: { email: "vermittler@woyou.demo", passwordHash: pwd, role: "ADMIN", locale: "de" },
   });
+  await prisma.user.create({
+    data: { email: "team@woyou.demo", passwordHash: pwd, role: "TEAM", locale: "de" },
+  });
 
   // Two companies
   const compUserA = await prisma.user.create({

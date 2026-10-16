@@ -11,7 +11,14 @@ Stand: App läuft als Test unter https://woyou-app.46.225.109.84.nip.io. woyou.d
 ## Schritte (ca. 15 Minuten)
 1. Backup: `docker exec woyou_postgres pg_dumpall -U <user> > ../backups/vor-golive-$(date +%F).sql`
 2. `.env` der App: `NEXT_PUBLIC_BASE_URL=https://woyou.de`, `DEMO_MODE=false`, Stripe- und SMTP-Werte eintragen
-3. Demo-Daten entfernen (Demo-Konten, Beispiel-Firmen, Testbuchungen). Nicht mit `db-init` ohne Parameter arbeiten, das spielt Demodaten neu ein.
+3. Demo-Daten entfernen, erst Probelauf, dann wirklich:
+   ```
+   docker compose --profile init run --rm db-init npx tsx scripts/demo-daten-entfernen.ts
+   docker compose --profile init run --rm db-init npx tsx scripts/demo-daten-entfernen.ts --ausfuehren
+   ```
+   Wichtig: `docker compose --profile init run --rm db-init` ohne Befehl spielt bei `DEMO_MODE` ungleich `false` die Demo neu ein und löscht dabei alles. Für Migrationen immer `... db-init npx prisma migrate deploy` verwenden.
+3b. Zeitplan einrichten: `bash deploy/cron-einrichten.sh`
+3c. Mail und Antwortadressen: siehe deploy/MAIL-DNS.md
 4. `docker compose build app && docker compose up -d app`
 5. nginx umstellen:
    ```

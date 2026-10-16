@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { SOURCE_LABEL } from "@/lib/portals";
 
 export type Suggestion = {
-  id: string; title: string; company: string; city: string | null; url: string | null; email: string | null; score: number | null;
+  id: string; source: string; title: string; company: string; city: string | null; url: string | null; email: string | null; score: number | null;
   notes: string[]; aiNote: string | null; createdAt: string;
   meta: { distanceKm?: number; fulltime?: boolean; parttime?: boolean; salary?: number | null; publishedAt?: string; startAt?: string; externalUrl?: string | null; tasks?: string; requirements?: string; germanRequired?: string | null };
 };
@@ -62,7 +63,7 @@ export function SuggestionList({ bookingId, items, free: free0, approved, ai }: 
         <div>
           <h2 className="font-semibold">Stellenvorschläge</h2>
           <p className="text-xs text-[color:var(--color-ink-soft)]">
-            Automatisch gesucht in der Jobbörse der Bundesagentur, sortiert nach Passung zur Mappe{ai ? " (Regeln und KI)" : " (nach Regeln, KI noch aus)"}.
+            Automatisch gesucht (Bundesagentur, Arbeitnow, Adzuna sobald eingerichtet), sortiert nach Passung zur Mappe{ai ? " (Regeln und KI)" : " (nach Regeln, KI noch aus)"}.
             {!approved && " Die Suche startet automatisch, sobald die Mappe freigegeben ist."}
           </p>
         </div>
@@ -83,7 +84,7 @@ export function SuggestionList({ bookingId, items, free: free0, approved, ai }: 
                   <span className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${tone(s.score ?? 0)}`}>{s.score ?? "–"} %</span>
                   {s.url ? <a href={s.url} target="_blank" rel="noreferrer" className="font-semibold text-[color:var(--color-brand)]">{s.title}</a> : <span className="font-semibold">{s.title}</span>}
                 </div>
-                <div className="text-sm mt-0.5">{s.company}{s.city ? ` · ${s.city}` : ""}{s.meta.distanceKm != null ? ` (${s.meta.distanceKm} km)` : ""}</div>
+                <div className="text-sm mt-0.5"><span className="text-xs text-[color:var(--color-ink-soft)]">{SOURCE_LABEL[s.source] ?? s.source} · </span>{s.company}{s.city ? ` · ${s.city}` : ""}{s.meta.distanceKm != null ? ` (${s.meta.distanceKm} km)` : ""}</div>
                 <div className="text-xs text-[color:var(--color-ink-soft)]">
                   {[s.meta.fulltime && "Vollzeit", s.meta.parttime && "Teilzeit", s.meta.salary ? `${Math.round(s.meta.salary).toLocaleString("de-DE")} €/Jahr` : null, s.meta.germanRequired && `Deutsch ${s.meta.germanRequired}`, s.meta.startAt && `ab ${new Date(s.meta.startAt).toLocaleDateString("de-DE")}`, s.email ? `✉ ${s.email}` : s.meta.externalUrl ? "Bewerbung über Firmenseite" : "keine E-Mail gefunden"].filter(Boolean).join(" · ")}
                 </div>

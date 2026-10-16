@@ -3,7 +3,7 @@
 
 export type DemoAccount = {
   email: string;
-  role: "SUPER_ADMIN" | "ADMIN" | "COMPANY" | "CANDIDATE";
+  role: "SUPER_ADMIN" | "ADMIN" | "TEAM" | "COMPANY" | "CANDIDATE";
   name: string;
   description: string;
   next: string;
@@ -29,6 +29,15 @@ export const DEMO_ACCOUNTS: DemoAccount[] = [
     next: "/admin",
     emoji: "🎯",
     color: "from-indigo-500 to-indigo-700",
+  },
+  {
+    email: "team@woyou.demo",
+    role: "TEAM",
+    name: "Bewerbungsteam",
+    description: "Sieht nur Buchungen und Aufgaben: Mappen prüfen, Stellen freigeben, „Jetzt bewerben“.",
+    next: "/admin/buchungen",
+    emoji: "📨",
+    color: "from-sky-500 to-sky-700",
   },
   {
     email: "hr@klinik-berlin.demo",

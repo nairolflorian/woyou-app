@@ -10,6 +10,7 @@ export const metadata = {
 const ROLE_GROUPS: Record<string, string> = {
   SUPER_ADMIN: "Backoffice",
   ADMIN: "Backoffice",
+  TEAM: "Backoffice",
   COMPANY: "Unternehmen",
   CANDIDATE: "Kandidat:innen",
 };

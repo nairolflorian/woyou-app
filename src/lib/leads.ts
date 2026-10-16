@@ -105,9 +105,11 @@ export async function sendApplication(leadId: string) {
   const name = `${data.firstName} ${data.lastName}`.trim();
   const alias = aliasAddress(booking.aliasLocal);
   const customer = data.email || booking.candidate.user.email || "";
-  // Absender: persönliche WoYou-Adresse (wenn eingerichtet), sonst MAIL_FROM mit Namen; Antworten gehen an Alias bzw. direkt an Kund:in
+  // Absender: Name der Kund:in mit der WoYou-Versandadresse (MAIL_FROM, Domain woyou.de mit SPF/DKIM bei IONOS).
+  // Antworten (Reply-To) gehen an die persönliche Adresse auf MAIL_ALIAS_DOMAIN (nur Empfang, Brevo leitet weiter),
+  // ohne Alias direkt an die echte Adresse der Kund:in. Siehe deploy/MAIL-DNS.md.
   const fromBase = (process.env.MAIL_FROM || "WoYou <no-reply@woyou.de>").match(/<([^>]+)>/)?.[1] || process.env.MAIL_FROM || "no-reply@woyou.de";
-  const from = alias ? `"${name}" <${alias}>` : `"${name} (über WoYou)" <${fromBase}>`;
+  const from = `"${name.replace(/"/g, "")} (über WoYou)" <${fromBase}>`;
   const replyTo = alias || customer || undefined;
   const subject = subjectLine({ title: lead.title, company: lead.company, ref: lead.sourceRef }, lang);
   const body = (lang === "en"

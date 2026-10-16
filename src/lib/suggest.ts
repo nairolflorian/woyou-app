@@ -8,6 +8,9 @@ import { searchJobs, jobDetails, jobUrl, type BaJob } from "@/lib/jobs-ba";
 import { parseProfile, type ProfileData } from "@/lib/application";
 import { withProfile } from "@/lib/mappe";
 import { aiEnabled, callAI } from "@/lib/letters";
+import { searchAdzuna, searchArbeitnow, type ExtraJob } from "@/lib/jobs-extra";
+
+type AnyJob = BaJob & { source?: "BA" | "ADZUNA" | "ARBEITNOW"; description?: string; email?: string | null };
 
 export type SuggestMeta = {
   distanceKm?: number; fulltime: boolean; parttime: boolean; salary?: number | null; publishedAt?: string; startAt?: string;
@@ -126,7 +129,7 @@ export async function suggestJobs(bookingId: string): Promise<{ added: number; s
   if (!terms.length) throw new Error("Für die Suche fehlt ein Wunschberuf (Buchung oder Mappe).");
   const regions = split(booking.targetRegions).filter((r) => !/deutschland|egal|bundesweit|überall/i.test(r)).slice(0, 3);
 
-  const found = new Map<string, BaJob>();
+  const found = new Map<string, AnyJob>();
   for (const was of terms) {
     for (const wo of regions.length ? regions : [undefined]) {
       try {
@@ -135,6 +138,13 @@ export async function suggestJobs(bookingId: string): Promise<{ added: number; s
       } catch (e) { console.error("[suggest] Suche", was, wo, e instanceof Error ? e.message : e); }
     }
   }
+  // Weitere Quellen: Adzuna (wenn Schlüssel hinterlegt) und Arbeitnow (offen, ohne Anmeldung)
+  const extra: ExtraJob[] = [];
+  for (const was of terms) for (const wo of regions.length ? regions : [undefined]) extra.push(...(await searchAdzuna(was, wo).catch((e) => { console.error("[suggest] Adzuna", e instanceof Error ? e.message : e); return []; })));
+  extra.push(...(await searchArbeitnow(terms, regions).catch(() => [])));
+  // Dubletten über Quellen hinweg (gleiche Firma + Titel) nur einmal
+  const seen = new Set([...found.values()].map((j) => `${norm(j.company)}|${norm(j.title)}`));
+  for (const j of extra) { const k = `${norm(j.company)}|${norm(j.title)}`; if (!found.has(j.ref) && !seen.has(k)) { seen.add(k); found.set(j.ref, j); } }
   const known = new Set((await prisma.jobLead.findMany({ where: { bookingId }, select: { sourceRef: true } })).map((x) => x.sourceRef));
   const fresh = [...found.values()].filter((j) => !known.has(j.ref));
 
@@ -145,7 +155,8 @@ export async function suggestJobs(bookingId: string): Promise<{ added: number; s
   const expWords = new Set(d.experience.flatMap((x) => words(x.title)));
 
   const scored: Scored[] = await pool(pre, 5, async ({ job, pts, notes }) => {
-    const det = await jobDetails(job.ref);
+    const own = (job as AnyJob).source && (job as AnyJob).source !== "BA";
+    const det = own ? { description: (job as AnyJob).description ?? "", emails: (job as AnyJob).email ? [(job as AnyJob).email!] : [] } : await jobDetails(job.ref);
     const text = det?.description ?? "";
     const email = det?.emails[0] ?? null;
     const n = [...notes];
@@ -186,8 +197,8 @@ export async function suggestJobs(bookingId: string): Promise<{ added: number; s
     try {
       await prisma.jobLead.create({
         data: {
-          bookingId, source: "BA", sourceRef: s.job.ref, status: "SUGGESTED", title: s.job.title.slice(0, 200), company: s.job.company.slice(0, 200), city: s.job.city || null,
-          url: jobUrl(s.job.ref), applyUrl: s.job.externalUrl ?? null, email: s.email, description: s.description?.slice(0, 20000) ?? null,
+          bookingId, source: (s.job as AnyJob).source ?? "BA", sourceRef: s.job.ref, status: "SUGGESTED", title: s.job.title.slice(0, 200), company: s.job.company.slice(0, 200), city: s.job.city || null,
+          url: (s.job as AnyJob).source && (s.job as AnyJob).source !== "BA" ? s.job.url : jobUrl(s.job.ref), applyUrl: s.job.externalUrl ?? null, email: s.email, description: s.description?.slice(0, 20000) ?? null,
           score, matchNotes: JSON.stringify(s.notes), aiNote: r?.note || null, meta: JSON.stringify(s.meta),
         },
       });
