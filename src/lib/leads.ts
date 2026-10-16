@@ -6,7 +6,7 @@ import { jobDetails, jobUrl } from "@/lib/jobs-ba";
 import { letterForJob, subjectLine, salutation } from "@/lib/letters";
 import { parseProfile } from "@/lib/application";
 import { cvPdf, letterPdf, type DocLang } from "@/lib/pdf";
-import { readPhoto, readOwnCv } from "@/lib/mappe";
+import { readPhoto, readOwnCv, withProfile } from "@/lib/mappe";
 import { sendMail, layout, mailEnabled, type Attachment } from "@/lib/mail";
 import { aliasAddress } from "@/lib/alias";
 import { BOOKING_STATUS } from "@/lib/services";
@@ -19,7 +19,9 @@ export function profileFor(profile: { data: string; dataEn: string | null } | nu
   return parseProfile(lang === "en" && profile?.dataEn ? profile.dataEn : profile?.data);
 }
 
+// Mappe wird bei Bedarf angelegt (vorausgefüllt aus dem Kundenprofil), damit Unterlagen nie ohne Namen entstehen
 async function bookingWithProfile(bookingId: string) {
+  await withProfile(bookingId);
   return prisma.serviceBooking.findUniqueOrThrow({ where: { id: bookingId }, include: { profile: true, candidate: { include: { user: true } } } });
 }
 

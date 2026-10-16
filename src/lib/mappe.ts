@@ -14,7 +14,7 @@ import { BOOKING_STATUS } from "@/lib/services";
 
 const ACTIVE = [BOOKING_STATUS.REQUESTED, BOOKING_STATUS.PENDING_PAYMENT, BOOKING_STATUS.PAID, BOOKING_STATUS.IN_PROGRESS, BOOKING_STATUS.DONE];
 
-async function withProfile(bookingId: string) {
+export async function withProfile(bookingId: string) {
   const booking = await prisma.serviceBooking.findUniqueOrThrow({ where: { id: bookingId }, include: { profile: true, candidate: { include: { user: true } } } });
   if (booking.profile) return { booking, profile: booking.profile };
   const data = prefillFromCandidate(booking.candidate, booking);
