@@ -19,6 +19,7 @@ export async function SiteFooter() {
             <li><a href="/registrierung" className="hover:text-white">{t("nav.register")}</a></li>
             <li><a href="/anmelden" className="hover:text-white">{t("nav.login")}</a></li>
             <li><a href="/sprachtest" className="hover:text-white">{t("test.title")}</a></li>
+            <li><a href="/bewerbungsservice" className="hover:text-white">{t("nav.service")}</a></li>
           </ul>
         </div>
         <div>

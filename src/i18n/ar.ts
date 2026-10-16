@@ -1,5 +1,6 @@
 const ar: Record<string, string> = {
   "nav.bewerber": "للمتقدمين",
+  "nav.service": "خدمة التقديم",
   "nav.arbeitgeber": "لأصحاب العمل",
   "nav.so_funktioniert": "كيف يعمل",
   "nav.berufe": "المهن",

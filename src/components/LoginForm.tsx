@@ -23,7 +23,8 @@ export function LoginForm() {
       setError(data.error ?? "Fehler");
       return;
     }
-    window.location.href = data.next ?? "/profil";
+    const want = new URLSearchParams(window.location.search).get("next");
+    window.location.href = want && want.startsWith("/") && !want.startsWith("//") ? want : data.next ?? "/profil";
   }
 
   return (

@@ -22,7 +22,8 @@ export type AuditAction =
   | "TEAM_MEMBER_CREATE"
   | "ACCOUNT_SELF_DELETE"
   | "CRON_REMATCH_RUN"
-  | "CRON_REMINDERS_RUN";
+  | "CRON_REMINDERS_RUN"
+  | "BOOKING_UPDATE";
 
 type Refs = {
   candidateId?: string | null;
@@ -78,6 +79,7 @@ export const AUDIT_ACTION_LABEL: Record<AuditAction, string> = {
   MATCH_DECISION_HIRE: "Firma: Eingestellt",
   TASK_CREATE: "Aufgabe angelegt",
   TASK_STATUS_CHANGE: "Aufgaben-Status geändert",
+  BOOKING_UPDATE: "Buchung bearbeitet",
   TEAM_MEMBER_CREATE: "Admin-Account angelegt",
   ACCOUNT_SELF_DELETE: "Account-Selbstlöschung",
   CRON_REMATCH_RUN: "Cron: Re-Matching",

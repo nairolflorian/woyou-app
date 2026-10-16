@@ -1,5 +1,6 @@
 const uk: Record<string, string> = {
   "nav.bewerber": "Кандидатам",
+  "nav.service": "Сервіс відгуків",
   "nav.arbeitgeber": "Роботодавцям",
   "nav.so_funktioniert": "Як це працює",
   "nav.berufe": "Професії",

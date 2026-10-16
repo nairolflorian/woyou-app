@@ -16,7 +16,7 @@ export const APP_CONFIG = {
   channels: {
     telegramBotEnabled: !!process.env.TELEGRAM_BOT_TOKEN,
     whatsappEnabled: false, // not in demo (paid API)
-    emailEnabled: false, // configure SMTP in .env to enable
+    emailEnabled: !!process.env.SMTP_HOST, // SMTP in .env → siehe src/lib/mail.ts
   },
 };
 

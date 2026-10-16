@@ -1,0 +1,235 @@
+// Zusatz-Services, die Bewerber:innen buchen können. Preis/Umfang zentral hier ändern –
+// Angebotsseite, Buchung, Stripe-Checkout und Mails lesen alles von hier.
+
+export type ServiceKey = "bewerbung-25";
+
+export const SERVICES: Record<ServiceKey, { priceCents: number; applications: number; deliveryWeeks: number }> = {
+  "bewerbung-25": { priceCents: 19900, applications: 25, deliveryWeeks: 4 },
+};
+
+export const BOOKING_STATUS = {
+  REQUESTED: "REQUESTED", // gebucht, Zahlung noch nicht möglich (kein Stripe-Konto hinterlegt)
+  PENDING_PAYMENT: "PENDING_PAYMENT", // Stripe-Checkout gestartet
+  PAID: "PAID",
+  IN_PROGRESS: "IN_PROGRESS",
+  DONE: "DONE",
+  CANCELLED: "CANCELLED",
+} as const;
+export type BookingStatus = (typeof BOOKING_STATUS)[keyof typeof BOOKING_STATUS];
+
+export const BOOKING_STATUS_LABEL: Record<BookingStatus, { de: string; color: string }> = {
+  REQUESTED: { de: "Angefragt", color: "bg-amber-100 text-amber-800" },
+  PENDING_PAYMENT: { de: "Zahlung offen", color: "bg-amber-100 text-amber-800" },
+  PAID: { de: "Bezahlt", color: "bg-blue-100 text-blue-800" },
+  IN_PROGRESS: { de: "In Arbeit", color: "bg-indigo-100 text-indigo-800" },
+  DONE: { de: "Abgeschlossen", color: "bg-emerald-100 text-emerald-800" },
+  CANCELLED: { de: "Storniert", color: "bg-slate-200 text-slate-700" },
+};
+
+export function formatPrice(cents: number, locale = "de") {
+  return new Intl.NumberFormat(locale === "ar" ? "ar-MA" : locale, { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(cents / 100);
+}
+
+// ---------- Texte der Angebotsseite (DE/FR/EN/AR; ES/RU/UK fallen auf EN zurück) ----------
+type Copy = {
+  badge: string; title: string; lead: string; priceNote: string; cta: string; ctaLogin: string;
+  includedTitle: string; included: string[];
+  stepsTitle: string; steps: { t: string; d: string }[];
+  goodTitle: string; good: string[];
+  faqTitle: string; faq: { q: string; a: string }[];
+  bookTitle: string; bookLead: string; phone: string; jobs: string; regions: string; notes: string;
+  terms: string; waiver: string; submit: string; submitNoPay: string; summary: string;
+  thanksTitle: string; thanksPaid: string; thanksRequested: string; toProfile: string;
+};
+
+export const SERVICE_COPY: Record<"de" | "fr" | "en" | "ar", Copy> = {
+  de: {
+    badge: "BEWERBUNGS-SERVICE",
+    title: "Wir bewerben dich: 25 Bewerbungen für 199 €",
+    lead: "Du willst in Deutschland arbeiten, aber Bewerbungen kosten dich Zeit und Nerven? Wir übernehmen das: von deinem Lebenslauf bis zum Versand von 25 passenden Bewerbungen.",
+    priceNote: "einmalig, kein Abo",
+    cta: "Jetzt buchen", ctaLogin: "Anmelden und buchen",
+    includedTitle: "Das ist enthalten",
+    included: [
+      "Persönliches Erstgespräch per Telefon, WhatsApp oder Video",
+      "Dein Lebenslauf nach deutschem Standard, auf Deutsch",
+      "Ein passendes Anschreiben für jede Stelle",
+      "Wir suchen 25 passende Stellen für dich",
+      "Wir verschicken alle 25 Bewerbungen in deinem Namen",
+      "Übersicht in deinem Profil: wann, an wen, welcher Stand",
+      "Hilfe bei Antworten und Einladungen zum Vorstellungsgespräch",
+    ],
+    stepsTitle: "So läuft es ab",
+    steps: [
+      { t: "Buchen", d: "Du buchst den Service in deinem WoYou-Profil und bezahlst sicher online." },
+      { t: "Erstgespräch", d: "Wir sprechen über deinen Beruf, deine Erfahrung und wo du arbeiten möchtest." },
+      { t: "Bewerbungen", d: "Wir erstellen deine Unterlagen und verschicken 25 Bewerbungen innerhalb von 4 Wochen." },
+      { t: "Antworten", d: "Du siehst jeden Stand in deinem Profil. Bei Rückmeldungen helfen wir dir weiter." },
+    ],
+    goodTitle: "Gut zu wissen",
+    good: [
+      "Wir können keine Zusage garantieren. Die Entscheidung trifft immer der Arbeitgeber.",
+      "Je besser dein Deutsch und je vollständiger dein Profil, desto mehr Stellen kommen in Frage.",
+      "Bitte lade deine Zeugnisse und Nachweise in deinem Profil hoch.",
+    ],
+    faqTitle: "Häufige Fragen",
+    faq: [
+      { q: "Kommen noch weitere Kosten dazu?", a: "Nein. Du zahlst einmalig 199 €. Es gibt kein Abo und keine versteckten Gebühren." },
+      { q: "Was ist, wenn es keine 25 passenden Stellen gibt?", a: "Dann melden wir uns bei dir und besprechen gemeinsam, wie wir die Suche erweitern." },
+      { q: "In welchen Berufen bewerbt ihr mich?", a: "In den Berufen, die du im Erstgespräch mit uns festlegst, passend zu deiner Ausbildung und Erfahrung." },
+      { q: "Wie bezahle ich?", a: "Sicher online mit Karte über unseren Zahlungsanbieter Stripe." },
+    ],
+    bookTitle: "Bewerbungs-Service buchen", bookLead: "Prüfe kurz deine Angaben. Im Erstgespräch klären wir alles Weitere.",
+    phone: "Telefon / WhatsApp für das Erstgespräch", jobs: "Gewünschte Berufe", regions: "Wunschregion in Deutschland (optional)", notes: "Was sollen wir noch wissen? (optional)",
+    terms: "Ich akzeptiere die AGB und habe die Datenschutzerklärung gelesen.",
+    waiver: "Ich möchte, dass WoYou sofort mit der Leistung beginnt. Mir ist bekannt, dass mein Widerrufsrecht erlischt, sobald die Leistung vollständig erbracht ist.",
+    submit: "Zahlungspflichtig buchen", submitNoPay: "Verbindlich anfragen", summary: "Bewerbungs-Service · 25 Bewerbungen",
+    thanksTitle: "Danke für deine Buchung!",
+    thanksPaid: "Deine Zahlung ist eingegangen. Wir melden uns in den nächsten 2 Werktagen für das Erstgespräch.",
+    thanksRequested: "Deine Anfrage ist bei uns. Wir melden uns in den nächsten 2 Werktagen und schicken dir den Zahlungslink.",
+    toProfile: "Zu meinem Profil",
+  },
+  fr: {
+    badge: "SERVICE CANDIDATURES",
+    title: "Nous postulons pour vous : 25 candidatures pour 199 €",
+    lead: "Vous voulez travailler en Allemagne, mais les candidatures vous prennent du temps et de l'énergie ? Nous nous en occupons : de votre CV jusqu'à l'envoi de 25 candidatures adaptées.",
+    priceNote: "paiement unique, sans abonnement",
+    cta: "Réserver maintenant", ctaLogin: "Se connecter et réserver",
+    includedTitle: "Ce qui est inclus",
+    included: [
+      "Un premier entretien personnel par téléphone, WhatsApp ou vidéo",
+      "Votre CV au format allemand, en allemand",
+      "Une lettre de motivation adaptée à chaque offre",
+      "Nous trouvons 25 offres qui vous correspondent",
+      "Nous envoyons les 25 candidatures en votre nom",
+      "Un suivi dans votre profil : quand, à qui, quel statut",
+      "De l'aide pour les réponses et les invitations à un entretien",
+    ],
+    stepsTitle: "Comment ça marche",
+    steps: [
+      { t: "Réserver", d: "Vous réservez le service dans votre profil WoYou et payez en ligne en toute sécurité." },
+      { t: "Premier entretien", d: "Nous parlons de votre métier, de votre expérience et de la région où vous voulez travailler." },
+      { t: "Candidatures", d: "Nous préparons vos documents et envoyons 25 candidatures en 4 semaines." },
+      { t: "Réponses", d: "Vous suivez chaque étape dans votre profil. Nous vous aidons pour la suite." },
+    ],
+    goodTitle: "Bon à savoir",
+    good: [
+      "Nous ne pouvons pas garantir une embauche. La décision appartient toujours à l'employeur.",
+      "Plus votre allemand est bon et votre profil complet, plus il y a d'offres possibles.",
+      "Merci de télécharger vos diplômes et attestations dans votre profil.",
+    ],
+    faqTitle: "Questions fréquentes",
+    faq: [
+      { q: "Y a-t-il d'autres frais ?", a: "Non. Vous payez 199 € une seule fois. Pas d'abonnement, pas de frais cachés." },
+      { q: "Et s'il n'y a pas 25 offres adaptées ?", a: "Nous vous contactons et décidons ensemble comment élargir la recherche." },
+      { q: "Pour quels métiers postulez-vous ?", a: "Pour les métiers que nous définissons ensemble lors du premier entretien, selon votre formation et votre expérience." },
+      { q: "Comment payer ?", a: "En ligne par carte, de façon sécurisée, via notre prestataire de paiement Stripe." },
+    ],
+    bookTitle: "Réserver le service candidatures", bookLead: "Vérifiez vos informations. Nous voyons le reste lors du premier entretien.",
+    phone: "Téléphone / WhatsApp pour le premier entretien", jobs: "Métiers souhaités", regions: "Région souhaitée en Allemagne (facultatif)", notes: "Autre chose à nous dire ? (facultatif)",
+    terms: "J'accepte les CGV et j'ai lu la politique de confidentialité.",
+    waiver: "Je souhaite que WoYou commence la prestation immédiatement. Je sais que mon droit de rétractation prend fin dès que la prestation est entièrement réalisée.",
+    submit: "Réserver avec obligation de paiement", submitNoPay: "Envoyer la demande", summary: "Service candidatures · 25 candidatures",
+    thanksTitle: "Merci pour votre réservation !",
+    thanksPaid: "Votre paiement est bien reçu. Nous vous contactons dans les 2 jours ouvrés pour le premier entretien.",
+    thanksRequested: "Votre demande est bien reçue. Nous vous contactons dans les 2 jours ouvrés et vous envoyons le lien de paiement.",
+    toProfile: "Vers mon profil",
+  },
+  en: {
+    badge: "APPLICATION SERVICE",
+    title: "We apply for you: 25 applications for €199",
+    lead: "You want to work in Germany, but applying takes time and energy? We handle it for you: from your CV to sending 25 matching applications.",
+    priceNote: "one-time, no subscription",
+    cta: "Book now", ctaLogin: "Log in and book",
+    includedTitle: "What's included",
+    included: [
+      "Personal first call by phone, WhatsApp or video",
+      "Your CV in German format, in German",
+      "A matching cover letter for every job",
+      "We find 25 jobs that fit you",
+      "We send all 25 applications in your name",
+      "Overview in your profile: when, to whom, which status",
+      "Help with replies and interview invitations",
+    ],
+    stepsTitle: "How it works",
+    steps: [
+      { t: "Book", d: "Book the service in your WoYou profile and pay securely online." },
+      { t: "First call", d: "We talk about your job, your experience and where you want to work." },
+      { t: "Applications", d: "We prepare your documents and send 25 applications within 4 weeks." },
+      { t: "Replies", d: "You see every step in your profile. We help you with the next steps." },
+    ],
+    goodTitle: "Good to know",
+    good: [
+      "We cannot guarantee a job offer. The employer always decides.",
+      "The better your German and the more complete your profile, the more jobs are possible.",
+      "Please upload your certificates and documents to your profile.",
+    ],
+    faqTitle: "FAQ",
+    faq: [
+      { q: "Are there any extra costs?", a: "No. You pay €199 once. No subscription, no hidden fees." },
+      { q: "What if there are not 25 matching jobs?", a: "We contact you and decide together how to widen the search." },
+      { q: "For which jobs do you apply?", a: "For the jobs we agree on in the first call, based on your training and experience." },
+      { q: "How do I pay?", a: "Securely online by card through our payment provider Stripe." },
+    ],
+    bookTitle: "Book the application service", bookLead: "Please check your details. We clarify everything else in the first call.",
+    phone: "Phone / WhatsApp for the first call", jobs: "Desired jobs", regions: "Preferred region in Germany (optional)", notes: "Anything else we should know? (optional)",
+    terms: "I accept the terms and conditions and have read the privacy policy.",
+    waiver: "I want WoYou to start the service immediately. I know that my right of withdrawal ends once the service has been fully provided.",
+    submit: "Book with obligation to pay", submitNoPay: "Send request", summary: "Application service · 25 applications",
+    thanksTitle: "Thank you for your booking!",
+    thanksPaid: "We received your payment. We will contact you within 2 working days for the first call.",
+    thanksRequested: "We received your request. We will contact you within 2 working days and send you the payment link.",
+    toProfile: "Go to my profile",
+  },
+  ar: {
+    badge: "خدمة التقديم",
+    title: "نقدّم طلباتك عنك: 25 طلب توظيف مقابل 199 €",
+    lead: "تريد العمل في ألمانيا، لكن طلبات التوظيف تأخذ منك الكثير من الوقت والجهد؟ نحن نتكفّل بذلك: من سيرتك الذاتية حتى إرسال 25 طلبًا مناسبًا.",
+    priceNote: "دفعة واحدة، بدون اشتراك",
+    cta: "احجز الآن", ctaLogin: "سجّل الدخول واحجز",
+    includedTitle: "ما يشمله العرض",
+    included: [
+      "مكالمة أولى شخصية عبر الهاتف أو واتساب أو الفيديو",
+      "سيرتك الذاتية بالنموذج الألماني وباللغة الألمانية",
+      "رسالة تحفيزية مناسبة لكل وظيفة",
+      "نبحث لك عن 25 وظيفة مناسبة",
+      "نرسل الطلبات الـ25 باسمك",
+      "متابعة في ملفك الشخصي: متى، لمن، وما هي الحالة",
+      "مساعدة في الردود ودعوات المقابلات",
+    ],
+    stepsTitle: "كيف تسير العملية",
+    steps: [
+      { t: "الحجز", d: "تحجز الخدمة من ملفك في WoYou وتدفع عبر الإنترنت بأمان." },
+      { t: "المكالمة الأولى", d: "نتحدث عن مهنتك وخبرتك والمكان الذي تريد العمل فيه." },
+      { t: "الطلبات", d: "نجهّز ملفاتك ونرسل 25 طلبًا خلال 4 أسابيع." },
+      { t: "الردود", d: "ترى كل مرحلة في ملفك الشخصي، ونساعدك في الخطوات التالية." },
+    ],
+    goodTitle: "معلومات مهمة",
+    good: [
+      "لا يمكننا ضمان القبول، فالقرار دائمًا لصاحب العمل.",
+      "كلما كانت لغتك الألمانية أفضل وملفك مكتملًا، زادت الوظائف المناسبة.",
+      "يرجى رفع شهاداتك ووثائقك في ملفك الشخصي.",
+    ],
+    faqTitle: "أسئلة شائعة",
+    faq: [
+      { q: "هل هناك تكاليف إضافية؟", a: "لا. تدفع 199 € مرة واحدة فقط، بدون اشتراك أو رسوم مخفية." },
+      { q: "ماذا لو لم توجد 25 وظيفة مناسبة؟", a: "نتواصل معك ونقرر معًا كيف نوسّع البحث." },
+      { q: "في أي مهن تقدّمون عني؟", a: "في المهن التي نحددها معًا في المكالمة الأولى حسب تكوينك وخبرتك." },
+      { q: "كيف أدفع؟", a: "عبر الإنترنت بالبطاقة وبشكل آمن من خلال مزوّد الدفع Stripe." },
+    ],
+    bookTitle: "حجز خدمة التقديم", bookLead: "تحقّق من بياناتك. نوضح الباقي في المكالمة الأولى.",
+    phone: "الهاتف / واتساب للمكالمة الأولى", jobs: "المهن المرغوبة", regions: "المنطقة المفضلة في ألمانيا (اختياري)", notes: "هل هناك شيء آخر يجب أن نعرفه؟ (اختياري)",
+    terms: "أوافق على الشروط العامة وقرأت سياسة الخصوصية.",
+    waiver: "أريد أن تبدأ WoYou الخدمة فورًا. أعلم أن حقي في الانسحاب ينتهي بمجرد تقديم الخدمة بالكامل.",
+    submit: "احجز مع الالتزام بالدفع", submitNoPay: "أرسل الطلب", summary: "خدمة التقديم · 25 طلبًا",
+    thanksTitle: "شكرًا على حجزك!",
+    thanksPaid: "وصلنا دفعك. سنتواصل معك خلال يومي عمل للمكالمة الأولى.",
+    thanksRequested: "وصلنا طلبك. سنتواصل معك خلال يومي عمل ونرسل لك رابط الدفع.",
+    toProfile: "إلى ملفي الشخصي",
+  },
+};
+
+export function serviceCopy(locale: string): Copy {
+  if (locale === "de" || locale === "fr" || locale === "ar") return SERVICE_COPY[locale];
+  return SERVICE_COPY.en;
+}

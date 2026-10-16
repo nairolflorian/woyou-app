@@ -1,5 +1,6 @@
 const ru: Record<string, string> = {
   "nav.bewerber": "Соискателям",
+  "nav.service": "Сервис откликов",
   "nav.arbeitgeber": "Работодателям",
   "nav.so_funktioniert": "Как это работает",
   "nav.berufe": "Профессии",

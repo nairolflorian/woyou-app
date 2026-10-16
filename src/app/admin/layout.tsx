@@ -36,6 +36,7 @@ export default async function AdminLayout({
                 <Link href="/admin/matching" className="btn-ghost justify-start">🎯 Matching</Link>
                 <Link href="/admin/chats" className="btn-ghost justify-start">💬 Chats</Link>
                 <Link href="/admin/aufgaben" className="btn-ghost justify-start">✅ Aufgaben</Link>
+                <Link href="/admin/buchungen" className="btn-ghost justify-start">🧾 Buchungen</Link>
                 <Link href="/admin/audit" className="btn-ghost justify-start">📜 Audit-Log</Link>
                 {session.role === ROLE.SUPER_ADMIN && (
                   <>

@@ -20,6 +20,7 @@ export async function SiteHeader() {
 
   const navItems = [
     { href: "/bewerber", label: t("nav.bewerber") },
+    { href: "/bewerbungsservice", label: t("nav.service") },
     { href: "/arbeitgeber", label: t("nav.arbeitgeber") },
     { href: "/#prozess", label: t("nav.so_funktioniert") },
   ];

@@ -7,6 +7,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const routes = [
     "",
     "/bewerber",
+    "/bewerbungsservice",
     "/arbeitgeber",
     "/registrierung",
     "/registrierung/telegram",

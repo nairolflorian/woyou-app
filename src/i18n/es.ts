@@ -1,5 +1,6 @@
 const es: Record<string, string> = {
   "nav.bewerber": "Para candidatos",
+  "nav.service": "Servicio de candidaturas",
   "nav.arbeitgeber": "Para empresas",
   "nav.so_funktioniert": "Cómo funciona",
   "nav.berufe": "Profesiones",

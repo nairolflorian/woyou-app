@@ -14,6 +14,7 @@ import { APP_CONFIG, formatFee } from "@/lib/config";
 import { getT } from "@/lib/i18n";
 import { jobLabel } from "@/lib/jobs";
 import { UnlockButton } from "@/components/UnlockButton";
+import { serviceCopy, formatPrice, SERVICES, BOOKING_STATUS_LABEL, type BookingStatus } from "@/lib/services";
 import { ConsentButtons } from "@/components/ConsentButtons";
 import { DocumentUpload } from "@/components/DocumentUpload";
 import { AccountControls } from "@/components/AccountControls";
@@ -49,6 +50,8 @@ export default async function CandidateDashboardPage() {
   const statusLabel =
     (labelInfo as Record<string, string>)[locale] ?? labelInfo.de;
   const fee = formatFee(locale);
+  const booking = await prisma.serviceBooking.findFirst({ where: { candidateId: candidate.id, status: { not: "CANCELLED" } }, orderBy: { createdAt: "desc" } });
+  const sc = serviceCopy(locale);
 
   const consentRequired = candidate.matches.filter(
     (m) => m.status === MATCH_STATUS.AWAITING_CANDIDATE_CONSENT
@@ -171,6 +174,26 @@ export default async function CandidateDashboardPage() {
                 </p>
               </div>
             )}
+
+          {/* BEWERBUNGS-SERVICE */}
+          {booking ? (
+            <div className="mt-8 card">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <h2 className="font-semibold">{sc.summary}</h2>
+                <span className={`rounded-full px-3 py-1 text-xs font-semibold ${BOOKING_STATUS_LABEL[booking.status as BookingStatus]?.color ?? ""}`}>{BOOKING_STATUS_LABEL[booking.status as BookingStatus]?.de ?? booking.status}</span>
+              </div>
+              <div className="mt-3 flex justify-between text-sm"><span>{booking.applicationsSent} / {booking.applicationsGoal}</span></div>
+              <div className="mt-1 h-2 rounded bg-slate-100 overflow-hidden"><div className="h-full bg-[color:var(--color-brand)]" style={{ width: `${Math.min(100, Math.round((booking.applicationsSent / booking.applicationsGoal) * 100))}%` }} /></div>
+            </div>
+          ) : (
+            <div className="mt-8 card flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <h2 className="font-semibold">{sc.title}</h2>
+                <p className="mt-1 text-sm text-[color:var(--color-ink-soft)]">{sc.lead}</p>
+              </div>
+              <Link href="/bewerbungsservice" className="btn-primary">{sc.cta} · {formatPrice(SERVICES["bewerbung-25"].priceCents, locale)}</Link>
+            </div>
+          )}
 
           {/* CONSENT REQUIRED */}
           {consentRequired.length > 0 && (

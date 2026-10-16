@@ -109,6 +109,7 @@ model Candidate {
   conversations       Conversation[]
   testAnswers         LanguageTestAnswer[]
   tasks               AdminTask[]
+  bookings            ServiceBooking[]
 }
 
 model LanguageTestAnswer {
@@ -318,4 +319,46 @@ model AuditLog {
   @@index([candidateId, createdAt])
   @@index([companyId, createdAt])
   @@index([action, createdAt])
+}
+
+// Buchung eines Zusatz-Services (z. B. Bewerbungs-Service 25 Bewerbungen).
+// Ablauf: REQUESTED (ohne Stripe) bzw. PENDING_PAYMENT → PAID → IN_PROGRESS → DONE | CANCELLED
+model ServiceBooking {
+  id               String    @id @default(cuid())
+  candidateId      String
+  candidate        Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  packageKey       String    // siehe src/lib/services.ts
+  amountCents      Int
+  currency         String    @default("eur")
+  status           String    @default("REQUESTED")
+  contactPhone     String?
+  targetJobs       String?
+  targetRegions    String?
+  notes            String?
+  acceptedTermsAt  DateTime
+  waiverAcceptedAt DateTime? // Zustimmung zum vorzeitigen Leistungsbeginn (Widerrufsrecht)
+  stripeSessionId  String?   @unique
+  paidAt           DateTime?
+  applicationsSent Int       @default(0)
+  applicationsGoal Int       @default(25)
+  adminNote        String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@index([status, createdAt])
+  @@index([candidateId])
+}
+
+// Protokoll aller ausgehenden Mails – auch wenn (noch) kein SMTP konfiguriert ist.
+model EmailLog {
+  id        String   @id @default(cuid())
+  to        String
+  subject   String
+  template  String
+  status    String   // SENT | SKIPPED | FAILED
+  error     String?
+  bookingId String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
 }
