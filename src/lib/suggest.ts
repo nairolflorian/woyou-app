@@ -42,14 +42,25 @@ function candidateGerman(d: ProfileData): string | null {
   return null;
 }
 
-// Abschnitt aus dem Freitext, z. B. „Ihre Aufgaben“ oder „Ihr Profil“
-function section(text: string, heads: RegExp, max = 420) {
-  const m = text.match(heads);
-  if (!m || m.index === undefined) return undefined;
-  const rest = text.slice(m.index + m[0].length).replace(/^[\s:–-]+/, "");
-  const stop = rest.search(/\n\s*(ihr profil|ihre qualifikation|anforderungen|wir bieten|das bieten wir|unser angebot|was wir bieten|ihre aufgaben|aufgaben|kontakt|haben wir ihr interesse)\b/i);
-  const out = (stop > 0 ? rest.slice(0, stop) : rest).replace(/\n{2,}/g, "\n").trim();
-  return out ? (out.length > max ? out.slice(0, max).replace(/\s\S*$/, "") + " …" : out) : undefined;
+// Abschnitte aus dem Freitext („Ihre Aufgaben“, „Ihr Profil“): Überschrift ist eine kurze eigene Zeile,
+// der Abschnitt endet an der nächsten Überschrift
+const TASKS = /(aufgaben|aufgabengebiet|tätigkeit|stellenbeschreibung|verantwortlich für|das erwartet (sie|dich)|was (sie|dich|du) erwartet)/i;
+const REQS = /(bringst du mit|bringen sie\b.*\bmit|anforderung|(ihr|dein|ideales) profil|qualifikation|voraussetzung|sie für uns|kompetenzen|wichtig sind uns|wir erwarten|was wir uns wünschen)/i;
+const OTHER = /(wir bieten|bieten wir|wir für sie|unser angebot|vorteile|benefits|kontakt|ansprechpartner|über uns|wer wir sind|bewerb|arbeitsort|einsatzort|standort|arbeitszeit|gehalt|einarbeitung)/i;
+const clean = (l: string) => l.replace(/\*\*|__|#+/g, "").trim();
+const isHeading = (l: string) => { const c = clean(l); return c.length > 2 && c.length < 70 && !/^[-•*·–]/.test(l.trim()) && (/:$/.test(c) || TASKS.test(c) || REQS.test(c) || OTHER.test(c)) && !/^(unser|über)/i.test(c); };
+
+function sections(text: string) {
+  const lines = text.split("\n");
+  const grab = (re: RegExp) => {
+    const i = lines.findIndex((l) => isHeading(l) && re.test(clean(l)) && !(re === TASKS && OTHER.test(clean(l))));
+    if (i < 0) return undefined;
+    const out: string[] = [];
+    for (const l of lines.slice(i + 1)) { if (isHeading(l) && out.length) break; const c = clean(l); if (c) out.push(c); }
+    const t = out.join("\n");
+    return t ? (t.length > 450 ? t.slice(0, 450).replace(/\s\S*$/, "") + " …" : t) : undefined;
+  };
+  return { tasks: grab(TASKS), requirements: grab(REQS) };
 }
 
 type Scored = { job: BaJob; score: number; notes: string[]; description?: string; email?: string | null; meta: SuggestMeta };
@@ -157,7 +168,7 @@ export async function suggestJobs(bookingId: string): Promise<{ added: number; s
     return {
       job, score: Math.min(100, p), notes: n, description: text || undefined, email,
       meta: { distanceKm: job.distanceKm, fulltime: job.fulltime, parttime: job.parttime, salary: job.salary, publishedAt: job.publishedAt, startAt: job.startAt, externalUrl: job.externalUrl, germanRequired: req,
-        tasks: section(text, /(ihre aufgaben|ihr aufgabengebiet|aufgaben|das erwartet sie|tätigkeiten)\s*:?/i), requirements: section(text, /(ihr profil|ihre qualifikationen?|anforderungen|das bringen sie mit|wir erwarten|was sie mitbringen)\s*:?/i) },
+        ...sections(text) },
     };
   });
 
