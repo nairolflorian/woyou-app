@@ -38,7 +38,7 @@ type Copy = {
   goodTitle: string; good: string[];
   faqTitle: string; faq: { q: string; a: string }[];
   bookTitle: string; bookLead: string; phone: string; jobs: string; regions: string; notes: string;
-  terms: string; waiver: string; submit: string; submitNoPay: string; summary: string;
+  terms: string; waiver: string; consent: string; submit: string; submitNoPay: string; summary: string;
   thanksTitle: string; thanksPaid: string; thanksRequested: string; toProfile: string;
 };
 
@@ -83,6 +83,7 @@ export const SERVICE_COPY: Record<"de" | "fr" | "en" | "ar", Copy> = {
     phone: "Telefon / WhatsApp für das Erstgespräch", jobs: "Gewünschte Berufe", regions: "Wunschregion in Deutschland (optional)", notes: "Was sollen wir noch wissen? (optional)",
     terms: "Ich akzeptiere die AGB und habe die Datenschutzerklärung gelesen.",
     waiver: "Ich möchte, dass WoYou sofort mit der Leistung beginnt. Mir ist bekannt, dass mein Widerrufsrecht erlischt, sobald die Leistung vollständig erbracht ist.",
+    consent: "Ich bevollmächtige WoYou, in meinem Namen Bewerbungen per E-Mail an Arbeitgeber zu senden. Ich bekomme von jeder Bewerbung eine Kopie.",
     submit: "Zahlungspflichtig buchen", submitNoPay: "Verbindlich anfragen", summary: "Bewerbungs-Service · 25 Bewerbungen",
     thanksTitle: "Danke für deine Buchung!",
     thanksPaid: "Deine Zahlung ist eingegangen. Wir melden uns in den nächsten 2 Werktagen für das Erstgespräch.",
@@ -129,6 +130,7 @@ export const SERVICE_COPY: Record<"de" | "fr" | "en" | "ar", Copy> = {
     phone: "Téléphone / WhatsApp pour le premier entretien", jobs: "Métiers souhaités", regions: "Région souhaitée en Allemagne (facultatif)", notes: "Autre chose à nous dire ? (facultatif)",
     terms: "J'accepte les CGV et j'ai lu la politique de confidentialité.",
     waiver: "Je souhaite que WoYou commence la prestation immédiatement. Je sais que mon droit de rétractation prend fin dès que la prestation est entièrement réalisée.",
+    consent: "J'autorise WoYou à envoyer des candidatures par e-mail aux employeurs en mon nom. Je reçois une copie de chaque candidature.",
     submit: "Réserver avec obligation de paiement", submitNoPay: "Envoyer la demande", summary: "Service candidatures · 25 candidatures",
     thanksTitle: "Merci pour votre réservation !",
     thanksPaid: "Votre paiement est bien reçu. Nous vous contactons dans les 2 jours ouvrés pour le premier entretien.",
@@ -175,6 +177,7 @@ export const SERVICE_COPY: Record<"de" | "fr" | "en" | "ar", Copy> = {
     phone: "Phone / WhatsApp for the first call", jobs: "Desired jobs", regions: "Preferred region in Germany (optional)", notes: "Anything else we should know? (optional)",
     terms: "I accept the terms and conditions and have read the privacy policy.",
     waiver: "I want WoYou to start the service immediately. I know that my right of withdrawal ends once the service has been fully provided.",
+    consent: "I authorise WoYou to send applications to employers by email in my name. I receive a copy of every application.",
     submit: "Book with obligation to pay", submitNoPay: "Send request", summary: "Application service · 25 applications",
     thanksTitle: "Thank you for your booking!",
     thanksPaid: "We received your payment. We will contact you within 2 working days for the first call.",
@@ -221,6 +224,7 @@ export const SERVICE_COPY: Record<"de" | "fr" | "en" | "ar", Copy> = {
     phone: "الهاتف / واتساب للمكالمة الأولى", jobs: "المهن المرغوبة", regions: "المنطقة المفضلة في ألمانيا (اختياري)", notes: "هل هناك شيء آخر يجب أن نعرفه؟ (اختياري)",
     terms: "أوافق على الشروط العامة وقرأت سياسة الخصوصية.",
     waiver: "أريد أن تبدأ WoYou الخدمة فورًا. أعلم أن حقي في الانسحاب ينتهي بمجرد تقديم الخدمة بالكامل.",
+    consent: "أفوّض WoYou بإرسال طلبات التوظيف باسمي إلى أصحاب العمل عبر البريد الإلكتروني. أتلقى نسخة من كل طلب.",
     submit: "احجز مع الالتزام بالدفع", submitNoPay: "أرسل الطلب", summary: "خدمة التقديم · 25 طلبًا",
     thanksTitle: "شكرًا على حجزك!",
     thanksPaid: "وصلنا دفعك. سنتواصل معك خلال يومي عمل للمكالمة الأولى.",

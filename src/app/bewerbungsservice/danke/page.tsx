@@ -40,7 +40,8 @@ export default async function BookingThanksPage(props: { searchParams: Promise<{
           <div className="text-6xl">{paid ? "🎉" : "📨"}</div>
           <h1 className="mt-4 text-3xl font-bold">{c.thanksTitle}</h1>
           <p className="mt-3 text-[color:var(--color-ink-soft)]">{paid ? c.thanksPaid : c.thanksRequested}</p>
-          <Link href="/profil" className="btn-primary mt-8 inline-flex">{c.toProfile}</Link>
+          <p className="mt-6 text-[color:var(--color-ink-soft)]">Du kannst direkt mit deiner Bewerbungsmappe anfangen: Lebenslauf hochladen oder Angaben ausfüllen.</p>
+          <Link href="/bewerbungsmappe" className="btn-primary mt-4 inline-flex">Zur Bewerbungsmappe</Link>
         </div>
       </main>
       <SiteFooter />

@@ -342,11 +342,60 @@ model ServiceBooking {
   applicationsSent Int       @default(0)
   applicationsGoal Int       @default(25)
   adminNote        String?
+  consentSendAt    DateTime? // Vollmacht: Bewerbungen im Namen des Kunden versenden
+  aliasLocal       String?   @unique // z. B. "fatima.benali" → fatima.benali@<MAIL_ALIAS_DOMAIN>
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
 
+  profile          ApplicationProfile?
+  leads            JobLead[]
+
   @@index([status, createdAt])
   @@index([candidateId])
+}
+
+// Bewerbungsmappe: alle Angaben für Lebenslauf und Anschreiben (Abschnitte als JSON)
+model ApplicationProfile {
+  id           String         @id @default(cuid())
+  bookingId    String         @unique
+  booking      ServiceBooking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  data         String         // JSON, siehe src/lib/application.ts
+  photoFile    String?        // Dateiname im Kandidaten-Upload-Ordner
+  ownCvFile    String?        // eigener, hochgeladener Lebenslauf (PDF) im Kandidaten-Upload-Ordner
+  useOwnCv     Boolean        @default(false) // beim Versand eigenen statt erzeugten Lebenslauf anhängen
+  baseLetter   String?        // Grund-Anschreiben (Bearbeiter passt je Stelle an)
+  status       String         @default("DRAFT") // DRAFT | SUBMITTED | APPROVED
+  submittedAt  DateTime?
+  approvedAt   DateTime?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+}
+
+// Stelle, auf die für eine Buchung beworben wird (Vorschlag → ausgewählt → verschickt)
+model JobLead {
+  id            String         @id @default(cuid())
+  bookingId     String
+  booking       ServiceBooking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  source        String         @default("BA") // BA | MANUAL
+  sourceRef     String?        // Referenznummer der Quelle
+  title         String
+  company       String
+  city          String?
+  url           String?        // Link zur Ausschreibung
+  applyUrl      String?        // externer Bewerbungslink der Firma
+  email         String?        // Bewerbungs-E-Mail (vom Bearbeiter geprüft)
+  contactName   String?
+  description   String?
+  coverLetter   String?
+  status        String         @default("SELECTED") // SELECTED | READY | SENT | APPLIED_MANUALLY | DISCARDED
+  sentAt        DateTime?
+  response      String?        // Rückmeldung der Firma (Notiz / eingehende Mail)
+  respondedAt   DateTime?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@unique([bookingId, source, sourceRef])
+  @@index([bookingId, status])
 }
 
 // Protokoll aller ausgehenden Mails – auch wenn (noch) kein SMTP konfiguriert ist.

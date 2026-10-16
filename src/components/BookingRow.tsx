@@ -31,7 +31,7 @@ export function BookingRow(p: Props) {
     <div className="card space-y-3">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <Link href={`/admin/kandidaten/${p.candidateId}`} className="font-semibold text-[color:var(--color-brand)]">{p.candidateName}</Link>
+          <Link href={`/admin/buchungen/${p.id}`} className="font-semibold text-[color:var(--color-brand)]">{p.candidateName} → Bearbeiten</Link>
           <div className="text-xs text-[color:var(--color-ink-soft)]">{p.email ?? "–"} · {p.phone ?? "–"}</div>
           <div className="text-xs text-[color:var(--color-ink-soft)]">Gebucht {p.createdAt}{p.paidAt ? ` · bezahlt ${p.paidAt}` : ""} · {p.price}</div>
         </div>

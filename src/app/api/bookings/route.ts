@@ -15,6 +15,7 @@ const Body = z.object({
   notes: z.string().trim().max(1000).optional().nullable(),
   acceptTerms: z.literal(true),
   acceptWaiver: z.literal(true),
+  acceptConsent: z.literal(true),
 });
 
 export async function POST(req: Request) {
@@ -24,7 +25,7 @@ export async function POST(req: Request) {
   if (!rl.ok) return NextResponse.json({ error: "Zu viele Versuche. Bitte später erneut." }, { status: 429 });
 
   const parsed = Body.safeParse(await req.json().catch(() => ({})));
-  if (!parsed.success) return NextResponse.json({ error: "Bitte alle Pflichtfelder ausfüllen und beide Häkchen setzen." }, { status: 400 });
+  if (!parsed.success) return NextResponse.json({ error: "Bitte alle Pflichtfelder ausfüllen und alle Häkchen setzen." }, { status: 400 });
   const d = parsed.data;
 
   const candidate = await prisma.candidate.findUnique({ where: { userId: session.userId } });
@@ -51,6 +52,7 @@ export async function POST(req: Request) {
       notes: d.notes || null,
       acceptedTermsAt: now,
       waiverAcceptedAt: now,
+      consentSendAt: now,
       status: BOOKING_STATUS.REQUESTED,
     },
   });

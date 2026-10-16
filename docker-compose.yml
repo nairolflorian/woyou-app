@@ -60,6 +60,11 @@ services:
       SMTP_PASS: ${SMTP_PASS:-}
       MAIL_FROM: ${MAIL_FROM:-WoYou <no-reply@woyou.de>}
       MAIL_TEAM: ${MAIL_TEAM:-}
+      MAIL_ALIAS_DOMAIN: ${MAIL_ALIAS_DOMAIN:-}
+      MAIL_INBOUND_TOKEN: ${MAIL_INBOUND_TOKEN:-}
+      AI_PROVIDER: ${AI_PROVIDER:-}
+      AI_API_KEY: ${AI_API_KEY:-}
+      AI_MODEL: ${AI_MODEL:-}
     volumes:
       - woyou_uploads:/app/uploads
     ports:

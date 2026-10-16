@@ -42,7 +42,9 @@ export function layout(title: string, paragraphs: string[], button?: { label: st
   </div></body></html>`;
 }
 
-export async function sendMail(opts: { to: string; subject: string; html: string; text: string; template: string; bookingId?: string }) {
+export type Attachment = { filename: string; content: Buffer; contentType?: string };
+
+export async function sendMail(opts: { to: string; subject: string; html: string; text: string; template: string; bookingId?: string; from?: string; replyTo?: string; bcc?: string; attachments?: Attachment[] }) {
   const t = getTransport();
   if (!opts.to) return { status: "SKIPPED" as const };
   if (!t) {
@@ -51,7 +53,7 @@ export async function sendMail(opts: { to: string; subject: string; html: string
     return { status: "SKIPPED" as const };
   }
   try {
-    await t.sendMail({ from: process.env.MAIL_FROM || "WoYou <no-reply@woyou.de>", to: opts.to, subject: opts.subject, html: opts.html, text: opts.text });
+    await t.sendMail({ from: opts.from || process.env.MAIL_FROM || "WoYou <no-reply@woyou.de>", to: opts.to, replyTo: opts.replyTo, bcc: opts.bcc, subject: opts.subject, html: opts.html, text: opts.text, attachments: opts.attachments });
     await prisma.emailLog.create({ data: { to: opts.to, subject: opts.subject, template: opts.template, status: "SENT", bookingId: opts.bookingId } }).catch(() => {});
     return { status: "SENT" as const };
   } catch (e) {

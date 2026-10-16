@@ -52,7 +52,7 @@ export default async function BookServicePage(props: { searchParams: Promise<{ a
             </div>
           ) : (
             <BookingForm
-              copy={{ phone: c.phone, jobs: c.jobs, regions: c.regions, notes: c.notes, terms: c.terms, waiver: c.waiver, submit: getStripe() ? c.submit : c.submitNoPay }}
+              copy={{ phone: c.phone, jobs: c.jobs, regions: c.regions, notes: c.notes, terms: c.terms, waiver: c.waiver, consent: c.consent, submit: getStripe() ? c.submit : c.submitNoPay }}
               defaults={{ phone: candidate.whatsappNumber || "", jobs: candidate.desiredJobTitle || "", regions: "" }}
             />
           )}

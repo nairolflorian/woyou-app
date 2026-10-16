@@ -184,6 +184,7 @@ export default async function CandidateDashboardPage() {
               </div>
               <div className="mt-3 flex justify-between text-sm"><span>{booking.applicationsSent} / {booking.applicationsGoal}</span></div>
               <div className="mt-1 h-2 rounded bg-slate-100 overflow-hidden"><div className="h-full bg-[color:var(--color-brand)]" style={{ width: `${Math.min(100, Math.round((booking.applicationsSent / booking.applicationsGoal) * 100))}%` }} /></div>
+              <Link href="/bewerbungsmappe" className="btn-primary mt-4 inline-flex">Meine Bewerbungsmappe</Link>
             </div>
           ) : (
             <div className="mt-8 card flex flex-wrap items-center justify-between gap-4">
