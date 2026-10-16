@@ -4,6 +4,8 @@ import { BOOKING_STATUS, BOOKING_STATUS_LABEL, formatPrice } from "@/lib/service
 import { mailEnabled } from "@/lib/mail";
 import { getStripe } from "@/lib/stripe";
 import { monthlyReport } from "@/lib/report";
+import { getSession } from "@/lib/session";
+import { isAdmin } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 const d = (x: Date | null) => (x ? x.toLocaleDateString("de-DE") : "");
@@ -13,7 +15,8 @@ export default async function AdminBookingsPage() {
   const mails = await prisma.emailLog.findMany({ orderBy: { createdAt: "desc" }, take: 20 });
   const count = (s: string) => bookings.filter((b) => b.status === s).length;
   const revenue = bookings.filter((b) => b.paidAt).reduce((s, b) => s + b.amountCents, 0);
-  const report = await monthlyReport(6);
+  const admin = isAdmin((await getSession()).role);
+  const report = admin ? await monthlyReport(6) : [];
 
   return (
     <div className="space-y-6">
@@ -29,6 +32,7 @@ export default async function AdminBookingsPage() {
           <div key={s} className="card"><div className="text-2xl font-bold">{count(s)}</div><div className="text-xs text-[color:var(--color-ink-soft)]">{BOOKING_STATUS_LABEL[s].de}</div></div>
         ))}
       </div>
+      {admin && (<>
       <div className="text-sm">Umsatz bezahlt: <strong>{formatPrice(revenue)}</strong></div>
       <div className="card overflow-x-auto">
         <div className="flex flex-wrap items-center justify-between gap-2">
@@ -44,6 +48,7 @@ export default async function AdminBookingsPage() {
         </table>
         <p className="mt-2 text-xs text-[color:var(--color-ink-soft)]">Buchungsquote = Buchungen des Bewerbungs-Service je neue Registrierung im Monat. Demo-Zahlungen zählen nicht als Umsatz.</p>
       </div>
+      </>)}
       {bookings.length === 0 && <div className="card text-sm text-[color:var(--color-ink-soft)]">Noch keine Buchungen.</div>}
       <div className="space-y-4">
         {bookings.map((b) => (
