@@ -8,7 +8,7 @@ import { ROLE } from "@/lib/enums";
 import { SERVICES, serviceCopy, formatPrice } from "@/lib/services";
 
 export const metadata: Metadata = {
-  title: "Bewerbungs-Service: 25 Bewerbungen für 199 € | WoYou",
+  title: "Bewerbungs-Service: 25 Bewerbungen für 199 €",
   description: "Wir erstellen deinen Lebenslauf nach deutschem Standard und verschicken 25 passende Bewerbungen in deinem Namen. Einmalig 199 €.",
 };
 

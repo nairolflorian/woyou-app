@@ -33,7 +33,8 @@ async function loginAndRedirect(req: Request, email: string) {
   if (wantsJson) {
     return NextResponse.json({ ok: true, next: acc.next, account: acc });
   }
-  return NextResponse.redirect(new URL(acc.next, req.url));
+  // Relativer Location-Header: hinter dem Proxy kennt req.url nur die interne Adresse (0.0.0.0:3000)
+  return new NextResponse(null, { status: 303, headers: { Location: acc.next } });
 }
 
 export async function GET(req: Request) {
