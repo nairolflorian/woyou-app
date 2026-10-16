@@ -34,6 +34,7 @@ export default async function AdminBookingsPage() {
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="font-semibold">Monatsreport</h2>
           <a href="/api/admin/report" className="btn-outline py-1">CSV (12 Monate)</a>
+          <a href="/api/admin/bookings/export" className="btn-outline py-1">Kunden und Buchungen (CSV)</a>
         </div>
         <table className="mt-3 w-full text-sm">
           <thead><tr className="text-left text-xs text-[color:var(--color-ink-soft)]"><th className="py-1">Monat</th><th>Registrierungen</th><th>Buchungen</th><th>bezahlt</th><th>Umsatz Service</th><th>Mappen</th><th>Bewerbungen</th><th>Antworten</th><th>Buchungsquote</th></tr></thead>
