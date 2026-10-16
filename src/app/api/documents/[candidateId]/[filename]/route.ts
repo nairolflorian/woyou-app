@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { ROLE, MATCH_STATUS } from "@/lib/enums";
-import { isAdmin } from "@/lib/auth";
+import { isStaff } from "@/lib/auth";
 import { readUpload, parseDocs } from "@/lib/uploads";
 
 export const runtime = "nodejs";
@@ -24,7 +24,7 @@ export async function GET(
   if (!candidate) return NextResponse.json({ error: "NOT_FOUND" }, { status: 404 });
 
   const isOwner = candidate.userId === session.userId;
-  const isAdminUser = isAdmin(session.role);
+  const isAdminUser = isStaff(session.role);
   let isAllowedCompany = false;
   const ACTIVE: string[] = [
     MATCH_STATUS.SHARED_WITH_COMPANY,

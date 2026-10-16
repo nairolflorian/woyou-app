@@ -110,6 +110,9 @@ model Candidate {
   testAnswers         LanguageTestAnswer[]
   tasks               AdminTask[]
   bookings            ServiceBooking[]
+  creditEntries       CreditEntry[]
+  creditPurchases     CreditPurchase[]
+  subscriptionUntil   DateTime? // Abo „unbegrenzt“ gilt bis hier (inkl. bezahltem Zeitraum nach Kündigung)
 }
 
 model LanguageTestAnswer {
@@ -416,4 +419,38 @@ model EmailLog {
   createdAt DateTime @default(now())
 
   @@index([createdAt])
+}
+
+// Guthaben an Bewerbungen: +25 je Paket, -1 je verschickter Bewerbung. Mit aktivem Abo wird nichts abgezogen (Eintrag mit 0).
+model CreditEntry {
+  id          String    @id @default(cuid())
+  candidateId String
+  candidate   Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  delta       Int
+  reason      String    // START | PACK | GRANT | APPLICATION | REFUND
+  note        String?
+  bookingId   String?
+  leadId      String?   @unique // je Bewerbung höchstens einmal abgebucht
+  purchaseId  String?
+  createdAt   DateTime  @default(now())
+
+  @@index([candidateId])
+}
+
+// Nachkauf (25 Bewerbungen) oder Abo (unbegrenzt, monatlich)
+model CreditPurchase {
+  id                   String    @id @default(cuid())
+  candidateId          String
+  candidate            Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  kind                 String    // PACK_25 | SUBSCRIPTION
+  amountCents          Int
+  status               String    @default("REQUESTED") // REQUESTED | PENDING_PAYMENT | PAID | ACTIVE | CANCELLING | ENDED | CANCELLED
+  stripeSessionId      String?
+  stripeSubscriptionId String?   @unique
+  paidAt               DateTime?
+  periodEnd            DateTime?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  @@index([candidateId])
 }

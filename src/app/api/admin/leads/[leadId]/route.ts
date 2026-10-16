@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { requireAdmin } from "@/lib/admin-guard";
+import { requireStaff } from "@/lib/admin-guard";
 import { recount } from "@/lib/leads";
+import { consumeCredit, refundCredit } from "@/lib/credits";
 import { audit } from "@/lib/audit";
 
 const Body = z.object({
@@ -15,7 +16,7 @@ const Body = z.object({
 });
 
 export async function PATCH(req: Request, ctx: { params: Promise<{ leadId: string }> }) {
-  const deny = await requireAdmin(); if (deny) return deny;
+  const deny = await requireStaff(); if (deny) return deny;
   const { leadId } = await ctx.params;
   const p = Body.safeParse(await req.json().catch(() => ({})));
   if (!p.success) return NextResponse.json({ error: "Ungültige Eingabe (E-Mail prüfen)." }, { status: 400 });
@@ -23,6 +24,12 @@ export async function PATCH(req: Request, ctx: { params: Promise<{ leadId: strin
   if (!before) return NextResponse.json({ error: "Nicht gefunden" }, { status: 404 });
   if (before.status === "SENT" && (p.data.status || p.data.lang)) return NextResponse.json({ error: "Bereits verschickt." }, { status: 409 });
   if (before.status === "SENT" && p.data.status) return NextResponse.json({ error: "Bereits verschickt." }, { status: 409 });
+  if (p.data.status === "APPLIED_MANUALLY" && before.status !== "APPLIED_MANUALLY") {
+    const b = await prisma.serviceBooking.findUniqueOrThrow({ where: { id: before.bookingId } });
+    try { await consumeCredit(b.candidateId, leadId, b.id, `${before.title} · ${before.company} (Firmenseite)`); }
+    catch (e) { return NextResponse.json({ error: e instanceof Error ? e.message : "Kein Guthaben" }, { status: 402 }); }
+  }
+  if (before.status === "APPLIED_MANUALLY" && p.data.status && p.data.status !== "APPLIED_MANUALLY") await refundCredit(leadId);
   const data: Record<string, unknown> = { ...p.data };
   if (p.data.email === "") data.email = null;
   if (p.data.status === "APPLIED_MANUALLY" && !before.sentAt) data.sentAt = new Date();

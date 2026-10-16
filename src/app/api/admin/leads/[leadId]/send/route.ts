@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/admin-guard";
+import { requireStaff } from "@/lib/admin-guard";
 import { sendApplication } from "@/lib/leads";
 import { audit } from "@/lib/audit";
 
 export async function POST(req: Request, ctx: { params: Promise<{ leadId: string }> }) {
-  const deny = await requireAdmin(); if (deny) return deny;
+  const deny = await requireStaff(); if (deny) return deny;
   const { leadId } = await ctx.params;
   try {
     const sent = await sendApplication(leadId);

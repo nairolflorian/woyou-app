@@ -4,7 +4,7 @@ import { getSession } from "@/lib/session";
 import { LangSwitcher } from "@/components/LangSwitcher";
 import { MobileMenu } from "@/components/MobileMenu";
 import { NotificationsBell } from "@/components/NotificationsBell";
-import { isAdmin } from "@/lib/auth";
+import { isAdmin, isStaff } from "@/lib/auth";
 import { siteText } from "@/lib/company";
 
 export async function SiteHeader() {
@@ -14,6 +14,7 @@ export async function SiteHeader() {
   let dashboardHref = "/anmelden";
   if (session.userId) {
     if (isAdmin(session.role)) dashboardHref = "/admin";
+    else if (isStaff(session.role)) dashboardHref = "/admin/buchungen";
     else dashboardHref = "/profil";
   }
 

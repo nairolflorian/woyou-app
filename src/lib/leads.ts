@@ -2,7 +2,7 @@ import "server-only";
 
 // Stellen je Buchung: übernehmen, Anschreiben erzeugen, Bewerbung versenden (mit Kopie an Kund:in)
 import { prisma } from "@/lib/prisma";
-import { jobDetails, jobUrl } from "@/lib/jobs-ba";
+import { jobDetails, jobUrl, extractEmails } from "@/lib/jobs-ba";
 import { letterForJob, subjectLine, salutation } from "@/lib/letters";
 import { parseProfile } from "@/lib/application";
 import { cvPdf, letterPdf, type DocLang } from "@/lib/pdf";
@@ -10,6 +10,7 @@ import { readPhoto, readOwnCv, withProfile } from "@/lib/mappe";
 import { sendMail, layout, mailEnabled, type Attachment } from "@/lib/mail";
 import { aliasAddress } from "@/lib/alias";
 import { BOOKING_STATUS } from "@/lib/services";
+import { consumeCredit, refundCredit, creditState } from "@/lib/credits";
 
 export const ACTIVE_LEAD = ["SELECTED", "READY", "SENT", "APPLIED_MANUALLY"];
 export const DONE_LEAD = ["SENT", "APPLIED_MANUALLY"];
@@ -25,18 +26,16 @@ async function bookingWithProfile(bookingId: string) {
   return prisma.serviceBooking.findUniqueOrThrow({ where: { id: bookingId }, include: { profile: true, candidate: { include: { user: true } } } });
 }
 
-export async function addLead(bookingId: string, job: { ref?: string | null; title: string; company: string; city?: string | null; url?: string | null; applyUrl?: string | null; email?: string | null; source?: "BA" | "MANUAL" }) {
+export async function addLead(bookingId: string, job: { ref?: string | null; title: string; company: string; city?: string | null; url?: string | null; applyUrl?: string | null; email?: string | null; source?: string; description?: string | null }) {
   // Stelle steht schon als Vorschlag in der Liste? Dann diesen übernehmen
   if (job.ref) {
     const existing = await prisma.jobLead.findFirst({ where: { bookingId, sourceRef: job.ref, status: { in: ["SUGGESTED", "HIDDEN"] } } });
     if (existing) return selectSuggestion(existing.id);
   }
   const b = await bookingWithProfile(bookingId);
-  const active = await prisma.jobLead.count({ where: { bookingId, status: { in: ACTIVE_LEAD } } });
-  if (active >= b.applicationsGoal) throw new Error(`Es sind bereits ${b.applicationsGoal} Stellen ausgewählt.`);
 
-  let description: string | null = null, email = job.email ?? null;
-  if (job.source !== "MANUAL" && job.ref) {
+  let description: string | null = job.description?.trim() || null, email = job.email ?? (description ? extractEmails(description)[0] ?? null : null);
+  if ((job.source ?? "BA") === "BA" && job.ref) {
     const det = await jobDetails(job.ref);
     if (det) { description = det.description.slice(0, 20000) || null; email = email || det.emails[0] || null; }
   }
@@ -45,7 +44,7 @@ export async function addLead(bookingId: string, job: { ref?: string | null; tit
   return prisma.jobLead.create({
     data: {
       bookingId, source: job.source ?? "BA", sourceRef: job.ref ?? null, title: job.title.slice(0, 200), company: job.company.slice(0, 200), city: job.city ?? null,
-      url: job.url ?? (job.ref && job.source !== "MANUAL" ? jobUrl(job.ref) : null), applyUrl: job.applyUrl ?? null, email, description, coverLetter: letter.text,
+      url: job.url ?? (job.ref && (job.source ?? "BA") === "BA" ? jobUrl(job.ref) : null), applyUrl: job.applyUrl ?? null, email, description, coverLetter: letter.text,
     },
   });
 }
@@ -55,8 +54,6 @@ export async function selectSuggestion(leadId: string) {
   const l = await prisma.jobLead.findUniqueOrThrow({ where: { id: leadId } });
   if (ACTIVE_LEAD.includes(l.status)) return l;
   const b = await bookingWithProfile(l.bookingId);
-  const active = await prisma.jobLead.count({ where: { bookingId: l.bookingId, status: { in: ACTIVE_LEAD } } });
-  if (active >= b.applicationsGoal) throw new Error(`Es sind bereits ${b.applicationsGoal} Stellen ausgewählt.`);
   const lang = l.lang as DocLang;
   const letter = await letterForJob(profileFor(b.profile, lang), { title: l.title, company: l.company, city: l.city, ref: l.sourceRef, contactName: l.contactName, description: l.description }, lang);
   return prisma.jobLead.update({ where: { id: leadId }, data: { status: "SELECTED", coverLetter: letter.text } });
@@ -102,6 +99,8 @@ export async function sendApplication(leadId: string) {
   if (booking.profile?.status !== "APPROVED") throw new Error("Bitte zuerst die Bewerbungsmappe freigeben.");
   if (!lead.email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(lead.email)) throw new Error("Bitte eine gültige Bewerbungs-E-Mail eintragen.");
   if (!lead.coverLetter || lead.coverLetter.length < 200) throw new Error("Das Anschreiben fehlt oder ist zu kurz.");
+  // Guthaben: 1 Bewerbung abbuchen (mit Abo 0); schlägt der Versand fehl, wird zurückgebucht
+  await consumeCredit(booking.candidateId, lead.id, booking.id, `${lead.title} · ${lead.company}`);
 
   const name = `${data.firstName} ${data.lastName}`.trim();
   const alias = aliasAddress(booking.aliasLocal);
@@ -117,15 +116,35 @@ export async function sendApplication(leadId: string) {
   const html = `<div style="font-family:Arial,sans-serif;font-size:14px;line-height:1.5;color:#1f1f1f">${body.split("\n").map((x) => (x ? x.replace(/[<>&]/g, "") : "<br>")).join("<br>")}</div>`;
 
   const r = await sendMail({ to: lead.email, from, replyTo, subject, text: body, html, attachments: files, template: "application", bookingId: booking.id });
+  if (r.status !== "SENT") await refundCredit(lead.id);
   if (r.status !== "SENT") throw new Error(`Versand fehlgeschlagen${"error" in r && r.error ? `: ${r.error}` : ""}`);
 
   await prisma.jobLead.update({ where: { id: lead.id }, data: { status: "SENT", sentAt: new Date() } });
   const sent = await recount(booking.id);
-  await prisma.notification.create({ data: { userId: booking.candidate.userId, type: "APPLICATION_SENT", title: `Bewerbung an ${lead.company} verschickt`, body: `${sent} von ${booking.applicationsGoal}`, link: "/bewerbungsmappe" } }).catch(() => {});
+  await prisma.notification.create({ data: { userId: booking.candidate.userId, type: "APPLICATION_SENT", title: `Bewerbung an ${lead.company} verschickt`, body: `${sent} Bewerbungen verschickt`, link: "/profil" } }).catch(() => {});
 
   if (customer) {
-    const paras = [`Hallo ${data.firstName},`, `wir haben deine Bewerbung als ${lead.title} an ${lead.company}${lead.city ? ` in ${lead.city}` : ""} verschickt (${sent} von ${booking.applicationsGoal}).`, "Im Anhang findest du die Unterlagen, wie sie verschickt wurden. Wenn die Firma antwortet, bekommst du die Antwort direkt.", "Viele Grüße", "Dein WoYou-Team"];
+    const cs = await creditState(booking.candidateId);
+    const left = cs.unlimited ? "Du hast unbegrenzte Bewerbungen im Abo." : `Du hast noch ${cs.balance} Bewerbungen übrig.`;
+    const paras = [`Hallo ${data.firstName},`, `wir haben deine Bewerbung als ${lead.title} an ${lead.company}${lead.city ? ` in ${lead.city}` : ""} verschickt. ${left}`, "Im Anhang findest du die Unterlagen, wie sie verschickt wurden. Wenn die Firma antwortet, bekommst du die Antwort direkt.", "Viele Grüße", "Dein WoYou-Team"];
     await sendMail({ to: customer, subject: `Kopie: Bewerbung an ${lead.company}`, text: paras.join("\n\n"), html: layout("Deine Bewerbung ist raus", paras), attachments: files, template: "application_copy", bookingId: booking.id });
   }
   return sent;
+}
+
+// „Jetzt bewerben“: alle freigegebenen Stellen (READY) mit E-Mail nacheinander verschicken, solange Guthaben reicht
+export async function applyApproved(bookingId: string) {
+  const leads = await prisma.jobLead.findMany({ where: { bookingId, status: "READY" }, orderBy: [{ score: "desc" }, { createdAt: "asc" }] });
+  const result = { sent: 0, noEmail: [] as string[], failed: [] as { title: string; error: string }[], stoppedNoCredit: false };
+  for (const l of leads) {
+    if (!l.email) { result.noEmail.push(`${l.title} · ${l.company}`); continue; }
+    try { await sendApplication(l.id); result.sent++; }
+    catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      if (/Kein Guthaben/.test(msg)) { result.stoppedNoCredit = true; break; }
+      result.failed.push({ title: `${l.title} · ${l.company}`, error: msg });
+      if (/SMTP|Vollmacht|Mappe/.test(msg)) break; // betrifft alle weiteren genauso
+    }
+  }
+  return result;
 }

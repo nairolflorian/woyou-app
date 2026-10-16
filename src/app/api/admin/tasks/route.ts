@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getSession } from "@/lib/session";
-import { isAdmin } from "@/lib/auth";
+import { isStaff } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { TASK_KINDS, TASK_STATUS } from "@/lib/enums";
 import { audit } from "@/lib/audit";
@@ -19,7 +19,7 @@ const schema = z.object({
 
 export async function POST(req: Request) {
   const session = await getSession();
-  if (!session.userId || !isAdmin(session.role)) {
+  if (!session.userId || !isStaff(session.role)) {
     return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
   }
   const body = await req.json().catch(() => ({}));
@@ -39,7 +39,7 @@ export async function POST(req: Request) {
 
 export async function PATCH(req: Request) {
   const session = await getSession();
-  if (!session.userId || !isAdmin(session.role)) {
+  if (!session.userId || !isStaff(session.role)) {
     return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
   }
   const body = await req.json().catch(() => ({}));

@@ -6,7 +6,7 @@ import path from "node:path";
 import crypto from "node:crypto";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
-import { isAdmin } from "@/lib/auth";
+import { isStaff } from "@/lib/auth";
 import { ROLE } from "@/lib/enums";
 import { ensureCandidateDir, detectKind, MAX_BYTES, parseDocs } from "@/lib/uploads";
 import { prefillFromCandidate, parseProfile } from "@/lib/application";
@@ -39,7 +39,7 @@ export async function mappeForSession() {
 // Zugriff für Kund:in (eigene Buchung) oder Admin (beliebige Buchung)
 export async function mappeForRequest(bookingId?: string | null) {
   const session = await getSession();
-  if (bookingId && session.userId && isAdmin(session.role)) {
+  if (bookingId && session.userId && isStaff(session.role)) {
     const r = await withProfile(bookingId);
     return { ...r, data: parseProfile(r.profile.data), dataEn: r.profile.dataEn ? parseProfile(r.profile.dataEn) : null, admin: true };
   }

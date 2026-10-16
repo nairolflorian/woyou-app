@@ -12,6 +12,11 @@ import { aliasAddress, aliasDomain } from "@/lib/alias";
 import { mailEnabled } from "@/lib/mail";
 import { aiEnabled } from "@/lib/letters";
 import { ACTIVE_LEAD } from "@/lib/leads";
+import { ApplyPanel } from "@/components/ApplyPanel";
+import { creditState } from "@/lib/credits";
+import { CREDIT_PRODUCTS, type CreditKind } from "@/lib/services";
+import { getSession } from "@/lib/session";
+import { isAdmin } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 const PROFILE_STATUS: Record<string, string> = { DRAFT: "Kunde füllt aus", SUBMITTED: "Eingereicht – bitte prüfen", APPROVED: "Freigegeben" };
@@ -31,6 +36,13 @@ export default async function AdminBookingDetail(props: { params: Promise<{ id: 
   const label = BOOKING_STATUS_LABEL[b.status as BookingStatus];
   const canSend = mailEnabled() && b.profile?.status === "APPROVED" && !!b.consentSendAt;
   const alias = aliasAddress(b.aliasLocal);
+  const credits = await creditState(b.candidateId);
+  const purchases = await prisma.creditPurchase.findMany({ where: { candidateId: b.candidateId, status: { not: "CANCELLED" } }, orderBy: { createdAt: "desc" }, take: 10 });
+  const ready = b.leads.filter((l) => l.status === "READY");
+  const openSelected = b.leads.filter((l) => l.status === "SELECTED" || l.status === "READY").length;
+  const free = credits.unlimited ? 25 : Math.max(0, credits.balance - openSelected);
+  const admin = isAdmin((await getSession()).role);
+  const sendBlock = !mailEnabled() ? "Mailversand ist noch nicht eingerichtet." : b.profile?.status !== "APPROVED" ? "Erst die Bewerbungsmappe freigeben." : !b.consentSendAt ? "Vollmacht für den Versand fehlt." : null;
 
   return (
     <div className="space-y-6">
@@ -47,7 +59,7 @@ export default async function AdminBookingDetail(props: { params: Promise<{ id: 
 
       <div className="grid gap-3 sm:grid-cols-4">
         <div className="card"><div className="text-xs text-[color:var(--color-ink-soft)]">Mappe</div><div className="font-semibold">{b.profile ? PROFILE_STATUS[b.profile.status] : "noch nicht begonnen"}</div></div>
-        <div className="card"><div className="text-xs text-[color:var(--color-ink-soft)]">Bewerbungen</div><div className="font-semibold">{b.applicationsSent} verschickt · {active.length} ausgewählt / {b.applicationsGoal}</div></div>
+        <div className="card"><div className="text-xs text-[color:var(--color-ink-soft)]">Bewerbungen</div><div className="font-semibold">{b.applicationsSent} verschickt · {openSelected} in Vorbereitung</div></div>
         <div className="card"><div className="text-xs text-[color:var(--color-ink-soft)]">Bewerbungsadresse</div><div className="font-semibold break-all">{alias ?? (aliasDomain() ? "entsteht bei Einreichung" : "noch nicht eingerichtet")}</div></div>
         <div className="card"><div className="text-xs text-[color:var(--color-ink-soft)]">Vollmacht Versand</div><div className="font-semibold">{b.consentSendAt ? `erteilt ${b.consentSendAt.toLocaleDateString("de-DE")}` : "fehlt"}</div></div>
       </div>
@@ -71,7 +83,10 @@ export default async function AdminBookingDetail(props: { params: Promise<{ id: 
         </div>
       </details>
 
-      <SuggestionList bookingId={b.id} items={suggestions} selected={active.length} goal={b.applicationsGoal} approved={b.profile?.status === "APPROVED"} ai={aiEnabled()} />
+      <ApplyPanel bookingId={b.id} balance={credits.balance} unlimited={credits.unlimited} until={credits.until?.toLocaleDateString("de-DE") ?? null} ready={ready.filter((l) => l.email).length} readyNoEmail={ready.filter((l) => !l.email).length} canSend={!sendBlock} reason={sendBlock} isAdmin={admin}
+        purchases={purchases.map((x) => ({ id: x.id, kind: x.kind, label: CREDIT_PRODUCTS[x.kind as CreditKind]?.name ?? x.kind, status: { REQUESTED: "bestellt, Zahlung offen", PENDING_PAYMENT: "Zahlung offen", PAID: "bezahlt", ACTIVE: "aktiv", CANCELLING: "gekündigt", ENDED: "beendet" }[x.status] ?? x.status, createdAt: x.createdAt.toLocaleDateString("de-DE") }))} />
+
+      <SuggestionList bookingId={b.id} items={suggestions} free={free} approved={b.profile?.status === "APPROVED"} ai={aiEnabled()} />
 
       <details className="card">
         <summary className="cursor-pointer font-semibold">Selbst suchen (Jobbörse der Bundesagentur)</summary>
@@ -83,7 +98,7 @@ export default async function AdminBookingDetail(props: { params: Promise<{ id: 
       <section className="space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-xl font-bold">Ausgewählte Stellen ({active.length} / {b.applicationsGoal})</h2>
-          <ManualLead bookingId={b.id} />
+          <ManualLead bookingId={b.id} was={(data.targetJob || b.targetJobs || "").split(",")[0].trim()} wo={(b.targetRegions || "").split(",")[0].trim()} />
         </div>
         {listed.length === 0 && <div className="card text-sm text-[color:var(--color-ink-soft)]">Noch keine Stellen ausgewählt. Oben einen Vorschlag übernehmen oder selbst suchen und „Auswählen“ klicken – Ausschreibung, E-Mail (falls angegeben) und ein erstes Anschreiben werden automatisch übernommen.</div>}
         {listed.map((l, i) => (

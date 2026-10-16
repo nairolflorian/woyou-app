@@ -1,7 +1,8 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getSession } from "@/lib/session";
-import { isAdmin } from "@/lib/auth";
+import { isStaff } from "@/lib/auth";
+import { headers } from "next/headers";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { ROLE } from "@/lib/enums";
@@ -12,7 +13,11 @@ export default async function AdminLayout({
   children: React.ReactNode;
 }) {
   const session = await getSession();
-  if (!session.userId || !isAdmin(session.role)) redirect("/anmelden");
+  if (!session.userId || !isStaff(session.role)) redirect("/anmelden");
+  const team = session.role === ROLE.TEAM;
+  // Bewerbungsteam sieht nur Buchungen und Aufgaben
+  const path = (await headers()).get("x-pathname") ?? "";
+  if (team && !/^\/admin\/(buchungen|aufgaben)(\/|$)/.test(path)) redirect("/admin/buchungen");
 
   return (
     <>
@@ -25,15 +30,15 @@ export default async function AdminLayout({
                 Admin
               </div>
               <div className="mt-1 text-sm font-semibold">
-                {session.role === ROLE.SUPER_ADMIN ? "Super-Admin" : "Vermittler"}
+                {session.role === ROLE.SUPER_ADMIN ? "Super-Admin" : team ? "Bewerbungsteam" : "Vermittler"}
               </div>
               <nav className="mt-4 flex flex-col gap-1 text-sm">
-                <Link href="/admin" className="btn-ghost justify-start">📊 Übersicht</Link>
+                {!team && <Link href="/admin" className="btn-ghost justify-start">📊 Übersicht</Link>}
                 <Link href="/admin/buchungen" className="btn-ghost justify-start">🧾 Buchungen</Link>
-                <Link href="/admin/analytics" className="btn-ghost justify-start">📈 Analytics</Link>
-                <Link href="/admin/kandidaten" className="btn-ghost justify-start">👥 Kund:innen</Link>
+                {!team && <Link href="/admin/analytics" className="btn-ghost justify-start">📈 Analytics</Link>}
+                {!team && <Link href="/admin/kandidaten" className="btn-ghost justify-start">👥 Kund:innen</Link>}
                 <Link href="/admin/aufgaben" className="btn-ghost justify-start">✅ Aufgaben</Link>
-                <Link href="/admin/audit" className="btn-ghost justify-start">📜 Audit-Log</Link>
+                {!team && <Link href="/admin/audit" className="btn-ghost justify-start">📜 Audit-Log</Link>}
                 {session.role === ROLE.SUPER_ADMIN && (
                   <>
                     <Link href="/admin/papierkorb" className="btn-ghost justify-start">🗑 Papierkorb</Link>

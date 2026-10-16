@@ -50,6 +50,11 @@ export async function findUserByLogin(login: string) {
   });
 }
 
+// Admins und Bewerbungsteam (Zugriff auf Buchungen, Mappen, Stellen, Aufgaben)
+export function isStaff(role?: string | null) {
+  return isAdmin(role) || role === ROLE.TEAM;
+}
+
 export function isAdmin(role?: string | null) {
   return role === ROLE.ADMIN || role === ROLE.SUPER_ADMIN;
 }

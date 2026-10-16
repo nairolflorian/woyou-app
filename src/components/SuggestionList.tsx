@@ -12,14 +12,14 @@ export type Suggestion = {
 const tone = (s: number) => (s >= 75 ? "bg-emerald-100 text-emerald-800" : s >= 55 ? "bg-amber-100 text-amber-800" : "bg-slate-100 text-slate-600");
 const negative = /nur |keine |verlangt abgeschlossene|knapp|unbekannt|verwandt/;
 
-export function SuggestionList({ bookingId, items, selected, goal, approved, ai }: { bookingId: string; items: Suggestion[]; selected: number; goal: number; approved: boolean; ai: boolean }) {
+export function SuggestionList({ bookingId, items, free: free0, approved, ai }: { bookingId: string; items: Suggestion[]; free: number; approved: boolean; ai: boolean }) {
   const router = useRouter();
   const [list, setList] = useState(items);
-  const [count, setCount] = useState(selected);
+  const [taken, setTaken] = useState(0);
   const [busy, setBusy] = useState<string | null>(null);
   const [msg, setMsg] = useState<{ ok: boolean; t: string } | null>(null);
   const [onlyMail, setOnlyMail] = useState(false);
-  const free = goal - count;
+  const free = Math.max(0, free0 - taken);
   const shown = list.filter((s) => !onlyMail || s.email);
 
   async function search() {
@@ -37,7 +37,7 @@ export function SuggestionList({ bookingId, items, selected, goal, approved, ai 
     const r = await fetch(`/api/admin/leads/${s.id}/select`, { method: "POST" });
     const j = await r.json().catch(() => ({}));
     if (!r.ok) { setMsg({ ok: false, t: j.error ?? "Fehler" }); return false; }
-    setList((x) => x.filter((y) => y.id !== s.id)); setCount((c) => c + 1);
+    setList((x) => x.filter((y) => y.id !== s.id)); setTaken((c) => c + 1);
     return true;
   }
   async function one(s: Suggestion) { setBusy(s.id); setMsg(null); if (await take(s)) { setMsg({ ok: true, t: `Übernommen: ${s.title}. Anschreiben ist erstellt.` }); router.refresh(); } setBusy(null); }
@@ -89,7 +89,7 @@ export function SuggestionList({ bookingId, items, selected, goal, approved, ai 
                 </div>
               </div>
               <div className="flex gap-2">
-                <button className="btn-primary py-1" disabled={!!busy || free <= 0} onClick={() => one(s)}>{busy === s.id ? "…" : "Übernehmen"}</button>
+                <button className="btn-primary py-1" disabled={!!busy} onClick={() => one(s)}>{busy === s.id ? "…" : "Übernehmen"}</button>
                 <button className="btn-ghost py-1" disabled={!!busy} onClick={() => hide(s)}>Passt nicht</button>
               </div>
             </div>

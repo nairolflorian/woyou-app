@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { requireAdmin } from "@/lib/admin-guard";
+import { requireStaff } from "@/lib/admin-guard";
 import { searchJobs } from "@/lib/jobs-ba";
 
 // Stellensuche (Bundesagentur) für eine Buchung; bereits ausgewählte Stellen werden markiert
 export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }) {
-  const deny = await requireAdmin(); if (deny) return deny;
+  const deny = await requireStaff(); if (deny) return deny;
   const { id } = await ctx.params;
   const u = new URL(req.url);
   const was = (u.searchParams.get("was") || "").trim().slice(0, 120);

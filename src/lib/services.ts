@@ -7,6 +7,13 @@ export const SERVICES: Record<ServiceKey, { priceCents: number; applications: nu
   "bewerbung-25": { priceCents: 19900, applications: 25, deliveryWeeks: 4 },
 };
 
+// Nachkauf und Abo (Guthaben, siehe src/lib/credits.ts)
+export type CreditKind = "PACK_25" | "SUBSCRIPTION";
+export const CREDIT_PRODUCTS: Record<CreditKind, { name: string; priceCents: number; credits: number }> = {
+  PACK_25: { name: "25 weitere Bewerbungen", priceCents: 14900, credits: 25 },
+  SUBSCRIPTION: { name: "Unbegrenzt bewerben (Abo)", priceCents: 5000, credits: 0 },
+};
+
 export const BOOKING_STATUS = {
   REQUESTED: "REQUESTED", // gebucht, Zahlung noch nicht möglich (kein Stripe-Konto hinterlegt)
   PENDING_PAYMENT: "PENDING_PAYMENT", // Stripe-Checkout gestartet
@@ -47,7 +54,7 @@ export const SERVICE_COPY: Record<"de" | "fr" | "en" | "ar", Copy> = {
     badge: "BEWERBUNGS-SERVICE",
     title: "Wir bewerben dich: 25 Bewerbungen für 199 €",
     lead: "Du willst in Deutschland arbeiten, aber Bewerbungen kosten dich Zeit und Nerven? Wir übernehmen das: von deinem Lebenslauf bis zum Versand von 25 passenden Bewerbungen.",
-    priceNote: "einmalig, kein Abo",
+    priceNote: "einmalig · danach 25 weitere für 149 € oder unbegrenzt für 50 € im Monat",
     cta: "Jetzt buchen", ctaLogin: "Anmelden und buchen",
     includedTitle: "Das ist enthalten",
     included: [
@@ -74,7 +81,7 @@ export const SERVICE_COPY: Record<"de" | "fr" | "en" | "ar", Copy> = {
     ],
     faqTitle: "Häufige Fragen",
     faq: [
-      { q: "Kommen noch weitere Kosten dazu?", a: "Nein. Du zahlst einmalig 199 €. Es gibt kein Abo und keine versteckten Gebühren." },
+      { q: "Kommen noch weitere Kosten dazu?", a: "Das Startpaket kostet einmalig 199 € und enthält 25 Bewerbungen. Danach entscheidest du selbst: 25 weitere für 149 € oder unbegrenzt für 50 € im Monat, jederzeit zum Monatsende kündbar. Versteckte Gebühren gibt es nicht." },
       { q: "Was ist, wenn es keine 25 passenden Stellen gibt?", a: "Dann melden wir uns bei dir und besprechen gemeinsam, wie wir die Suche erweitern." },
       { q: "In welchen Berufen bewerbt ihr mich?", a: "In den Berufen, die du im Erstgespräch mit uns festlegst, passend zu deiner Ausbildung und Erfahrung." },
       { q: "Wie bezahle ich?", a: "Sicher online mit Karte über unseren Zahlungsanbieter Stripe." },
@@ -94,7 +101,7 @@ export const SERVICE_COPY: Record<"de" | "fr" | "en" | "ar", Copy> = {
     badge: "SERVICE CANDIDATURES",
     title: "Nous postulons pour vous : 25 candidatures pour 199 €",
     lead: "Vous voulez travailler en Allemagne, mais les candidatures vous prennent du temps et de l'énergie ? Nous nous en occupons : de votre CV jusqu'à l'envoi de 25 candidatures adaptées.",
-    priceNote: "paiement unique, sans abonnement",
+    priceNote: "paiement unique · ensuite 25 de plus pour 149 € ou illimité pour 50 € par mois",
     cta: "Réserver maintenant", ctaLogin: "Se connecter et réserver",
     includedTitle: "Ce qui est inclus",
     included: [
@@ -121,7 +128,7 @@ export const SERVICE_COPY: Record<"de" | "fr" | "en" | "ar", Copy> = {
     ],
     faqTitle: "Questions fréquentes",
     faq: [
-      { q: "Y a-t-il d'autres frais ?", a: "Non. Vous payez 199 € une seule fois. Pas d'abonnement, pas de frais cachés." },
+      { q: "Y a-t-il d'autres frais ?", a: "Le pack de départ coûte 199 € une seule fois et comprend 25 candidatures. Ensuite, vous choisissez : 25 de plus pour 149 € ou illimité pour 50 € par mois, résiliable à la fin de chaque mois. Aucun frais caché." },
       { q: "Et s'il n'y a pas 25 offres adaptées ?", a: "Nous vous contactons et décidons ensemble comment élargir la recherche." },
       { q: "Pour quels métiers postulez-vous ?", a: "Pour les métiers que nous définissons ensemble lors du premier entretien, selon votre formation et votre expérience." },
       { q: "Comment payer ?", a: "En ligne par carte, de façon sécurisée, via notre prestataire de paiement Stripe." },
@@ -141,7 +148,7 @@ export const SERVICE_COPY: Record<"de" | "fr" | "en" | "ar", Copy> = {
     badge: "APPLICATION SERVICE",
     title: "We apply for you: 25 applications for €199",
     lead: "You want to work in Germany, but applying takes time and energy? We handle it for you: from your CV to sending 25 matching applications.",
-    priceNote: "one-time, no subscription",
+    priceNote: "one-time · then 25 more for €149 or unlimited for €50 a month",
     cta: "Book now", ctaLogin: "Log in and book",
     includedTitle: "What's included",
     included: [
@@ -168,7 +175,7 @@ export const SERVICE_COPY: Record<"de" | "fr" | "en" | "ar", Copy> = {
     ],
     faqTitle: "FAQ",
     faq: [
-      { q: "Are there any extra costs?", a: "No. You pay €199 once. No subscription, no hidden fees." },
+      { q: "Are there any extra costs?", a: "The starter package costs €199 once and includes 25 applications. After that you decide: 25 more for €149 or unlimited for €50 a month, cancellable at the end of any month. No hidden fees." },
       { q: "What if there are not 25 matching jobs?", a: "We contact you and decide together how to widen the search." },
       { q: "For which jobs do you apply?", a: "For the jobs we agree on in the first call, based on your training and experience." },
       { q: "How do I pay?", a: "Securely online by card through our payment provider Stripe." },
@@ -188,7 +195,7 @@ export const SERVICE_COPY: Record<"de" | "fr" | "en" | "ar", Copy> = {
     badge: "خدمة التقديم",
     title: "نقدّم طلباتك عنك: 25 طلب توظيف مقابل 199 €",
     lead: "تريد العمل في ألمانيا، لكن طلبات التوظيف تأخذ منك الكثير من الوقت والجهد؟ نحن نتكفّل بذلك: من سيرتك الذاتية حتى إرسال 25 طلبًا مناسبًا.",
-    priceNote: "دفعة واحدة، بدون اشتراك",
+    priceNote: "دفعة واحدة · بعدها 25 طلبًا إضافيًا مقابل 149 € أو عدد غير محدود مقابل 50 € شهريًا",
     cta: "احجز الآن", ctaLogin: "سجّل الدخول واحجز",
     includedTitle: "ما يشمله العرض",
     included: [
@@ -215,7 +222,7 @@ export const SERVICE_COPY: Record<"de" | "fr" | "en" | "ar", Copy> = {
     ],
     faqTitle: "أسئلة شائعة",
     faq: [
-      { q: "هل هناك تكاليف إضافية؟", a: "لا. تدفع 199 € مرة واحدة فقط، بدون اشتراك أو رسوم مخفية." },
+      { q: "هل هناك تكاليف إضافية؟", a: "باقة البداية بـ 199 € مرة واحدة وتشمل 25 طلبًا. بعدها تختار: 25 طلبًا إضافيًا مقابل 149 € أو عددًا غير محدود مقابل 50 € شهريًا، مع إمكانية الإلغاء في نهاية كل شهر. لا توجد رسوم مخفية." },
       { q: "ماذا لو لم توجد 25 وظيفة مناسبة؟", a: "نتواصل معك ونقرر معًا كيف نوسّع البحث." },
       { q: "في أي مهن تقدّمون عني؟", a: "في المهن التي نحددها معًا في المكالمة الأولى حسب تكوينك وخبرتك." },
       { q: "كيف أدفع؟", a: "عبر الإنترنت بالبطاقة وبشكل آمن من خلال مزوّد الدفع Stripe." },

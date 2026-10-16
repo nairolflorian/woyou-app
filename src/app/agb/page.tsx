@@ -42,8 +42,11 @@ export default function AGB() {
               davon unberührt.
             </Section>
             <Section title="§ 5 Preis und Zahlung">
-              Der Preis beträgt einmalig 199 € inklusive Umsatzsteuer. Es gibt kein Abo und keine weiteren
-              Kosten. Die Zahlung erfolgt bei der Buchung online über Stripe.
+              Das Startpaket kostet einmalig 199 € inklusive Umsatzsteuer und enthält 25 Bewerbungen. Danach kannst
+              du 25 weitere Bewerbungen für 149 € nachkaufen oder ein Abo für unbegrenzte Bewerbungen zu 50 € im
+              Monat abschließen. Das Abo verlängert sich monatlich und ist jederzeit zum Ende des bezahlten Monats
+              kündbar, direkt in deinem Bereich auf woyou.de. Nicht genutzte Bewerbungen aus Paketen verfallen
+              nicht. Die Zahlung erfolgt online über Stripe.
             </Section>
             <Section title="§ 6 Widerrufsrecht">
               Als Verbraucher:in hast du ein Widerrufsrecht von 14 Tagen ab Vertragsschluss. Verlangst du

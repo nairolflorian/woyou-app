@@ -3,6 +3,7 @@ export const ROLE = {
   COMPANY: "COMPANY",
   ADMIN: "ADMIN",
   SUPER_ADMIN: "SUPER_ADMIN",
+  TEAM: "TEAM", // Bewerbungsteam: Buchungen bearbeiten, Stellen freigeben, bewerben
 } as const;
 export type Role = (typeof ROLE)[keyof typeof ROLE];
 

@@ -9,7 +9,7 @@ import { audit } from "@/lib/audit";
 const schema = z.object({
   email: z.string().email(),
   password: z.string().min(6),
-  role: z.enum([ROLE.ADMIN, ROLE.SUPER_ADMIN]),
+  role: z.enum([ROLE.ADMIN, ROLE.SUPER_ADMIN, ROLE.TEAM]),
 });
 
 export async function POST(req: Request) {

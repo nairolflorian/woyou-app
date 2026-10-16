@@ -8,7 +8,7 @@ export default async function AdminTeam() {
   const session = await getSession();
   if (session.role !== ROLE.SUPER_ADMIN) redirect("/admin");
   const admins = await prisma.user.findMany({
-    where: { role: { in: [ROLE.ADMIN, ROLE.SUPER_ADMIN] } },
+    where: { role: { in: [ROLE.ADMIN, ROLE.SUPER_ADMIN, ROLE.TEAM] } },
     orderBy: { createdAt: "asc" },
   });
   return (

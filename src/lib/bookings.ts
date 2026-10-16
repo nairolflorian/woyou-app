@@ -37,6 +37,7 @@ export async function markBookingPaid(bookingId: string, stripeSessionId?: strin
     data: { paidAt: new Date(), status: BOOKING_STATUS.PAID, ...(stripeSessionId ? { stripeSessionId } : {}) },
   });
   if (res.count > 0) {
+    await (await import("@/lib/credits")).grantStartCredits(bookingId);
     await bookingMails(bookingId, "paid");
     const b = await prisma.serviceBooking.findUnique({ where: { id: bookingId }, include: { candidate: true } });
     if (b) await ensureTask(b.candidateId, "CONTACT", `Erstgespräch Bewerbungs-Service: ${[b.candidate.firstName, b.candidate.lastName].filter(Boolean).join(" ")}`, `Bezahlt. Telefon/WhatsApp: ${b.contactPhone ?? "–"}. Berufe: ${b.targetJobs ?? "–"}. Buchung: /admin/buchungen/${b.id}`);

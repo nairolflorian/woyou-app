@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getSession } from "@/lib/session";
-import { isAdmin } from "@/lib/auth";
+import { isStaff } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { audit } from "@/lib/audit";
+import { grantStartCredits } from "@/lib/credits";
 import { BOOKING_STATUS } from "@/lib/services";
 
 const Body = z.object({
@@ -15,7 +16,7 @@ const Body = z.object({
 
 export async function PATCH(req: Request) {
   const session = await getSession();
-  if (!session.userId || !isAdmin(session.role)) return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
+  if (!session.userId || !isStaff(session.role)) return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
   const parsed = Body.safeParse(await req.json().catch(() => ({})));
   if (!parsed.success) return NextResponse.json({ error: "Ungültige Eingabe" }, { status: 400 });
   const { id, ...data } = parsed.data;
@@ -24,6 +25,7 @@ export async function PATCH(req: Request) {
   // "Bezahlt" von Hand setzen (z. B. Überweisung) setzt auch das Zahlungsdatum
   const extra = data.status === BOOKING_STATUS.PAID && !before.paidAt ? { paidAt: new Date() } : {};
   const after = await prisma.serviceBooking.update({ where: { id }, data: { ...data, ...extra } });
+  if (after.paidAt) await grantStartCredits(id);
   await audit(req, "BOOKING_UPDATE", { candidateId: before.candidateId }, { bookingId: id, from: { status: before.status, sent: before.applicationsSent }, to: { status: after.status, sent: after.applicationsSent } });
   return NextResponse.json({ ok: true, booking: after });
 }
