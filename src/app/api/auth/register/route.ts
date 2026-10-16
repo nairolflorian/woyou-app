@@ -14,6 +14,7 @@ const schema = z.object({
   locale: z.string().optional(),
   // Honeypot: a hidden field that real users never see and bots usually fill.
   website: z.string().optional(),
+  source: z.string().max(120).optional(),
 });
 
 export async function POST(req: Request) {
@@ -55,6 +56,10 @@ export async function POST(req: Request) {
     { email: email || undefined, phone: phone || undefined, password, locale },
     role
   );
+
+  // Herkunft (utm_source/utm_campaign aus dem Werbelink) für die Auswertung je Kanal
+  const source = parsed.data.source?.replace(/[^\w./ -]/g, "").slice(0, 80);
+  if (source) await prisma.user.update({ where: { id: user.id }, data: { signupSource: source } });
 
   if (role === ROLE.CANDIDATE) {
     await prisma.candidate.create({

@@ -34,6 +34,9 @@ export default async function CandidateDashboardPage(props: { searchParams: Prom
     orderBy: { createdAt: "desc" },
     include: { leads: { where: { status: { in: Object.keys(OFFER_STATUS) } }, orderBy: [{ sentAt: { sort: "desc", nulls: "last" } }, { score: { sort: "desc", nulls: "last" } }], take: 80, select: { id: true, title: true, company: true, city: true, sentAt: true, status: true, url: true, response: true } } },
   });
+  // Verschickte und freigegebene zuerst, dann in Vorbereitung, dann Vorschläge
+  const rank: Record<string, number> = { SENT: 0, APPLIED_MANUALLY: 0, READY: 1, SELECTED: 2, SUGGESTED: 3 };
+  booking?.leads.sort((x, y) => (rank[x.status] ?? 9) - (rank[y.status] ?? 9));
   const credits = await creditState(candidate.id);
   const sub = await prisma.creditPurchase.findFirst({ where: { candidateId: candidate.id, kind: "SUBSCRIPTION", status: { in: ["ACTIVE", "CANCELLING"] } }, orderBy: { createdAt: "desc" } });
   const sp = await props.searchParams;

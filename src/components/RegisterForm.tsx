@@ -30,6 +30,7 @@ export function RegisterForm() {
         password,
         role: "CANDIDATE",
         website,
+        source: (() => { try { return sessionStorage.getItem("woyou_src") || undefined; } catch { return undefined; } })(),
       }),
     });
     const data = await res.json();

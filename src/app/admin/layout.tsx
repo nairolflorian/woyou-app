@@ -38,6 +38,7 @@ export default async function AdminLayout({
                 {!team && <Link href="/admin/analytics" className="btn-ghost justify-start">📈 Analytics</Link>}
                 {!team && <Link href="/admin/kandidaten" className="btn-ghost justify-start">👥 Kund:innen</Link>}
                 <Link href="/admin/aufgaben" className="btn-ghost justify-start">✅ Aufgaben</Link>
+                {!team && <Link href="/admin/marketing" className="btn-ghost justify-start">📣 Marketing</Link>}
                 {!team && <Link href="/admin/audit" className="btn-ghost justify-start">📜 Audit-Log</Link>}
                 {session.role === ROLE.SUPER_ADMIN && (
                   <>

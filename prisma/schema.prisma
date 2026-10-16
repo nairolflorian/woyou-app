@@ -27,6 +27,9 @@ model User {
 
   candidate       Candidate?
   company         Company?
+  marketingOptOut Boolean  @default(false) // Abmeldung von Hinweis-Mails (Link in jeder Mail)
+  signupSource    String?  // Herkunft bei Registrierung (utm_source/utm_campaign), für Auswertung je Kanal
+  marketingSends  MarketingSend[]
   sentMessages    Message[] @relation("SenderMessages")
   notifications   Notification[]
   assignedTasks   AdminTask[] @relation("AssignedAdmin")
@@ -453,4 +456,15 @@ model CreditPurchase {
   updatedAt            DateTime  @updatedAt
 
   @@index([candidateId])
+}
+
+// Automatische Hinweis-Mails (Marketingstrecke): je Person und Schritt höchstens einmal
+model MarketingSend {
+  id     String   @id @default(cuid())
+  userId String
+  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  step   String
+  sentAt DateTime @default(now())
+
+  @@unique([userId, step])
 }
