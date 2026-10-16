@@ -27,15 +27,6 @@ export default async function RegisterPage() {
                   {t("nav.login")}
                 </Link>
               </span>
-              <span>
-                Lieber per Telegram?{" "}
-                <Link
-                  href="/registrierung/telegram"
-                  className="text-[#229ED9] font-semibold"
-                >
-                  Telegram-Bot starten
-                </Link>
-              </span>
             </div>
           </div>
         </div>

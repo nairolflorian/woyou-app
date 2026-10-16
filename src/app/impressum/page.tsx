@@ -1,7 +1,8 @@
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { COMPANY } from "@/lib/company";
 
-export const metadata = { title: "Impressum — WoYou" };
+export const metadata = { title: "Impressum" };
 
 export default function Impressum() {
   return (
@@ -11,72 +12,73 @@ export default function Impressum() {
         <div className="mx-auto max-w-3xl px-6 py-12">
           <span className="section-tag">Rechtliches</span>
           <h1 className="text-3xl font-bold">Impressum</h1>
-          <Notice />
 
           <div className="mt-8 card space-y-4 text-sm leading-relaxed">
-            <h2 className="font-semibold text-base">Angaben gemäß § 5 TMG</h2>
+            <h2 className="font-semibold text-base">Angaben gemäß § 5 DDG</h2>
             <p>
-              <strong>[Firmenname WoYou GmbH]</strong>
+              <strong>{COMPANY.name}</strong>
               <br />
-              [Straße + Hausnummer]
+              {COMPANY.street}
               <br />
-              [PLZ + Ort]
+              {COMPANY.zipCity}
               <br />
-              Deutschland
+              {COMPANY.country}
             </p>
+
+            <h2 className="font-semibold text-base">Vertreten durch den Geschäftsführer</h2>
+            <p>{COMPANY.ceo}</p>
 
             <h2 className="font-semibold text-base">Kontakt</h2>
             <p>
-              Telefon: [+49 …]
+              Telefon: <span dir="ltr">{COMPANY.phone}</span>
               <br />
-              E-Mail: [kontakt@woyou.de]
+              E-Mail: {COMPANY.email}
             </p>
 
-            <h2 className="font-semibold text-base">Vertretungsberechtigte:r</h2>
-            <p>[Vorname Nachname], Geschäftsführer:in</p>
-
-            <h2 className="font-semibold text-base">Eintragung im Handelsregister</h2>
+            <h2 className="font-semibold text-base">Registereintrag</h2>
             <p>
-              Registergericht: [Amtsgericht …]
+              Sitz der Gesellschaft: Düsseldorf
               <br />
-              Registernummer: [HRB …]
+              Registergericht: {COMPANY.court}
+              <br />
+              Registernummer: {COMPANY.register}
             </p>
 
-            <h2 className="font-semibold text-base">Umsatzsteuer-ID</h2>
-            <p>USt-IdNr. nach § 27a UStG: [DE …]</p>
+            <h2 className="font-semibold text-base">Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV</h2>
+            <p>{COMPANY.ceo}, {COMPANY.street}, {COMPANY.zipCity}</p>
 
-            <h2 className="font-semibold text-base">
-              Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV
-            </h2>
-            <p>[Vorname Nachname, Adresse wie oben]</p>
-
-            <h2 className="font-semibold text-base">EU-Streitschlichtung</h2>
+            <h2 className="font-semibold text-base">Verbraucherstreitbeilegung</h2>
             <p>
-              Plattform der EU-Kommission zur Online-Streitbeilegung:{" "}
-              <a
-                href="https://ec.europa.eu/consumers/odr/"
-                className="text-[color:var(--color-brand)] underline"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                ec.europa.eu/consumers/odr
-              </a>
-              . Wir sind nicht verpflichtet und nicht bereit, an einem
-              Streitbeilegungsverfahren teilzunehmen.
+              Wir sind nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer
+              Verbraucherschlichtungsstelle teilzunehmen.
+            </p>
+
+            <h2 className="font-semibold text-base">Haftung für Inhalte</h2>
+            <p>
+              Als Diensteanbieter sind wir für eigene Inhalte auf diesen Seiten nach den allgemeinen
+              Gesetzen verantwortlich. Wir sind jedoch nicht verpflichtet, übermittelte oder gespeicherte
+              fremde Informationen zu überwachen oder nach Umständen zu forschen, die auf eine rechtswidrige
+              Tätigkeit hinweisen. Verpflichtungen zur Entfernung oder Sperrung der Nutzung von Informationen
+              nach den allgemeinen Gesetzen bleiben unberührt.
+            </p>
+
+            <h2 className="font-semibold text-base">Haftung für Links</h2>
+            <p>
+              Unser Angebot enthält Links zu externen Websites Dritter, auf deren Inhalte wir keinen Einfluss
+              haben. Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber
+              verantwortlich. Werden uns Rechtsverletzungen bekannt, entfernen wir solche Links umgehend.
+            </p>
+
+            <h2 className="font-semibold text-base">Urheberrecht</h2>
+            <p>
+              Die durch den Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen dem
+              deutschen Urheberrecht. Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung
+              außerhalb der Grenzen des Urheberrechts bedürfen der schriftlichen Zustimmung.
             </p>
           </div>
         </div>
       </main>
       <SiteFooter />
     </>
-  );
-}
-
-function Notice() {
-  return (
-    <div className="mt-3 rounded-lg bg-amber-50 border border-amber-200 p-3 text-sm text-amber-900">
-      ⚠ <strong>Demo-Platzhalter.</strong> Vor Produktivstart durch tatsächliche
-      Firmenangaben ersetzen — siehe <code>src/app/impressum/page.tsx</code>.
-    </div>
   );
 }

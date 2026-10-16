@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-export type LeadView = { id: string; title: string; company: string; city: string | null; url: string | null; applyUrl: string | null; email: string | null; contactName: string | null; coverLetter: string | null; status: string; sentAt: string | null; response: string | null; source: string; hasDescription: boolean };
+export type LeadView = { id: string; title: string; company: string; city: string | null; url: string | null; applyUrl: string | null; email: string | null; contactName: string | null; coverLetter: string | null; status: string; sentAt: string | null; response: string | null; source: string; hasDescription: boolean; lang: string };
 
 const LABEL: Record<string, [string, string]> = {
   SELECTED: ["ausgewählt", "bg-slate-100 text-slate-700"], READY: ["geprüft", "bg-blue-100 text-blue-800"],
@@ -21,7 +21,7 @@ export function LeadCard({ lead, canSend, n }: { lead: LeadView; canSend: boolea
     const r = await fetch(`/api/admin/leads/${l.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
     const j = await r.json().catch(() => ({}));
     setBusy(false);
-    if (r.ok) { setL((x) => ({ ...x, ...data, sentAt: j.lead?.sentAt ?? x.sentAt })); setMsg({ ok: true, t: okText }); } else setMsg({ ok: false, t: j.error ?? "Fehler" });
+    if (r.ok) { setL((x) => ({ ...x, ...data, sentAt: j.lead?.sentAt ?? x.sentAt })); if (okText) setMsg({ ok: true, t: okText }); } else setMsg({ ok: false, t: j.error ?? "Fehler" });
     return r.ok;
   }
   async function generate() {
@@ -31,6 +31,16 @@ export function LeadCard({ lead, canSend, n }: { lead: LeadView; canSend: boolea
     const j = await r.json().catch(() => ({}));
     setBusy(false);
     if (r.ok) { setL((x) => ({ ...x, coverLetter: j.coverLetter })); setMsg({ ok: true, t: j.ai ? "Neu formuliert (KI) – bitte gegenlesen." : "Aus der Vorlage neu erstellt." }); }
+  }
+  async function switchLang(lang: "de" | "en") {
+    if (lang === l.lang) return;
+    if (!confirm(lang === "en" ? "Unterlagen für diese Stelle auf Englisch umstellen? Das Anschreiben wird neu erstellt." : "Zurück auf Deutsch? Das Anschreiben wird neu erstellt.")) return;
+    if (!(await patch({ lang }, ""))) return;
+    setBusy(true);
+    const r = await fetch(`/api/admin/leads/${l.id}/generate`, { method: "POST" });
+    const j = await r.json().catch(() => ({}));
+    setBusy(false);
+    if (r.ok) { setL((x) => ({ ...x, lang, coverLetter: j.coverLetter })); setMsg({ ok: true, t: lang === "en" ? "Auf Englisch umgestellt. Bitte Anschreiben und englischen Lebenslauf prüfen." : "Auf Deutsch umgestellt." }); }
   }
   async function send() {
     if (!(await patch({ email: l.email ?? "", contactName: l.contactName ?? "", coverLetter: l.coverLetter ?? "" }, "Gespeichert"))) return;
@@ -47,7 +57,7 @@ export function LeadCard({ lead, canSend, n }: { lead: LeadView; canSend: boolea
     <div className={`card ${l.status === "DISCARDED" ? "opacity-60" : ""}`}>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <button type="button" className="text-left min-w-0 flex-1" onClick={() => setOpen((o) => !o)}>
-          <div className="text-xs text-[color:var(--color-ink-soft)]">#{n} · {l.source === "BA" ? "Bundesagentur" : "manuell"}</div>
+          <div className="text-xs text-[color:var(--color-ink-soft)]">#{n} · {l.source === "BA" ? "Bundesagentur" : "manuell"}{l.lang === "en" ? " · Englisch" : ""}</div>
           <div className="font-semibold">{l.title}</div>
           <div className="text-sm">{l.company}{l.city ? ` · ${l.city}` : ""}</div>
         </button>
@@ -61,6 +71,14 @@ export function LeadCard({ lead, canSend, n }: { lead: LeadView; canSend: boolea
             <a className="text-[color:var(--color-brand)] underline" href={`/api/admin/leads/${l.id}/pdf?doc=letter`} target="_blank">Anschreiben (PDF)</a>
             <a className="text-[color:var(--color-brand)] underline" href={`/api/admin/leads/${l.id}/pdf?doc=cv`} target="_blank">Lebenslauf (PDF)</a>
           </div>
+          {!done && l.status !== "DISCARDED" && (
+            <div className="flex flex-wrap items-center gap-2 text-sm">
+              <span className="text-[color:var(--color-ink-soft)]">Sprache der Unterlagen:</span>
+              {(["de", "en"] as const).map((x) => (
+                <button key={x} type="button" disabled={busy} onClick={() => switchLang(x)} className={`rounded-full px-3 py-1 border ${l.lang === x ? "bg-[color:var(--color-brand)] text-white border-transparent" : "border-[color:var(--color-border)]"}`}>{x === "de" ? "Deutsch" : "Englisch"}</button>
+              ))}
+            </div>
+          )}
           <div className="grid gap-3 md:grid-cols-2">
             <div><label className="label">Bewerbungs-E-Mail {l.email ? "" : "(aus der Ausschreibung übernehmen)"}</label><input className="input" type="email" value={l.email ?? ""} disabled={done} onChange={(e) => setL({ ...l, email: e.target.value })} /></div>
             <div><label className="label">Ansprechperson (z. B. „Frau Müller“)</label><input className="input" value={l.contactName ?? ""} disabled={done} onChange={(e) => setL({ ...l, contactName: e.target.value })} /></div>

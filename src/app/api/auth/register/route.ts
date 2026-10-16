@@ -10,7 +10,7 @@ const schema = z.object({
   email: z.string().email().optional().or(z.literal("")),
   phone: z.string().optional(),
   password: z.string().min(6),
-  role: z.enum([ROLE.CANDIDATE, ROLE.COMPANY]).default(ROLE.CANDIDATE),
+  role: z.literal(ROLE.CANDIDATE).default(ROLE.CANDIDATE),
   locale: z.string().optional(),
   // Honeypot: a hidden field that real users never see and bots usually fill.
   website: z.string().optional(),
@@ -69,6 +69,6 @@ export async function POST(req: Request) {
   session.locale = locale ?? "de";
   await session.save();
 
-  const next = role === ROLE.COMPANY ? "/arbeitgeber/registrierung" : "/registrierung/profil";
+  const next = "/bewerbungsservice/buchen";
   return NextResponse.json({ ok: true, next });
 }

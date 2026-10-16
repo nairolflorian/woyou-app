@@ -4,20 +4,7 @@ const BASE = process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
-  const routes = [
-    "",
-    "/bewerber",
-    "/bewerbungsservice",
-    "/arbeitgeber",
-    "/registrierung",
-    "/registrierung/telegram",
-    "/anmelden",
-    "/sprachtest",
-    "/impressum",
-    "/datenschutz",
-    "/agb",
-    "/demo",
-  ];
+  const routes = ["", "/bewerbungsservice", "/registrierung", "/anmelden", "/impressum", "/datenschutz", "/agb"];
   return routes.map((path) => ({
     url: `${BASE}${path}`,
     lastModified: now,

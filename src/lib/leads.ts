@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { jobDetails, jobUrl } from "@/lib/jobs-ba";
 import { letterForJob, subjectLine, salutation } from "@/lib/letters";
 import { parseProfile } from "@/lib/application";
-import { cvPdf, letterPdf } from "@/lib/pdf";
+import { cvPdf, letterPdf, type DocLang } from "@/lib/pdf";
 import { readPhoto, readOwnCv } from "@/lib/mappe";
 import { sendMail, layout, mailEnabled, type Attachment } from "@/lib/mail";
 import { aliasAddress } from "@/lib/alias";
@@ -13,6 +13,11 @@ import { BOOKING_STATUS } from "@/lib/services";
 
 export const ACTIVE_LEAD = ["SELECTED", "READY", "SENT", "APPLIED_MANUALLY"];
 export const DONE_LEAD = ["SENT", "APPLIED_MANUALLY"];
+
+// Daten für die gewünschte Sprache: englische Fassung, falls gepflegt, sonst die deutsche Mappe
+export function profileFor(profile: { data: string; dataEn: string | null } | null, lang: string) {
+  return parseProfile(lang === "en" && profile?.dataEn ? profile.dataEn : profile?.data);
+}
 
 async function bookingWithProfile(bookingId: string) {
   return prisma.serviceBooking.findUniqueOrThrow({ where: { id: bookingId }, include: { profile: true, candidate: { include: { user: true } } } });
@@ -41,7 +46,8 @@ export async function addLead(bookingId: string, job: { ref?: string | null; tit
 export async function regenerateLetter(leadId: string) {
   const l = await prisma.jobLead.findUniqueOrThrow({ where: { id: leadId } });
   const b = await bookingWithProfile(l.bookingId);
-  const letter = await letterForJob(parseProfile(b.profile?.data), { title: l.title, company: l.company, city: l.city, ref: l.sourceRef, contactName: l.contactName, description: l.description });
+  const lang = l.lang as DocLang;
+  const letter = await letterForJob(profileFor(b.profile, lang), { title: l.title, company: l.company, city: l.city, ref: l.sourceRef, contactName: l.contactName, description: l.description }, lang);
   return prisma.jobLead.update({ where: { id: leadId }, data: { coverLetter: letter.text } });
 }
 
@@ -57,20 +63,21 @@ export async function recount(bookingId: string) {
 export async function leadDocuments(leadId: string) {
   const l = await prisma.jobLead.findUniqueOrThrow({ where: { id: leadId } });
   const b = await bookingWithProfile(l.bookingId);
-  const d = parseProfile(b.profile?.data);
+  const lang = l.lang as DocLang, en = lang === "en";
+  const d = profileFor(b.profile, lang);
   const name = `${d.firstName}_${d.lastName}`.replace(/[^A-Za-z0-9_-]+/g, "") || "Bewerbung";
-  const recipient = [l.company, l.contactName ? `z. Hd. ${l.contactName}` : "Personalabteilung", l.city ?? ""];
-  const letter = await letterPdf(d, recipient, subjectLine({ title: l.title, company: l.company, ref: l.sourceRef }), l.coverLetter || "");
+  const recipient = [l.company, l.contactName ? `${en ? "Attn." : "z. Hd."} ${l.contactName}` : en ? "Human Resources" : "Personalabteilung", l.city ?? ""];
+  const letter = await letterPdf(d, recipient, subjectLine({ title: l.title, company: l.company, ref: l.sourceRef }, lang), l.coverLetter || "", lang);
   const own = b.profile?.useOwnCv ? await readOwnCv(b.candidate, b.profile.ownCvFile) : null;
-  const cv = own ?? (await cvPdf(d, await readPhoto(b.candidateId, b.profile?.photoFile ?? null)));
-  return { lead: l, booking: b, data: d, files: [
-    { filename: `Anschreiben_${name}.pdf`, content: letter, contentType: "application/pdf" },
-    { filename: `Lebenslauf_${name}.pdf`, content: cv, contentType: "application/pdf" },
+  const cv = own ?? (await cvPdf(d, await readPhoto(b.candidateId, b.profile?.photoFile ?? null), lang));
+  return { lead: l, booking: b, data: d, lang, files: [
+    { filename: `${en ? "Cover_letter" : "Anschreiben"}_${name}.pdf`, content: letter, contentType: "application/pdf" },
+    { filename: `${en ? "CV" : "Lebenslauf"}_${name}.pdf`, content: cv, contentType: "application/pdf" },
   ] as Attachment[] };
 }
 
 export async function sendApplication(leadId: string) {
-  const { lead, booking, data, files } = await leadDocuments(leadId);
+  const { lead, booking, data, files, lang } = await leadDocuments(leadId);
   if (!mailEnabled()) throw new Error("Mailversand ist noch nicht eingerichtet (SMTP fehlt). Bitte vorerst manuell bewerben und als „beworben“ markieren.");
   if (!booking.consentSendAt) throw new Error("Für diese Buchung liegt keine Vollmacht zum Versand vor.");
   if (booking.profile?.status !== "APPROVED") throw new Error("Bitte zuerst die Bewerbungsmappe freigeben.");
@@ -84,8 +91,10 @@ export async function sendApplication(leadId: string) {
   const fromBase = (process.env.MAIL_FROM || "WoYou <no-reply@woyou.de>").match(/<([^>]+)>/)?.[1] || process.env.MAIL_FROM || "no-reply@woyou.de";
   const from = alias ? `"${name}" <${alias}>` : `"${name} (über WoYou)" <${fromBase}>`;
   const replyTo = alias || customer || undefined;
-  const subject = subjectLine({ title: lead.title, company: lead.company, ref: lead.sourceRef });
-  const body = [salutation(lead.contactName), "", `anbei sende ich Ihnen meine Bewerbung als ${lead.title}. Mein Anschreiben und meinen Lebenslauf finden Sie im Anhang.`, "", "Ich freue mich auf Ihre Rückmeldung.", "", "Mit freundlichen Grüßen", name, data.phone].filter((x) => x !== undefined).join("\n");
+  const subject = subjectLine({ title: lead.title, company: lead.company, ref: lead.sourceRef }, lang);
+  const body = (lang === "en"
+    ? [salutation(lead.contactName, "en"), "", `Please find attached my application for the position of ${lead.title}, including my cover letter and CV.`, "", "I look forward to hearing from you.", "", "Kind regards", name, data.phone]
+    : [salutation(lead.contactName), "", `anbei sende ich Ihnen meine Bewerbung als ${lead.title}. Mein Anschreiben und meinen Lebenslauf finden Sie im Anhang.`, "", "Ich freue mich auf Ihre Rückmeldung.", "", "Mit freundlichen Grüßen", name, data.phone]).filter((x) => x !== undefined).join("\n");
   const html = `<div style="font-family:Arial,sans-serif;font-size:14px;line-height:1.5;color:#1f1f1f">${body.split("\n").map((x) => (x ? x.replace(/[<>&]/g, "") : "<br>")).join("<br>")}</div>`;
 
   const r = await sendMail({ to: lead.email, from, replyTo, subject, text: body, html, attachments: files, template: "application", bookingId: booking.id });

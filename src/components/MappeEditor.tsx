@@ -13,6 +13,7 @@ type Props = {
   ownCv: { has: boolean; use: boolean };
   missing: string[];
   bookingId?: string; // nur Admin
+  lang?: "en"; // nur Admin: englische Fassung bearbeiten
   locale?: string;
 };
 
@@ -26,7 +27,8 @@ export function MappeEditor(p: Props) {
   const [hasPhoto, setHasPhoto] = useState(p.hasPhoto);
   const [ownCv, setOwnCv] = useState(p.ownCv);
   const [v, setV] = useState(0); // erzwingt Neuladen der Vorschau-Links
-  const q = p.bookingId ? `bookingId=${p.bookingId}&` : "";
+  const en = !!p.bookingId && p.lang === "en";
+  const q = p.bookingId ? `bookingId=${p.bookingId}&${en ? "lang=en&" : ""}` : "";
   const locked = !p.bookingId && status === "APPROVED";
 
   const set = <K extends keyof ProfileData>(k: K, val: ProfileData[K]) => setD((x) => ({ ...x, [k]: val }));
@@ -133,7 +135,9 @@ export function MappeEditor(p: Props) {
         </div>
       </section>
 
-      <section className="card">
+      {en && <div className="card bg-blue-50 border-blue-200 text-sm text-blue-900">Englische Fassung: Texte hier auf Englisch eintragen bzw. übersetzen. Sie wird für Stellen verwendet, die auf „Englisch“ stehen. Foto und eigener Lebenslauf gelten für beide Fassungen.</div>}
+
+      {!en && <section className="card">
         <h2 className="font-semibold">{tx.ownTitle}</h2>
         <p className="mt-1 text-sm text-[color:var(--color-ink-soft)]">{tx.ownHint}</p>
         <div className="mt-3 flex flex-wrap items-center gap-3">
@@ -142,7 +146,7 @@ export function MappeEditor(p: Props) {
             <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={ownCv.use} disabled={locked} onChange={(e) => useOwn(e.target.checked)} />{tx.ownUse}</label>
           )}
         </div>
-      </section>
+      </section>}
 
       <section className="card grid gap-4 md:grid-cols-2">
         <h2 className="font-semibold md:col-span-2">{tx.personal}</h2>
@@ -201,7 +205,7 @@ export function MappeEditor(p: Props) {
       {!locked && (
         <div className="flex flex-wrap gap-3 sticky bottom-4 bg-white/90 backdrop-blur rounded-full p-2 shadow">
           <button type="button" className="btn-outline" disabled={busy} onClick={save}>{busy ? "…" : tx.save}</button>
-          {p.bookingId
+          {en ? null : p.bookingId
             ? <button type="button" className="btn-primary" disabled={busy} onClick={submit}>Speichern und freigeben</button>
             : status === "DRAFT" && <button type="button" className="btn-primary" disabled={busy} onClick={submit}>{tx.submit}</button>}
           {!p.bookingId && status === "SUBMITTED" && <span className="self-center text-sm text-[color:var(--color-ink-soft)]">{tx.submittedNote}</span>}

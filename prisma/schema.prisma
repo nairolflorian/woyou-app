@@ -360,6 +360,7 @@ model ApplicationProfile {
   bookingId    String         @unique
   booking      ServiceBooking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
   data         String         // JSON, siehe src/lib/application.ts
+  dataEn       String?        // englische Fassung (vom Bearbeiter gepflegt, nur bei Bedarf)
   photoFile    String?        // Dateiname im Kandidaten-Upload-Ordner
   ownCvFile    String?        // eigener, hochgeladener Lebenslauf (PDF) im Kandidaten-Upload-Ordner
   useOwnCv     Boolean        @default(false) // beim Versand eigenen statt erzeugten Lebenslauf anhängen
@@ -387,6 +388,7 @@ model JobLead {
   contactName   String?
   description   String?
   coverLetter   String?
+  lang          String         @default("de") // de | en: Sprache von Anschreiben und Lebenslauf
   status        String         @default("SELECTED") // SELECTED | READY | SENT | APPLIED_MANUALLY | DISCARDED
   sentAt        DateTime?
   response      String?        // Rückmeldung der Firma (Notiz / eingehende Mail)

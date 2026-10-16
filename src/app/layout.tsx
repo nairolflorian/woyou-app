@@ -10,33 +10,33 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   title: {
-    default: "WoYou — Deine Zukunft in Deutschland",
+    default: "WoYou · 25 Bewerbungen für 199 €",
     template: "%s · WoYou",
   },
   description:
-    "WoYou verbindet internationales Talent mit deutschen Unternehmen. Erstelle dein Profil, finde die passende Stelle und starte dein Abenteuer in Deutschland.",
+    "Wir erstellen deinen Lebenslauf nach deutschem Standard und verschicken 25 passende Bewerbungen in deinem Namen. Einmalig 199 €.",
   keywords: [
     "Arbeit Deutschland",
     "Ausbildung",
     "internationale Fachkräfte",
-    "Marokko",
-    "Vermittlung",
-    "Karriere",
+    "Bewerbung schreiben lassen",
+    "Lebenslauf deutsch",
+    "Bewerbungsservice",
   ],
   openGraph: {
     type: "website",
     siteName: "WoYou",
     locale: "de_DE",
     url: BASE_URL,
-    title: "WoYou — Deine Zukunft in Deutschland",
+    title: "WoYou · 25 Bewerbungen für 199 €",
     description:
-      "Vermittlung internationaler Fachkräfte nach Deutschland — mit Sprachtest, Visa-Unterstützung und persönlicher Begleitung.",
+      "Lebenslauf nach deutschem Standard und 25 passende Bewerbungen in deinem Namen.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "WoYou — Deine Zukunft in Deutschland",
+    title: "WoYou · 25 Bewerbungen für 199 €",
     description:
-      "Vermittlung internationaler Fachkräfte nach Deutschland.",
+      "Lebenslauf nach deutschem Standard und 25 passende Bewerbungen in deinem Namen.",
   },
   robots: {
     index: process.env.DEMO_MODE === "false",

@@ -13,7 +13,7 @@ const ORGANIZATION = {
   logo: `${BASE}/Logo.png`,
   sameAs: ["https://woyou.de"],
   description:
-    "WoYou verbindet internationale Fachkräfte mit deutschen Unternehmen. Vermittlung, Sprachtests, Visa-Unterstützung und persönliche Begleitung bis zur Ankunft in Deutschland.",
+    "WoYou erstellt Lebenslauf und Anschreiben nach deutschem Standard und verschickt 25 passende Bewerbungen in deinem Namen.",
   areaServed: { "@type": "Country", name: "Germany" },
 };
 
@@ -22,7 +22,7 @@ const WEBSITE = {
   "@type": "WebSite",
   name: "WoYou",
   url: BASE,
-  inLanguage: ["de", "en", "fr", "ar", "es", "ru", "uk"],
+  inLanguage: ["de", "en", "fr", "ar"],
 };
 
 export async function SchemaOrg() {

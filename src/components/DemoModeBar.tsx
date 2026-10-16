@@ -16,7 +16,7 @@ export async function DemoModeBar() {
   }
   return (
     <DemoModeBarClient
-      accounts={DEMO_ACCOUNTS}
+      accounts={DEMO_ACCOUNTS.filter((a) => a.role !== "COMPANY")}
       currentEmail={currentEmail}
     />
   );

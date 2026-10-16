@@ -11,6 +11,7 @@ const Body = z.object({
   coverLetter: z.string().max(6000).optional(),
   status: z.enum(["SELECTED", "READY", "APPLIED_MANUALLY", "DISCARDED"]).optional(),
   response: z.string().max(4000).optional(),
+  lang: z.enum(["de", "en"]).optional(),
 });
 
 export async function PATCH(req: Request, ctx: { params: Promise<{ leadId: string }> }) {
@@ -20,6 +21,7 @@ export async function PATCH(req: Request, ctx: { params: Promise<{ leadId: strin
   if (!p.success) return NextResponse.json({ error: "Ungültige Eingabe (E-Mail prüfen)." }, { status: 400 });
   const before = await prisma.jobLead.findUnique({ where: { id: leadId } });
   if (!before) return NextResponse.json({ error: "Nicht gefunden" }, { status: 404 });
+  if (before.status === "SENT" && (p.data.status || p.data.lang)) return NextResponse.json({ error: "Bereits verschickt." }, { status: 409 });
   if (before.status === "SENT" && p.data.status) return NextResponse.json({ error: "Bereits verschickt." }, { status: 409 });
   const data: Record<string, unknown> = { ...p.data };
   if (p.data.email === "") data.email = null;

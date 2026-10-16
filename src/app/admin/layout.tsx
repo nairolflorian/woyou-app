@@ -29,14 +29,10 @@ export default async function AdminLayout({
               </div>
               <nav className="mt-4 flex flex-col gap-1 text-sm">
                 <Link href="/admin" className="btn-ghost justify-start">📊 Übersicht</Link>
-                <Link href="/admin/analytics" className="btn-ghost justify-start">📈 Analytics</Link>
-                <Link href="/admin/kandidaten" className="btn-ghost justify-start">👥 Kandidaten</Link>
-                <Link href="/admin/firmen" className="btn-ghost justify-start">🏢 Unternehmen</Link>
-                <Link href="/admin/anfragen" className="btn-ghost justify-start">📝 Anfragen</Link>
-                <Link href="/admin/matching" className="btn-ghost justify-start">🎯 Matching</Link>
-                <Link href="/admin/chats" className="btn-ghost justify-start">💬 Chats</Link>
-                <Link href="/admin/aufgaben" className="btn-ghost justify-start">✅ Aufgaben</Link>
                 <Link href="/admin/buchungen" className="btn-ghost justify-start">🧾 Buchungen</Link>
+                <Link href="/admin/analytics" className="btn-ghost justify-start">📈 Analytics</Link>
+                <Link href="/admin/kandidaten" className="btn-ghost justify-start">👥 Kund:innen</Link>
+                <Link href="/admin/aufgaben" className="btn-ghost justify-start">✅ Aufgaben</Link>
                 <Link href="/admin/audit" className="btn-ghost justify-start">📜 Audit-Log</Link>
                 {session.role === ROLE.SUPER_ADMIN && (
                   <>

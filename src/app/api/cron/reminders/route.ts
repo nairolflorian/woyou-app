@@ -44,26 +44,7 @@ async function notifyOnce(
 async function run() {
   let counts = { incomplete: 0, candidateConsent: 0, companyStale: 0, overdueTasks: 0, mappeReminders: 0 };
 
-  // 1. Stale incomplete profiles (>3 days)
-  const staleThreshold = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000);
-  const stale = await prisma.candidate.findMany({
-    where: {
-      status: { in: [CANDIDATE_STATUS.REGISTERED, CANDIDATE_STATUS.INCOMPLETE] },
-      createdAt: { lt: staleThreshold },
-    },
-    include: { user: true },
-  });
-  for (const c of stale) {
-    if (
-      await notifyOnce(c.userId, "PROFILE_NUDGE", {
-        title: "Vergiss dein WoYou-Profil nicht 👋",
-        body: `Es ist nur noch zu ${c.profileCompleteness}% ausgefüllt — wir können dich erst vorschlagen, wenn es vollständig ist.`,
-        link: "/registrierung/profil",
-      })
-    ) {
-      counts.incomplete++;
-    }
-  }
+  // 1. Profil-Erinnerung (Vermittlung) entfällt: WoYou bietet nur noch den Bewerbungs-Service an.
 
   // 2. Matches awaiting candidate consent for >24h
   const consentThreshold = new Date(Date.now() - 24 * 60 * 60 * 1000);

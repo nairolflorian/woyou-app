@@ -4,8 +4,8 @@ import { getSession } from "@/lib/session";
 import { LangSwitcher } from "@/components/LangSwitcher";
 import { MobileMenu } from "@/components/MobileMenu";
 import { NotificationsBell } from "@/components/NotificationsBell";
-import { ROLE } from "@/lib/enums";
 import { isAdmin } from "@/lib/auth";
+import { siteText } from "@/lib/company";
 
 export async function SiteHeader() {
   const { t, locale } = await getT();
@@ -14,15 +14,15 @@ export async function SiteHeader() {
   let dashboardHref = "/anmelden";
   if (session.userId) {
     if (isAdmin(session.role)) dashboardHref = "/admin";
-    else if (session.role === ROLE.COMPANY) dashboardHref = "/firmen/dashboard";
     else dashboardHref = "/profil";
   }
 
+  const st = siteText(locale);
   const navItems = [
-    { href: "/bewerber", label: t("nav.bewerber") },
-    { href: "/bewerbungsservice", label: t("nav.service") },
-    { href: "/arbeitgeber", label: t("nav.arbeitgeber") },
-    { href: "/#prozess", label: t("nav.so_funktioniert") },
+    { href: "/#angebot", label: st.navOffer },
+    { href: "/#ablauf", label: st.navSteps },
+    { href: "/#faq", label: st.navFaq },
+    { href: "/#kontakt", label: st.navContact },
   ];
 
   return (
@@ -69,8 +69,8 @@ export async function SiteHeader() {
               <Link href="/anmelden" className="btn-ghost hidden md:inline-flex">
                 {t("nav.login")}
               </Link>
-              <Link href="/registrierung" className="btn-primary hidden md:inline-flex">
-                {t("nav.register")}
+              <Link href="/bewerbungsservice/buchen" className="btn-primary hidden md:inline-flex">
+                {st.book}
               </Link>
             </>
           )}
@@ -78,7 +78,7 @@ export async function SiteHeader() {
             items={navItems}
             isLoggedIn={Boolean(session.userId)}
             loginLabel={t("nav.login")}
-            registerLabel={t("nav.register")}
+            registerLabel={st.book}
             logoutLabel={t("nav.logout")}
             dashboardLabel={t("nav.dashboard")}
             dashboardHref={dashboardHref}

@@ -34,7 +34,7 @@ export default function DemoPage() {
   }
 
   const grouped: Record<string, typeof DEMO_ACCOUNTS> = {};
-  for (const acc of DEMO_ACCOUNTS) {
+  for (const acc of DEMO_ACCOUNTS.filter((a) => a.role !== "COMPANY")) {
     const g = ROLE_GROUPS[acc.role];
     grouped[g] = grouped[g] ?? [];
     grouped[g].push(acc);

@@ -105,7 +105,7 @@ export function MobileMenu({
               ) : (
                 <>
                   <Link
-                    href="/registrierung"
+                    href="/bewerbungsservice/buchen"
                     onClick={() => setOpen(false)}
                     className="btn-primary w-full"
                   >

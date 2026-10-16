@@ -41,10 +41,10 @@ export async function mappeForRequest(bookingId?: string | null) {
   const session = await getSession();
   if (bookingId && session.userId && isAdmin(session.role)) {
     const r = await withProfile(bookingId);
-    return { ...r, data: parseProfile(r.profile.data), admin: true };
+    return { ...r, data: parseProfile(r.profile.data), dataEn: r.profile.dataEn ? parseProfile(r.profile.dataEn) : null, admin: true };
   }
   const own = await mappeForSession();
-  return own ? { ...own, admin: false } : null;
+  return own ? { ...own, dataEn: null, admin: false } : null;
 }
 
 export async function savePhoto(candidateId: string, file: File) {

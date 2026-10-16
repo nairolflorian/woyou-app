@@ -57,6 +57,14 @@ export default async function AdminBookingDetail(props: { params: Promise<{ id: 
         </div>
       </details>
 
+      <details className="card">
+        <summary className="cursor-pointer font-semibold">Englische Fassung (nur bei Bedarf)</summary>
+        <p className="mt-2 text-sm text-[color:var(--color-ink-soft)]">Für englischsprachige Firmen oder Stellen. Beim ersten Öffnen ist die deutsche Mappe vorausgefüllt; bitte die Texte übersetzen und speichern. Welche Stellen auf Englisch gehen, legst du unten je Stelle fest.</p>
+        <div className="mt-4">
+          <MappeEditor bookingId={b.id} lang="en" initial={b.profile?.dataEn ? parseProfile(b.profile.dataEn) : data} status={b.profile?.status ?? "DRAFT"} hasPhoto={!!b.profile?.photoFile} ownCv={{ has: !!b.profile?.ownCvFile, use: !!b.profile?.useOwnCv }} missing={[]} />
+        </div>
+      </details>
+
       <JobSearch bookingId={b.id} defaults={{ was: (data.targetJob || b.targetJobs || "").split(",")[0].trim(), wo: (b.targetRegions || "").split(",")[0].trim() }} selectedCount={active.length} goal={b.applicationsGoal} />
 
       <section className="space-y-3">
@@ -66,7 +74,7 @@ export default async function AdminBookingDetail(props: { params: Promise<{ id: 
         </div>
         {b.leads.length === 0 && <div className="card text-sm text-[color:var(--color-ink-soft)]">Noch keine Stellen ausgewählt. Oben suchen und „Auswählen“ klicken – Ausschreibung, E-Mail (falls angegeben) und ein erstes Anschreiben werden automatisch übernommen.</div>}
         {b.leads.map((l, i) => (
-          <LeadCard key={l.id} n={i + 1} canSend={canSend} lead={{ id: l.id, title: l.title, company: l.company, city: l.city, url: l.url, applyUrl: l.applyUrl, email: l.email, contactName: l.contactName, coverLetter: l.coverLetter, status: l.status, sentAt: l.sentAt?.toISOString() ?? null, response: l.response, source: l.source, hasDescription: !!l.description }} />
+          <LeadCard key={l.id} n={i + 1} canSend={canSend} lead={{ id: l.id, title: l.title, company: l.company, city: l.city, url: l.url, applyUrl: l.applyUrl, email: l.email, contactName: l.contactName, coverLetter: l.coverLetter, status: l.status, sentAt: l.sentAt?.toISOString() ?? null, response: l.response, source: l.source, hasDescription: !!l.description, lang: l.lang }} />
         ))}
       </section>
     </div>

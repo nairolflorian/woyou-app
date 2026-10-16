@@ -6,7 +6,7 @@ import { BookingForm } from "@/components/BookingForm";
 import { getT } from "@/lib/i18n";
 import { getSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
-import { ROLE } from "@/lib/enums";
+import { ROLE, CANDIDATE_STATUS } from "@/lib/enums";
 import { SERVICES, serviceCopy, formatPrice, BOOKING_STATUS } from "@/lib/services";
 import { getStripe } from "@/lib/stripe";
 
@@ -19,8 +19,9 @@ export default async function BookServicePage(props: { searchParams: Promise<{ a
   const { locale } = await getT();
   const c = serviceCopy(locale);
   const svc = SERVICES["bewerbung-25"];
-  const candidate = await prisma.candidate.findUnique({ where: { userId: session.userId } });
-  if (!candidate) redirect("/registrierung/profil");
+  const candidate =
+    (await prisma.candidate.findUnique({ where: { userId: session.userId } })) ??
+    (await prisma.candidate.create({ data: { userId: session.userId!, status: CANDIDATE_STATUS.REGISTERED } }));
 
   // Laufende Buchung? Dann nicht doppelt buchen lassen
   const open = await prisma.serviceBooking.findFirst({

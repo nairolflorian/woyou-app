@@ -40,6 +40,5 @@ export async function POST(req: Request) {
 
   let next = "/profil";
   if (user.role === ROLE.ADMIN || user.role === ROLE.SUPER_ADMIN) next = "/admin";
-  else if (user.role === ROLE.COMPANY) next = "/firmen/dashboard";
   return NextResponse.json({ ok: true, next });
 }
