@@ -52,8 +52,8 @@ type Copy = {
 export const SERVICE_COPY: Record<"de" | "fr" | "en" | "ar", Copy> = {
   de: {
     badge: "BEWERBUNGS-SERVICE",
-    title: "Wir bewerben dich: 25 Bewerbungen für 199 €",
-    lead: "Du willst in Deutschland arbeiten, aber Bewerbungen kosten dich Zeit und Nerven? Wir übernehmen das: von deinem Lebenslauf bis zum Versand von 25 passenden Bewerbungen.",
+    title: "Wir bewerben dich in Deutschland – ehrlich, für 199 €",
+    lead: "Lebenslauf nach deutschem Standard, 25 realistische Stellen, Versand in deinem Namen. Ob ein Arbeitgeber dich einlädt, entscheidet er – nicht wir.",
     priceNote: "einmalig · danach 25 weitere für 149 € oder unbegrenzt für 50 € im Monat",
     cta: "Jetzt buchen", ctaLogin: "Anmelden und buchen",
     includedTitle: "Das ist enthalten",
@@ -61,7 +61,7 @@ export const SERVICE_COPY: Record<"de" | "fr" | "en" | "ar", Copy> = {
       "Persönliches Erstgespräch per Telefon, WhatsApp oder Video",
       "Dein Lebenslauf nach deutschem Standard, auf Deutsch",
       "Ein passendes Anschreiben für jede Stelle",
-      "Wir suchen 25 passende Stellen für dich",
+      "Wir suchen 25 realistische Stellen für dich",
       "Wir verschicken alle 25 Bewerbungen in deinem Namen",
       "Übersicht in deinem Profil: wann, an wen, welcher Stand",
       "Hilfe bei Antworten und Einladungen zum Vorstellungsgespräch",
@@ -82,7 +82,7 @@ export const SERVICE_COPY: Record<"de" | "fr" | "en" | "ar", Copy> = {
     faqTitle: "Häufige Fragen",
     faq: [
       { q: "Kommen noch weitere Kosten dazu?", a: "Das Startpaket kostet einmalig 199 € und enthält 25 Bewerbungen. Danach entscheidest du selbst: 25 weitere für 149 € oder unbegrenzt für 50 € im Monat, jederzeit zum Monatsende kündbar. Versteckte Gebühren gibt es nicht." },
-      { q: "Was ist, wenn es keine 25 passenden Stellen gibt?", a: "Dann melden wir uns bei dir und besprechen gemeinsam, wie wir die Suche erweitern." },
+      { q: "Was ist, wenn es keine 25 realistischen Stellen gibt?", a: "Dann melden wir uns bei dir und besprechen gemeinsam, wie wir die Suche erweitern." },
       { q: "In welchen Berufen bewerbt ihr mich?", a: "In den Berufen, die du im Erstgespräch mit uns festlegst, passend zu deiner Ausbildung und Erfahrung." },
       { q: "Wie bezahle ich?", a: "Sicher online mit Karte über unseren Zahlungsanbieter Stripe." },
     ],

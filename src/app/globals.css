@@ -4,6 +4,8 @@
 @theme inline {
   --color-brand: #6F9EAB;
   --color-brand-dark: #5a8a97;
+  --color-brand-deep: #3e6f7e; /* Petrol dunkel (Konzept Ehrlichkeit v2): Knöpfe, Überschriften, Zahlen */
+  --color-brand-deeper: #2f5966;
   --color-brand-soft: rgba(111, 158, 171, 0.08);
   --color-ink: #222222;
   --color-ink-soft: #555555;
@@ -33,7 +35,7 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: var(--color-brand);
+  background: var(--color-brand-deep);
   color: #fff;
   padding: 12px 28px;
   border-radius: 9999px;
@@ -44,7 +46,7 @@ body {
   cursor: pointer;
 }
 .btn-primary:hover {
-  background: var(--color-brand-dark);
+  background: var(--color-brand-deeper);
   transform: translateY(-1px);
 }
 .btn-outline {
@@ -52,8 +54,8 @@ body {
   align-items: center;
   justify-content: center;
   background: transparent;
-  color: var(--color-brand);
-  border: 1.5px solid var(--color-brand);
+  color: var(--color-brand-deep);
+  border: 1.5px solid var(--color-brand-deep);
   padding: 11px 26px;
   border-radius: 9999px;
   font-weight: 600;
@@ -62,7 +64,7 @@ body {
   cursor: pointer;
 }
 .btn-outline:hover {
-  background: var(--color-brand);
+  background: var(--color-brand-deep);
   color: #fff;
 }
 .btn-ghost {
@@ -210,4 +212,13 @@ body {
   overflow: visible;
   clip: auto;
   white-space: normal;
+}
+
+/* Hero-Bildwelt: fünf Berufe im Wechsel (25 s), ohne JavaScript; bei reduzierter Bewegung nur das erste Bild */
+.fade-stack > figure { opacity: 0; animation: woyou-fade 25s infinite; }
+.fade-stack > figure:first-child { opacity: 1; }
+@keyframes woyou-fade { 0% { opacity: 0; } 3% { opacity: 1; } 20% { opacity: 1; } 24% { opacity: 0; } 100% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .fade-stack > figure { animation: none; opacity: 0; }
+  .fade-stack > figure:first-child { opacity: 1; }
 }

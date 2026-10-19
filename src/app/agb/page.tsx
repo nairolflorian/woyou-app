@@ -33,8 +33,8 @@ export default function AGB() {
             <Section title="§ 3 Ablauf und Mitwirkung">
               Nach der Buchung füllst du deine Bewerbungsmappe aus oder lädst deinen eigenen Lebenslauf hoch.
               Vor dem ersten Versand prüfen wir die Mappe und geben sie gemeinsam mit dir frei. Deine Angaben
-              müssen wahr und vollständig sein. Sind keine 25 passenden Stellen zu finden, besprechen wir mit
-              dir, wie wir die Suche erweitern.
+              müssen wahr und vollständig sein. Finden wir keine 25 realistischen Stellen, besprechen wir mit dir, wie wir die Suche
+              erweitern; gelingt das nicht, erstatten wir den Preis für die nicht versendeten Bewerbungen anteilig.
             </Section>
             <Section title="§ 4 Vollmacht">
               Mit der Buchung bevollmächtigst du uns, Bewerbungen in deinem Namen an die ausgewählten Stellen zu

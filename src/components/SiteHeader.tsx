@@ -22,6 +22,7 @@ export async function SiteHeader() {
   const navItems = [
     { href: "/#angebot", label: st.navOffer },
     { href: "/#ablauf", label: st.navSteps },
+    { href: "/selbstcheck", label: st.navCheck },
     { href: "/#faq", label: st.navFaq },
     { href: "/#kontakt", label: st.navContact },
   ];
