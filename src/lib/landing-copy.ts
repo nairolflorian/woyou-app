@@ -280,5 +280,5 @@ export const IMAGES = {
     U("photo-1621905251189-08b45d6a269e"), // Technik: Elektriker mit Helm
   ],
   talk: U("photo-1573497620053-ea5300f94f21", 900), // Erstgespräch
-  papers: U("photo-1698047681432-006d2449c631", 900), // Unterlagen in der Hand
+  papers: U("photo-1664382953403-fc1ac77073a0", 900), // Logistik: zwei Kolleginnen im Lager
 };

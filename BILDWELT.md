@@ -38,7 +38,7 @@ Ziel: Wer die Seite sieht, soll denken „die sind seriös und sagen mir die Wah
 | Hero 3 | Handwerker mit Bohrmaschine | photo-1646640381839-02748ae8ddf0 |
 | Hero 4 | Kollegin im Büro | photo-1758876202618-7197443c717f |
 | Hero 5 | Elektriker mit Helm | photo-1621905251189-08b45d6a269e |
-| Realistisch bekommst | Hände mit Lebenslauf | photo-1698047681432-006d2449c631 |
+| Realistisch bekommst | Logistik: zwei Kolleginnen im Lager | photo-1664382953403-fc1ac77073a0 |
 | Selbstcheck | Gesprächssituation | photo-1573497620053-ea5300f94f21 |
 
 Ansehen: `https://images.unsplash.com/<Bild-ID>?w=1200`. Austausch zentral in `src/lib/landing-copy.ts` (IMAGES).
