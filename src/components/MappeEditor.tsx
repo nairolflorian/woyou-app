@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { ProfileData, Station } from "@/lib/application";
 import { mappeText, localizeMissing, type MappeText } from "@/lib/mappe-i18n";
+import { DESIGN_TEMPLATES, DESIGN_COLORS, DEFAULT_DESIGN, type DesignTemplate } from "@/lib/design";
 
 const EMPTY: Station = { from: "", to: "", title: "", place: "", city: "", details: "" };
 
@@ -16,6 +17,24 @@ type Props = {
   lang?: "en"; // nur Admin: englische Fassung bearbeiten
   locale?: string;
 };
+
+function Sketch({ t, c }: { t: DesignTemplate; c: string }) {
+  const bar = (w: string, op = 0.25) => <div className="h-1 rounded-sm" style={{ width: w, background: "#1f1f1f", opacity: op }} />;
+  const body = <div className="space-y-1">{bar("40%", 0.6)}{bar("90%")}{bar("80%")}{bar("40%", 0.6)}{bar("85%")}{bar("70%")}</div>;
+  return (
+    <div className="relative h-24 w-[68px] overflow-hidden rounded border bg-white shadow-sm">
+      {t === "modern" ? (
+        <div className="flex h-full"><div className="w-5" style={{ background: c }} /><div className="flex-1 space-y-1 p-1.5"><div className="h-1.5 w-3/4 rounded-sm" style={{ background: c }} />{body}</div></div>
+      ) : t === "kompakt" ? (
+        <><div className="h-5 px-1.5 pt-1.5" style={{ background: c }}><div className="h-1.5 w-3/4 rounded-sm bg-white/90" /></div><div className="p-1.5">{body}</div></>
+      ) : t === "elegant" ? (
+        <div className="p-1.5"><div className="mx-auto mb-1 h-1.5 w-2/3 rounded-sm" style={{ background: "#1f1f1f" }} /><div className="mb-1.5 h-px w-full" style={{ background: c }} />{body}</div>
+      ) : (
+        <div className="p-1.5"><div className="mb-1.5 h-1.5 w-2/3 rounded-sm" style={{ background: c }} />{body}</div>
+      )}
+    </div>
+  );
+}
 
 export function MappeEditor(p: Props) {
   const tx: MappeText = mappeText(p.bookingId ? "de" : p.locale ?? "de");
@@ -170,6 +189,38 @@ export function MappeEditor(p: Props) {
           </div>
           <p className="mt-1 text-xs text-[color:var(--color-ink-soft)]">{tx.photoHint}</p>
         </div>
+      </section>
+
+      <section className="card">
+        <h2 className="font-semibold">{tx.designTitle}</h2>
+        <p className="mt-1 text-sm text-[color:var(--color-ink-soft)]">{tx.designLead}</p>
+        <div className="mt-4 flex flex-wrap gap-3" role="radiogroup" aria-label={tx.designTitle}>
+          {DESIGN_TEMPLATES.map((t) => {
+            const on = (d.design?.template ?? DEFAULT_DESIGN.template) === t;
+            return (
+              <button key={t} type="button" role="radio" aria-checked={on} disabled={locked} onClick={() => set("design", { ...(d.design ?? DEFAULT_DESIGN), template: t })}
+                className={`flex w-32 flex-col items-center gap-2 rounded-xl border-2 p-3 text-center transition ${on ? "border-[color:var(--color-brand-deep)] bg-[color:var(--color-brand-soft)]" : "border-transparent hover:border-slate-200"}`}>
+                <Sketch t={t} c={d.design?.color ?? DEFAULT_DESIGN.color} />
+                <span className="text-sm font-medium">{tx.designs[t]}</span>
+                <span className="text-xs text-[color:var(--color-ink-soft)]">{tx.designHints[t]}</span>
+              </button>
+            );
+          })}
+        </div>
+        <label className="label mt-4">{tx.color}</label>
+        <div className="flex flex-wrap gap-3" role="radiogroup" aria-label={tx.color}>
+          {DESIGN_COLORS.map((c, i) => {
+            const on = (d.design?.color ?? DEFAULT_DESIGN.color) === c.value;
+            return (
+              <button key={c.value} type="button" role="radio" aria-checked={on} disabled={locked} title={tx.colors[i]} onClick={() => set("design", { ...(d.design ?? DEFAULT_DESIGN), color: c.value })}
+                className={`flex flex-col items-center gap-1 text-xs ${on ? "font-semibold" : "text-[color:var(--color-ink-soft)]"}`}>
+                <span className={`block h-9 w-9 rounded-full ring-offset-2 ${on ? "ring-2 ring-[color:var(--color-ink)]" : ""}`} style={{ background: c.value }} />
+                {tx.colors[i]}
+              </button>
+            );
+          })}
+        </div>
+        <p className="mt-3 text-xs text-[color:var(--color-ink-soft)]">{tx.saveToPreview}</p>
       </section>
 
       <section className="card grid gap-4 md:grid-cols-2">

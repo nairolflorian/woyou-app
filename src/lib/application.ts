@@ -1,5 +1,6 @@
 // Bewerbungsmappe: Datenstruktur, Vorbelegung aus dem WoYou-Profil, Vollständigkeit.
 import { z } from "zod";
+import { DESIGN_TEMPLATES, DESIGN_COLORS, DEFAULT_DESIGN } from "@/lib/design";
 
 const str = (max: number) => z.string().trim().max(max).default("");
 
@@ -34,6 +35,11 @@ export const ProfileData = z.object({
   motivation: str(1200), // warum Deutschland, warum dieser Beruf – Grundlage für Anschreiben
   strengths: str(600),
   showPhoto: z.boolean().default(true),
+  // Aussehen von Lebenslauf und Anschreiben; unbekannte Farben fallen auf Standard zurück
+  design: z.object({
+    template: z.enum(DESIGN_TEMPLATES).catch(DEFAULT_DESIGN.template),
+    color: z.string().refine((c) => DESIGN_COLORS.some((x) => x.value === c)).catch(DEFAULT_DESIGN.color),
+  }).default(DEFAULT_DESIGN).catch(DEFAULT_DESIGN),
 });
 export type ProfileData = z.infer<typeof ProfileData>;
 

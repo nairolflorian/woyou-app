@@ -34,3 +34,13 @@ mkdirSync(out, { recursive: true });
   writeFileSync(`${out}/muster-lebenslauf.pdf`, await cvPdf(d));
   writeFileSync(`${out}/muster-anschreiben.pdf`, await letterPdf(d, ["Gasthaus Beispiel", "z. Hd. Frau Muster", "Beispielweg 5", "40213 Düsseldorf"], "Bewerbung als Köchin", text));
 })();
+
+// Designvorschau: npx tsx scripts/muster/render.tsx <ordner> designs
+if (process.argv[3] === "designs") (async () => {
+  const combos: [string, string][] = [["klassisch", "#1f1f1f"], ["modern", "#1f3a5f"], ["kompakt", "#2f5d50"], ["elegant", "#7a2e2a"]];
+  for (const [template, color] of combos) {
+    const dd = { ...d, design: { template, color } } as typeof d;
+    writeFileSync(`${out}/design-${template}-lebenslauf.pdf`, await cvPdf(dd));
+    writeFileSync(`${out}/design-${template}-anschreiben.pdf`, await letterPdf(dd, ["Gasthaus Beispiel", "z. Hd. Frau Muster", "Beispielweg 5", "40213 Düsseldorf"], "Bewerbung als Köchin", text));
+  }
+})();
