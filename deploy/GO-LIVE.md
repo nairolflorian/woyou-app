@@ -29,3 +29,10 @@ Stand: App läuft als Test unter https://woyou-app.46.225.109.84.nip.io. woyou.d
    ```
 6. Prüfen: Startseite, `/faq.html` → `/#faq`, Buchung bis Stripe, Testmail
 7. Zurück (falls nötig): Link wieder auf `woyou-preview.conf` setzen, `nginx -t && systemctl reload nginx`
+
+## Nach jedem Deploy: Speicher aufräumen
+
+Jeder Build legt Zwischenstände ab. Am 19.10.2026 lief die Platte dadurch voll (27 MB frei), die Datenbanken auf dem Server hatten kurz Schreibfehler. Darum nach jedem Deploy:
+```
+docker builder prune -f && docker image prune -f
+```
