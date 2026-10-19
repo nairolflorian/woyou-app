@@ -83,7 +83,7 @@ const de: Record<string, string> = {
   "footer.privacy": "Datenschutz",
   "footer.terms": "AGB",
   "footer.contact": "Kontakt",
-  "footer.copy": "© 2026 WoYou Demo",
+  "footer.copy": "© 2026 KarriereKind GmbH · WoYou",
 
   "auth.login_title": "Anmelden",
   "auth.register_title": "Konto anlegen",

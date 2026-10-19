@@ -136,9 +136,44 @@ const ar: MappeText = {
   missingMap: { "Name": "الاسم", "Telefon oder E-Mail": "الهاتف أو البريد الإلكتروني", "Wohnort": "مكان السكن", "Wunschberuf": "المهنة المرغوبة", "mindestens eine Berufserfahrung": "خبرة مهنية واحدة على الأقل", "mindestens eine Ausbildung bzw. Schule": "تكوين أو دراسة واحدة على الأقل", "Sprachkenntnisse": "اللغات", "Motivation (ein paar Sätze)": "الدافع (بضع جمل)" },
 };
 
+const hi: MappeText = {
+  back: "मेरी प्रोफ़ाइल", title: "मेरी आवेदन फ़ाइल",
+  intro: "आपकी जानकारी से हम आपका बायोडाटा और आपके 25 आवेदनों के कवर लेटर बनाते हैं। आराम से भरें और बीच-बीच में सहेजते रहें।",
+  langHint: "आपका बायोडाटा और पत्र जर्मन में होंगे, क्योंकि वे जर्मन नियोक्ताओं को जाते हैं। अगर हो सके तो जर्मन में लिखें। नहीं तो अंग्रेज़ी में लिखें: हम जाँचकर अनुवाद कर देंगे।",
+  stMappe: "फ़ाइल", stSent: "भेजे गए आवेदन", of: "में से", stAddress: "आपका आवेदन पता", addressPending: "तैयार हो रहा है",
+  aliasInfo: "आवेदन {alias} से भेजे जाते हैं। कंपनियों के जवाब हम अपने-आप आपके ईमेल पर भेज देते हैं।",
+  status: { DRAFT: "भरा जा रहा है", SUBMITTED: "जमा किया गया, जाँच चल रही है", APPROVED: "स्वीकृत" },
+  myApps: "आपके आवेदन", answered: "जवाब आया",
+  saved: "सहेजा गया।", saveFail: "सहेजा नहीं जा सका।", error: "त्रुटि", uploadFail: "अपलोड नहीं हो सका।",
+  submittedMsg: "धन्यवाद! हमें आपकी फ़ाइल मिल गई है। आवेदन शुरू होते ही हम आपसे संपर्क करेंगे।",
+  photoSaved: "फ़ोटो सहेजी गई।", cvSaved: "बायोडाटा सहेजा गया। इसे आपके आवेदनों में इस्तेमाल किया जाएगा।",
+  locked: "आपकी फ़ाइल स्वीकृत हो चुकी है। बदलाव चाहिए तो हमें लिखें।",
+  preview: "पूर्वावलोकन", previewHint: "आपके दस्तावेज़ ऐसे दिखते हैं। पहले सहेजें, फिर दोबारा खोलें।",
+  pdfCv: "बायोडाटा (PDF)", pdfLetter: "कवर लेटर नमूना (PDF)", ownCvLink: "मेरा अपना बायोडाटा",
+  ownTitle: "क्या आपके पास पहले से बायोडाटा है?", ownHint: "उसे PDF के रूप में अपलोड करें। तब हम आपका अपना बायोडाटा भेजेंगे। कवर लेटर के लिए हमें नीचे की जानकारी फिर भी चाहिए।",
+  ownUpload: "PDF अपलोड करें", ownUse: "मेरा अपना बायोडाटा इस्तेमाल करें",
+  personal: "व्यक्तिगत जानकारी", firstName: "पहला नाम", lastName: "उपनाम", street: "गली, मकान नंबर", zipCity: "पिन कोड, शहर", country: "देश",
+  phone: "फ़ोन / WhatsApp", email: "ईमेल", birthDate: "जन्म तिथि (वैकल्पिक)", birthDatePh: "DD.MM.YYYY", nationality: "नागरिकता (वैकल्पिक)",
+  targetJob: "इच्छित पेशा (बायोडाटा का शीर्षक)", targetJobPh: "जैसे Pflegefachkraft (नर्स)",
+  photo: "आवेदन फ़ोटो (वैकल्पिक)", photoUpload: "फ़ोटो अपलोड करें", photoReplace: "फ़ोटो बदलें", remove: "हटाएँ", showPhoto: "बायोडाटा में फ़ोटो दिखाएँ",
+  photoHint: "जर्मनी में फ़ोटो लगाना आम है, पर ज़रूरी नहीं। सबसे अच्छा: सादे पृष्ठभूमि पर साफ़ रोशनी में चेहरे की फ़ोटो।",
+  about: "आपके बारे में", summary: "संक्षिप्त परिचय", summaryHint: "2 से 4 वाक्य: पेशा, अनुभव, सबसे बड़ी ख़ूबी। यह बायोडाटा में सबसे ऊपर आता है।",
+  motivation: "जर्मनी क्यों, यह पेशा क्यों?", motivationHint: "अपने शब्दों में। आपके कवर लेटर इसी पर आधारित होते हैं, इसलिए ईमानदार और स्पष्ट लिखें।",
+  strengths: "आप ख़ास तौर पर किसमें अच्छे हैं? (वैकल्पिक)", strengthsHint: "जैसे किसी ख़ास मशीन, मरीज़ों के समूह या प्रक्रिया का अनुभव।",
+  experience: "कार्य अनुभव", position: "पद", employer: "नियोक्ता", tasks: "काम",
+  education: "शिक्षा और स्कूल", degree: "डिग्री या प्रशिक्षण", school: "स्कूल / विश्वविद्यालय", focus: "मुख्य विषय (वैकल्पिक)",
+  addEntry: "+ जोड़ें", newestFirst: "सबसे नया सबसे ऊपर।", noEntries: "अभी कोई प्रविष्टि नहीं।", from: "से", to: "तक", toPh: "आज", cityCountry: "शहर, देश", onePerLine: "हर पंक्ति में एक बात।",
+  langSkills: "भाषाएँ और कौशल", langPh: "भाषा", levelPh: "स्तर, जैसे B2 या मातृभाषा", addLang: "+ भाषा",
+  skills: "पेशेवर कौशल", skillsHint: "हर पंक्ति में एक कौशल, जैसे घाव की देखभाल, फ़ोर्कलिफ़्ट लाइसेंस, MS Office।",
+  driving: "ड्राइविंग लाइसेंस", drivingPh: "जैसे श्रेणी B", available: "कब से उपलब्ध", availablePh: "तुरंत या MM/YYYY",
+  missing: "अभी बाकी है:", save: "सहेजें", submit: "फ़ाइल जमा करें", submittedNote: "जमा हो गई। आप बदलाव अब भी सहेज सकते हैं।",
+  missingMap: { "Name": "नाम", "Telefon oder E-Mail": "फ़ोन या ईमेल", "Wohnort": "निवास स्थान", "Wunschberuf": "इच्छित पेशा", "mindestens eine Berufserfahrung": "कम से कम एक कार्य अनुभव", "mindestens eine Ausbildung bzw. Schule": "कम से कम एक शिक्षा प्रविष्टि", "Sprachkenntnisse": "भाषाएँ", "Motivation (ein paar Sätze)": "प्रेरणा (कुछ वाक्य)" },
+};
+
 export function mappeText(locale: string): MappeText {
   if (locale === "fr") return fr;
   if (locale === "ar") return ar;
+  if (locale === "hi") return hi;
   if (locale === "de") return de;
   return en;
 }

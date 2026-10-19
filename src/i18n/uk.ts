@@ -79,7 +79,7 @@ const uk: Record<string, string> = {
   "footer.privacy": "Конфіденційність",
   "footer.terms": "Умови",
   "footer.contact": "Контакти",
-  "footer.copy": "© 2026 WoYou Demo",
+  "footer.copy": "© 2026 KarriereKind GmbH · WoYou",
 
   "auth.login_title": "Вхід",
   "auth.register_title": "Створити акаунт",

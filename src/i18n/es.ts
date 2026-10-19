@@ -77,7 +77,7 @@ const es: Record<string, string> = {
   "footer.privacy": "Privacidad",
   "footer.terms": "Términos",
   "footer.contact": "Contacto",
-  "footer.copy": "© 2026 WoYou Demo",
+  "footer.copy": "© 2026 KarriereKind GmbH · WoYou",
 
   "auth.login_title": "Iniciar sesión",
   "auth.register_title": "Crear cuenta",

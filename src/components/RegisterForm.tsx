@@ -1,10 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { useT } from "@/components/TranslationProvider";
+import { formText } from "@/lib/form-text";
 
 type Method = "email" | "phone";
 
 export function RegisterForm() {
+  const f = formText(useT().locale);
   const [method, setMethod] = useState<Method>("email");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -17,7 +20,7 @@ export function RegisterForm() {
     e.preventDefault();
     setError(null);
     if (password.length < 6) {
-      setError("Passwort muss mind. 6 Zeichen haben.");
+      setError(f.pwShort);
       return;
     }
     setLoading(true);
@@ -38,8 +41,8 @@ export function RegisterForm() {
     if (!res.ok) {
       setError(
         data.error === "ALREADY_REGISTERED"
-          ? "Diese Adresse ist schon registriert."
-          : data.error ?? "Fehler"
+          ? f.taken
+          : f.error
       );
       return;
     }
@@ -59,7 +62,7 @@ export function RegisterForm() {
               : "bg-white border border-[color:var(--color-border)] text-[color:var(--color-ink-soft)]"
           }`}
         >
-          📧 E-Mail
+          📧 {f.email}
         </button>
         <button
           type="button"
@@ -70,13 +73,13 @@ export function RegisterForm() {
               : "bg-white border border-[color:var(--color-border)] text-[color:var(--color-ink-soft)]"
           }`}
         >
-          📱 Telefon
+          📱 {f.phoneTab}
         </button>
       </div>
 
       {method === "email" ? (
         <div>
-          <label className="label">E-Mail</label>
+          <label className="label">{f.email}</label>
           <input
             className="input"
             type="email"
@@ -88,7 +91,7 @@ export function RegisterForm() {
         </div>
       ) : (
         <div>
-          <label className="label">Telefonnummer (mit Ländercode)</label>
+          <label className="label">{f.phone}</label>
           <input
             className="input"
             type="tel"
@@ -102,7 +105,7 @@ export function RegisterForm() {
       )}
 
       <div>
-        <label className="label">Passwort wählen (min. 6 Zeichen)</label>
+        <label className="label">{f.pwNew}</label>
         <input
           className="input"
           type="password"
@@ -145,7 +148,7 @@ export function RegisterForm() {
       )}
 
       <button className="btn-primary w-full" disabled={loading}>
-        {loading ? "…" : "Konto anlegen & weiter zum Profil"}
+        {loading ? "…" : f.register}
       </button>
 
       <p className="text-xs text-[color:var(--color-ink-soft)] text-center">

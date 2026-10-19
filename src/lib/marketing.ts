@@ -115,7 +115,7 @@ const UNSUB: Record<Lang, string> = {
 
 const SIGN: Record<Lang, string> = { de: "Dein WoYou-Team", en: "Your WoYou team", fr: "L'équipe WoYou", ar: "فريق WoYou" };
 
-const langOf = (l?: string | null): Lang => (l === "de" || l === "fr" || l === "ar" ? l : l === "en" ? "en" : "de");
+const langOf = (l?: string | null): Lang => (l === "de" || l === "fr" || l === "ar" ? l : l === "en" || l === "hi" || l === "es" || l === "ru" || l === "uk" ? "en" : "de"); // Hindi u. a.: Mails auf Englisch
 
 export function render(step: Step, lang: Lang, v: Vars, userId: string) {
   const t0 = step.text[lang](v);

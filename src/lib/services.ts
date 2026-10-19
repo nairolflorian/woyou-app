@@ -49,7 +49,7 @@ type Copy = {
   thanksTitle: string; thanksPaid: string; thanksRequested: string; toProfile: string;
 };
 
-export const SERVICE_COPY: Record<"de" | "fr" | "en" | "ar", Copy> = {
+export const SERVICE_COPY: Record<"de" | "fr" | "en" | "ar" | "hi", Copy> = {
   de: {
     badge: "BEWERBUNGS-SERVICE",
     title: "Wir bewerben dich in Deutschland. Ehrlich, für 199 €.",
@@ -99,8 +99,8 @@ export const SERVICE_COPY: Record<"de" | "fr" | "en" | "ar", Copy> = {
   },
   fr: {
     badge: "SERVICE CANDIDATURES",
-    title: "Nous postulons pour vous : 25 candidatures pour 199 €",
-    lead: "Vous voulez travailler en Allemagne, mais les candidatures vous prennent du temps et de l'énergie ? Nous nous en occupons : de votre CV jusqu'à l'envoi de 25 candidatures adaptées.",
+    title: "Nous postulons pour vous en Allemagne. Honnêtement, pour 199 €.",
+    lead: "Nous mettons votre CV aux normes allemandes, cherchons 25 offres qui peuvent vous correspondre et envoyons les candidatures en votre nom. C'est l'employeur qui décide de vous inviter, pas nous.",
     priceNote: "paiement unique · ensuite 25 de plus pour 149 € ou illimité pour 50 € par mois",
     cta: "Réserver maintenant", ctaLogin: "Se connecter et réserver",
     includedTitle: "Ce qui est inclus",
@@ -146,8 +146,8 @@ export const SERVICE_COPY: Record<"de" | "fr" | "en" | "ar", Copy> = {
   },
   en: {
     badge: "APPLICATION SERVICE",
-    title: "We apply for you: 25 applications for €199",
-    lead: "You want to work in Germany, but applying takes time and energy? We handle it for you: from your CV to sending 25 matching applications.",
+    title: "We apply for jobs in Germany for you. Honestly, for €199.",
+    lead: "We bring your CV up to German standards, look for 25 jobs that could suit you and send the applications in your name. Whether an employer invites you is their decision, not ours.",
     priceNote: "one-time · then 25 more for €149 or unlimited for €50 a month",
     cta: "Book now", ctaLogin: "Log in and book",
     includedTitle: "What's included",
@@ -193,8 +193,8 @@ export const SERVICE_COPY: Record<"de" | "fr" | "en" | "ar", Copy> = {
   },
   ar: {
     badge: "خدمة التقديم",
-    title: "نقدّم طلباتك عنك: 25 طلب توظيف مقابل 199 €",
-    lead: "تريد العمل في ألمانيا، لكن طلبات التوظيف تأخذ منك الكثير من الوقت والجهد؟ نحن نتكفّل بذلك: من سيرتك الذاتية حتى إرسال 25 طلبًا مناسبًا.",
+    title: "نقدّم طلباتك للعمل في ألمانيا. بصدق، مقابل 199 €.",
+    lead: "نجهّز سيرتك الذاتية بالمعايير الألمانية، ونبحث عن 25 وظيفة قد تناسبك، ونرسل الطلبات باسمك. أما دعوتك للمقابلة فقرار صاحب العمل، وليس قرارنا.",
     priceNote: "دفعة واحدة · بعدها 25 طلبًا إضافيًا مقابل 149 € أو عدد غير محدود مقابل 50 € شهريًا",
     cta: "احجز الآن", ctaLogin: "سجّل الدخول واحجز",
     includedTitle: "ما يشمله العرض",
@@ -238,9 +238,42 @@ export const SERVICE_COPY: Record<"de" | "fr" | "en" | "ar", Copy> = {
     thanksRequested: "وصلنا طلبك. سنتواصل معك خلال يومي عمل ونرسل لك رابط الدفع.",
     toProfile: "إلى ملفي الشخصي",
   },
+  hi: {
+    badge: "आवेदन सेवा",
+    title: "हम जर्मनी में आपके लिए आवेदन करते हैं। ईमानदारी से, 199 € में।",
+    lead: "हम आपका बायोडाटा जर्मन मानक के अनुसार तैयार करते हैं, आपके लिए उपयुक्त हो सकने वाली 25 नौकरियाँ खोजते हैं और आपके नाम से आवेदन भेजते हैं। इंटरव्यू के लिए बुलाना है या नहीं, यह नियोक्ता तय करता है, हम नहीं।",
+    priceNote: "एक बार · उसके बाद 25 और आवेदन 149 € में या असीमित 50 € प्रति माह",
+    cta: "अभी बुक करें", ctaLogin: "लॉग इन करें और बुक करें",
+    includedTitle: "इसमें शामिल है",
+    included: ["फ़ोन, WhatsApp या वीडियो पर पहली बातचीत", "जर्मन मानक के अनुसार जर्मन में आपका बायोडाटा", "हर नौकरी के लिए अलग कवर लेटर", "आपके लिए 25 वास्तविक नौकरियाँ", "आपके नाम से सभी 25 आवेदन भेजना", "आपकी प्रोफ़ाइल में पूरी जानकारी: कब, किसे, क्या स्थिति"],
+    stepsTitle: "प्रक्रिया कैसे चलती है",
+    steps: [
+      { t: "बुकिंग", d: "आप अपनी WoYou प्रोफ़ाइल में सेवा बुक करते हैं और ऑनलाइन सुरक्षित भुगतान करते हैं।" },
+      { t: "पहली बातचीत", d: "हम आपके पेशे, अनुभव और काम करने की जगह के बारे में बात करते हैं।" },
+      { t: "आवेदन", d: "हम आपके दस्तावेज़ तैयार करते हैं और 4 सप्ताह में 25 आवेदन भेजते हैं।" },
+      { t: "जवाब", d: "आप अपनी प्रोफ़ाइल में हर स्थिति देख सकते हैं।" },
+    ],
+    goodTitle: "ध्यान रखें",
+    good: ["हम नौकरी की गारंटी नहीं दे सकते। फ़ैसला हमेशा नियोक्ता करता है।", "आपकी जर्मन जितनी अच्छी और प्रोफ़ाइल जितनी पूरी होगी, उतनी ज़्यादा नौकरियाँ संभव हैं।", "कृपया अपने प्रमाणपत्र और दस्तावेज़ प्रोफ़ाइल में अपलोड करें।"],
+    faqTitle: "सामान्य प्रश्न",
+    faq: [
+      { q: "क्या कोई और लागत है?", a: "शुरुआती पैकेज एक बार 199 € का है और इसमें 25 आवेदन शामिल हैं। उसके बाद 25 और आवेदन 149 € में या असीमित 50 € प्रति माह, जिसे हर महीने के अंत में रद्द किया जा सकता है।" },
+      { q: "भुगतान कैसे करूँ?", a: "हमारे भुगतान प्रदाता Stripe के ज़रिए कार्ड से, ऑनलाइन और सुरक्षित।" },
+    ],
+    bookTitle: "आवेदन सेवा बुक करें", bookLead: "कृपया अपनी जानकारी जाँच लें। बाकी सब हम पहली बातचीत में तय करेंगे।",
+    phone: "पहली बातचीत के लिए फ़ोन / WhatsApp", jobs: "इच्छित पेशे", regions: "जर्मनी में पसंदीदा क्षेत्र (वैकल्पिक)", notes: "हमें और क्या जानना चाहिए? (वैकल्पिक)",
+    terms: "मैं नियम और शर्तें स्वीकार करता/करती हूँ और गोपनीयता नीति पढ़ ली है।",
+    waiver: "मैं चाहता/चाहती हूँ कि WoYou सेवा तुरंत शुरू करे। मुझे पता है कि सेवा पूरी होने पर मेरा वापसी का अधिकार समाप्त हो जाता है।",
+    consent: "मैं WoYou को अपने नाम से नियोक्ताओं को ईमेल द्वारा आवेदन भेजने की अनुमति देता/देती हूँ। हर आवेदन की एक प्रति मुझे मिलती है।",
+    submit: "भुगतान के साथ बुक करें", submitNoPay: "अनुरोध भेजें", summary: "आवेदन सेवा · 25 आवेदन",
+    thanksTitle: "बुकिंग के लिए धन्यवाद!",
+    thanksPaid: "आपका भुगतान मिल गया है। पहली बातचीत के लिए हम 2 कार्यदिवसों में आपसे संपर्क करेंगे।",
+    thanksRequested: "आपका अनुरोध मिल गया है। हम 2 कार्यदिवसों में संपर्क करेंगे और भुगतान का लिंक भेजेंगे।",
+    toProfile: "मेरी प्रोफ़ाइल पर जाएँ",
+  },
 };
 
 export function serviceCopy(locale: string): Copy {
-  if (locale === "de" || locale === "fr" || locale === "ar") return SERVICE_COPY[locale];
+  if (locale === "de" || locale === "fr" || locale === "ar" || locale === "hi") return SERVICE_COPY[locale];
   return SERVICE_COPY.en;
 }

@@ -1,8 +1,11 @@
 "use client";
 
+import { useT } from "@/components/TranslationProvider";
+import { formText } from "@/lib/form-text";
 import { useState } from "react";
 
 export function LoginForm() {
+  const f = formText(useT().locale);
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -20,7 +23,7 @@ export function LoginForm() {
     const data = await res.json();
     setLoading(false);
     if (!res.ok) {
-      setError(data.error ?? "Fehler");
+      setError(data.error ?? "ERROR");
       return;
     }
     const want = new URLSearchParams(window.location.search).get("next");
@@ -30,7 +33,7 @@ export function LoginForm() {
   return (
     <form onSubmit={submit} className="mt-6 space-y-4">
       <div>
-        <label className="label">E-Mail / Telefon / Telegram-ID</label>
+        <label className="label">{f.login}</label>
         <input
           className="input"
           value={login}
@@ -40,7 +43,7 @@ export function LoginForm() {
         />
       </div>
       <div>
-        <label className="label">Passwort</label>
+        <label className="label">{f.password}</label>
         <input
           className="input"
           type="password"
@@ -52,14 +55,12 @@ export function LoginForm() {
       </div>
       {error && (
         <div className="text-sm text-rose-600 bg-rose-50 border border-rose-200 rounded-lg p-2">
-          {error === "NOT_FOUND" && "Kein Konto gefunden."}
-          {error === "WRONG_PASSWORD" && "Falsches Passwort."}
-          {error === "INVALID" && "Eingabe unvollständig."}
+          {error === "NOT_FOUND" ? f.notFound : error === "WRONG_PASSWORD" ? f.wrongPw : error === "INVALID" ? f.invalid : f.error}
           {!["NOT_FOUND", "WRONG_PASSWORD", "INVALID"].includes(error) && error}
         </div>
       )}
       <button className="btn-primary w-full" disabled={loading}>
-        {loading ? "…" : "Anmelden"}
+        {loading ? "…" : f.signIn}
       </button>
 
     </form>

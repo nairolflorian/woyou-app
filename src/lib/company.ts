@@ -11,7 +11,7 @@ export const COMPANY = {
   phone: "+49 160 626 6208",
 };
 
-type L = "de" | "en" | "fr" | "ar";
+type L = "de" | "en" | "fr" | "ar" | "hi";
 export const SITE_TEXT: Record<L, {
   navOffer: string; navSteps: string; navFaq: string; navContact: string; navCheck: string;
   aboutTitle: string; about: string[]; contactTitle: string; contactLead: string; hours: string;
@@ -60,6 +60,17 @@ export const SITE_TEXT: Record<L, {
     contactTitle: "اتصل بنا", contactLead: "لديك سؤال عن خدمة التقديم؟ راسلنا أو اتصل بنا.",
     hours: "من الاثنين إلى الجمعة، 9 إلى 18",
     footerService: "خدمة التقديم", footerLegal: "معلومات قانونية", book: "احجز الآن",
+  },
+  hi: {
+    navOffer: "ऑफ़र", navCheck: "सेल्फ-चेक", navSteps: "प्रक्रिया", navFaq: "सामान्य प्रश्न", navContact: "संपर्क",
+    aboutTitle: "WoYou के बारे में",
+    about: [
+      "WoYou 2018 से है। हम विदेश के लोगों को जर्मनी में सही तरीके से आवेदन करने में मदद करते हैं।",
+      "हमारी टीम कई भाषाएँ बोलती है और जर्मनी में आवेदन की मुश्किलों को अपने अनुभव से जानती है। इसलिए हम आपके लिए मेहनत वाला हिस्सा करते हैं: जर्मन मानक के दस्तावेज़, वास्तविक नौकरियाँ और आवेदन भेजना। और हम साफ़ बताते हैं कि हम क्या नहीं कर सकते।",
+    ],
+    contactTitle: "संपर्क", contactLead: "आवेदन सेवा के बारे में कोई सवाल? हमें लिखें या फ़ोन करें।",
+    hours: "सोमवार से शुक्रवार, सुबह 9 से शाम 6 बजे (जर्मन समय)",
+    footerService: "आवेदन सेवा", footerLegal: "कानूनी जानकारी", book: "अभी बुक करें",
   },
 };
 export const siteText = (locale: string) => SITE_TEXT[(locale in SITE_TEXT ? locale : locale === "de" ? "de" : "en") as L];

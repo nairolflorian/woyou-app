@@ -9,6 +9,7 @@ import { prisma } from "@/lib/prisma";
 import { ROLE, CANDIDATE_STATUS } from "@/lib/enums";
 import { SERVICES, serviceCopy, formatPrice, BOOKING_STATUS } from "@/lib/services";
 import { getStripe } from "@/lib/stripe";
+import { accountText, fill } from "@/lib/account-text";
 
 export default async function BookServicePage(props: { searchParams: Promise<{ abgebrochen?: string }> }) {
   const sp = await props.searchParams;
@@ -18,6 +19,7 @@ export default async function BookServicePage(props: { searchParams: Promise<{ a
 
   const { locale } = await getT();
   const c = serviceCopy(locale);
+  const a = accountText(locale);
   const svc = SERVICES["bewerbung-25"];
   const candidate =
     (await prisma.candidate.findUnique({ where: { userId: session.userId } })) ??
@@ -43,12 +45,12 @@ export default async function BookServicePage(props: { searchParams: Promise<{ a
             <div className="text-3xl font-bold text-[color:var(--color-brand)]">{formatPrice(svc.priceCents, locale)}</div>
           </div>
 
-          {sp.abgebrochen && <p className="mt-4 rounded bg-amber-50 border border-amber-200 text-amber-800 p-3 text-sm">Die Zahlung wurde abgebrochen. Du kannst es jederzeit erneut versuchen.</p>}
+          {sp.abgebrochen && <p className="mt-4 rounded bg-amber-50 border border-amber-200 text-amber-800 p-3 text-sm">{a.payAborted}</p>}
 
           {open ? (
             <div className="card mt-6">
-              <p className="font-semibold">Du hast den Bewerbungs-Service bereits gebucht.</p>
-              <p className="mt-1 text-sm text-[color:var(--color-ink-soft)]">Stand: {open.applicationsSent} von {open.applicationsGoal} Bewerbungen verschickt.</p>
+              <p className="font-semibold">{a.alreadyBooked}</p>
+              <p className="mt-1 text-sm text-[color:var(--color-ink-soft)]">{fill(a.stateSent, { sent: open.applicationsSent })}</p>
               <Link href="/profil" className="btn-primary mt-4 inline-flex">{c.toProfile}</Link>
             </div>
           ) : (
