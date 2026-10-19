@@ -122,7 +122,7 @@ export async function callAI(prompt: string, system = STYLE_RULES): Promise<stri
       const r = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST", signal: ctrl,
         headers: { "content-type": "application/json", "x-api-key": key, "anthropic-version": "2023-06-01" },
-        body: JSON.stringify({ model: process.env.AI_MODEL || "claude-haiku-4-5", max_tokens: 900, system, messages: [{ role: "user", content: prompt }] }),
+        body: JSON.stringify({ model: process.env.AI_MODEL || "claude-haiku-5-5", max_tokens: 900, system, messages: [{ role: "user", content: prompt }] }),
       });
       const j = await r.json();
       return r.ok ? (j.content?.[0]?.text ?? null) : null;

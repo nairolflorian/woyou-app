@@ -57,7 +57,7 @@ export default function Datenschutz() {
                 <li><strong>Stripe</strong> (Zahlungsabwicklung).</li>
                 <li><strong>Hetzner Online GmbH</strong> (Server in Deutschland).</li>
                 <li><strong>Unser E-Mail-Anbieter</strong> für den Versand der Bewerbungen und Benachrichtigungen.</li>
-                <li><strong>KI-Textdienst</strong> (nur wenn aktiviert): Für Formulierungsvorschläge zum Anschreiben übermitteln wir Angaben aus deiner Mappe und die Stellenbeschreibung an einen Anbieter mit Sitz in der EU. Jedes Anschreiben wird vor dem Versand von unserem Team geprüft.</li>
+                <li><strong>KI-Textdienst</strong> (nur wenn aktiviert): Für Formulierungsvorschläge zum Anschreiben übermitteln wir Angaben aus deiner Mappe und die Stellenbeschreibung an Mistral AI SAS (Paris, Frankreich), mit dem ein Vertrag zur Auftragsverarbeitung besteht. Die Daten werden nicht zum Training verwendet. Jedes Anschreiben wird vor dem Versand von unserem Team geprüft.</li>
               </ul>
               <p className="mt-2">Für die Stellensuche nutzen wir die Jobbörse der Bundesagentur für Arbeit. Dabei übermitteln wir keine Daten über dich.</p>
             </section>
