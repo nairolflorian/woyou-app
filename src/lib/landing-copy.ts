@@ -56,7 +56,7 @@ export const LANDING: Record<Lang, Landing> = {
       { n: "4", t: "Wochen, bis alles verschickt ist", d: "In deinem Profil siehst du jederzeit, wo wir gerade stehen." },
       { n: "+", t: "Unterlagen, die dir gehören", d: "Lebenslauf und Anschreiben kannst du herunterladen und selbst weiter nutzen. Du weißt danach auch, auf welchen Seiten du suchen kannst." },
     ],
-    checkTitle: "Passt WoYou zu dir?", checkLead: "Vier kurze Fragen, kostenlos. Danach sagen wir dir offen, ob sich eine Buchung für dich lohnt.", checkBtn: "Zum Selbstcheck",
+    checkTitle: "Passt WoYou zu dir?", checkLead: "Fünf kurze Fragen, kostenlos. Danach sagen wir dir offen, ob sich eine Buchung für dich lohnt.", checkBtn: "Zum Selbstcheck",
     sampleTitle: "So sieht deine Bewerbung aus", sampleLead: "So sehen Lebenslauf und Anschreiben aus, die wir für dich erstellen. Schlicht und gut lesbar, so wie Personalabteilungen es mögen.", sampleCv: "Muster-Lebenslauf", sampleLetter: "Muster-Anschreiben", sampleNote: "Muster mit erfundener Person",
     stepsTitle: "So läuft es ab",
     steps: [
@@ -118,7 +118,7 @@ export const LANDING: Record<Lang, Landing> = {
       { n: "4", t: "weeks until everything is sent", d: "Your profile always shows where we are." },
       { n: "+", t: "documents that belong to you", d: "You can download your CV and cover letter and keep using them. You will also know which sites to search." },
     ],
-    checkTitle: "Is WoYou right for you?", checkLead: "Four short questions, free. Then we tell you openly whether booking makes sense for you.", checkBtn: "Go to self-check",
+    checkTitle: "Is WoYou right for you?", checkLead: "Five short questions, free. Then we tell you openly whether booking makes sense for you.", checkBtn: "Go to self-check",
     sampleTitle: "This is what your application looks like", sampleLead: "This is what the CV and cover letter we write for you look like. Simple and easy to read, the way HR departments like it.", sampleCv: "Sample CV", sampleLetter: "Sample cover letter", sampleNote: "Sample with a fictional person",
     stepsTitle: "How it works",
     steps: [
@@ -180,7 +180,7 @@ export const LANDING: Record<Lang, Landing> = {
       { n: "4", t: "semaines jusqu'à l'envoi de tout", d: "Votre profil montre à tout moment où nous en sommes." },
       { n: "+", t: "des documents qui vous appartiennent", d: "Vous pouvez télécharger CV et lettre et continuer à les utiliser. Vous saurez aussi sur quels sites chercher." },
     ],
-    checkTitle: "WoYou vous convient-il ?", checkLead: "Quatre questions courtes, gratuit. Ensuite nous vous disons franchement si une réservation vaut la peine pour vous.", checkBtn: "Faire l'auto-test",
+    checkTitle: "WoYou vous convient-il ?", checkLead: "Cinq questions courtes, gratuit. Ensuite nous vous disons franchement si une réservation vaut la peine pour vous.", checkBtn: "Faire l'auto-test",
     sampleTitle: "Voici à quoi ressemble votre candidature", sampleLead: "Voici à quoi ressemblent le CV et la lettre que nous rédigeons pour vous. Simples et lisibles, comme les services RH les aiment.", sampleCv: "CV modèle", sampleLetter: "Lettre modèle", sampleNote: "Modèle avec une personne fictive",
     stepsTitle: "Déroulement",
     steps: [
