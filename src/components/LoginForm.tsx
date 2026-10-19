@@ -62,47 +62,6 @@ export function LoginForm() {
         {loading ? "…" : "Anmelden"}
       </button>
 
-      <div className="relative my-6">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-[color:var(--color-border)]"></div>
-        </div>
-        <div className="relative flex justify-center text-xs">
-          <span className="bg-white px-3 text-[color:var(--color-ink-soft)]">
-            oder demo-weise
-          </span>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-2">
-        <button
-          type="button"
-          disabled
-          className="btn-outline opacity-60 cursor-not-allowed"
-          title="Demo-Button"
-        >
-          🔵 Google
-        </button>
-        <button
-          type="button"
-          disabled
-          className="btn-outline opacity-60 cursor-not-allowed"
-          title="Demo-Button"
-        >
-          📘 Facebook
-        </button>
-        <button
-          type="button"
-          disabled
-          className="btn-outline opacity-60 cursor-not-allowed col-span-2"
-          title="Demo-Button"
-        >
-          ✈️ Telegram-Login
-        </button>
-      </div>
-      <p className="text-xs text-[color:var(--color-ink-soft)] text-center">
-        OAuth-Buttons sind Demo-Platzhalter (Phase 2). Telegram-Login funktioniert
-        bereits über den Bot — siehe Startseite.
-      </p>
     </form>
   );
 }

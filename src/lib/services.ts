@@ -52,8 +52,8 @@ type Copy = {
 export const SERVICE_COPY: Record<"de" | "fr" | "en" | "ar", Copy> = {
   de: {
     badge: "BEWERBUNGS-SERVICE",
-    title: "Wir bewerben dich in Deutschland – ehrlich, für 199 €",
-    lead: "Lebenslauf nach deutschem Standard, 25 realistische Stellen, Versand in deinem Namen. Ob ein Arbeitgeber dich einlädt, entscheidet er – nicht wir.",
+    title: "Wir bewerben dich in Deutschland. Ehrlich, für 199 €.",
+    lead: "Wir bringen deinen Lebenslauf auf deutschen Standard, suchen 25 Stellen, die zu dir passen können, und schicken die Bewerbungen in deinem Namen ab. Ob dich ein Arbeitgeber einlädt, entscheidet er. Nicht wir.",
     priceNote: "einmalig · danach 25 weitere für 149 € oder unbegrenzt für 50 € im Monat",
     cta: "Jetzt buchen", ctaLogin: "Anmelden und buchen",
     includedTitle: "Das ist enthalten",

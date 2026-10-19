@@ -12,7 +12,7 @@ const ru: Record<string, string> = {
   "nav.logout": "Выйти",
 
   "home.hero_badge": "РАБОТА И ОБУЧЕНИЕ ИЗ-ЗА РУБЕЖА",
-  "home.hero_title": "Ваше будущее в Германии — с WoYou",
+  "home.hero_title": "Ваше будущее в Германии. С WoYou",
   "home.hero_subtitle":
     "Мы соединяем международные таланты с ведущими немецкими компаниями. Создайте профиль, найдите подходящее место и начните своё путешествие.",
   "home.hero_btn_start": "Начать",
@@ -28,13 +28,13 @@ const ru: Record<string, string> = {
   "home.process_subtitle": "Четыре простых шага к работе в Германии",
   "home.process_step1_title": "Регистрация и анкета",
   "home.process_step1_desc":
-    "Онлайн, через Telegram или WhatsApp — заполните профиль.",
+    "Онлайн, через Telegram или WhatsApp. Заполните профиль.",
   "home.process_step2_title": "Языковой тест",
   "home.process_step2_desc":
-    "Краткий тест по немецкому (A1–B2) для правильной оценки.",
+    "Краткий тест по немецкому (A1-B2) для правильной оценки.",
   "home.process_step3_title": "Активация профиля",
   "home.process_step3_desc":
-    "Разовая оплата — и вы становитесь видимы для компаний.",
+    "Разовая оплата. И вы становитесь видимы для компаний.",
   "home.process_step4_title": "Авто-подбор и приезд",
   "home.process_step4_desc":
     "Как только профиль активирован, система автоматически предлагает подходящие компании. Затем мы помогаем с визой и приездом.",
@@ -42,12 +42,12 @@ const ru: Record<string, string> = {
   "home.benefits_badge": "ПОЧЕМУ WOYOU",
   "home.benefits_title": "Ваши преимущества",
   "home.benefits_subtitle":
-    "Больше, чем просто доска объявлений — мы сопровождаем вас до прибытия.",
+    "Больше, чем просто доска объявлений. Мы сопровождаем вас до прибытия.",
   "home.benefits_card1_title": "Международная сеть",
   "home.benefits_card1_desc": "Прямой выход на лучших работодателей Германии.",
   "home.benefits_card2_title": "Помощь с бюрократией",
   "home.benefits_card2_desc":
-    "Виза, признание дипломов, страхование — шаг за шагом.",
+    "Виза, признание дипломов, страхование. Шаг за шагом.",
   "home.benefits_card3_title": "Личный коучинг",
   "home.benefits_card3_desc": "Ваш карьерный коуч сопровождает весь путь.",
   "home.benefits_card4_title": "Многоканальность",
@@ -58,13 +58,13 @@ const ru: Record<string, string> = {
     "Жильё, оформление документов и культурная ориентация.",
   "home.benefits_card6_title": "Честные условия",
   "home.benefits_card6_desc":
-    "Разовая плата за активацию — далее всё прозрачно.",
+    "Разовая плата за активацию. Далее всё прозрачно.",
 
   "home.audience_badge": "ДЛЯ КОГО",
   "home.audience_title": "Кому подходит WoYou?",
   "home.audience_card1_title": "Квалифицированные специалисты",
   "home.audience_card1_desc":
-    "Из Марокко и других стран — медицина, стройка, гастрономия и др.",
+    "Из Марокко и других стран. Медицина, стройка, гастрономия и др.",
   "home.audience_card2_title": "Ученики",
   "home.audience_card2_desc":
     "Молодые таланты, желающие начать обучение в Германии.",
@@ -72,7 +72,7 @@ const ru: Record<string, string> = {
   "home.audience_card3_desc": "Компании в поисках квалифицированного персонала.",
 
   "home.cta_title": "Готовы к переезду в Германию?",
-  "home.cta_subtitle": "Создайте профиль за 5 минут — бесплатно.",
+  "home.cta_subtitle": "Создайте профиль за 5 минут. Бесплатно.",
   "home.cta_btn": "Создать профиль",
 
   "footer.legal": "Импрессум",
@@ -95,7 +95,7 @@ const ru: Record<string, string> = {
   "auth.with_telegram": "Через Telegram",
   "auth.with_google": "Через Google",
   "auth.with_facebook": "Через Facebook",
-  "auth.demo_only": "(Демо-кнопка — полный OAuth во второй фазе)",
+  "auth.demo_only": "(Демо-кнопка. Полный OAuth во второй фазе)",
 
   "common.yes": "Да",
   "common.no": "Нет",

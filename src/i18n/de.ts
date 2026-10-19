@@ -12,7 +12,7 @@ const de: Record<string, string> = {
   "nav.logout": "Abmelden",
 
   "home.hero_badge": "JOBS & AUSBILDUNG AUS DEM AUSLAND",
-  "home.hero_title": "Deine Zukunft in Deutschland – mit WoYou",
+  "home.hero_title": "Deine Zukunft in Deutschland. Mit WoYou",
   "home.hero_subtitle":
     "Wir verbinden internationales Talent mit führenden deutschen Unternehmen. Erstelle dein Profil, finde die passende Stelle und starte dein Abenteuer.",
   "home.hero_btn_start": "Jetzt durchstarten",
@@ -29,10 +29,10 @@ const de: Record<string, string> = {
     "In vier Schritten zu deinem neuen Job in Deutschland",
   "home.process_step1_title": "Registrieren & Fragebogen",
   "home.process_step1_desc":
-    "Online, per Telegram oder WhatsApp – fülle deinen Steckbrief aus.",
+    "Online, per Telegram oder WhatsApp. Fülle deinen Steckbrief aus.",
   "home.process_step2_title": "Sprachtest",
   "home.process_step2_desc":
-    "Kurzer Test (Deutsch A1–B2), damit wir dich richtig einstufen.",
+    "Kurzer Test (Deutsch A1-B2), damit wir dich richtig einstufen.",
   "home.process_step3_title": "Profil freischalten",
   "home.process_step3_desc":
     "Einmalige Gebühr, dann bist du für Unternehmen sichtbar und vermittelbar.",
@@ -43,13 +43,13 @@ const de: Record<string, string> = {
   "home.benefits_badge": "WARUM WOYOU",
   "home.benefits_title": "Deine Vorteile",
   "home.benefits_subtitle":
-    "Mehr als eine Jobbörse – wir begleiten dich von der Bewerbung bis zur Ankunft.",
+    "Mehr als eine Jobbörse. Wir begleiten dich von der Bewerbung bis zur Ankunft.",
   "home.benefits_card1_title": "Internationales Netzwerk",
   "home.benefits_card1_desc":
     "Direkter Draht zu Top-Unternehmen in ganz Deutschland.",
   "home.benefits_card2_title": "Bürokratie-Support",
   "home.benefits_card2_desc":
-    "Visum, Anerkennung, Versicherung — wir helfen Schritt für Schritt.",
+    "Visum, Anerkennung, Versicherung. Wir helfen Schritt für Schritt.",
   "home.benefits_card3_title": "Persönliche Beratung",
   "home.benefits_card3_desc":
     "Dein Career Coach begleitet dich auf dem ganzen Weg.",
@@ -61,13 +61,13 @@ const de: Record<string, string> = {
     "Wohnungssuche, Behördengänge und kulturelle Orientierung.",
   "home.benefits_card6_title": "Faire Konditionen",
   "home.benefits_card6_desc":
-    "Eine einmalige Freischaltgebühr — danach ist alles transparent.",
+    "Eine einmalige Freischaltgebühr. Danach ist alles transparent.",
 
   "home.audience_badge": "ZIELGRUPPEN",
   "home.audience_title": "Für wen ist WoYou?",
   "home.audience_card1_title": "Fachkräfte",
   "home.audience_card1_desc":
-    "Aus Marokko und der Welt – mit Erfahrung in Pflege, Bau, Gastronomie und mehr.",
+    "Aus Marokko und der Welt. Mit Erfahrung in Pflege, Bau, Gastronomie und mehr.",
   "home.audience_card2_title": "Auszubildende",
   "home.audience_card2_desc":
     "Junge Talente, die in Deutschland eine Ausbildung starten möchten.",
@@ -76,7 +76,7 @@ const de: Record<string, string> = {
     "Firmen, die qualifizierte Mitarbeiter:innen suchen.",
 
   "home.cta_title": "Bereit für deinen Weg nach Deutschland?",
-  "home.cta_subtitle": "Erstelle in 5 Minuten dein Profil — kostenlos.",
+  "home.cta_subtitle": "Erstelle in 5 Minuten dein Profil. Kostenlos.",
   "home.cta_btn": "Jetzt Profil anlegen",
 
   "footer.legal": "Impressum",
@@ -99,7 +99,7 @@ const de: Record<string, string> = {
   "auth.with_telegram": "Mit Telegram",
   "auth.with_google": "Mit Google",
   "auth.with_facebook": "Mit Facebook",
-  "auth.demo_only": "(Demo-Button — vollständige OAuth-Integration in Phase 2)",
+  "auth.demo_only": "(Demo-Button. Vollständige OAuth-Integration in Phase 2)",
 
   "reg.step": "Schritt",
   "reg.of": "von",
@@ -152,13 +152,13 @@ const de: Record<string, string> = {
   "reg.finish": "Profil abschließen",
 
   "test.title": "Sprachtest Deutsch",
-  "test.subtitle": "12 Fragen — A1 bis B2. Dauer ca. 5 Min.",
+  "test.subtitle": "12 Fragen. A1 bis B2. Dauer ca. 5 Min.",
   "test.start": "Test starten",
   "test.submit": "Test abgeben",
   "test.your_score": "Dein Ergebnis",
   "test.your_level": "Dein Niveau",
   "test.passed": "Bestanden",
-  "test.failed": "Nicht bestanden – kein Problem, du kannst es später wiederholen.",
+  "test.failed": "Nicht bestanden. Kein Problem, du kannst es später wiederholen.",
 
   "dash.title": "Mein Bereich",
   "dash.status": "Status",
@@ -193,11 +193,11 @@ const de: Record<string, string> = {
   "common.delete": "Löschen",
   "common.save": "Speichern",
   "common.loading": "Lädt …",
-  "common.please_choose": "— bitte wählen —",
+  "common.please_choose": "Bitte wählen",
   "common.error_generic": "Etwas ist schiefgelaufen.",
   "a11y.skip": "Zum Inhalt springen",
 
-  // Reg wizard — additional keys for inline strings & options
+  // Reg wizard. Additional keys for inline strings & options
   "reg.section_personal_h": "Über dich",
   "reg.section_contact_h": "Kontaktwege",
   "reg.section_job_h": "Wunschberuf",
@@ -292,7 +292,7 @@ const de: Record<string, string> = {
     "Du kannst E-Mail und Telefon ändern. Passwort-Wechsel erfordert das aktuelle Passwort.",
   "edit.err_wrong_password": "Aktuelles Passwort ist falsch.",
   "edit.err_taken": "Diese E-Mail oder Telefonnummer ist bereits vergeben.",
-  "edit.err_no_password": "Für diesen Account ist kein Passwort gesetzt — bitte über den Telegram-Login.",
+  "edit.err_no_password": "Für diesen Account ist kein Passwort gesetzt. Bitte über den Telegram-Login.",
   "dash.documents_h": "Deine Dokumente",
   "dash.documents_desc":
     "Lebenslauf, Reisepass, Diplome und Zertifikate. Sichtbar für dich und für Unternehmen, mit denen ein aktiver Vorschlag besteht.",
@@ -300,7 +300,7 @@ const de: Record<string, string> = {
   "dash.account_desc": "Datenexport und Account-Löschung gemäß DSGVO.",
   "dash.telegram_h": "WoYou-Bot auf Telegram nutzen",
   "dash.telegram_desc":
-    "Verlinke deinen Telegram-Account, damit wir dich auch dort erreichen können — und Unternehmen direkt mit dir chatten können.",
+    "Verlinke deinen Telegram-Account, damit wir dich auch dort erreichen können. Und Unternehmen direkt mit dir chatten können.",
   "dash.telegram_open": "Bot öffnen",
 
   // Onboarding checklist
@@ -309,7 +309,7 @@ const de: Record<string, string> = {
   "onb.progress": "{done} / {total} erledigt",
   "onb.step1_title": "Profil ausfüllen",
   "onb.step1_desc":
-    "Aktuell {percent}% — wir brauchen 100% für die Vermittlung.",
+    "Aktuell {percent}%. Wir brauchen 100% für die Vermittlung.",
   "onb.step1_cta_done": "Bearbeiten",
   "onb.step1_cta": "Weiter ausfüllen",
   "onb.step2_title": "Sprachtest absolvieren",
@@ -319,12 +319,12 @@ const de: Record<string, string> = {
   "onb.step2_cta": "Test starten",
   "onb.step3_title": "Mindestens den Lebenslauf hochladen",
   "onb.step3_desc":
-    "Bewerbungsgespräche werden so 3× schneller — Firmen sehen direkt was du kannst.",
+    "Bewerbungsgespräche werden so 3× schneller. Firmen sehen direkt was du kannst.",
   "onb.step3_cta_done": "Dokumente verwalten",
   "onb.step3_cta": "Hochladen",
   "onb.step4_title": "Profil freischalten",
   "onb.step4_desc":
-    "Einmalige Gebühr — danach bist du für unsere Partnerunternehmen sichtbar und wirst automatisch vorgeschlagen.",
+    "Einmalige Gebühr. Danach bist du für unsere Partnerunternehmen sichtbar und wirst automatisch vorgeschlagen.",
 
   // Documents
   "doc.kind_label": "Dokumenttyp",
@@ -351,10 +351,10 @@ const de: Record<string, string> = {
   // Account / DSGVO
   "acc.export_btn": "📥 Meine Daten als JSON herunterladen",
   "acc.export_hint":
-    "DSGVO Art. 15 / Art. 20 — vollständiger Export aller über dich gespeicherten Daten.",
+    "DSGVO Art. 15 / Art. 20. Vollständiger Export aller über dich gespeicherten Daten.",
   "acc.delete_h": "Account dauerhaft löschen",
   "acc.delete_desc":
-    "DSGVO Art. 17 — alle deine Daten und Dokumente werden unwiderruflich entfernt. Aktive Vorschläge gehen verloren.",
+    "DSGVO Art. 17. Alle deine Daten und Dokumente werden unwiderruflich entfernt. Aktive Vorschläge gehen verloren.",
   "acc.delete_confirm_prefix": "Tipp das Wort",
   "acc.delete_confirm_suffix": "um zu bestätigen:",
   "acc.delete_btn": "Account löschen",
@@ -392,7 +392,7 @@ const de: Record<string, string> = {
   "cookie.ok": "Verstanden",
 
   // 404
-  "nf.title": "404 — Seite nicht gefunden",
+  "nf.title": "404: Seite nicht gefunden",
   "nf.body": "Die Seite existiert nicht (mehr) oder du hast dich vertippt.",
   "nf.home": "Zur Startseite",
   "nf.demo": "Test-Seite",
@@ -400,18 +400,18 @@ const de: Record<string, string> = {
   // Sprachtest UI
   "test.choose_lang_h": "Welche Sprache möchtest du testen?",
   "test.choose_lang_desc":
-    "Du kannst alle drei machen — die Ergebnisse werden in deinem Profil gespeichert. Jeder Test hat 12 Multiple-Choice-Fragen (A1 bis B2), Dauer ca. 5 Minuten.",
+    "Du kannst alle drei machen. Die Ergebnisse werden in deinem Profil gespeichert. Jeder Test hat 12 Multiple-Choice-Fragen (A1 bis B2), Dauer ca. 5 Minuten.",
   "test.questions_count": "{n} Fragen",
   "test.other_lang": "← andere Sprache",
   "test.title_lang": "Sprachtest {lang}",
   "test.intro":
-    "{count} Multiple-Choice-Fragen — von A1 bis B2. Dauert ca. 5 Minuten. Du kannst den Test später wiederholen.",
+    "{count} Multiple-Choice-Fragen. Von A1 bis B2. Dauert ca. 5 Minuten. Du kannst den Test später wiederholen.",
   "test.bullet1": "✓ Deine Punktzahl wird in deinem Profil angezeigt",
   "test.bullet2": "✓ Unternehmen sehen dein objektives Niveau",
   "test.bullet3": "✓ Hilft uns beim passenden Matching",
   "test.passed_h": "Bestanden!",
   "test.failed_h": "Noch nicht bestanden",
-  "test.your_result": "Dein Ergebnis: {score} / {total} — Niveau {level}",
+  "test.your_result": "Dein Ergebnis: {score} / {total}. Niveau {level}",
   "test.go_dashboard": "Zum Dashboard",
   "test.question": "Frage {n} · {level}",
   "test.answer_all_first": "Bitte beantworte alle Fragen.",

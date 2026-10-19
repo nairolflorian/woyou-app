@@ -12,7 +12,7 @@ const ar: Record<string, string> = {
   "nav.logout": "تسجيل الخروج",
 
   "home.hero_badge": "وظائف وتدريب من الخارج",
-  "home.hero_title": "مستقبلك في ألمانيا — مع WoYou",
+  "home.hero_title": "مستقبلك في ألمانيا. مع WoYou",
   "home.hero_subtitle":
     "نربط المواهب الدولية بأفضل الشركات الألمانية. أنشئ ملفك الشخصي وابدأ مغامرتك.",
   "home.hero_btn_start": "ابدأ الآن",
@@ -28,12 +28,12 @@ const ar: Record<string, string> = {
   "home.process_subtitle": "أربع خطوات نحو وظيفتك في ألمانيا",
   "home.process_step1_title": "التسجيل والاستبيان",
   "home.process_step1_desc":
-    "عبر الإنترنت أو تيليجرام أو واتساب — املأ ملفك.",
+    "عبر الإنترنت أو تيليجرام أو واتساب. املأ ملفك.",
   "home.process_step2_title": "اختبار اللغة",
   "home.process_step2_desc": "اختبار قصير للألمانية (A1-B2).",
   "home.process_step3_title": "تفعيل الملف",
   "home.process_step3_desc":
-    "رسوم لمرة واحدة — ثم تصبح قابلاً للتوظيف.",
+    "رسوم لمرة واحدة. ثم تصبح قابلاً للتوظيف.",
   "home.process_step4_title": "مطابقة آلية ووصول",
   "home.process_step4_desc":
     "بمجرد تفعيل ملفك يقترح نظامنا تلقائياً الشركات المناسبة. ثم نساعدك في التأشيرة والوصول.",
@@ -41,12 +41,12 @@ const ar: Record<string, string> = {
   "home.benefits_badge": "لماذا WoYou",
   "home.benefits_title": "مزاياك",
   "home.benefits_subtitle":
-    "أكثر من مجرد لوحة وظائف — نرافقك من البداية حتى الوصول.",
+    "أكثر من مجرد لوحة وظائف. نرافقك من البداية حتى الوصول.",
   "home.benefits_card1_title": "شبكة دولية",
   "home.benefits_card1_desc": "اتصال مباشر بأفضل الشركات في ألمانيا.",
   "home.benefits_card2_title": "دعم إداري",
   "home.benefits_card2_desc":
-    "التأشيرة والاعتراف والتأمين — خطوة بخطوة.",
+    "التأشيرة والاعتراف والتأمين. خطوة بخطوة.",
   "home.benefits_card3_title": "تدريب شخصي",
   "home.benefits_card3_desc": "مدرب مهني يرافقك طوال الطريق.",
   "home.benefits_card4_title": "قنوات متعددة",
@@ -57,13 +57,13 @@ const ar: Record<string, string> = {
     "السكن والإجراءات الإدارية والتوجيه الثقافي.",
   "home.benefits_card6_title": "شروط عادلة",
   "home.benefits_card6_desc":
-    "رسوم تفعيل لمرة واحدة — كل شيء شفاف بعد ذلك.",
+    "رسوم تفعيل لمرة واحدة. كل شيء شفاف بعد ذلك.",
 
   "home.audience_badge": "لمن",
   "home.audience_title": "لمن هي WoYou؟",
   "home.audience_card1_title": "مهنيون مؤهلون",
   "home.audience_card1_desc":
-    "من المغرب والعالم — في الرعاية والبناء والضيافة وأكثر.",
+    "من المغرب والعالم. في الرعاية والبناء والضيافة وأكثر.",
   "home.audience_card2_title": "متدربون",
   "home.audience_card2_desc":
     "مواهب شابة لبدء التدريب المهني في ألمانيا.",
@@ -71,7 +71,7 @@ const ar: Record<string, string> = {
   "home.audience_card3_desc": "شركات تبحث عن موظفين مؤهلين.",
 
   "home.cta_title": "جاهز للانتقال إلى ألمانيا؟",
-  "home.cta_subtitle": "أنشئ ملفك في 5 دقائق — مجاناً.",
+  "home.cta_subtitle": "أنشئ ملفك في 5 دقائق. مجاناً.",
   "home.cta_btn": "أنشئ ملفي",
 
   "footer.legal": "بيانات النشر",
@@ -94,7 +94,7 @@ const ar: Record<string, string> = {
   "auth.with_telegram": "بتيليجرام",
   "auth.with_google": "بـGoogle",
   "auth.with_facebook": "بـFacebook",
-  "auth.demo_only": "(زر تجريبي — OAuth الكامل في المرحلة الثانية)",
+  "auth.demo_only": "(زر تجريبي. OAuth الكامل في المرحلة الثانية)",
 
   "reg.step": "الخطوة",
   "reg.of": "من",
@@ -146,13 +146,13 @@ const ar: Record<string, string> = {
   "reg.finish": "إنهاء الملف",
 
   "test.title": "اختبار اللغة الألمانية",
-  "test.subtitle": "12 سؤالاً — A1 إلى B2. حوالي 5 دقائق.",
+  "test.subtitle": "12 سؤالاً. A1 إلى B2. حوالي 5 دقائق.",
   "test.start": "ابدأ",
   "test.submit": "إرسال",
   "test.your_score": "نتيجتك",
   "test.your_level": "مستواك",
   "test.passed": "ناجح",
-  "test.failed": "غير ناجح — لا مشكلة، يمكنك المحاولة لاحقاً.",
+  "test.failed": "غير ناجح. لا مشكلة، يمكنك المحاولة لاحقاً.",
 
   "dash.title": "منطقتي",
   "dash.status": "الحالة",
@@ -187,7 +187,7 @@ const ar: Record<string, string> = {
   "common.delete": "حذف",
   "common.save": "حفظ",
   "common.loading": "جارٍ التحميل …",
-  "common.please_choose": "— اختر —",
+  "common.please_choose": "اختر",
   "common.error_generic": "حدث خطأ ما.",
   "a11y.skip": "تخطّى إلى المحتوى",
 
@@ -283,7 +283,7 @@ const ar: Record<string, string> = {
     "يمكنك تغيير البريد والهاتف. تغيير كلمة المرور يتطلب الحالية.",
   "edit.err_wrong_password": "كلمة المرور الحالية غير صحيحة.",
   "edit.err_taken": "هذا البريد أو الرقم مستخدم بالفعل.",
-  "edit.err_no_password": "هذا الحساب لا يملك كلمة مرور — استخدم Telegram للدخول.",
+  "edit.err_no_password": "هذا الحساب لا يملك كلمة مرور. استخدم Telegram للدخول.",
   "dash.documents_h": "وثائقك",
   "dash.documents_desc":
     "السيرة الذاتية وجواز السفر والشهادات. يراها فقط أنت والشركات التي لها اقتراح نشط.",
@@ -298,7 +298,7 @@ const ar: Record<string, string> = {
   "onb.title_active": "اجعل ملفك جاهزاً للتوظيف",
   "onb.progress": "{done} / {total} منجز",
   "onb.step1_title": "املأ ملفك",
-  "onb.step1_desc": "حالياً {percent}٪ — نحتاج 100٪ للتوظيف.",
+  "onb.step1_desc": "حالياً {percent}٪. نحتاج 100٪ للتوظيف.",
   "onb.step1_cta_done": "تعديل",
   "onb.step1_cta": "متابعة الملء",
   "onb.step2_title": "إجراء اختبار اللغة",
@@ -308,12 +308,12 @@ const ar: Record<string, string> = {
   "onb.step2_cta": "ابدأ الاختبار",
   "onb.step3_title": "ارفع السيرة الذاتية على الأقل",
   "onb.step3_desc":
-    "تتم المقابلات أسرع 3× — ترى الشركات قدراتك مباشرة.",
+    "تتم المقابلات أسرع 3×. ترى الشركات قدراتك مباشرة.",
   "onb.step3_cta_done": "إدارة الوثائق",
   "onb.step3_cta": "ارفع",
   "onb.step4_title": "تفعيل الملف",
   "onb.step4_desc":
-    "رسوم لمرة واحدة — ثم تصبح مرئياً لشركائنا ويُقترح ملفك تلقائياً.",
+    "رسوم لمرة واحدة. ثم تصبح مرئياً لشركائنا ويُقترح ملفك تلقائياً.",
 
   "doc.kind_label": "نوع الوثيقة",
   "doc.file_label": "ملف (PDF / JPG / PNG، حد أقصى 5 ميغابايت)",
@@ -338,10 +338,10 @@ const ar: Record<string, string> = {
 
   "acc.export_btn": "📥 تنزيل بياناتي بصيغة JSON",
   "acc.export_hint":
-    "اللائحة العامة لحماية البيانات المادتان 15/20 — تصدير كامل لكل البيانات المخزنة عنك.",
+    "اللائحة العامة لحماية البيانات المادتان 15/20. تصدير كامل لكل البيانات المخزنة عنك.",
   "acc.delete_h": "حذف الحساب نهائياً",
   "acc.delete_desc":
-    "اللائحة العامة لحماية البيانات المادة 17 — جميع بياناتك ووثائقك تُحذف بشكل نهائي. تُفقد الاقتراحات النشطة.",
+    "اللائحة العامة لحماية البيانات المادة 17. جميع بياناتك ووثائقك تُحذف بشكل نهائي. تُفقد الاقتراحات النشطة.",
   "acc.delete_confirm_prefix": "اكتب الكلمة",
   "acc.delete_confirm_suffix": "للتأكيد:",
   "acc.delete_btn": "حذف الحساب",
@@ -374,25 +374,25 @@ const ar: Record<string, string> = {
   "cookie.privacy_link": "سياسة الخصوصية",
   "cookie.ok": "مفهوم",
 
-  "nf.title": "404 — الصفحة غير موجودة",
+  "nf.title": "404: الصفحة غير موجودة",
   "nf.body": "هذه الصفحة لم تعد موجودة أو أخطأت في الكتابة.",
   "nf.home": "الصفحة الرئيسية",
   "nf.demo": "صفحة الاختبار",
 
   "test.choose_lang_h": "ما اللغة التي تريد اختبارها؟",
   "test.choose_lang_desc":
-    "يمكنك إجراء الثلاث — تُحفظ النتائج في ملفك. كل اختبار يتكون من 12 سؤالاً متعدد الخيارات (A1 إلى B2)، ~5 دقائق.",
+    "يمكنك إجراء الثلاث. تُحفظ النتائج في ملفك. كل اختبار يتكون من 12 سؤالاً متعدد الخيارات (A1 إلى B2)، ~5 دقائق.",
   "test.questions_count": "{n} أسئلة",
   "test.other_lang": "← لغة أخرى",
   "test.title_lang": "اختبار {lang}",
   "test.intro":
-    "{count} أسئلة متعددة الخيارات — A1 إلى B2. ~5 دقائق. يمكنك إعادة الاختبار لاحقاً.",
+    "{count} أسئلة متعددة الخيارات. A1 إلى B2. ~5 دقائق. يمكنك إعادة الاختبار لاحقاً.",
   "test.bullet1": "✓ تظهر نتيجتك في ملفك",
   "test.bullet2": "✓ ترى الشركات مستواك الموضوعي",
   "test.bullet3": "✓ يحسّن المطابقة",
   "test.passed_h": "ناجح!",
   "test.failed_h": "غير ناجح بعد",
-  "test.your_result": "نتيجتك: {score} / {total} — المستوى {level}",
+  "test.your_result": "نتيجتك: {score} / {total}. المستوى {level}",
   "test.go_dashboard": "إلى لوحة التحكم",
   "test.question": "السؤال {n} · {level}",
   "test.answer_all_first": "أجب عن جميع الأسئلة.",

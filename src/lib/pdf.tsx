@@ -35,14 +35,14 @@ const L = {
 };
 
 const lines = (t: string) => t.split("\n").map((x) => x.trim()).filter(Boolean);
-const period = (x: Station) => [x.from, x.to].filter(Boolean).join(" – ");
+const period = (x: Station, sep = " bis ") => [x.from, x.to].filter(Boolean).join(sep);
 
-function StationList({ items }: { items: Station[] }) {
+function StationList({ items, sep }: { items: Station[]; sep?: string }) {
   return (
     <>
       {items.filter((x) => x.title).map((x, i) => (
         <View key={i} style={s.row} wrap={false}>
-          <Text style={s.date}>{period(x)}</Text>
+          <Text style={s.date}>{period(x, sep)}</Text>
           <View style={s.body}>
             <Text style={s.bold}>{x.title}</Text>
             {(x.place || x.city) && <Text style={s.soft}>{[x.place, x.city].filter(Boolean).join(", ")}</Text>}
@@ -77,8 +77,8 @@ export function CvDocument({ d, photo, lang = "de" }: { d: ProfileData; photo?: 
         </View>
 
         {d.summary && (<><Text style={s.h2}>{l.summary}</Text><Text>{d.summary}</Text></>)}
-        {d.experience.some((x) => x.title) && (<><Text style={s.h2}>{l.experience}</Text><StationList items={d.experience} /></>)}
-        {d.education.some((x) => x.title) && (<><Text style={s.h2}>{l.education}</Text><StationList items={d.education} /></>)}
+        {d.experience.some((x) => x.title) && (<><Text style={s.h2}>{l.experience}</Text><StationList items={d.experience} sep={lang === "en" ? " to " : " bis "} /></>)}
+        {d.education.some((x) => x.title) && (<><Text style={s.h2}>{l.education}</Text><StationList items={d.education} sep={lang === "en" ? " to " : " bis "} /></>)}
 
         {(langs.length > 0 || skills.length > 0 || d.drivingLicense) && <Text style={s.h2}>{l.skills}</Text>}
         {langs.length > 0 && <View style={s.row}><Text style={s.date}>{l.languages}</Text><Text style={s.body}>{langs.map((l) => (l.level ? `${l.name} (${l.level})` : l.name)).join(", ")}</Text></View>}

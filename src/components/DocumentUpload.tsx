@@ -104,7 +104,7 @@ export function DocumentUpload({ candidateId }: { candidateId: string }) {
             >
               <div>
                 <div className="font-semibold">
-                  {t(`doc.kind_${d.kind}`)} — {d.originalName}
+                  {t(`doc.kind_${d.kind}`)}: {d.originalName}
                 </div>
                 <div className="text-xs text-[color:var(--color-ink-soft)]">
                   {t("doc.size_kb", { kb: (d.size / 1024).toFixed(0) })} ·{" "}

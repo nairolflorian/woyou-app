@@ -12,7 +12,7 @@ const en: Record<string, string> = {
   "nav.logout": "Log out",
 
   "home.hero_badge": "JOBS & TRAINING FROM ABROAD",
-  "home.hero_title": "Your future in Germany — with WoYou",
+  "home.hero_title": "Your future in Germany. With WoYou",
   "home.hero_subtitle":
     "We connect international talent with leading German companies. Build your profile, find the right role, start your adventure.",
   "home.hero_btn_start": "Get started",
@@ -28,13 +28,13 @@ const en: Record<string, string> = {
   "home.process_subtitle": "Four simple steps to your job in Germany",
   "home.process_step1_title": "Register & questionnaire",
   "home.process_step1_desc":
-    "Online, via Telegram or WhatsApp — fill in your profile.",
+    "Online, via Telegram or WhatsApp. Fill in your profile.",
   "home.process_step2_title": "Language test",
   "home.process_step2_desc":
-    "Quick German test (A1–B2) so we can place you correctly.",
+    "Quick German test (A1-B2) so we can place you correctly.",
   "home.process_step3_title": "Unlock profile",
   "home.process_step3_desc":
-    "One-time fee — then employers see your profile and you become placeable.",
+    "One-time fee. Then employers see your profile and you become placeable.",
   "home.process_step4_title": "Auto-match & arrive",
   "home.process_step4_desc":
     "Once your profile is unlocked our system automatically suggests matching companies. We then help with visa & arrival.",
@@ -42,12 +42,12 @@ const en: Record<string, string> = {
   "home.benefits_badge": "WHY WOYOU",
   "home.benefits_title": "Your benefits",
   "home.benefits_subtitle":
-    "More than a job board — we walk with you from application to arrival.",
+    "More than a job board. We walk with you from application to arrival.",
   "home.benefits_card1_title": "International network",
   "home.benefits_card1_desc": "Direct line to top employers across Germany.",
   "home.benefits_card2_title": "Bureaucracy support",
   "home.benefits_card2_desc":
-    "Visa, recognition, insurance — we help every step.",
+    "Visa, recognition, insurance. We help every step.",
   "home.benefits_card3_title": "Personal coaching",
   "home.benefits_card3_desc": "Your career coach is with you all the way.",
   "home.benefits_card4_title": "Multi-channel",
@@ -58,13 +58,13 @@ const en: Record<string, string> = {
     "Housing, paperwork and cultural orientation.",
   "home.benefits_card6_title": "Fair conditions",
   "home.benefits_card6_desc":
-    "One-off activation fee — fully transparent afterwards.",
+    "One-off activation fee. Fully transparent afterwards.",
 
   "home.audience_badge": "FOR WHOM",
   "home.audience_title": "Who is WoYou for?",
   "home.audience_card1_title": "Professionals",
   "home.audience_card1_desc":
-    "From Morocco and beyond — experienced in care, construction, hospitality and more.",
+    "From Morocco and beyond. Experienced in care, construction, hospitality and more.",
   "home.audience_card2_title": "Apprentices",
   "home.audience_card2_desc":
     "Young talents looking to start vocational training in Germany.",
@@ -72,7 +72,7 @@ const en: Record<string, string> = {
   "home.audience_card3_desc": "Employers searching for qualified staff.",
 
   "home.cta_title": "Ready for your move to Germany?",
-  "home.cta_subtitle": "Build your profile in 5 minutes — for free.",
+  "home.cta_subtitle": "Build your profile in 5 minutes. For free.",
   "home.cta_btn": "Create my profile",
 
   "footer.legal": "Imprint",
@@ -95,7 +95,7 @@ const en: Record<string, string> = {
   "auth.with_telegram": "With Telegram",
   "auth.with_google": "With Google",
   "auth.with_facebook": "With Facebook",
-  "auth.demo_only": "(Demo button — full OAuth in phase 2)",
+  "auth.demo_only": "(Demo button. Full OAuth in phase 2)",
 
   "reg.step": "Step",
   "reg.of": "of",
@@ -147,13 +147,13 @@ const en: Record<string, string> = {
   "reg.finish": "Finish profile",
 
   "test.title": "German language test",
-  "test.subtitle": "12 questions — A1 to B2. About 5 minutes.",
+  "test.subtitle": "12 questions. A1 to B2. About 5 minutes.",
   "test.start": "Start test",
   "test.submit": "Submit test",
   "test.your_score": "Your score",
   "test.your_level": "Your level",
   "test.passed": "Passed",
-  "test.failed": "Not passed — no problem, you can retake later.",
+  "test.failed": "Not passed. No problem, you can retake later.",
 
   "dash.title": "My area",
   "dash.status": "Status",
@@ -188,7 +188,7 @@ const en: Record<string, string> = {
   "common.delete": "Delete",
   "common.save": "Save",
   "common.loading": "Loading …",
-  "common.please_choose": "— please choose —",
+  "common.please_choose": "Please choose",
   "common.error_generic": "Something went wrong.",
   "a11y.skip": "Skip to content",
 
@@ -284,7 +284,7 @@ const en: Record<string, string> = {
     "You can change email and phone. Password change requires the current one.",
   "edit.err_wrong_password": "Current password is wrong.",
   "edit.err_taken": "That email or phone is already in use.",
-  "edit.err_no_password": "This account has no password — sign in via Telegram.",
+  "edit.err_no_password": "This account has no password. Sign in via Telegram.",
   "dash.documents_h": "Your documents",
   "dash.documents_desc":
     "CV, passport, diplomas and certificates. Visible to you and to companies with an active proposal.",
@@ -292,14 +292,14 @@ const en: Record<string, string> = {
   "dash.account_desc": "Data export and account deletion under GDPR.",
   "dash.telegram_h": "Use the WoYou bot on Telegram",
   "dash.telegram_desc":
-    "Link your Telegram account so we can reach you there too — and companies can chat with you directly.",
+    "Link your Telegram account so we can reach you there too. And companies can chat with you directly.",
   "dash.telegram_open": "Open bot",
 
   "onb.title_done": "You're ready 🎉",
   "onb.title_active": "Get your profile placement-ready",
   "onb.progress": "{done} / {total} done",
   "onb.step1_title": "Fill in your profile",
-  "onb.step1_desc": "Currently {percent}% — we need 100% before placement.",
+  "onb.step1_desc": "Currently {percent}%. We need 100% before placement.",
   "onb.step1_cta_done": "Edit",
   "onb.step1_cta": "Continue filling",
   "onb.step2_title": "Take the language test",
@@ -309,12 +309,12 @@ const en: Record<string, string> = {
   "onb.step2_cta": "Start test",
   "onb.step3_title": "Upload at least your CV",
   "onb.step3_desc":
-    "Interviews go 3× faster — companies see right away what you can do.",
+    "Interviews go 3× faster. Companies see right away what you can do.",
   "onb.step3_cta_done": "Manage documents",
   "onb.step3_cta": "Upload",
   "onb.step4_title": "Unlock your profile",
   "onb.step4_desc":
-    "One-off fee — then you become visible to our partner companies and are auto-proposed.",
+    "One-off fee. Then you become visible to our partner companies and are auto-proposed.",
 
   "doc.kind_label": "Document type",
   "doc.file_label": "File (PDF / JPG / PNG, max 5 MB)",
@@ -338,10 +338,10 @@ const en: Record<string, string> = {
 
   "acc.export_btn": "📥 Download my data as JSON",
   "acc.export_hint":
-    "GDPR Art. 15 / 20 — full export of every record we hold about you.",
+    "GDPR Art. 15 / 20. Full export of every record we hold about you.",
   "acc.delete_h": "Permanently delete account",
   "acc.delete_desc":
-    "GDPR Art. 17 — all your data and documents are erased irreversibly. Active proposals are lost.",
+    "GDPR Art. 17. All your data and documents are erased irreversibly. Active proposals are lost.",
   "acc.delete_confirm_prefix": "Type the word",
   "acc.delete_confirm_suffix": "to confirm:",
   "acc.delete_btn": "Delete account",
@@ -374,25 +374,25 @@ const en: Record<string, string> = {
   "cookie.privacy_link": "privacy policy",
   "cookie.ok": "Got it",
 
-  "nf.title": "404 — Page not found",
+  "nf.title": "404: Page not found",
   "nf.body": "This page no longer exists or you mistyped the URL.",
   "nf.home": "Home",
   "nf.demo": "Test page",
 
   "test.choose_lang_h": "Which language would you like to test?",
   "test.choose_lang_desc":
-    "You can take all three — results are saved on your profile. Each test has 12 multiple-choice questions (A1 to B2), about 5 minutes.",
+    "You can take all three. Results are saved on your profile. Each test has 12 multiple-choice questions (A1 to B2), about 5 minutes.",
   "test.questions_count": "{n} questions",
   "test.other_lang": "← another language",
   "test.title_lang": "{lang} test",
   "test.intro":
-    "{count} multiple-choice questions — A1 to B2. About 5 minutes. You can retake it later.",
+    "{count} multiple-choice questions. A1 to B2. About 5 minutes. You can retake it later.",
   "test.bullet1": "✓ Your score is shown on your profile",
   "test.bullet2": "✓ Companies see your objective level",
   "test.bullet3": "✓ Helps us match you better",
   "test.passed_h": "Passed!",
   "test.failed_h": "Not passed yet",
-  "test.your_result": "Your score: {score} / {total} — level {level}",
+  "test.your_result": "Your score: {score} / {total}. Level {level}",
   "test.go_dashboard": "Go to dashboard",
   "test.question": "Question {n} · {level}",
   "test.answer_all_first": "Please answer every question.",
