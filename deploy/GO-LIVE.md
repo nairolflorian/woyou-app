@@ -36,3 +36,19 @@ Jeder Build legt Zwischenstände ab. Am 19.10.2026 lief die Platte dadurch voll 
 ```
 docker builder prune -f && docker image prune -f
 ```
+
+## Anbindung EuBiA-CRM
+
+WoYou meldet Kundenereignisse an das EuBiA-CRM (registriert, gebucht, bezahlt, Mappe eingereicht, Bewerbungen laufen, Nachkauf, storniert). Standard ist aus. Gesendet wird erst, wenn `EUBIA_CRM_URL`, `EUBIA_CRM_TOKEN` und `EUBIA_CRM_SYNC=on` in der `.env` stehen. Demo- und Testkonten werden nie übertragen. Code: `src/lib/crm-sync.ts`.
+
+1. Vorher: Die Datenschutzerklärung von WoYou muss die Weitergabe an EuBiA abdecken, Vereinbarung mit EuBiA liegt vor.
+2. Schlüssel für den Woyou-Eingang im EuBiA-CRM bereithalten (nie ins Repo, nie in den Chat).
+3. Einrichten (fragt Adresse und Schlüssel ab, startet die App neu): `bash deploy/crm-einrichten.sh`
+4. Bestehende Kund:innen einmalig nachtragen, erst Probelauf, dann wirklich:
+   ```
+   docker compose --profile init build db-init
+   docker compose --profile init run --rm db-init npx tsx scripts/crm-nachtragen.ts
+   docker compose --profile init run --rm db-init npx tsx scripts/crm-nachtragen.ts --ausfuehren
+   ```
+5. Prüfen: Testbuchung anlegen, im CRM erscheint die Kund:in. Fehler stehen nur als Ereignis und Status im Log: `docker logs woyou_app 2>&1 | grep '\[crm\]'`
+6. Ausschalten: `EUBIA_CRM_SYNC=off` in `.env`, dann `docker compose up -d app`

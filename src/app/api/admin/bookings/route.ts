@@ -7,6 +7,7 @@ import { audit } from "@/lib/audit";
 import { grantStartCredits } from "@/lib/credits";
 import { markBookingPaid } from "@/lib/bookings";
 import { BOOKING_STATUS } from "@/lib/services";
+import { crmMelden } from "@/lib/crm-sync";
 
 const Body = z.object({
   id: z.string().min(1),
@@ -29,6 +30,7 @@ export async function PATCH(req: Request) {
   if (markPaid) await markBookingPaid(id);
   const after = await prisma.serviceBooking.update({ where: { id }, data });
   if (after.paidAt) await grantStartCredits(id);
+  if (after.status === BOOKING_STATUS.CANCELLED && before.status !== BOOKING_STATUS.CANCELLED) crmMelden("storniert", after.candidateId, { paket: after.packageKey });
   await audit(req, "BOOKING_UPDATE", { candidateId: before.candidateId }, { bookingId: id, from: { status: before.status, sent: before.applicationsSent }, to: { status: after.status, sent: after.applicationsSent } });
   return NextResponse.json({ ok: true, booking: after });
 }

@@ -65,6 +65,10 @@ services:
       AI_PROVIDER: ${AI_PROVIDER:-}
       AI_API_KEY: ${AI_API_KEY:-}
       AI_MODEL: ${AI_MODEL:-}
+      # Anbindung EuBiA-CRM (aus, solange EUBIA_CRM_SYNC nicht "on" ist; Einrichtung: deploy/crm-einrichten.sh)
+      EUBIA_CRM_URL: ${EUBIA_CRM_URL:-}
+      EUBIA_CRM_TOKEN: ${EUBIA_CRM_TOKEN:-}
+      EUBIA_CRM_SYNC: ${EUBIA_CRM_SYNC:-}
     volumes:
       - woyou_uploads:/app/uploads
     ports:
@@ -84,6 +88,10 @@ services:
         condition: service_healthy
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-woyou}:${POSTGRES_PASSWORD:-woyou}@postgres:5432/${POSTGRES_DB:-woyou}?schema=public
+      # für scripts/crm-nachtragen.ts
+      EUBIA_CRM_URL: ${EUBIA_CRM_URL:-}
+      EUBIA_CRM_TOKEN: ${EUBIA_CRM_TOKEN:-}
+      EUBIA_CRM_SYNC: ${EUBIA_CRM_SYNC:-}
     command: sh -c "npx prisma migrate deploy && (test \"$$DEMO_MODE\" = false || npx tsx scripts/seed.ts)"
     networks:
       - woyou_net

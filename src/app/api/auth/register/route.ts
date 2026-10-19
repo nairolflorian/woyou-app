@@ -5,6 +5,7 @@ import { createUserWithRole } from "@/lib/auth";
 import { getSession } from "@/lib/session";
 import { ROLE, CANDIDATE_STATUS } from "@/lib/enums";
 import { rateLimit, clientIp } from "@/lib/rate-limit";
+import { crmMelden } from "@/lib/crm-sync";
 
 const schema = z.object({
   email: z.string().email().optional().or(z.literal("")),
@@ -62,9 +63,10 @@ export async function POST(req: Request) {
   if (source) await prisma.user.update({ where: { id: user.id }, data: { signupSource: source } });
 
   if (role === ROLE.CANDIDATE) {
-    await prisma.candidate.create({
+    const candidate = await prisma.candidate.create({
       data: { userId: user.id, status: CANDIDATE_STATUS.REGISTERED },
     });
+    crmMelden("registriert", candidate.id);
   }
 
   const session = await getSession();

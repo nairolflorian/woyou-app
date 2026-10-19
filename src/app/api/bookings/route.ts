@@ -6,6 +6,7 @@ import { ROLE } from "@/lib/enums";
 import { rateLimit, clientIp } from "@/lib/rate-limit";
 import { SERVICES, BOOKING_STATUS } from "@/lib/services";
 import { startCheckout, bookingMails, ensureTask } from "@/lib/bookings";
+import { crmMelden } from "@/lib/crm-sync";
 
 const Body = z.object({
   packageKey: z.literal("bewerbung-25"),
@@ -56,6 +57,7 @@ export async function POST(req: Request) {
       status: BOOKING_STATUS.REQUESTED,
     },
   });
+  crmMelden("gebucht", candidate.id, { paket: booking.packageKey });
 
   const url = await startCheckout(booking.id, new URL(req.url).origin);
   if (url) return NextResponse.json({ ok: true, url });

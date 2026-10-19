@@ -11,6 +11,7 @@ import { sendMail, layout, mailEnabled, type Attachment } from "@/lib/mail";
 import { aliasAddress } from "@/lib/alias";
 import { BOOKING_STATUS } from "@/lib/services";
 import { consumeCredit, refundCredit, creditState } from "@/lib/credits";
+import { crmMelden } from "@/lib/crm-sync";
 
 export const ACTIVE_LEAD = ["SELECTED", "READY", "SENT", "APPLIED_MANUALLY"];
 export const DONE_LEAD = ["SENT", "APPLIED_MANUALLY"];
@@ -73,6 +74,7 @@ export async function recount(bookingId: string) {
   const b = await prisma.serviceBooking.findUniqueOrThrow({ where: { id: bookingId } });
   const status = sent > 0 && (b.status === BOOKING_STATUS.PAID || b.status === BOOKING_STATUS.REQUESTED) ? BOOKING_STATUS.IN_PROGRESS : b.status;
   await prisma.serviceBooking.update({ where: { id: bookingId }, data: { applicationsSent: sent, status } });
+  if (b.applicationsSent === 0 && sent > 0) crmMelden("bewerbungen_laufen", b.candidateId, { paket: b.packageKey });
   return sent;
 }
 

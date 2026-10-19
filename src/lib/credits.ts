@@ -8,6 +8,8 @@ import { prisma } from "@/lib/prisma";
 import { getStripe } from "@/lib/stripe";
 import { sendMail, layout, teamAddress } from "@/lib/mail";
 import { CREDIT_PRODUCTS, formatPrice, type CreditKind } from "@/lib/services";
+import { crmMelden } from "@/lib/crm-sync";
+import { euro } from "@/lib/crm-core";
 
 const baseUrl = () => process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 type Tx = Prisma.TransactionClient | typeof prisma;
@@ -97,6 +99,7 @@ export async function markPurchasePaid(purchaseId: string, opts: { sessionId?: s
     await prisma.candidate.update({ where: { id: p.candidateId }, data: { subscriptionUntil: until } });
   }
   await purchaseMails(p.id, "paid");
+  crmMelden("nachkauf", p.candidateId, { paket: p.kind, betrag: euro(p.amountCents), datum: now.toISOString() });
   return true;
 }
 
@@ -118,6 +121,7 @@ export async function cancelSubscription(candidateId: string) {
   const stripe = getStripe();
   if (stripe && p.stripeSubscriptionId) await stripe.subscriptions.update(p.stripeSubscriptionId, { cancel_at_period_end: true });
   await prisma.creditPurchase.update({ where: { id: p.id }, data: { status: "CANCELLING" } });
+  crmMelden("storniert", candidateId, { paket: p.kind });
   const c = await prisma.candidate.findUniqueOrThrow({ where: { id: candidateId }, include: { user: true } });
   const until = c.subscriptionUntil?.toLocaleDateString("de-DE") ?? "Monatsende";
   const paras = [`Hallo ${c.firstName ?? ""},`.replace(" ,", ","), `dein Abo ist gekündigt. Du kannst den Service noch bis ${until} unbegrenzt nutzen. Danach wird nichts mehr abgebucht.`, "Viele Grüße", "Dein WoYou-Team"];

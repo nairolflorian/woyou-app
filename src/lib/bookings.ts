@@ -5,6 +5,8 @@ import { prisma } from "@/lib/prisma";
 import { getStripe } from "@/lib/stripe";
 import { sendMail, layout, teamAddress } from "@/lib/mail";
 import { SERVICES, BOOKING_STATUS, formatPrice, type ServiceKey } from "@/lib/services";
+import { crmMelden } from "@/lib/crm-sync";
+import { euro } from "@/lib/crm-core";
 
 const baseUrl = () => process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 const SERVICE_NAME: Record<ServiceKey, string> = { "bewerbung-25": "Bewerbungs-Service (25 Bewerbungen)" };
@@ -40,6 +42,7 @@ export async function markBookingPaid(bookingId: string, stripeSessionId?: strin
     await (await import("@/lib/credits")).grantStartCredits(bookingId);
     await bookingMails(bookingId, "paid");
     const b = await prisma.serviceBooking.findUnique({ where: { id: bookingId }, include: { candidate: true } });
+    if (b) crmMelden("bezahlt", b.candidateId, { paket: b.packageKey, betrag: euro(b.amountCents), datum: b.paidAt?.toISOString() });
     if (b) await ensureTask(b.candidateId, "CONTACT", `Erstgespräch Bewerbungs-Service: ${[b.candidate.firstName, b.candidate.lastName].filter(Boolean).join(" ")}`, `Bezahlt. Telefon/WhatsApp: ${b.contactPhone ?? "–"}. Berufe: ${b.targetJobs ?? "–"}. Buchung: /admin/buchungen/${b.id}`);
   }
   return res.count > 0;
