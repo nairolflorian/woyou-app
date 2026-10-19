@@ -11,6 +11,7 @@ import { DocumentUpload } from "@/components/DocumentUpload";
 import { AccountControls } from "@/components/AccountControls";
 import { LoginEditForm } from "@/components/LoginEditForm";
 import { CreditShop } from "@/components/CreditShop";
+import { MyDocuments } from "@/components/MyDocuments";
 import { creditState } from "@/lib/credits";
 import { CREDIT_PRODUCTS } from "@/lib/services";
 import { getStripe } from "@/lib/stripe";
@@ -80,6 +81,7 @@ export default async function CandidateDashboardPage(props: { searchParams: Prom
                 </div>
               )}
             </div>
+            <div className="mt-8"><MyDocuments locale={locale} /></div>
             <div className="mt-8 card">
               <h2 className="text-xl font-bold">Deine Stellenangebote</h2>
               <p className="text-sm text-[color:var(--color-ink-soft)] mt-1">Diese Stellen haben wir für dich gefunden. Unser Team prüft sie, gibt die passenden frei und bewirbt dich per E-Mail. Antworten der Firmen bekommst du direkt.</p>

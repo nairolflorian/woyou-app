@@ -3,6 +3,7 @@ import Link from "next/link";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { MappeEditor } from "@/components/MappeEditor";
+import { MyDocuments } from "@/components/MyDocuments";
 import { getSession } from "@/lib/session";
 import { mappeForSession } from "@/lib/mappe";
 import { missingFields } from "@/lib/application";
@@ -40,6 +41,8 @@ export default async function MappePage() {
             <div className="card"><div className="text-xs text-[color:var(--color-ink-soft)]">{tx.stAddress}</div><div className="font-semibold break-all" dir="ltr">{alias ?? tx.addressPending}</div></div>
           </div>
           {alias && <p className="text-sm text-[color:var(--color-ink-soft)]">{fmt(tx.aliasInfo, { alias })}</p>}
+
+          <MyDocuments locale={locale} hasEnglish={!!m.profile.dataEn} />
 
           <MappeEditor locale={locale} initial={m.data} status={m.profile.status} hasPhoto={!!m.profile.photoFile} ownCv={{ has: !!m.profile.ownCvFile, use: m.profile.useOwnCv }} missing={missingFields(m.data)} />
 

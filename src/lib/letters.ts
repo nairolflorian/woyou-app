@@ -157,3 +157,22 @@ export async function letterForJob(d: ProfileData, job: JobInfo, lang: DocLang =
   }
   return { text: en ? templateLetterEn(d, job) : templateLetter(d, job), source: "template" };
 }
+
+// Anschreiben-Muster zum Selbst-Ausfüllen: Fakten aus der Mappe sind eingesetzt, Firma, Stelle,
+// Ansprechperson und der Satz zur Firma bleiben als Lücke in [eckigen Klammern].
+export function gapLetter(d: ProfileData, lang: DocLang = "de") {
+  const en = lang === "en";
+  const job = en ? { title: "[job title]", company: "[company name]" } : { title: "[Stellenbezeichnung]", company: "[Name der Firma]" };
+  const body = (en ? templateLetterEn(d, job) : templateLetter(d, job)).split("\n");
+  body[0] = en ? "Dear [Ms / Mr surname of contact person, or: Sir or Madam]," : "Sehr geehrte/r [Frau / Herr Nachname der Ansprechperson, sonst: Damen und Herren],";
+  const firstPara = body.findIndex((l, i) => i > 1 && l.trim());
+  body[firstPara] += en
+    ? " [One or two sentences on why this company interests you, e.g. what appealed to you in the job advert.]"
+    : " [Ein bis zwei Sätze, warum Sie gerade diese Firma interessiert, z. B. was Sie in der Anzeige angesprochen hat.]";
+  return {
+    recipient: en ? ["[Company name]", "[Contact person]", "[Street and number]", "[Postcode and city]"] : ["[Name der Firma]", "[Ansprechperson]", "[Straße und Hausnummer]", "[PLZ und Ort]"],
+    subject: en ? "Application for the position of [job title], reference [if given]" : "Bewerbung als [Stellenbezeichnung], Referenznummer [falls angegeben]",
+    place: en ? "[City], [date]" : "[Ort], [Datum]",
+    text: body.join("\n"),
+  };
+}
