@@ -8,6 +8,8 @@ import { ROLE } from "@/lib/enums";
 import { SERVICES, formatPrice } from "@/lib/services";
 import { COMPANY, siteText } from "@/lib/company";
 import { landingCopy, IMAGES } from "@/lib/landing-copy";
+import { mappeText } from "@/lib/mappe-i18n";
+import { DESIGN_TEMPLATES } from "@/lib/design";
 import { SchemaOrg } from "@/components/SchemaOrg";
 
 // Startseite = Angebot, aufgebaut nach dem Konzept „Ehrlichkeit als Verkaufsargument“:
@@ -144,6 +146,15 @@ export async function ServiceLanding() {
                   </div>
                   <div className="mt-2 text-sm font-semibold text-[color:var(--color-brand-deep)]">{m.label} (PDF) ↗</div>
                 </a>
+              ))}
+            </div>
+            <p className="mt-10 font-semibold">{c.sampleDesigns}</p>
+            <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
+              {DESIGN_TEMPLATES.map((t) => (
+                <figure key={t}>
+                  <Image src={`/muster/design-${t}.png`} alt={mappeText(locale).designs[t]} width={424} height={600} className="h-auto w-full rounded-lg border border-[color:var(--color-border)] bg-white shadow-sm" />
+                  <figcaption className="mt-1.5 text-center text-sm text-[color:var(--color-ink-soft)]">{mappeText(locale).designs[t]}</figcaption>
+                </figure>
               ))}
             </div>
           </div>

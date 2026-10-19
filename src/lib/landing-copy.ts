@@ -9,7 +9,7 @@ type Landing = {
   doTitle: string; doYes: string; doNo: string; yes: string[]; no: string[];
   realTitle: string; real: { n: string; t: string; d: string }[];
   checkTitle: string; checkLead: string; checkBtn: string;
-  sampleTitle: string; sampleLead: string; sampleCv: string; sampleLetter: string; sampleNote: string;
+  sampleTitle: string; sampleLead: string; sampleCv: string; sampleLetter: string; sampleNote: string; sampleDesigns: string;
   stepsTitle: string; steps: { t: string; d: string }[];
   faqTitle: string; faq: { q: string; a: string }[];
   facts: string[];
@@ -57,7 +57,7 @@ export const LANDING: Record<Lang, Landing> = {
       { n: "+", t: "Unterlagen, die dir gehören", d: "Lebenslauf und Anschreiben kannst du herunterladen und selbst weiter nutzen. Du weißt danach auch, auf welchen Seiten du suchen kannst." },
     ],
     checkTitle: "Passt WoYou zu dir?", checkLead: "Fünf kurze Fragen, kostenlos. Danach sagen wir dir offen, ob sich eine Buchung für dich lohnt.", checkBtn: "Zum Selbstcheck",
-    sampleTitle: "So sieht deine Bewerbung aus", sampleLead: "So sehen Lebenslauf und Anschreiben aus, die wir für dich erstellen. Schlicht und gut lesbar, so wie Personalabteilungen es mögen.", sampleCv: "Muster-Lebenslauf", sampleLetter: "Muster-Anschreiben", sampleNote: "Muster mit erfundener Person",
+    sampleTitle: "So sieht deine Bewerbung aus", sampleLead: "So sehen Lebenslauf und Anschreiben aus, die wir für dich erstellen. Schlicht und gut lesbar, so wie Personalabteilungen es mögen.", sampleCv: "Muster-Lebenslauf", sampleLetter: "Muster-Anschreiben", sampleNote: "Muster mit erfundener Person", sampleDesigns: "Vier Designs und sechs Farben zur Wahl. Du suchst sie in deiner Bewerbungsmappe aus.",
     stepsTitle: "So läuft es ab",
     steps: [
       { t: "Selbstcheck", d: "kostenlos, dauert eine Minute" },
@@ -119,7 +119,7 @@ export const LANDING: Record<Lang, Landing> = {
       { n: "+", t: "documents that belong to you", d: "You can download your CV and cover letter and keep using them. You will also know which sites to search." },
     ],
     checkTitle: "Is WoYou right for you?", checkLead: "Five short questions, free. Then we tell you openly whether booking makes sense for you.", checkBtn: "Go to self-check",
-    sampleTitle: "This is what your application looks like", sampleLead: "This is what the CV and cover letter we write for you look like. Simple and easy to read, the way HR departments like it.", sampleCv: "Sample CV", sampleLetter: "Sample cover letter", sampleNote: "Sample with a fictional person",
+    sampleTitle: "This is what your application looks like", sampleLead: "This is what the CV and cover letter we write for you look like. Simple and easy to read, the way HR departments like it.", sampleCv: "Sample CV", sampleLetter: "Sample cover letter", sampleNote: "Sample with a fictional person", sampleDesigns: "Four designs and six colours to choose from. You pick them in your application folder.",
     stepsTitle: "How it works",
     steps: [
       { t: "Self-check", d: "free, takes a minute" },
@@ -181,7 +181,7 @@ export const LANDING: Record<Lang, Landing> = {
       { n: "+", t: "des documents qui vous appartiennent", d: "Vous pouvez télécharger CV et lettre et continuer à les utiliser. Vous saurez aussi sur quels sites chercher." },
     ],
     checkTitle: "WoYou vous convient-il ?", checkLead: "Cinq questions courtes, gratuit. Ensuite nous vous disons franchement si une réservation vaut la peine pour vous.", checkBtn: "Faire l'auto-test",
-    sampleTitle: "Voici à quoi ressemble votre candidature", sampleLead: "Voici à quoi ressemblent le CV et la lettre que nous rédigeons pour vous. Simples et lisibles, comme les services RH les aiment.", sampleCv: "CV modèle", sampleLetter: "Lettre modèle", sampleNote: "Modèle avec une personne fictive",
+    sampleTitle: "Voici à quoi ressemble votre candidature", sampleLead: "Voici à quoi ressemblent le CV et la lettre que nous rédigeons pour vous. Simples et lisibles, comme les services RH les aiment.", sampleCv: "CV modèle", sampleLetter: "Lettre modèle", sampleNote: "Modèle avec une personne fictive", sampleDesigns: "Quatre designs et six couleurs au choix. Vous les choisissez dans votre dossier.",
     stepsTitle: "Déroulement",
     steps: [
       { t: "Auto-test", d: "gratuit, une minute" },
@@ -243,7 +243,7 @@ export const LANDING: Record<Lang, Landing> = {
       { n: "+", t: "مستندات تبقى لك", d: "يمكنك تحميل السيرة الذاتية والرسالة واستخدامهما لاحقًا. وستعرف أيضًا أين تبحث عن الوظائف." },
     ],
     checkTitle: "هل تناسبك WoYou؟", checkLead: "60 ثانية، مجانًا. نخبرك بصدق مسبقًا إن كان الحجز مفيدًا لملفك.", checkBtn: "إلى الاختبار الذاتي",
-    sampleTitle: "هكذا يبدو طلبك", sampleLead: "هادئ وموضوعي وبالمعايير الألمانية. بلا زخرفة ولا عبارات فارغة.", sampleCv: "نموذج سيرة ذاتية", sampleLetter: "نموذج رسالة تحفيز", sampleNote: "نموذج لشخص خيالي",
+    sampleTitle: "هكذا يبدو طلبك", sampleLead: "هادئ وموضوعي وبالمعايير الألمانية. بلا زخرفة ولا عبارات فارغة.", sampleCv: "نموذج سيرة ذاتية", sampleLetter: "نموذج رسالة تحفيز", sampleNote: "نموذج لشخص خيالي", sampleDesigns: "أربعة تصاميم وستة ألوان للاختيار. تختارها في ملف التقديم الخاص بك.",
     stepsTitle: "طريقة العمل",
     steps: [
       { t: "الاختبار الذاتي", d: "مجانًا، 60 ثانية" },
@@ -305,7 +305,7 @@ export const LANDING: Record<Lang, Landing> = {
       { n: "+", t: "दस्तावेज़ जो आपके अपने हैं", d: "बायोडाटा और कवर लेटर आप डाउनलोड करके आगे भी इस्तेमाल कर सकते हैं। आपको यह भी पता चलेगा कि नौकरियाँ कहाँ खोजें।" },
     ],
     checkTitle: "क्या WoYou आपके लिए सही है?", checkLead: "पाँच छोटे सवाल, मुफ़्त। उसके बाद हम साफ़ बताते हैं कि आपके लिए बुकिंग फ़ायदेमंद है या नहीं।", checkBtn: "सेल्फ-चेक पर जाएँ",
-    sampleTitle: "आपका आवेदन ऐसा दिखता है", sampleLead: "हम आपके लिए जो बायोडाटा और कवर लेटर बनाते हैं, वे ऐसे दिखते हैं। सरल और पढ़ने में आसान, जैसा HR विभाग पसंद करते हैं।", sampleCv: "नमूना बायोडाटा", sampleLetter: "नमूना कवर लेटर", sampleNote: "काल्पनिक व्यक्ति का नमूना",
+    sampleTitle: "आपका आवेदन ऐसा दिखता है", sampleLead: "हम आपके लिए जो बायोडाटा और कवर लेटर बनाते हैं, वे ऐसे दिखते हैं। सरल और पढ़ने में आसान, जैसा HR विभाग पसंद करते हैं।", sampleCv: "नमूना बायोडाटा", sampleLetter: "नमूना कवर लेटर", sampleNote: "काल्पनिक व्यक्ति का नमूना", sampleDesigns: "चुनने के लिए चार डिज़ाइन और छह रंग। आप इन्हें अपनी आवेदन फ़ाइल में चुनते हैं।",
     stepsTitle: "प्रक्रिया कैसे चलती है",
     steps: [
       { t: "सेल्फ-चेक", d: "मुफ़्त, एक मिनट" },
