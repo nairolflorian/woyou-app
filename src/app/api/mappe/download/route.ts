@@ -3,6 +3,7 @@ import { mappeForRequest, readPhoto, readOwnCv } from "@/lib/mappe";
 import { cvPdf, letterPdf, type DocLang } from "@/lib/pdf";
 import { gapLetter } from "@/lib/letters";
 import { docx, type DocPara } from "@/lib/docx";
+import { parseProfile } from "@/lib/application";
 
 // Unterlagen zum Herunterladen und freien Weiterverwenden (Kund:in für die eigene Mappe, Team mit bookingId):
 //   ?doc=cv            Lebenslauf als PDF (eigener hochgeladener Lebenslauf, wenn so eingestellt)
@@ -14,7 +15,7 @@ export async function GET(req: Request) {
   const m = await mappeForRequest(url.searchParams.get("bookingId"));
   if (!m) return NextResponse.json({ error: "Nicht gefunden" }, { status: 404 });
   const lang: DocLang = url.searchParams.get("lang") === "en" ? "en" : "de";
-  const d = lang === "en" && m.profile.dataEn ? JSON.parse(m.profile.dataEn) : m.data;
+  const d = lang === "en" && m.profile.dataEn ? { ...parseProfile(m.profile.dataEn), design: m.data.design } : m.data; // Design gilt für beide Sprachen
   const name = `${d.firstName}_${d.lastName}`.replace(/[^A-Za-z0-9_-]+/g, "") || "Bewerbung";
   const en = lang === "en";
   const doc = url.searchParams.get("doc");

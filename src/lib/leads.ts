@@ -17,7 +17,8 @@ export const DONE_LEAD = ["SENT", "APPLIED_MANUALLY"];
 
 // Daten für die gewünschte Sprache: englische Fassung, falls gepflegt, sonst die deutsche Mappe
 export function profileFor(profile: { data: string; dataEn: string | null } | null, lang: string) {
-  return parseProfile(lang === "en" && profile?.dataEn ? profile.dataEn : profile?.data);
+  const de = parseProfile(profile?.data);
+  return lang === "en" && profile?.dataEn ? { ...parseProfile(profile.dataEn), design: de.design } : de; // Design gilt für beide Sprachen
 }
 
 // Mappe wird bei Bedarf angelegt (vorausgefüllt aus dem Kundenprofil), damit Unterlagen nie ohne Namen entstehen

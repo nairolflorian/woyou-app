@@ -10,7 +10,7 @@ export async function GET(req: Request) {
   const m = await mappeForRequest(url.searchParams.get("bookingId"));
   if (!m) return NextResponse.json({ error: "Nicht gefunden" }, { status: 404 });
   const lang: DocLang = m.admin && url.searchParams.get("lang") === "en" ? "en" : "de";
-  const d = lang === "en" ? m.dataEn ?? m.data : m.data;
+  const d = lang === "en" && m.dataEn ? { ...m.dataEn, design: m.data.design } : m.data; // Design gilt für beide Sprachen
   const name = `${d.firstName}_${d.lastName}`.replace(/[^A-Za-z0-9_-]+/g, "") || "Bewerbung";
   let pdf: Buffer;
   let file: string;
