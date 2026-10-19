@@ -33,7 +33,7 @@ export function evaluate(a: Answer, lang: "de" | "en" = "de"): Verdict {
     if (helper) reasons.push(t("Mit A2 sind vor allem Helferstellen realistisch. Dafür finden wir Stellen, aber weniger als mit B1.", "With A2, mainly helper jobs are realistic. We can find those, but fewer than with B1."));
     else return { level: "red", reasons: [t("Für Fachstellen verlangen Arbeitgeber fast immer mindestens B1. Mit A2 raten wir ab. Wenn du B1 erreicht hast, lohnt sich die Buchung deutlich mehr.", "For skilled jobs employers almost always require at least B1. With A2 we advise against booking. Once you reach B1, booking is much more worthwhile.")] };
   }
-  if (health && !atLeast(a.german, "B2")) reasons.push(t("In Pflege und Gesundheit wird meist B2 verlangt. Mit B1 gibt es weniger passende Stellen.", "In care and health, B2 is usually required. With B1 there are fewer suitable jobs."));
+  if (health && !atLeast(a.german, "B2")) reasons.push(t("In Pflege und Gesundheit wird meist B2 verlangt. Mit B1 gibt es weniger realistische Stellen.", "In care and health, B2 is usually required. With B1 there are fewer suitable jobs."));
   if (regulated && a.recognition === "pending") reasons.push(t("Anerkennung läuft: Viele Arbeitgeber warten auf den Bescheid. Gib das in der Bewerbung an.", "Recognition pending: many employers wait for the decision. Mention it in your application."));
   if (a.degree === "none" && !helper) reasons.push(t("Ohne Abschluss sind vor allem Helferstellen realistisch.", "Without a qualification, mainly helper jobs are realistic."));
 

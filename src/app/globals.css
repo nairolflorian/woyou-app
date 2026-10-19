@@ -30,6 +30,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+@layer components {
 /* Generic helpers used by landing/dashboard pages */
 .btn-primary {
   display: inline-flex;
@@ -212,6 +213,7 @@ body {
   overflow: visible;
   clip: auto;
   white-space: normal;
+}
 }
 
 /* Hero-Bildwelt: fünf Berufe im Wechsel (25 s), ohne JavaScript; bei reduzierter Bewegung nur das erste Bild */
