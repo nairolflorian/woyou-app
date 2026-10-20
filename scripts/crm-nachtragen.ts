@@ -37,7 +37,7 @@ async function main() {
           leads: { where: { status: { in: ["SENT", "APPLIED_MANUALLY"] }, sentAt: { not: null } }, orderBy: { sentAt: "asc" }, take: 1, select: { sentAt: true } },
         },
       },
-      creditPurchases: { where: { paidAt: { not: null } }, orderBy: { paidAt: "desc" }, take: 1, select: { kind: true, amountCents: true, paidAt: true } },
+      creditPurchases: { where: { paidAt: { not: null } }, orderBy: { paidAt: "desc" }, select: { kind: true, amountCents: true, paidAt: true } },
     },
   });
 
@@ -48,9 +48,19 @@ async function main() {
     const [event, extra] = highest(c);
     counts[event] = (counts[event] ?? 0) + 1;
     if (!run) continue;
-    const data = await candidatePayload(prisma, c.id, extra);
-    if (!data) continue;
-    if (await sendCrmEvent(event, data)) ok++; else failed++;
+    // Erst alle Zahlungen (damit der Umsatz im CRM stimmt), dann die höchste erreichte Phase
+    const zahlungen: [CrmEventName, Partial<CrmPayload>][] = [
+      ...c.bookings.filter((x) => x.paidAt).map((x): [CrmEventName, Partial<CrmPayload>] => ["bezahlt", { paket: x.packageKey, betrag: euro(x.amountCents), datum: x.paidAt!.toISOString() }]),
+      ...c.creditPurchases.slice().reverse().map((x): [CrmEventName, Partial<CrmPayload>] => ["nachkauf", { paket: x.kind, betrag: euro(x.amountCents), datum: (x.paidAt ?? c.createdAt).toISOString() }]),
+    ];
+    const folge = ["bezahlt", "nachkauf"].includes(event) ? zahlungen : [...zahlungen, [event, extra] as [CrmEventName, Partial<CrmPayload>]];
+    let alleOk = true;
+    for (const [ev, ex] of folge.length ? folge : [[event, extra] as [CrmEventName, Partial<CrmPayload>]]) {
+      const data = await candidatePayload(prisma, c.id, ex);
+      if (!data) { alleOk = false; break; }
+      if (!(await sendCrmEvent(ev, data))) alleOk = false;
+    }
+    if (alleOk) ok++; else failed++;
   }
 
   console.log(`${candidates.length - skipped} echte Kund:innen, ${skipped} Demo-/Testkonten ausgelassen.`);
