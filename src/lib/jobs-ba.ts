@@ -15,14 +15,16 @@ type Raw = Record<string, unknown> & {
   referenznummer: string; stellenangebotsTitel?: string; firma?: string; hauptberuf?: string; externeURL?: string;
   stellenlokationen?: { adresse?: { ort?: string; plz?: string } }[]; entfernung?: number | string;
   datumErsteVeroeffentlichung?: string; eintrittszeitraum?: { von?: string }; arbeitszeitVollzeit?: boolean;
-  arbeitszeitTeilzeitVormittag?: boolean; arbeitszeitTeilzeitNachmittag?: boolean; arbeitszeitTeilzeitFlexibel?: boolean; festgehalt?: number;
+  arbeitszeitTeilzeitVormittag?: boolean; arbeitszeitTeilzeitNachmittag?: boolean; arbeitszeitTeilzeitAbend?: boolean; arbeitszeitTeilzeitFlexibel?: boolean; festgehalt?: number;
 };
 
 export const jobUrl = (ref: string) => `https://www.arbeitsagentur.de/jobsuche/jobdetail/${encodeURIComponent(ref)}`;
 
-export async function searchJobs(opts: { was: string; wo?: string; umkreis?: number; page?: number; size?: number; angebotsart?: 1 | 4 }) {
+// arbeitszeit: "vz" Vollzeit, "tz" Teilzeit (Filter der Jobbörse)
+export async function searchJobs(opts: { was: string; wo?: string; umkreis?: number; page?: number; size?: number; angebotsart?: 1 | 4; arbeitszeit?: "vz" | "tz" }) {
   const q = new URLSearchParams({ was: opts.was, size: String(opts.size ?? 50), page: String(opts.page ?? 1), angebotsart: String(opts.angebotsart ?? 1) });
   if (opts.wo) { q.set("wo", opts.wo); q.set("umkreis", String(opts.umkreis ?? 50)); }
+  if (opts.arbeitszeit) q.set("arbeitszeit", opts.arbeitszeit);
   const r = await fetch(`${BASE}/v6/jobs?${q}`, { headers: HEADERS, cache: "no-store", signal: AbortSignal.timeout(20000) });
   if (!r.ok) throw new Error(`Stellensuche nicht erreichbar (${r.status})`);
   const j = (await r.json()) as { ergebnisliste?: Raw[]; maxErgebnisse?: number };
@@ -36,7 +38,7 @@ export async function searchJobs(opts: { was: string; wo?: string; umkreis?: num
     publishedAt: x.datumErsteVeroeffentlichung,
     startAt: x.eintrittszeitraum?.von,
     fulltime: !!x.arbeitszeitVollzeit,
-    parttime: !!(x.arbeitszeitTeilzeitVormittag || x.arbeitszeitTeilzeitNachmittag || x.arbeitszeitTeilzeitFlexibel),
+    parttime: !!(x.arbeitszeitTeilzeitVormittag || x.arbeitszeitTeilzeitNachmittag || x.arbeitszeitTeilzeitAbend || x.arbeitszeitTeilzeitFlexibel),
     salary: x.festgehalt ?? null,
     externalUrl: x.externeURL ?? null,
     url: jobUrl(x.referenznummer),

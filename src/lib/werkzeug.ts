@@ -9,6 +9,8 @@ import "server-only";
 //   - ohne Stripe: Bestellung wird erfasst, das Team markiert sie im Admin als bezahlt
 //   - lokal zum Ausprobieren: PAYMENT_TEST_MODE=on (nur mit `next dev`, nie in Produktion) überspringt die Zahlung
 import { prisma } from "@/lib/prisma";
+import { getSession } from "@/lib/session";
+import { ROLE } from "@/lib/enums";
 import { getStripe } from "@/lib/stripe";
 import { sendMail, layout, teamAddress } from "@/lib/mail";
 import { ANGEBOT, extendUntil, toolState, toolProduct, formatPrice, type ToolKind } from "@/lib/angebot";
@@ -140,4 +142,13 @@ async function purchaseMails(purchaseId: string, state: "requested" | "paid") {
   const name = [p.candidate.firstName, p.candidate.lastName].filter(Boolean).join(" ") || "Kund:in";
   const teamWhat = abo ? `Monatsabo Werkzeug, ${formatPrice(p.amountCents)} im Monat` : `Werkzeug ${p.months ?? 1} Monat, ${formatPrice(p.amountCents)}`;
   if (team) await sendMail({ to: team, subject: `${state === "paid" ? "Bezahlt" : "Bestellt"}: ${teamWhat} · ${name}`, template: `team_tool_purchase_${state}`, text: `${name}: ${teamWhat}`, html: layout(teamWhat, [`${name}: ${teamWhat}`, state === "paid" ? "Bezahlt." : "Noch ohne Zahlung (Stripe nicht eingerichtet). Im Admin unter der Buchung als bezahlt markieren."]) });
+}
+
+/** Für die Werkzeug-Routen: angemeldete Kundin bzw. angemeldeter Kunde mit Zugangsstand (sonst null) */
+export async function toolSession() {
+  const session = await getSession();
+  if (!session.userId || session.role !== ROLE.CANDIDATE) return null;
+  const candidate = await prisma.candidate.findUnique({ where: { userId: session.userId }, include: { user: true } });
+  if (!candidate) return null;
+  return { candidate, access: await toolAccess(candidate.id) };
 }

@@ -6,6 +6,8 @@ import { MobileMenu } from "@/components/MobileMenu";
 import { NotificationsBell } from "@/components/NotificationsBell";
 import { isAdmin, isStaff } from "@/lib/auth";
 import { siteText } from "@/lib/company";
+import { werkzeugText } from "@/lib/werkzeug-text";
+import { ROLE } from "@/lib/enums";
 
 export async function SiteHeader() {
   const { t, locale } = await getT();
@@ -19,13 +21,22 @@ export async function SiteHeader() {
   }
 
   const st = siteText(locale);
-  const navItems = [
-    { href: "/#angebot", label: st.navOffer },
-    { href: "/#ablauf", label: st.navSteps },
-    { href: "/selbstcheck", label: st.navCheck },
-    { href: "/#faq", label: st.navFaq },
-    { href: "/#kontakt", label: st.navContact },
-  ];
+  const wt = werkzeugText(locale);
+  // Angemeldete Kund:innen sehen ihr Werkzeug, alle anderen das Angebot
+  const navItems = session.userId && session.role === ROLE.CANDIDATE
+    ? [
+        { href: "/stellensuche", label: wt.navSearch },
+        { href: "/meine-bewerbungen", label: wt.navTracker },
+        { href: "/bewerbungsmappe", label: wt.navMappe },
+        { href: "/#faq", label: st.navFaq },
+      ]
+    : [
+        { href: "/#angebot", label: st.navOffer },
+        { href: "/#ablauf", label: st.navSteps },
+        { href: "/selbstcheck", label: st.navCheck },
+        { href: "/#faq", label: st.navFaq },
+        { href: "/#kontakt", label: st.navContact },
+      ];
 
   return (
     <header className="sticky top-0 z-40 border-b border-[color:var(--color-border)] bg-white/95 backdrop-blur">

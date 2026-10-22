@@ -38,7 +38,9 @@ export function extendUntil(current: Date | null | undefined, months: number, no
 /** Stand des Werkzeugs zu einem Zeitpunkt */
 export function toolState(until: Date | null | undefined, now = new Date()) {
   const active = !!until && until > now;
-  const daysLeft = active ? Math.ceil((until!.getTime() - now.getTime()) / 864e5) : 0;
+  // Kalendertage (unabhängig von Sommer-/Winterzeit)
+  const day = (d: Date) => Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
+  const daysLeft = active ? Math.max(0, Math.round((day(until!) - day(now)) / 864e5)) : 0;
   return { active, until: until ?? null, daysLeft };
 }
 

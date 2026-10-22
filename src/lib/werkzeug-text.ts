@@ -27,7 +27,7 @@ type UI = {
   letterTitle: string; letterHint: string; generate: string; regenerate: string; generating: string; letterLang: string;
   pdf: string; word: string; cv: string; mail: string; mailHint: string; noEmail: string; employer: string; markApplied: string;
   addOwn: string; addOwnLead: string; ownTitle: string; ownCompany: string; ownCity: string; ownUrl: string; ownEmail: string; add: string;
-  failed: string; readOnly: string;
+  failed: string; readOnly: string; back: string; navSearch: string; navTracker: string; navMappe: string;
 };
 
 const de: UI = {
@@ -56,7 +56,7 @@ const de: UI = {
   noEmail: "In der Anzeige steht keine E-Mail-Adresse. Bewirb dich über die Seite des Arbeitgebers.", employer: "Zur Bewerbungsseite des Arbeitgebers", markApplied: "Ich habe mich beworben",
   addOwn: "Stelle selbst eintragen", addOwnLead: "Du hast eine Stelle woanders gefunden, z. B. auf einem Portal oder einer Firmenseite? Trag sie hier ein, dann hast du alles an einem Ort.",
   ownTitle: "Stellenbezeichnung", ownCompany: "Firma", ownCity: "Ort (optional)", ownUrl: "Link zur Anzeige (optional)", ownEmail: "Bewerbungs-E-Mail (optional)", add: "Eintragen",
-  failed: "Das hat nicht geklappt.", readOnly: "Nur lesbar, solange dein Werkzeug nicht verlängert ist.",
+  failed: "Das hat nicht geklappt.", readOnly: "Nur lesbar, solange dein Werkzeug nicht verlängert ist.", back: "Mein Bereich", navSearch: "Stellensuche", navTracker: "Meine Bewerbungen", navMappe: "Bewerbungsmappe",
 };
 
 const en: UI = {
@@ -85,7 +85,7 @@ const en: UI = {
   noEmail: "The advert doesn't give an email address. Apply via the employer's website.", employer: "Go to the employer's application page", markApplied: "I have applied",
   addOwn: "Add a job yourself", addOwnLead: "Found a job somewhere else, e.g. on a job portal or a company website? Add it here to keep everything in one place.",
   ownTitle: "Job title", ownCompany: "Company", ownCity: "City (optional)", ownUrl: "Link to the advert (optional)", ownEmail: "Application email (optional)", add: "Add",
-  failed: "That didn't work.", readOnly: "Read only until you extend your tool.",
+  failed: "That didn't work.", readOnly: "Read only until you extend your tool.", back: "My area", navSearch: "Job search", navTracker: "My applications", navMappe: "Application folder",
 };
 
 const fr: UI = {
@@ -114,7 +114,7 @@ const fr: UI = {
   noEmail: "L'annonce n'indique pas d'adresse e-mail. Postulez sur le site de l'employeur.", employer: "Vers la page de candidature de l'employeur", markApplied: "J'ai postulé",
   addOwn: "Ajouter une offre vous-même", addOwnLead: "Vous avez trouvé une offre ailleurs, p. ex. sur un portail ou le site d'une entreprise ? Ajoutez-la ici pour tout garder au même endroit.",
   ownTitle: "Intitulé du poste", ownCompany: "Entreprise", ownCity: "Ville (facultatif)", ownUrl: "Lien vers l'annonce (facultatif)", ownEmail: "E-mail de candidature (facultatif)", add: "Ajouter",
-  failed: "Cela n'a pas fonctionné.", readOnly: "Lecture seule tant que l'outil n'est pas prolongé.",
+  failed: "Cela n'a pas fonctionné.", readOnly: "Lecture seule tant que l'outil n'est pas prolongé.", back: "Mon espace", navSearch: "Recherche", navTracker: "Mes candidatures", navMappe: "Dossier",
 };
 
 const UI_ALL: Record<WLang, UI> = { de, en, fr };
