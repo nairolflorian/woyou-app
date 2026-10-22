@@ -53,7 +53,26 @@ Bedingungen:
 
 ## Umsetzung (Stand Zweig)
 
-Siehe Commits auf `weg1-werkzeug` und den Abschnitt „Offene Fragen“ unten.
+- Schalter `src/lib/weg1.ts`, Sperre in `src/middleware.ts` (API 410, Seiten Weiterleitung), zusätzliche Prüfung in
+  `leads.ts`, `suggest.ts`, `alias.ts`, `credits.ts`, Mail-Eingang, Firmen-Registrierung, Matching, Login von Firmenkonten.
+- Angebot und Preise: `src/lib/angebot.ts`; Zugang, Käufe, Stripe: `src/lib/werkzeug.ts`; Buchung: `src/lib/bookings.ts`.
+- Werkzeug: `src/lib/stellensuche-core.ts` (ohne Abhängigkeiten, getestet), `src/lib/stellensuche.ts`, `src/lib/tracker.ts`,
+  Seiten `/stellensuche`, `/meine-bewerbungen`, API `/api/stellensuche`, `/api/stellen/*`, `/api/werkzeug/*`.
+- Texte: `landing-copy.ts`, `services.ts`, `account-text.ts`, `werkzeug-text.ts`, `marketing.ts`, `mappe-i18n.ts`,
+  AGB/Datenschutz (Stellen mit `ANWALT PRÜFEN` markiert).
+- Migration `prisma/migrations/20261022120000_weg1_werkzeug` (nur Ergänzungen, gegen Postgres 16 getestet).
+- Tests: `npx tsx scripts/weg1-test.ts` (14 Tests), Live-Test mit Netz `--conditions=react-server ... --live`.
+
+Lokal starten:
+
+```bash
+git switch weg1-werkzeug
+npm ci
+docker compose up -d postgres            # Postgres auf Port 5444
+export DATABASE_URL="postgresql://woyou:woyou@localhost:5444/woyou?schema=public"
+npx prisma migrate deploy && npm run db:seed
+PAYMENT_TEST_MODE=on npm run dev          # http://localhost:3000/demo, z. B. als fatima@example.com
+```
 
 ## Offene Fragen für Rachid
 
@@ -66,3 +85,5 @@ Siehe Commits auf `weg1-werkzeug` und den Abschnitt „Offene Fragen“ unten.
   der Anwälte schon ein „Firmen-Pool“?
 - Arabisch und Hindi: geprüfte Übersetzung der neuen Texte.
 - CRM: neue Ereignisse `werkzeug_aktiv` muss das EuBiA-CRM noch annehmen (`apps/crm/eingang.js`).
+- Anwälte: Dürfen Summen aus dem Tracker (Quelle, Stand) anonym in der Admin-Auswertung stehen?
+- Kündigung des Abos meldet kein „storniert“ mehr ans CRM (früher: Deal „Verloren“). So lassen?

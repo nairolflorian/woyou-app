@@ -120,7 +120,8 @@ type Dates = { appliedAt: Date | null; repliedAt: Date | null; interviewAt: Date
  */
 export function nextTrackerState(current: Dates, status: TrackerStatus, now = new Date()): Dates & { status: TrackerStatus } {
   if (status === "SAVED") return { status, appliedAt: null, repliedAt: null, interviewAt: null, closedAt: null };
-  const d: Dates = { ...current };
+  // nur die Datumsfelder übernehmen (current kann ein ganzer Datenbank-Eintrag sein)
+  const d: Dates = { appliedAt: current.appliedAt, repliedAt: current.repliedAt, interviewAt: current.interviewAt, closedAt: current.closedAt };
   d.appliedAt ??= now;
   if (status === "REPLY") d.repliedAt ??= now;
   if (status === "INTERVIEW") { d.repliedAt ??= now; d.interviewAt ??= now; }

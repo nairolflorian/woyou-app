@@ -102,6 +102,10 @@ async function main() {
     const back = nextTrackerState(o, "REPLY", now);
     assert.equal(back.closedAt, null);
     assert.deepEqual(nextTrackerState(o, "SAVED", now), { status: "SAVED", ...empty });
+    // ganzer Datenbank-Eintrag als Eingabe: nur Stand und Daten kommen zurück, nichts anderes
+    const row = { id: "x", status: "SAVED", notes: "n", ...empty };
+    assert.deepEqual(Object.keys(nextTrackerState(row, "APPLIED", now)).sort(), ["appliedAt", "closedAt", "interviewAt", "repliedAt", "status"]);
+    assert.equal(nextTrackerState(row, "APPLIED", now).status, "APPLIED");
     const r = nextTrackerState(empty, "REJECTED", now); // Absage ohne vorher „beworben“: Datum wird nachgetragen
     assert.deepEqual(r.appliedAt, now); assert.deepEqual(r.closedAt, now);
   });

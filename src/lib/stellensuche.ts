@@ -10,6 +10,7 @@ import { searchJobs, jobDetails, jobUrl, extractEmails } from "@/lib/jobs-ba";
 import { searchAdzuna, searchArbeitnow, adzunaEnabled } from "@/lib/jobs-extra";
 import { searchFeeds } from "@/lib/jobs-feeds";
 import { parseProfile, type ProfileData } from "@/lib/application";
+import { withProfile } from "@/lib/mappe";
 import {
   germanRequired, germanFit, parseLevel, matchesHours, matchesGerman, dedupe, rank, trefferKey, isEmail, isHttpUrl,
   type Treffer, type Hours, type Level, type Source,
@@ -93,7 +94,9 @@ export async function sucheStellen(f: SuchFilter): Promise<{ treffer: Treffer[];
 // ---------- Profil der Person: Mappe (falls vorhanden) und Kundenprofil ----------
 export async function profileForCandidate(candidateId: string) {
   const c = await prisma.candidate.findUniqueOrThrow({ where: { id: candidateId }, include: { user: true } });
-  const b = await prisma.serviceBooking.findFirst({ where: { candidateId, status: { not: "CANCELLED" } }, orderBy: { createdAt: "desc" }, include: { profile: true } });
+  let b = await prisma.serviceBooking.findFirst({ where: { candidateId, status: { not: "CANCELLED" } }, orderBy: { createdAt: "desc" }, include: { profile: true } });
+  // Mappe noch nicht geöffnet: wie in der Bewerbungsmappe aus dem Kundenprofil vorbelegen, damit Anschreiben gehen
+  if (b && !b.profile) { const r = await withProfile(b.id); b = { ...b, profile: r.profile }; }
   const data: ProfileData | null = b?.profile ? parseProfile(b.profile.data) : null;
   const dataEn: ProfileData | null = b?.profile?.dataEn ? { ...parseProfile(b.profile.dataEn), design: data?.design ?? parseProfile(null).design } : null;
   const german = parseLevel(data?.languages.find((l) => /deutsch|german|allemand/i.test(l.name))?.level) ?? parseLevel(c.germanLevel);
