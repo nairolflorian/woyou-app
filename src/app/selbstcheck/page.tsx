@@ -6,8 +6,9 @@ import { getT } from "@/lib/i18n";
 import { getSession } from "@/lib/session";
 import { ROLE } from "@/lib/enums";
 import { landingCopy } from "@/lib/landing-copy";
+import { ANGEBOT, formatPrice } from "@/lib/angebot";
 
-export const metadata: Metadata = { title: "Selbstcheck", description: "60 Sekunden, kostenlos: Lohnt sich der Bewerbungs-Service für dein Profil?" };
+export const metadata: Metadata = { title: "Selbstcheck", description: "60 Sekunden, kostenlos: Lohnen sich Unterlagen und Bewerbungswerkzeug für dein Profil?" };
 
 export default async function SelbstcheckPage() {
   const { locale } = await getT();
@@ -21,7 +22,7 @@ export default async function SelbstcheckPage() {
         <div className="mx-auto max-w-5xl px-6 py-14">
           <h1 className="text-3xl font-bold">{c.checkTitle}</h1>
           <p className="mt-2 mb-8 text-[color:var(--color-ink-soft)]">{c.checkLead}</p>
-          <SelfCheck locale={locale} bookHref={bookHref} block={process.env.SELFCHECK_MODE === "block"} />
+          <SelfCheck locale={locale} bookHref={bookHref} block={process.env.SELFCHECK_MODE === "block"} price={formatPrice(ANGEBOT.startpaket.priceCents, locale)} />
         </div>
       </main>
       <SiteFooter />

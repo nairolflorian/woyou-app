@@ -42,12 +42,12 @@ export default async function AdminBookingsPage() {
           <a href="/api/admin/bookings/export" className="btn-outline py-1">Kunden und Buchungen (CSV)</a>
         </div>
         <table className="mt-3 w-full text-sm">
-          <thead><tr className="text-left text-xs text-[color:var(--color-ink-soft)]"><th className="py-1">Monat</th><th>Registrierungen</th><th>Buchungen</th><th>bezahlt</th><th>Umsatz Service</th><th>Mappen</th><th>Bewerbungen</th><th>Antworten</th><th>Buchungsquote</th></tr></thead>
+          <thead><tr className="text-left text-xs text-[color:var(--color-ink-soft)]"><th className="py-1">Monat</th><th>Registrierungen</th><th>Buchungen</th><th>bezahlt</th><th>Umsatz Startpaket</th><th>Mappen</th><th>Verlängerungen</th><th>Umsatz Verlängerung</th><th>Buchungsquote</th></tr></thead>
           <tbody>{report.map((r) => (
-            <tr key={r.month} className="border-t"><td className="py-1 font-semibold">{r.month}</td><td>{r.registrations}</td><td>{r.bookings}</td><td>{r.bookingsPaid}</td><td>{formatPrice(r.serviceRevenueCents)}</td><td>{r.mappenSubmitted}</td><td>{r.applicationsSent}</td><td>{r.replies}</td><td>{r.conversionPct === null ? "–" : `${r.conversionPct.toLocaleString("de-DE")} %`}</td></tr>
+            <tr key={r.month} className="border-t"><td className="py-1 font-semibold">{r.month}</td><td>{r.registrations}</td><td>{r.bookings}</td><td>{r.bookingsPaid}</td><td>{formatPrice(r.serviceRevenueCents)}</td><td>{r.mappenSubmitted}</td><td>{r.toolPurchases}</td><td>{formatPrice(r.toolRevenueCents)}</td><td>{r.conversionPct === null ? "–" : `${r.conversionPct.toLocaleString("de-DE")} %`}</td></tr>
           ))}</tbody>
         </table>
-        <p className="mt-2 text-xs text-[color:var(--color-ink-soft)]">Buchungsquote = Buchungen des Bewerbungs-Service je neue Registrierung im Monat. Demo-Zahlungen zählen nicht als Umsatz.</p>
+        <p className="mt-2 text-xs text-[color:var(--color-ink-soft)]">Buchungsquote = Buchungen des Startpakets je neue Registrierung im Monat. Demo-Zahlungen zählen nicht als Umsatz.</p>
       </div>
       </>)}
       {bookings.length === 0 && <div className="card text-sm text-[color:var(--color-ink-soft)]">Noch keine Buchungen.</div>}

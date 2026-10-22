@@ -128,7 +128,7 @@ async function run() {
     }
   }
 
-  // 5. Bewerbungs-Service gebucht, Mappe nach 3 Tagen noch nicht abgeschickt → Hinweis + Mail (max. alle 3 Tage)
+  // 5. Startpaket gebucht, Mappe nach 3 Tagen noch nicht abgeschickt → Hinweis + Mail (max. alle 3 Tage)
   const mappeThreshold = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000);
   const openBookings = await prisma.serviceBooking.findMany({
     where: { status: { in: ["REQUESTED", "PAID"] }, createdAt: { lt: mappeThreshold }, OR: [{ profile: null }, { profile: { status: "DRAFT" } }] },
@@ -142,7 +142,7 @@ async function run() {
     const recentMail = await prisma.emailLog.findFirst({ where: { bookingId: b.id, template: "mappe_reminder", createdAt: { gt: mappeThreshold } } });
     if (!recentMail && u.email) {
       const name = b.candidate.firstName ?? "";
-      const paras = [`Hallo ${name},`.replace(" ,", ","), "für deinen Bewerbungs-Service fehlt uns noch deine Bewerbungsmappe. Sobald du sie abgeschickt hast, erstellen wir deinen Lebenslauf und starten mit den Bewerbungen.", "Du kannst auch einfach deinen vorhandenen Lebenslauf als PDF hochladen.", "Viele Grüße", "Dein WoYou-Team"];
+      const paras = [`Hallo ${name},`.replace(" ,", ","), "für dein Startpaket fehlt uns noch deine Bewerbungsmappe. Sobald du sie abgeschickt hast, prüfen wir deine Angaben und machen deinen Lebenslauf und deine Anschreiben-Vorlage fertig.", "Du kannst auch einfach deinen vorhandenen Lebenslauf als PDF hochladen.", "Viele Grüße", "Dein WoYou-Team"];
       await sendMail({ to: u.email, subject: "WoYou: Deine Bewerbungsmappe wartet", template: "mappe_reminder", bookingId: b.id, text: paras.join("\n\n"), html: layout("Deine Bewerbungsmappe wartet", paras, { label: "Zur Bewerbungsmappe", href: `${base}/bewerbungsmappe` }) });
     }
     counts.mappeReminders++;

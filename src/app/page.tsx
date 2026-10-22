@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { ServiceLanding } from "@/components/ServiceLanding";
 
 export const metadata: Metadata = {
-  title: { absolute: "WoYou · 25 Bewerbungen für 199 €" },
-  description: "Wir erstellen deinen Lebenslauf nach deutschem Standard und verschicken 25 passende Bewerbungen in deinem Namen. Einmalig 199 €, kein Abo.",
+  title: { absolute: "WoYou · Bewerbungsunterlagen und Bewerbungswerkzeug" },
+  description: "Wir erstellen deine Bewerbungsunterlagen nach deutschem Standard und geben dir ein Werkzeug, mit dem du passende Stellen findest und dich selbst bewirbst. Du entscheidest, wo du dich bewirbst, und bekommst alle Antworten direkt.",
 };
 
 export default function HomePage() {

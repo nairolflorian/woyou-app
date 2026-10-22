@@ -11,16 +11,17 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   title: {
-    default: "WoYou · 25 Bewerbungen für 199 €",
+    default: "WoYou · Bewerbungsunterlagen und Bewerbungswerkzeug",
     template: "%s · WoYou",
   },
   description:
-    "Wir erstellen deinen Lebenslauf nach deutschem Standard und verschicken 25 passende Bewerbungen in deinem Namen. Einmalig 199 €.",
+    "Wir erstellen deine Bewerbungsunterlagen nach deutschem Standard und geben dir ein Werkzeug, mit dem du passende Stellen findest und dich selbst bewirbst. Du entscheidest, wo du dich bewirbst, und bekommst alle Antworten direkt.",
   keywords: [
     "Arbeit Deutschland",
     "Ausbildung",
     "internationale Fachkräfte",
-    "Bewerbung schreiben lassen",
+    "Bewerbungsunterlagen",
+    "Stellensuche",
     "Lebenslauf deutsch",
     "Bewerbungsservice",
   ],
@@ -29,15 +30,15 @@ export const metadata: Metadata = {
     siteName: "WoYou",
     locale: "de_DE",
     url: BASE_URL,
-    title: "WoYou · 25 Bewerbungen für 199 €",
+    title: "WoYou · Bewerbungsunterlagen und Bewerbungswerkzeug",
     description:
-      "Lebenslauf nach deutschem Standard und 25 passende Bewerbungen in deinem Namen.",
+      "Bewerbungsunterlagen nach deutschem Standard und ein Werkzeug, mit dem du dich selbst bewirbst.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "WoYou · 25 Bewerbungen für 199 €",
+    title: "WoYou · Bewerbungsunterlagen und Bewerbungswerkzeug",
     description:
-      "Lebenslauf nach deutschem Standard und 25 passende Bewerbungen in deinem Namen.",
+      "Bewerbungsunterlagen nach deutschem Standard und ein Werkzeug, mit dem du dich selbst bewirbst.",
   },
   robots: {
     index: process.env.DEMO_MODE === "false",

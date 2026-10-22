@@ -13,7 +13,7 @@ const ORGANIZATION = {
   logo: `${BASE}/Logo.png`,
   sameAs: ["https://woyou.de"],
   description:
-    "WoYou erstellt Lebenslauf und Anschreiben nach deutschem Standard und verschickt 25 passende Bewerbungen in deinem Namen.",
+    "WoYou erstellt Bewerbungsunterlagen nach deutschem Standard und gibt dir ein Werkzeug, mit dem du passende Stellen findest und dich selbst bewirbst.",
   areaServed: { "@type": "Country", name: "Germany" },
 };
 

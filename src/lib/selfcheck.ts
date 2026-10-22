@@ -30,7 +30,7 @@ export function evaluate(a: Answer, lang: "de" | "en" | "hi" = "de"): Verdict {
     return { level: "red", reasons: [t("Dein Beruf ist in Deutschland reglementiert. Ohne Anerkennung (oder ein laufendes Verfahren) laden Arbeitgeber in der Regel nicht ein. Kläre zuerst die Anerkennung, z. B. über anerkennung-in-deutschland.de.", "Your profession is regulated in Germany. Without recognition (or a pending procedure) employers usually do not invite you. Sort out recognition first, e.g. via anerkennung-in-deutschland.de.", "आपका पेशा जर्मनी में नियंत्रित है। मान्यता (या चल रही प्रक्रिया) के बिना नियोक्ता आमतौर पर इंटरव्यू के लिए नहीं बुलाते। पहले मान्यता का काम करें, जैसे anerkennung-in-deutschland.de पर।")] };
   }
   if (a.german === "A2") {
-    if (helper) reasons.push(t("Mit A2 sind vor allem Helferstellen realistisch. Dafür finden wir Stellen, aber weniger als mit B1.", "With A2, mainly helper jobs are realistic. We can find those, but fewer than with B1.", "A2 के साथ मुख्य रूप से सहायक (हेल्पर) नौकरियाँ वास्तविक हैं। वे हम खोज सकते हैं, पर B1 की तुलना में कम।"));
+    if (helper) reasons.push(t("Mit A2 sind vor allem Helferstellen realistisch. Die gibt es, aber weniger als mit B1.", "With A2, mainly helper jobs are realistic. There are some, but fewer than with B1."));
     else return { level: "red", reasons: [t("Für Fachstellen verlangen Arbeitgeber fast immer mindestens B1. Mit A2 raten wir ab. Wenn du B1 erreicht hast, lohnt sich die Buchung deutlich mehr.", "For skilled jobs employers almost always require at least B1. With A2 we advise against booking. Once you reach B1, booking is much more worthwhile.", "कुशल नौकरियों के लिए नियोक्ता लगभग हमेशा कम से कम B1 माँगते हैं। A2 के साथ हम सलाह नहीं देते। B1 होने पर बुकिंग कहीं ज़्यादा फ़ायदेमंद है।")] };
   }
   if (health && !atLeast(a.german, "B2")) reasons.push(t("In Pflege und Gesundheit wird meist B2 verlangt. Mit B1 gibt es weniger realistische Stellen.", "In care and health, B2 is usually required. With B1 there are fewer suitable jobs.", "देखभाल और स्वास्थ्य में आमतौर पर B2 माँगा जाता है। B1 के साथ कम वास्तविक नौकरियाँ हैं।"));
@@ -38,5 +38,5 @@ export function evaluate(a: Answer, lang: "de" | "en" | "hi" = "de"): Verdict {
   if (a.degree === "none" && !helper) reasons.push(t("Ohne Abschluss sind vor allem Helferstellen realistisch.", "Without a qualification, mainly helper jobs are realistic.", "योग्यता के बिना मुख्य रूप से सहायक नौकरियाँ वास्तविक हैं।"));
 
   if (reasons.length) return { level: "yellow", reasons };
-  return { level: "green", reasons: [t("Für dieses Profil finden wir in der Regel 25 Stellen. Eine Zusage bleibt trotzdem offen.", "For this profile we usually find 25 jobs. An offer is still not guaranteed.", "इस प्रोफ़ाइल के लिए हम आमतौर पर 25 नौकरियाँ खोज लेते हैं। फिर भी नौकरी मिलने की गारंटी नहीं है।")] };
+  return { level: "green", reasons: [t("Für dieses Profil gibt es in der Regel genug passende Stellen, auf die du dich selbst bewerben kannst. Eine Zusage bleibt trotzdem offen.", "For this profile there are usually enough suitable jobs you can apply to yourself. An offer is still not guaranteed.")] };
 }

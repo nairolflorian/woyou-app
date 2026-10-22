@@ -5,14 +5,14 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { getT } from "@/lib/i18n";
 import { getSession } from "@/lib/session";
 import { ROLE } from "@/lib/enums";
-import { SERVICES, formatPrice } from "@/lib/services";
+import { ANGEBOT, formatPrice } from "@/lib/angebot";
 import { COMPANY, siteText } from "@/lib/company";
 import { landingCopy, IMAGES } from "@/lib/landing-copy";
 import { mappeText } from "@/lib/mappe-i18n";
 import { DESIGN_TEMPLATES } from "@/lib/design";
 import { SchemaOrg } from "@/components/SchemaOrg";
 
-// Startseite = Angebot, aufgebaut nach dem Konzept „Ehrlichkeit als Verkaufsargument“:
+// Startseite = Angebot (Weg 1: Unterlagen plus Werkzeug), aufgebaut nach dem Konzept „Ehrlichkeit als Verkaufsargument“:
 // Hero mit Grenze, Preis neben „Bitte beachte“, Das machen wir | nicht, realistische Erwartung, Muster, Selbstcheck, Ablauf, FAQ.
 const Check = () => <span aria-hidden className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-emerald-700 text-[11px] font-bold text-white">✓</span>;
 const Cross = () => <span aria-hidden className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-slate-500 text-[11px] font-bold text-white">✕</span>;
@@ -28,7 +28,7 @@ export async function ServiceLanding() {
   const session = await getSession();
   const c = landingCopy(locale);
   const st = siteText(locale);
-  const price = formatPrice(SERVICES["bewerbung-25"].priceCents, locale);
+  const price = formatPrice(ANGEBOT.startpaket.priceCents, locale);
   const isCandidate = session.userId && session.role === ROLE.CANDIDATE;
   const bookHref = isCandidate ? "/bewerbungsservice/buchen" : `/registrierung?next=${encodeURIComponent("/bewerbungsservice/buchen")}`;
   const loginHref = isCandidate ? "/bewerbungsservice/buchen" : `/anmelden?next=${encodeURIComponent("/bewerbungsservice/buchen")}`;
