@@ -1,6 +1,7 @@
 // Pakete, die Bewerber:innen buchen können. Preise und Laufzeiten stehen zentral in src/lib/angebot.ts.
 // Weg 1 (22.10.2026): verkauft werden Bewerbungsunterlagen plus Bewerbungswerkzeug, keine Bewerbungen.
 import { ANGEBOT, formatPrice } from "@/lib/angebot";
+import { arMonths } from "@/lib/werkzeug-text";
 
 export { formatPrice };
 
@@ -40,7 +41,7 @@ export const BOOKING_STATUS_LABEL: Record<BookingStatus, { de: string; color: st
   CANCELLED: { de: "Storniert", color: "bg-slate-200 text-slate-700" },
 };
 
-// ---------- Texte zu Paket, Buchung und Danke-Seite (DE/EN/FR; andere Sprachen auf Englisch) ----------
+// ---------- Texte zu Paket, Buchung und Danke-Seite (DE/EN/FR/AR/HI; andere Sprachen auf Englisch) ----------
 // Textregeln: ehrlich, kein Jobversprechen, keine langen Gedankenstriche, du-Form.
 type Copy = {
   badge: string; title: string; lead: string; priceNote: string; cta: string; ctaLogin: string;
@@ -49,7 +50,7 @@ type Copy = {
   thanksTitle: string; thanksPaid: string; thanksRequested: string; thanksMappe: string; toMappe: string; toProfile: string; failed: string; alreadyBooked: string;
 };
 
-function build(lang: "de" | "en" | "fr"): Copy {
+function build(lang: "de" | "en" | "fr" | "ar" | "hi"): Copy {
   const f = (c: number) => formatPrice(c, lang);
   const start = f(ANGEBOT.startpaket.priceCents), months = ANGEBOT.startpaket.toolMonths;
   const month = f(ANGEBOT.verlaengerung.priceCents), abo = f(ANGEBOT.abo.priceCents);
@@ -69,6 +70,42 @@ function build(lang: "de" | "en" | "fr"): Copy {
     thanksRequested: "We received your request. We will contact you within 2 working days and send you the payment link.",
     thanksMappe: "Best start with your application folder: upload your CV or fill in your details. We check everything and let you know when your documents are ready.",
     toMappe: "Go to my application folder", toProfile: "Go to my area", failed: "The booking didn't work. Please try again.", alreadyBooked: "You have already booked the starter package.",
+  };
+  // Übersetzung bitte von Muttersprachler:in prüfen lassen (Arabisch, Hocharabisch für Marokko)
+  if (lang === "ar") return {
+    badge: "مستندات التقديم والأداة",
+    title: "مستندات التقديم بالمعايير الألمانية. وأداة تتقدّم بها بنفسك.",
+    lead: "نُعدّ مستندات التقديم الخاصة بك بالمعايير الألمانية، ونعطيك أداة تجد بها وظائف مناسبة وتتقدّم إليها بنفسك. أنت من يقرر أين تتقدّم، وتصلك كل الردود مباشرة.",
+    priceNote: `دفعة واحدة · تشمل ${arMonths(months)} من أداة التقديم · بعدها ${month} لكل شهر أو ${abo} شهريًا باشتراك`,
+    cta: "احجز الآن", ctaLogin: "سجّل الدخول واحجز",
+    bookTitle: "حجز باقة البداية", bookLead: "يرجى التحقق من بياناتك. نستخدم المهن والمنطقة التي تفضّلها كاقتراح للبحث عن وظيفة.",
+    phone: "الهاتف / واتساب للأسئلة حول مستنداتك", jobs: "المهن المرغوبة", regions: "المنطقة المفضلة في ألمانيا (اختياري)", notes: "هل هناك شيء آخر يجب أن نعرفه؟ (اختياري)",
+    terms: "أوافق على الشروط العامة وقرأت سياسة الخصوصية.",
+    waiver: "أريد أن تبدأ WoYou فورًا وأن تُفعّل الأداة مباشرة. أعلم أنني إذا انسحبت أدفع بشكل نسبي مقابل ما قُدّم حتى ذلك الحين، وأن حقي في الانسحاب ينتهي عندما تُقدَّم الخدمة كاملة.",
+    submit: "حجز ملزم بالدفع", submitNoPay: "إرسال طلب ملزم", summary: `باقة البداية · المستندات و${arMonths(months)} من الأداة`,
+    thanksTitle: "شكرًا على حجزك!",
+    thanksPaid: "وصلنا دفعك. تم تفعيل أداة التقديم.",
+    thanksRequested: "وصلنا طلبك. سنتواصل معك خلال يومَي عمل ونرسل لك رابط الدفع.",
+    thanksMappe: "ابدأ بملف التقديم: ارفع سيرتك الذاتية أو املأ بياناتك. نراجع كل شيء ونخبرك عندما تصبح مستنداتك جاهزة.",
+    toMappe: "إلى ملف التقديم", toProfile: "إلى حسابي", failed: "لم ينجح الحجز. يرجى المحاولة مرة أخرى.", alreadyBooked: "لقد حجزت باقة البداية بالفعل.",
+  };
+  // Übersetzung bitte von Muttersprachler:in prüfen lassen (Hindi)
+  if (lang === "hi") return {
+    badge: "आवेदन दस्तावेज़ और टूल",
+    title: "जर्मन मानक के अनुसार आपके आवेदन दस्तावेज़। और एक टूल, जिससे आप ख़ुद आवेदन करते हैं।",
+    lead: "हम जर्मन मानक के अनुसार आपके आवेदन दस्तावेज़ बनाते हैं और आपको एक टूल देते हैं, जिससे आप उपयुक्त नौकरियाँ ढूँढते हैं और ख़ुद आवेदन करते हैं। कहाँ आवेदन करना है, यह आप तय करते हैं, और सभी जवाब सीधे आपको मिलते हैं।",
+    priceNote: `एक बार का भुगतान · ${months} महीने का आवेदन टूल शामिल · उसके बाद ${month} प्रति माह या सदस्यता में ${abo} प्रति माह`,
+    cta: "अभी बुक करें", ctaLogin: "लॉग इन करें और बुक करें",
+    bookTitle: "स्टार्टर पैकेज बुक करें", bookLead: "कृपया अपनी जानकारी जाँच लें। आपके पसंदीदा पेशे और क्षेत्र को हम आपकी नौकरी खोज के सुझाव के रूप में इस्तेमाल करते हैं।",
+    phone: "आपके दस्तावेज़ों के बारे में सवालों के लिए फ़ोन / WhatsApp", jobs: "पसंदीदा पेशे", regions: "जर्मनी में पसंदीदा क्षेत्र (वैकल्पिक)", notes: "कुछ और जो हमें जानना चाहिए? (वैकल्पिक)",
+    terms: "मैं नियम और शर्तें स्वीकार करता/करती हूँ और मैंने गोपनीयता नीति पढ़ ली है।",
+    waiver: "मैं चाहता/चाहती हूँ कि WoYou तुरंत शुरू करे और टूल अभी चालू कर दे। मुझे पता है कि अनुबंध वापस लेने पर मुझे तब तक दी गई सेवाओं का अनुपात में भुगतान करना होगा, और सेवा पूरी तरह दिए जाने पर वापसी का मेरा अधिकार ख़त्म हो जाता है।",
+    submit: "भुगतान के साथ बुक करें", submitNoPay: "पक्का अनुरोध भेजें", summary: `स्टार्टर पैकेज · दस्तावेज़ और ${months} महीने का टूल`,
+    thanksTitle: "बुकिंग के लिए धन्यवाद!",
+    thanksPaid: "आपका भुगतान मिल गया है। आपका आवेदन टूल चालू हो गया है।",
+    thanksRequested: "आपका अनुरोध हमें मिल गया है। हम अगले 2 कार्यदिवसों में आपसे संपर्क करेंगे और भुगतान का लिंक भेजेंगे।",
+    thanksMappe: "सबसे पहले अपनी आवेदन फ़ाइल से शुरू करें: अपना बायोडाटा अपलोड करें या अपनी जानकारी भरें। हम सब कुछ जाँचते हैं और दस्तावेज़ तैयार होने पर आपको बताते हैं।",
+    toMappe: "मेरी आवेदन फ़ाइल पर जाएँ", toProfile: "मेरे खाते पर जाएँ", failed: "बुकिंग नहीं हो पाई। कृपया फिर से कोशिश करें।", alreadyBooked: "आप स्टार्टर पैकेज पहले ही बुक कर चुके हैं।",
   };
   if (lang === "fr") return {
     badge: "DOSSIER DE CANDIDATURE ET OUTIL",
@@ -107,5 +144,5 @@ function build(lang: "de" | "en" | "fr"): Copy {
 }
 
 export function serviceCopy(locale: string): Copy {
-  return build(locale === "de" || locale === "fr" ? locale : "en");
+  return build(locale === "de" || locale === "fr" || locale === "ar" || locale === "hi" ? locale : "en");
 }

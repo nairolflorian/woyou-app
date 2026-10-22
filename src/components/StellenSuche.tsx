@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { fillIn, type werkzeugText } from "@/lib/werkzeug-text";
+import { fillIn, dateLocaleOf, wLang, type werkzeugText } from "@/lib/werkzeug-text";
 import { LEVELS, SOURCE_NAME, type Treffer, type Hours, type GermanFit } from "@/lib/stellensuche-core";
 import { portalSearchLinks } from "@/lib/portals";
 
@@ -31,7 +31,7 @@ export function StellenSuche({ t, locale, defaults, suggestions, savedKeys, trac
   const [saving, setSaving] = useState<string | null>(null);
   const [count, setCount] = useState(trackerCount);
   const started = useRef(false);
-  const dl = locale === "de" ? "de-DE" : locale === "fr" ? "fr-FR" : "en-GB";
+  const dl = dateLocaleOf(wLang(locale));
 
   const search = useCallback(async (p = 1, overrideWas?: string) => {
     const q = overrideWas ?? was;

@@ -1,6 +1,6 @@
 // Texte im Kundenbereich („Mein Bereich“) und beim Verlängern des Werkzeugs, je Sprache.
 // Weg 1: kein Guthaben je Bewerbung mehr, sondern Unterlagen plus Bewerbungswerkzeug mit Laufzeit.
-// Deutsch, Englisch, Französisch; andere Sprachen bekommen Englisch, bis eine geprüfte Übersetzung da ist.
+// Deutsch, Englisch, Französisch, Arabisch, Hindi; andere Sprachen bekommen Englisch.
 // Platzhalter in {geschweiften Klammern} mit fill() ersetzen.
 type T = {
   paidThanks: string; payAborted: string;
@@ -83,6 +83,54 @@ const fr: T = {
   noBookingTitle: "Dossier de candidature et outil de candidature",
 };
 
-const ALL = { de, en, fr };
-export const accountText = (locale: string): T => ALL[(locale === "de" || locale === "fr" ? locale : "en") as keyof typeof ALL];
+// Übersetzung bitte von Muttersprachler:in prüfen lassen (Arabisch, Hocharabisch für Marokko)
+const ar: T = {
+  paidThanks: "شكرًا على الشراء! بمجرد تأكيد الدفع يتم تمديد أداتك.",
+  payAborted: "تم إلغاء الدفع. يمكنك المحاولة مرة أخرى في أي وقت.",
+  packageTitle: "باقة البداية الخاصة بك", legacyPackage: "باقتك (حُجزت قبل التغيير)", myMappe: "ملف التقديم الخاص بي", mappeState: "المستندات",
+  mappe: { NONE: "لم تبدأ بعد", DRAFT: "أنت تملؤه الآن", SUBMITTED: "تم الإرسال، ونحن نراجعه", APPROVED: "جاهز للتحميل" },
+  toolTitle: "أداة التقديم الخاصة بك", toolLead: "ابحث عن وظائف، وأنشئ رسالة تحفيز لكل وظيفة، وتابع طلباتك. أنت تتقدّم بنفسك وتصلك كل الردود مباشرة.",
+  toolActive: "مفعّلة حتى {date}", toolExpired: "انتهت في {date}", toolInactive: "لم تُفعّل بعد",
+  toolInactiveLead: "تُفعَّل الأداة بمجرد وصول دفعك.", toolAbo: "الاشتراك فعّال ويتجدد شهريًا", toolAboCancelling: "تم إلغاء الاشتراك، وينتهي في {date}",
+  openSearch: "فتح البحث عن وظيفة", openTracker: "طلباتي", counts: "{saved} محفوظة · {applied} تم التقديم عليها",
+  booking: { REQUESTED: "مطلوب", PENDING_PAYMENT: "الدفع معلق", PAID: "مدفوع", IN_PROGRESS: "قيد التنفيذ", DONE: "مكتمل", CANCELLED: "ملغى" },
+  extendTitle: "تمديد الأداة", extendLead: "شهر إضافي مرة واحدة، أو اشتراك يمكن إلغاؤه كل شهر. بدون تمديد ينتهي الوصول ببساطة، ويمكنك الاستمرار في تحميل مستنداتك.",
+  month: "شهر إضافي", abo: "اشتراك شهري", perMonth: "شهريًا",
+  monthTitle: "شهر واحد من أداة التقديم مقابل {price} (مرة واحدة، ينتهي تلقائيًا)", aboTitle: "اشتراك شهري مقابل {price} شهريًا. يبدأ عندما تنتهي مدتك المدفوعة، ويمكن إلغاؤه في نهاية أي شهر.",
+  terms: ["أوافق على ", "الشروط العامة", " وقرأت ", "سياسة الخصوصية", "."],
+  waiver: "أريد أن تستمر الأداة فورًا. أعلم أنني إذا انسحبت أدفع بشكل نسبي مقابل ما قُدّم حتى ذلك الحين.",
+  order: "طلب ملزم بالدفع", orderNoPay: "طلب ملزم بالدفع (سيصلك رابط الدفع)", cancel: "إلغاء",
+  ordered: "شكرًا! استلمنا طلبك وسنرسل لك رابط الدفع.", failed: "لم ينجح ذلك.",
+  cancelAsk: "هل تريد فعلًا إلغاء الاشتراك؟ تبقى الأداة متاحة حتى {date}.", cancelNow: "إلغاء الآن", no: "لا", cancelBtn: "إلغاء الاشتراك من هنا",
+  cancelled: "تم إلغاء اشتراكك. يمكنك استخدام الأداة حتى {date}.", cancelling: "تم إلغاء الاشتراك، والأداة متاحة حتى {date}.",
+  docsLead: "الشهادات والإثباتات. ارفعها هنا لتكون في متناولك عند التقديم.",
+  noBookingTitle: "مستندات التقديم وأداة التقديم",
+};
+
+// Übersetzung bitte von Muttersprachler:in prüfen lassen (Hindi)
+const hi: T = {
+  paidThanks: "ख़रीदारी के लिए धन्यवाद! भुगतान की पुष्टि होते ही आपके टूल की अवधि बढ़ा दी जाएगी।",
+  payAborted: "भुगतान रद्द हो गया। आप कभी भी फिर से कोशिश कर सकते हैं।",
+  packageTitle: "आपका स्टार्टर पैकेज", legacyPackage: "आपका पैकेज (बदलाव से पहले बुक किया गया)", myMappe: "मेरी आवेदन फ़ाइल", mappeState: "दस्तावेज़",
+  mappe: { NONE: "अभी शुरू नहीं हुई", DRAFT: "आप इसे भर रहे हैं", SUBMITTED: "भेज दी गई, हम जाँच रहे हैं", APPROVED: "तैयार, डाउनलोड के लिए" },
+  toolTitle: "आपका आवेदन टूल", toolLead: "नौकरियाँ खोजें, हर नौकरी के लिए कवर लेटर बनाएँ और अपने आवेदनों पर नज़र रखें। आवेदन आप ख़ुद करते हैं और सभी जवाब सीधे आपको मिलते हैं।",
+  toolActive: "{date} तक चालू", toolExpired: "{date} को समाप्त", toolInactive: "अभी चालू नहीं",
+  toolInactiveLead: "आपका भुगतान मिलते ही टूल चालू हो जाएगा।", toolAbo: "सदस्यता सक्रिय, हर महीने अपने-आप बढ़ती है", toolAboCancelling: "सदस्यता रद्द, {date} को समाप्त होगी",
+  openSearch: "नौकरी खोज खोलें", openTracker: "मेरे आवेदन", counts: "{saved} सहेजी गईं · {applied} पर आवेदन किया",
+  booking: { REQUESTED: "अनुरोध किया", PENDING_PAYMENT: "भुगतान बाकी", PAID: "भुगतान हो गया", IN_PROGRESS: "काम चल रहा है", DONE: "पूरा", CANCELLED: "रद्द" },
+  extendTitle: "टूल की अवधि बढ़ाएँ", extendLead: "एक बार में एक महीना और, या सदस्यता जिसे हर महीने रद्द कर सकते हैं। अवधि न बढ़ाने पर पहुँच बस ख़त्म हो जाती है, और आप अपने दस्तावेज़ फिर भी डाउनलोड कर सकते हैं।",
+  month: "1 महीना और", abo: "मासिक सदस्यता", perMonth: "प्रति माह",
+  monthTitle: "{price} में 1 महीने का आवेदन टूल (एक बार, अपने-आप ख़त्म होता है)", aboTitle: "{price} प्रति माह की मासिक सदस्यता। यह आपकी भुगतान की गई अवधि ख़त्म होने पर शुरू होती है और किसी भी महीने के अंत में रद्द की जा सकती है।",
+  terms: ["मैं ", "नियम और शर्तें", " स्वीकार करता/करती हूँ और मैंने ", "गोपनीयता नीति", " पढ़ ली है।"],
+  waiver: "मैं चाहता/चाहती हूँ कि टूल तुरंत चलता रहे। मुझे पता है कि अनुबंध वापस लेने पर मुझे तब तक दी गई सेवा का अनुपात में भुगतान करना होगा।",
+  order: "भुगतान के साथ ऑर्डर करें", orderNoPay: "भुगतान के साथ ऑर्डर करें (भुगतान लिंक बाद में आएगा)", cancel: "रद्द करें",
+  ordered: "धन्यवाद! हमें आपका ऑर्डर मिल गया है, हम भुगतान का लिंक भेजेंगे।", failed: "यह काम नहीं किया।",
+  cancelAsk: "क्या सच में सदस्यता रद्द करनी है? टूल {date} तक चलेगा।", cancelNow: "अभी रद्द करें", no: "नहीं", cancelBtn: "सदस्यता यहाँ रद्द करें",
+  cancelled: "आपकी सदस्यता रद्द हो गई है। आप {date} तक टूल इस्तेमाल कर सकते हैं।", cancelling: "सदस्यता रद्द, टूल {date} तक चलेगा।",
+  docsLead: "प्रमाणपत्र और योग्यता के दस्तावेज़। इन्हें यहाँ अपलोड करें, ताकि आवेदन के लिए ये आपके पास तैयार रहें।",
+  noBookingTitle: "आवेदन दस्तावेज़ और आवेदन टूल",
+};
+
+const ALL = { de, en, fr, ar, hi };
+export const accountText = (locale: string): T => ALL[(locale in ALL ? locale : "en") as keyof typeof ALL];
 export const fill = (s: string, v: Record<string, string | number>) => s.replace(/\{(\w+)\}/g, (_, k) => String(v[k] ?? ""));

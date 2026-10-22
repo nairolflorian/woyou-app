@@ -11,6 +11,7 @@ import { getT } from "@/lib/i18n";
 import { mappeText } from "@/lib/mappe-i18n";
 import { toolAccess } from "@/lib/werkzeug";
 import { accountText, fill } from "@/lib/account-text";
+import { dateLocaleOf, wLang } from "@/lib/werkzeug-text";
 
 export const dynamic = "force-dynamic";
 
@@ -24,7 +25,7 @@ export default async function MappePage() {
   const tx = mappeText(locale);
   const a = accountText(locale);
   const access = await toolAccess(m.booking.candidateId);
-  const dl = locale === "de" ? "de-DE" : locale === "fr" ? "fr-FR" : "en-GB";
+  const dl = dateLocaleOf(wLang(locale));
 
   return (
     <>

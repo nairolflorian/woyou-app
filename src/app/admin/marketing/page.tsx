@@ -51,7 +51,7 @@ export default async function MarketingPage() {
               <td className="py-2 text-[color:var(--color-ink-soft)]">{s.when}</td>
               <td className="py-2">{dueBy[s.key] ?? 0}</td>
               <td className="py-2">{sent[s.key] ?? 0}</td>
-              <td className="py-2 whitespace-nowrap">{(["de", "en", "fr"] as const).map((l) => <a key={l} className="mr-2 text-[color:var(--color-brand)] underline" href={`/api/admin/marketing/preview?step=${s.key}&lang=${l}`} target="_blank">{l.toUpperCase()}</a>)}</td>
+              <td className="py-2 whitespace-nowrap">{(["de", "en", "fr", "ar", "hi"] as const).map((l) => <a key={l} className="mr-2 text-[color:var(--color-brand)] underline" href={`/api/admin/marketing/preview?step=${s.key}&lang=${l}`} target="_blank">{l.toUpperCase()}</a>)}</td>
             </tr>
           ))}</tbody>
         </table>

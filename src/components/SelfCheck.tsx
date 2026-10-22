@@ -20,7 +20,7 @@ export function SelfCheck({ locale, bookHref, block, price }: { locale: string; 
   const set = <K extends keyof Answer>(k: K, val: Answer[K]) => { setA((x) => ({ ...x, [k]: val })); setV(null); };
   return (
     <div className="grid gap-6 md:grid-cols-2">
-      <form className="card space-y-3" onSubmit={(e) => { e.preventDefault(); setV(evaluate(a, locale === "de" ? "de" : locale === "hi" ? "hi" : "en")); }}>
+      <form className="card space-y-3" onSubmit={(e) => { e.preventDefault(); setV(evaluate(a, locale === "de" ? "de" : locale === "hi" ? "hi" : locale === "ar" ? "ar" : "en")); }}>
         <div><label className="label">{t.job}</label><input className="input" required maxLength={80} placeholder={t.jobPh} value={a.job} onChange={(e) => set("job", e.target.value)} /></div>
         <div><label className="label">{t.degree}</label><select className="input" value={a.degree} onChange={(e) => set("degree", e.target.value as Answer["degree"])}>{Object.entries(t.degrees).map(([k, l]) => <option key={k} value={k}>{l}</option>)}</select></div>
         <div><label className="label">{t.german}</label><select className="input" value={a.german} onChange={(e) => set("german", e.target.value as Answer["german"])}>{Object.entries(t.levels).map(([k, l]) => <option key={k} value={k}>{l}</option>)}</select></div>

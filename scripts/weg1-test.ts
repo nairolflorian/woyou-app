@@ -134,11 +134,90 @@ async function main() {
   });
   await test("Texte: keine langen Gedankenstriche und keine alten Versprechen in den neuen Kundentexten", async () => {
     const fs = await import("node:fs");
-    for (const f of ["src/lib/werkzeug-text.ts", "src/lib/account-text.ts", "src/lib/services.ts", "src/lib/landing-copy.ts", "src/lib/marketing.ts", "src/lib/mappe-i18n.ts", "src/lib/company.ts"]) {
+    for (const f of ["src/lib/werkzeug-text.ts", "src/lib/account-text.ts", "src/lib/services.ts", "src/lib/landing-copy.ts", "src/lib/marketing.ts", "src/lib/mappe-i18n.ts", "src/lib/company.ts", "src/lib/selfcheck.ts", "src/components/SelfCheck.tsx", "src/components/MyDocuments.tsx"]) {
       const s = fs.readFileSync(f, "utf8").split("\n").filter((l) => !/^\s*\/\//.test(l)).join("\n");
       assert.ok(!/[–—]/.test(s), `${f}: langer Gedankenstrich`);
       assert.ok(!/25 Bewerbungen|bewerben dich|in deinem Namen|in your name|en votre nom/i.test(s), `${f}: altes Versprechen`);
+      assert.ok(!/25 طلب|باسمك|نيابة عنك|25 आवेदन|आपकी ओर से आवेदन/.test(s), `${f}: altes Versprechen (ar/hi)`);
     }
+  });
+
+  // ---------- Arabisch und Hindi für die neuen Texte ----------
+  const AR = /[؀-ۿ]/, HI = /[ऀ-ॿ]/, LETTER = /[A-Za-zÀ-ÿ؀-ۿऀ-ॿ]/;
+  // alle Texte eines Objekts einsammeln; Funktionen (Mail-Bausteine) mit Beispielwerten aufrufen
+  const leaves = (x: unknown, path = ""): [string, string][] => {
+    if (typeof x === "string") return [[path, x]];
+    if (typeof x === "function") return leaves((x as (...a: unknown[]) => unknown)(...(x.length === 2 ? [3, "29 €"] : x.length === 1 ? ["Fatima"] : [])), `${path}()`);
+    if (Array.isArray(x)) return x.flatMap((v, i) => leaves(v, `${path}[${i}]`));
+    if (x && typeof x === "object") return Object.entries(x).flatMap(([k, v]) => leaves(v, path ? `${path}.${k}` : k));
+    return [];
+  };
+  const shape = (x: unknown): unknown => (Array.isArray(x) ? x.map(shape) : x && typeof x === "object" ? Object.fromEntries(Object.keys(x).sort().map((k) => [k, shape((x as Record<string, unknown>)[k])])) : typeof x);
+  // gleiche Schlüssel wie Deutsch, jeder Text in der richtigen Schrift, keine langen Gedankenstriche
+  const checkLang = (name: string, de: unknown, ar: unknown, hi: unknown, opts: { sameShape?: boolean } = {}) => {
+    if (opts.sameShape !== false) {
+      assert.deepEqual(shape(ar), shape(de), `${name}: ar hat andere Schlüssel als de`);
+      assert.deepEqual(shape(hi), shape(de), `${name}: hi hat andere Schlüssel als de`);
+    }
+    for (const [lang, obj, script] of [["ar", ar, AR], ["hi", hi, HI]] as const) {
+      const ls = leaves(obj);
+      assert.ok(ls.length > 0, `${name}/${lang}: leer`);
+      for (const [p, v] of ls) {
+        assert.ok(!/[–—]/.test(v), `${name}/${lang} ${p}: langer Gedankenstrich`);
+        if (LETTER.test(v.replace(/WoYou|Stripe|KarriereKind GmbH|PDF|Word|WhatsApp|HR|Pflegefachkraft|Bundesagentur für Arbeit|anerkennung-in-deutschland\.de|[A-C][12]|\{\w+\}/g, ""))) assert.ok(script.test(v), `${name}/${lang} ${p}: nicht übersetzt: ${v}`);
+      }
+    }
+  };
+
+  await test("Arabisch und Hindi: Bewerbungswerkzeug (Oberfläche und Mails)", async () => {
+    const w = await import("../src/lib/werkzeug-text");
+    assert.equal(w.wLang("ar"), "ar"); assert.equal(w.wLang("hi"), "hi"); assert.equal(w.wLang("es"), "en"); assert.equal(w.wLang(null), "de");
+    assert.equal(w.dirOf("ar"), "rtl"); assert.equal(w.dirOf("hi"), "ltr");
+    checkLang("werkzeugText", w.werkzeugText("de"), w.werkzeugText("ar"), w.werkzeugText("hi"));
+    const strip = <T extends { dir: string }>(o: T) => { const { dir, ...rest } = o; void dir; return rest; };
+    const mailParts = (m: (l: string) => object, l: string) => { const o = m(l) as Record<string, unknown>; const { lang, dateLocale, ...rest } = o; void lang; void dateLocale; return strip(rest as { dir: string }); };
+    for (const [n, f] of [["mappeMail", w.mappeMail], ["purchaseMail", w.purchaseMail], ["bookingMail", w.bookingMail]] as const)
+      checkLang(n, mailParts(f, "de"), mailParts(f, "ar"), mailParts(f, "hi"));
+    assert.equal(w.mappeMail("ar").dir, "rtl");
+    assert.equal(w.mappeMail("ar").hello("Fatima"), "مرحبًا Fatima،");
+    assert.equal(w.arMonths(3), "3 أشهر");
+  });
+  await test("Arabisch und Hindi: Startseite, Buchung, Kundenbereich, Mappe, Selbstcheck", async () => {
+    const { landingCopy } = await import("../src/lib/landing-copy");
+    checkLang("landingCopy", landingCopy("de"), landingCopy("ar"), landingCopy("hi"));
+    const { serviceCopy } = await import("../src/lib/services");
+    checkLang("serviceCopy", serviceCopy("de"), serviceCopy("ar"), serviceCopy("hi"));
+    const { accountText } = await import("../src/lib/account-text");
+    checkLang("accountText", accountText("de"), accountText("ar"), accountText("hi"));
+    const { mappeText } = await import("../src/lib/mappe-i18n");
+    const changed = (l: string) => { const m = mappeText(l); return { intro: m.intro, submittedMsg: m.submittedMsg, cvSaved: m.cvSaved, ownHint: m.ownHint }; };
+    checkLang("mappeText (geänderte Schlüssel)", changed("de"), changed("ar"), changed("hi"));
+    const { evaluate } = await import("../src/lib/selfcheck");
+    const green = { job: "Koch", degree: "vocational", german: "B1", recognition: "unknown", country: "Marokko" } as const;
+    const helper = { ...green, job: "Lagerhelfer", german: "A2" } as const;
+    checkLang("Selbstcheck", [evaluate(green, "de").reasons, evaluate(helper, "de").reasons], [evaluate(green, "ar").reasons, evaluate(helper, "ar").reasons], [evaluate(green, "hi").reasons, evaluate(helper, "hi").reasons]);
+  });
+  await test("Arabisch und Hindi: Marketing-Mails für jeden Schritt (Quelltext)", async () => {
+    const fs = await import("node:fs");
+    const s = fs.readFileSync("src/lib/marketing.ts", "utf8");
+    const count = (re: RegExp) => (s.match(re) ?? []).length;
+    const de = count(/^ {6}de: \(v\) =>/gm);
+    assert.ok(de >= 9, "Schritte nicht gefunden");
+    assert.equal(count(/^ {6}ar: \(v\) =>/gm), de, "nicht jeder Schritt hat ar");
+    assert.equal(count(/^ {6}hi: \(v\) =>/gm), de, "nicht jeder Schritt hat hi");
+    for (const l of s.split("\n").filter((x) => /^ {6}ar: \(v\) =>/.test(x))) assert.ok(AR.test(l) && !/[–—]/.test(l), l.slice(0, 60));
+    for (const l of s.split("\n").filter((x) => /^ {6}hi: \(v\) =>/.test(x))) assert.ok(HI.test(l) && !/[–—]/.test(l), l.slice(0, 60));
+    assert.match(s, /^ {2}ar: "[^"]*[؀-ۿ]/m, "Abmeldetext ar fehlt");
+    assert.match(s, /^ {2}hi: "[^"]*[ऀ-ॿ]/m, "Abmeldetext hi fehlt");
+    assert.match(s, /layout\([^\n]*dirOf\(lang\)\)/, "Mail ohne Schreibrichtung");
+  });
+  await test("Arabisch und Hindi: Preise und Datum mit lesbaren Ziffern", async () => {
+    const { dateLocaleOf } = await import("../src/lib/werkzeug-text");
+    const ar = formatPrice(19900, "ar"), hi = formatPrice(2950, "hi");
+    assert.ok(/199/.test(ar) && ar.includes("€"), ar);
+    assert.ok(/29[.,]50/.test(hi) && hi.includes("€"), hi);
+    assert.ok(/22.*10.*2026/.test(new Date(2026, 9, 22).toLocaleDateString(dateLocaleOf("ar"))));
+    assert.ok(/22.*10.*2026/.test(new Date(2026, 9, 22).toLocaleDateString(dateLocaleOf("hi"))));
   });
 
   if (process.argv.includes("--live")) {

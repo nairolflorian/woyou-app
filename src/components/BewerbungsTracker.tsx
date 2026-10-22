@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { fillIn, type werkzeugText } from "@/lib/werkzeug-text";
+import { fillIn, dateLocaleOf, wLang, type werkzeugText } from "@/lib/werkzeug-text";
 import { TRACKER_STATUS, type TrackerStatus } from "@/lib/stellensuche-core";
 import type { TrackerItem } from "@/lib/tracker";
 
@@ -19,7 +19,7 @@ export function BewerbungsTracker({ t, locale, initial, active }: { t: T; locale
   const [filter, setFilter] = useState<TrackerStatus | "ALL">("ALL");
   const [adding, setAdding] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
-  const dl = locale === "de" ? "de-DE" : locale === "fr" ? "fr-FR" : "en-GB";
+  const dl = dateLocaleOf(wLang(locale));
   const shown = items.filter((x) => filter === "ALL" || x.status === filter);
   const replace = (it: TrackerItem) => setItems((xs) => xs.map((x) => (x.id === it.id ? it : x)));
 

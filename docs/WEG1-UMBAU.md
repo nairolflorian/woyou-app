@@ -42,8 +42,9 @@ Bedingungen:
    Einmalzahlung, Abo als Stripe-Abo mit Beginn nach Ablauf des bezahlten Zeitraums. Ohne Stripe-Schlüssel
    testbar (Buchung als „Angefragt“ plus Admin „bezahlt“, lokal zusätzlich `PAYMENT_TEST_MODE=on`).
 4. **Texte**: Landing, Buchung, Kundenbereich, Mails, AGB/Datenschutz ohne „Wir bewerben dich“ und
-   „25 Bewerbungen“. Deutsch, Englisch und Französisch neu; Arabisch und Hindi fallen für die geänderten
-   Texte auf Englisch zurück, bis eine geprüfte Übersetzung vorliegt. Stellen in AGB/Datenschutz mit
+   „25 Bewerbungen“. Deutsch, Englisch, Französisch, Arabisch (rechts nach links, auch in den Mails) und
+   Hindi; die ar/hi-Texte sind im Code mit „Übersetzung bitte von Muttersprachler:in prüfen lassen“ markiert.
+   Spanisch, Russisch, Ukrainisch sehen für die neuen Texte Englisch. Stellen in AGB/Datenschutz mit
    Code-Kommentar `ANWALT PRÜFEN` markiert.
 5. **CRM**: Ereignisse registriert, gebucht, bezahlt, mappe_eingereicht, werkzeug_aktiv, nachkauf
    (Verlängerung/Abo), storniert. „bewerbungen_laufen“ entfällt (die eigenen Bewerbungen der Kund:innen
@@ -61,7 +62,7 @@ Bedingungen:
 - Texte: `landing-copy.ts`, `services.ts`, `account-text.ts`, `werkzeug-text.ts`, `marketing.ts`, `mappe-i18n.ts`,
   AGB/Datenschutz (Stellen mit `ANWALT PRÜFEN` markiert).
 - Migration `prisma/migrations/20261022120000_weg1_werkzeug` (nur Ergänzungen, gegen Postgres 16 getestet).
-- Tests: `npx tsx scripts/weg1-test.ts` (14 Tests), Live-Test mit Netz `--conditions=react-server ... --live`.
+- Tests: `npx tsx scripts/weg1-test.ts` (18 Tests, u. a. ar/hi vollständig und ohne lange Gedankenstriche), Live-Test mit Netz `--conditions=react-server ... --live`.
 
 Lokal starten:
 
@@ -83,7 +84,7 @@ PAYMENT_TEST_MODE=on npm run dev          # http://localhost:3000/demo, z. B. al
 - Bestandskund:innen mit altem Paket „25 Bewerbungen“: wie lange Werkzeug-Zugang, Umgang mit Restguthaben?
 - Karriereseiten-Feeds im Admin (Stellenquellen): bleibt das als reine Datenquelle, oder ist das aus Sicht
   der Anwälte schon ein „Firmen-Pool“?
-- Arabisch und Hindi: geprüfte Übersetzung der neuen Texte.
+- Arabisch und Hindi: Übersetzungen der neuen Texte liegen vor (Hocharabisch für Marokko, Hindi für Indien), müssen aber von Muttersprachler:innen geprüft werden.
 - CRM: neue Ereignisse `werkzeug_aktiv` muss das EuBiA-CRM noch annehmen (`apps/crm/eingang.js`).
 - Anwälte: Dürfen Summen aus dem Tracker (Quelle, Stand) anonym in der Admin-Auswertung stehen?
 - Kündigung des Abos meldet kein „storniert“ mehr ans CRM (früher: Deal „Verloren“). So lassen?

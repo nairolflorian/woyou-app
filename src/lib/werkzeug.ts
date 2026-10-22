@@ -124,7 +124,7 @@ export async function cancelToolSubscription(candidateId: string) {
   const t = purchaseMail(c.user.locale);
   const until = c.toolAccessUntil ?? p.periodEnd ?? new Date();
   const paras = [t.hello(c.firstName), t.cancelled(until.toLocaleDateString(t.dateLocale)), t.sign];
-  if (c.user.email) await sendMail({ to: c.user.email, subject: `WoYou: ${t.cancelledSubject}`, template: "tool_subscription_cancelled", text: paras.join("\n\n"), html: layout(t.cancelledSubject, paras) });
+  if (c.user.email) await sendMail({ to: c.user.email, subject: `WoYou: ${t.cancelledSubject}`, template: "tool_subscription_cancelled", text: paras.join("\n\n"), html: layout(t.cancelledSubject, paras, undefined, undefined, t.dir) });
   return until;
 }
 
@@ -137,7 +137,7 @@ async function purchaseMails(purchaseId: string, state: "requested" | "paid") {
   const to = p.candidate.user.email || "";
   const title = state === "paid" ? t.paidSubject : t.requestedSubject;
   const paras = state === "paid" ? [t.hello(p.candidate.firstName), t.paid(what), t.sign] : [t.hello(p.candidate.firstName), t.requested(what), t.sign];
-  if (to) await sendMail({ to, subject: `WoYou: ${title}`, template: `tool_purchase_${state}`, text: paras.join("\n\n"), html: layout(title, paras, { label: t.button, href: `${baseUrl()}/profil` }) });
+  if (to) await sendMail({ to, subject: `WoYou: ${title}`, template: `tool_purchase_${state}`, text: paras.join("\n\n"), html: layout(title, paras, { label: t.button, href: `${baseUrl()}/profil` }, undefined, t.dir) });
   const team = teamAddress();
   const name = [p.candidate.firstName, p.candidate.lastName].filter(Boolean).join(" ") || "Kund:in";
   const teamWhat = abo ? `Monatsabo Werkzeug, ${formatPrice(p.amountCents)} im Monat` : `Werkzeug ${p.months ?? 1} Monat, ${formatPrice(p.amountCents)}`;

@@ -29,11 +29,12 @@ export const teamAddress = () => process.env.MAIL_TEAM || "";
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
 
 // Einfaches, markenkonformes HTML-Layout (Petrol #6F9EAB)
-export function layout(title: string, paragraphs: string[], button?: { label: string; href: string }, footer?: string) {
+// dir = "rtl" für Arabisch (Schreibrichtung rechts nach links)
+export function layout(title: string, paragraphs: string[], button?: { label: string; href: string }, footer?: string, dir: "ltr" | "rtl" = "ltr") {
   const body = paragraphs.map((p) => `<p style="margin:0 0 14px;line-height:1.5">${esc(p)}</p>`).join("");
   const btn = button ? `<p style="margin:22px 0"><a href="${esc(button.href)}" style="background:#6F9EAB;color:#fff;text-decoration:none;padding:12px 22px;border-radius:999px;font-weight:600;display:inline-block">${esc(button.label)}</a></p>` : "";
-  return `<!doctype html><html><body style="margin:0;background:#f4f7f8;font-family:Segoe UI,Arial,sans-serif;color:#1f2a30">
-  <div style="max-width:560px;margin:0 auto;padding:28px 16px">
+  return `<!doctype html><html dir="${dir}"><body style="margin:0;background:#f4f7f8;font-family:Segoe UI,Arial,sans-serif;color:#1f2a30">
+  <div dir="${dir}" style="max-width:560px;margin:0 auto;padding:28px 16px;text-align:${dir === "rtl" ? "right" : "left"}">
     <div style="font-size:22px;font-weight:700;color:#6F9EAB;margin-bottom:18px">Wo<span style="color:#1f2a30">You</span></div>
     <div style="background:#fff;border-radius:12px;padding:26px 24px">
       <h1 style="font-size:20px;margin:0 0 16px">${esc(title)}</h1>${body}${btn}

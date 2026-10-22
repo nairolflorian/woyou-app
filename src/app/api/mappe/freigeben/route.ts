@@ -25,7 +25,7 @@ export async function POST(req: Request) {
       if (to) {
         const t = mappeMail(m.booking.candidate.user.locale);
         const paras = [t.hello(m.data.firstName), ...t.paras];
-        await sendMail({ to, subject: `WoYou: ${t.subject}`, template: "mappe_approved", bookingId: m.booking.id, text: [...paras, `${t.button}: ${base}/stellensuche`].join("\n\n"), html: layout(t.subject, paras, { label: t.button, href: `${base}/stellensuche` }) });
+        await sendMail({ to, subject: `WoYou: ${t.subject}`, template: "mappe_approved", bookingId: m.booking.id, text: [...paras, `${t.button}: ${base}/stellensuche`].join("\n\n"), html: layout(t.subject, paras, { label: t.button, href: `${base}/stellensuche` }, undefined, t.dir) });
       }
     }
     return NextResponse.json({ ok: true, status: "APPROVED" });

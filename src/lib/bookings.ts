@@ -9,7 +9,7 @@ import { ANGEBOT } from "@/lib/angebot";
 import { crmMelden } from "@/lib/crm-sync";
 import { euro } from "@/lib/crm-core";
 import { grantToolMonths, paymentTestMode } from "@/lib/werkzeug";
-import { bookingMail } from "@/lib/werkzeug-text";
+import { bookingMail, wLang } from "@/lib/werkzeug-text";
 
 const baseUrl = () => process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 const SERVICE_NAME: Record<ServiceKey, string> = {
@@ -61,14 +61,14 @@ export async function bookingMails(bookingId: string, kind: "requested" | "paid"
   if (!b) return;
   const name = [b.candidate.firstName, b.candidate.lastName].filter(Boolean).join(" ") || "Kund:in";
   const t = bookingMail(b.candidate.user.locale);
-  const price = formatPrice(b.amountCents, b.candidate.user.locale === "fr" ? "fr" : b.candidate.user.locale === "de" ? "de" : "en");
+  const price = formatPrice(b.amountCents, wLang(b.candidate.user.locale));
   const svc = SERVICE_NAME[b.packageKey as ServiceKey] ?? b.packageKey;
   const to = b.candidate.user.email || "";
 
   // an die Kundin / den Kunden
   const title = kind === "paid" ? t.paidSubject : t.requestedSubject;
   const paras = [t.hello(b.candidate.firstName), ...(kind === "paid" ? t.paid(price, b.toolMonths || ANGEBOT.startpaket.toolMonths) : t.requested(price)), t.sign];
-  await sendMail({ to, subject: `WoYou: ${title}`, template: `booking_${kind}`, bookingId: b.id, text: paras.join("\n\n"), html: layout(title, paras, { label: t.button, href: `${baseUrl()}/profil` }) });
+  await sendMail({ to, subject: `WoYou: ${title}`, template: `booking_${kind}`, bookingId: b.id, text: paras.join("\n\n"), html: layout(title, paras, { label: t.button, href: `${baseUrl()}/profil` }, undefined, t.dir) });
 
   // ans Team
   const team = teamAddress();
