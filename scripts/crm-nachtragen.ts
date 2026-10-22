@@ -1,6 +1,6 @@
 /**
  * Einmaliger Nachtrag: alle bestehenden echten Kund:innen an das EuBiA-CRM melden, je mit dem höchsten
- * erreichten Ereignis (registriert < gebucht < bezahlt < mappe_eingereicht < bewerbungen_laufen < nachkauf;
+ * erreichten Ereignis (registriert < gebucht < bezahlt < mappe_eingereicht < werkzeug_aktiv < nachkauf;
  * nur stornierte Buchungen ohne Zahlung: storniert). Demo- und Testkonten (*.demo, example.com usw.) bleiben außen vor.
  * Sendet nur, wenn EUBIA_CRM_URL, EUBIA_CRM_TOKEN und EUBIA_CRM_SYNC=on gesetzt sind (deploy/crm-einrichten.sh).
  *
@@ -32,9 +32,8 @@ async function main() {
       bookings: {
         orderBy: { createdAt: "asc" },
         select: {
-          packageKey: true, amountCents: true, status: true, paidAt: true, createdAt: true, applicationsSent: true,
-          profile: { select: { submittedAt: true } },
-          leads: { where: { status: { in: ["SENT", "APPLIED_MANUALLY"] }, sentAt: { not: null } }, orderBy: { sentAt: "asc" }, take: 1, select: { sentAt: true } },
+          packageKey: true, amountCents: true, status: true, paidAt: true, createdAt: true,
+          profile: { select: { submittedAt: true, approvedAt: true } },
         },
       },
       creditPurchases: { where: { paidAt: { not: null } }, orderBy: { paidAt: "desc" }, select: { kind: true, amountCents: true, paidAt: true } },
@@ -71,7 +70,7 @@ async function main() {
 
 type C = {
   createdAt: Date;
-  bookings: { packageKey: string; amountCents: number; status: string; paidAt: Date | null; createdAt: Date; applicationsSent: number; profile: { submittedAt: Date | null } | null; leads: { sentAt: Date | null }[] }[];
+  bookings: { packageKey: string; amountCents: number; status: string; paidAt: Date | null; createdAt: Date; profile: { submittedAt: Date | null; approvedAt: Date | null } | null }[];
   creditPurchases: { kind: string; amountCents: number; paidAt: Date | null }[];
 };
 
@@ -80,8 +79,9 @@ function highest(c: C): [CrmEventName, Partial<CrmPayload>] {
   const purchase = c.creditPurchases[0];
   if (purchase) return ["nachkauf", { paket: purchase.kind, betrag: euro(purchase.amountCents), datum: iso(purchase.paidAt) }];
   const b = c.bookings;
-  const running = b.find((x) => x.applicationsSent > 0 || x.leads.length > 0);
-  if (running) return ["bewerbungen_laufen", { paket: running.packageKey, datum: iso(running.leads[0]?.sentAt) }];
+  // Weg 1: Unterlagen fertig (Mappe freigegeben) = Werkzeug aktiv; "bewerbungen_laufen" gibt es nicht mehr
+  const ready = b.find((x) => x.profile?.approvedAt);
+  if (ready) return ["werkzeug_aktiv", { paket: ready.packageKey, datum: iso(ready.profile?.approvedAt) }];
   const submitted = b.find((x) => x.profile?.submittedAt);
   if (submitted) return ["mappe_eingereicht", { paket: submitted.packageKey, datum: iso(submitted.profile?.submittedAt) }];
   const paid = b.filter((x) => x.paidAt).pop();

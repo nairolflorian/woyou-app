@@ -2,7 +2,12 @@
 // In der App bitte nur über src/lib/crm-sync.ts verwenden. Hintergrund und Datenschutz: siehe dort.
 import type { PrismaClient } from "@prisma/client";
 
-export type CrmEventName = "registriert" | "gebucht" | "bezahlt" | "mappe_eingereicht" | "bewerbungen_laufen" | "nachkauf" | "storniert";
+// Weg 1 (22.10.2026): "bewerbungen_laufen" entfällt. WoYou verschickt keine Bewerbungen mehr, und was Kund:innen
+// in ihrem eigenen Tracker eintragen, geht weder WoYou noch das CRM etwas an. Neu: "werkzeug_aktiv" = Unterlagen
+// fertig (Mappe vom Team freigegeben), die Person arbeitet ab jetzt selbst mit dem Werkzeug.
+// "nachkauf" = Verlängerung des Werkzeugs oder Monatsabo bezahlt.
+// Achtung: Das EuBiA-CRM (apps/crm/eingang.js) muss "werkzeug_aktiv" noch annehmen, sonst antwortet es mit 400.
+export type CrmEventName = "registriert" | "gebucht" | "bezahlt" | "mappe_eingereicht" | "werkzeug_aktiv" | "nachkauf" | "storniert";
 
 export type CrmPayload = {
   woyouId: string;
