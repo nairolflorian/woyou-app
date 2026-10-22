@@ -4,19 +4,19 @@ import { getSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { ROLE } from "@/lib/enums";
 import { rateLimit, clientIp } from "@/lib/rate-limit";
-import { SERVICES, BOOKING_STATUS } from "@/lib/services";
+import { SERVICES, SERVICE_KEYS, BOOKING_STATUS } from "@/lib/services";
 import { startCheckout, bookingMails, ensureTask } from "@/lib/bookings";
 import { crmMelden } from "@/lib/crm-sync";
 
 const Body = z.object({
-  packageKey: z.literal("bewerbung-25"),
+  // Weg 1: nur noch das Startpaket (Unterlagen plus Werkzeug); keine Vollmacht zum Versand mehr
+  packageKey: z.literal("startpaket"),
   contactPhone: z.string().trim().min(5).max(40),
   targetJobs: z.string().trim().min(2).max(200),
   targetRegions: z.string().trim().max(200).optional().nullable(),
   notes: z.string().trim().max(1000).optional().nullable(),
   acceptTerms: z.literal(true),
   acceptWaiver: z.literal(true),
-  acceptConsent: z.literal(true),
 });
 
 export async function POST(req: Request) {
@@ -33,7 +33,7 @@ export async function POST(req: Request) {
   if (!candidate) return NextResponse.json({ error: "Bitte lege zuerst dein Profil an." }, { status: 404 });
 
   const existing = await prisma.serviceBooking.findFirst({
-    where: { candidateId: candidate.id, packageKey: d.packageKey, status: { in: [BOOKING_STATUS.REQUESTED, BOOKING_STATUS.PAID, BOOKING_STATUS.IN_PROGRESS] } },
+    where: { candidateId: candidate.id, packageKey: { in: SERVICE_KEYS }, status: { in: [BOOKING_STATUS.REQUESTED, BOOKING_STATUS.PAID, BOOKING_STATUS.IN_PROGRESS] } },
   });
   if (existing) return NextResponse.json({ error: "Du hast diesen Service bereits gebucht." }, { status: 409 });
 
@@ -46,14 +46,14 @@ export async function POST(req: Request) {
       candidateId: candidate.id,
       packageKey: d.packageKey,
       amountCents: SERVICES[d.packageKey].priceCents,
-      applicationsGoal: SERVICES[d.packageKey].applications,
+      applicationsGoal: 0, // Weg 1: keine Anzahl Bewerbungen mehr
+      toolMonths: SERVICES[d.packageKey].toolMonths,
       contactPhone: d.contactPhone,
       targetJobs: d.targetJobs,
       targetRegions: d.targetRegions || null,
       notes: d.notes || null,
       acceptedTermsAt: now,
       waiverAcceptedAt: now,
-      consentSendAt: now,
       status: BOOKING_STATUS.REQUESTED,
     },
   });
@@ -64,6 +64,6 @@ export async function POST(req: Request) {
 
   // Noch kein Stripe-Konto: Buchung bleibt "angefragt", Kunde und Team bekommen eine Mail
   await bookingMails(booking.id, "requested");
-  await ensureTask(candidate.id, "CONTACT", `Erstgespräch Bewerbungs-Service: ${[candidate.firstName, candidate.lastName].filter(Boolean).join(" ")}`, `Angefragt (noch ohne Zahlung). Telefon/WhatsApp: ${d.contactPhone}. Berufe: ${d.targetJobs}. Buchung: /admin/buchungen/${booking.id}`);
+  await ensureTask(candidate.id, "CONTACT", `Erstgespräch Unterlagen: ${[candidate.firstName, candidate.lastName].filter(Boolean).join(" ")}`, `Angefragt (noch ohne Zahlung). Telefon/WhatsApp: ${d.contactPhone}. Berufe: ${d.targetJobs}. Buchung: /admin/buchungen/${booking.id}`);
   return NextResponse.json({ ok: true, url: `/bewerbungsservice/danke?id=${booking.id}` });
 }

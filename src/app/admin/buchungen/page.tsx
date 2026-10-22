@@ -9,9 +9,10 @@ import { isAdmin } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 const d = (x: Date | null) => (x ? x.toLocaleDateString("de-DE") : "");
+const MAPPE: Record<string, string> = { DRAFT: "Kund:in füllt aus", SUBMITTED: "eingereicht, bitte prüfen", APPROVED: "freigegeben" };
 
 export default async function AdminBookingsPage() {
-  const bookings = await prisma.serviceBooking.findMany({ orderBy: { createdAt: "desc" }, include: { candidate: { include: { user: true } } }, take: 200 });
+  const bookings = await prisma.serviceBooking.findMany({ orderBy: { createdAt: "desc" }, include: { candidate: { include: { user: true } }, profile: { select: { status: true } } }, take: 200 });
   const mails = await prisma.emailLog.findMany({ orderBy: { createdAt: "desc" }, take: 20 });
   const count = (s: string) => bookings.filter((b) => b.status === s).length;
   const revenue = bookings.filter((b) => b.paidAt).reduce((s, b) => s + b.amountCents, 0);
@@ -21,7 +22,7 @@ export default async function AdminBookingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Buchungen · Bewerbungs-Service</h1>
+        <h1 className="text-2xl font-bold">Buchungen · Unterlagen und Werkzeug</h1>
         <p className="text-sm text-[color:var(--color-ink-soft)]">
           Zahlung: {getStripe() ? <span className="text-emerald-700 font-semibold">Stripe aktiv</span> : <span className="text-amber-700 font-semibold">noch kein Stripe-Konto – Buchungen kommen als „Angefragt“</span>}
           {" · "}Mailversand: {mailEnabled() ? <span className="text-emerald-700 font-semibold">aktiv</span> : <span className="text-amber-700 font-semibold">noch kein SMTP – Mails werden nur protokolliert</span>}
@@ -52,7 +53,9 @@ export default async function AdminBookingsPage() {
       {bookings.length === 0 && <div className="card text-sm text-[color:var(--color-ink-soft)]">Noch keine Buchungen.</div>}
       <div className="space-y-4">
         {bookings.map((b) => (
-          <BookingRow key={b.id} id={b.id} status={b.status} applicationsSent={b.applicationsSent} applicationsGoal={b.applicationsGoal} adminNote={b.adminNote}
+          <BookingRow key={b.id} id={b.id} status={b.status} adminNote={b.adminNote}
+            packageLabel={b.packageKey === "bewerbung-25" ? "altes Paket (25 Bewerbungen)" : "Startpaket"} mappe={MAPPE[b.profile?.status ?? ""] ?? "noch nicht begonnen"}
+            toolUntil={b.candidate.toolAccessUntil && b.candidate.toolAccessUntil > new Date() ? d(b.candidate.toolAccessUntil) : null}
             candidateId={b.candidateId} candidateName={[b.candidate.firstName, b.candidate.lastName].filter(Boolean).join(" ") || "(ohne Namen)"}
             email={b.candidate.user.email} phone={b.contactPhone} jobs={b.targetJobs} regions={b.targetRegions} notes={b.notes}
             price={formatPrice(b.amountCents)} createdAt={d(b.createdAt)} paidAt={b.paidAt ? d(b.paidAt) : null} />

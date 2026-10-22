@@ -8,8 +8,11 @@ import { prisma } from "@/lib/prisma";
 import { getStripe } from "@/lib/stripe";
 import { serviceCopy } from "@/lib/services";
 import { markBookingPaid } from "@/lib/bookings";
+import { paymentTestMode } from "@/lib/werkzeug";
 
-export default async function BookingThanksPage(props: { searchParams: Promise<{ session_id?: string; id?: string }> }) {
+export const dynamic = "force-dynamic";
+
+export default async function BookingThanksPage(props: { searchParams: Promise<{ session_id?: string; id?: string; test?: string }> }) {
   const sp = await props.searchParams;
   const session = await getSession();
   if (!session.userId) redirect("/anmelden");
@@ -31,17 +34,25 @@ export default async function BookingThanksPage(props: { searchParams: Promise<{
       }
     }
   }
+  // Lokaler Testmodus ohne Stripe (PAYMENT_TEST_MODE=on, nur next dev): Zahlung gilt als erfolgt
+  if (sp.test && paymentTestMode()) {
+    const booking = await prisma.serviceBooking.findUnique({ where: { id: sp.test } });
+    if (booking && booking.candidateId === candidate.id) { await markBookingPaid(booking.id); paid = true; }
+  }
 
   return (
     <>
       <SiteHeader />
       <main id="main" className="flex-1 bg-[color:var(--color-surface)]">
         <div className="mx-auto max-w-xl px-6 py-20 text-center">
-          <div className="text-6xl">{paid ? "🎉" : "📨"}</div>
+          <div className="text-6xl" aria-hidden>{paid ? "🎉" : "📨"}</div>
           <h1 className="mt-4 text-3xl font-bold">{c.thanksTitle}</h1>
           <p className="mt-3 text-[color:var(--color-ink-soft)]">{paid ? c.thanksPaid : c.thanksRequested}</p>
-          <p className="mt-6 text-[color:var(--color-ink-soft)]">Du kannst direkt mit deiner Bewerbungsmappe anfangen: Lebenslauf hochladen oder Angaben ausfüllen.</p>
-          <Link href="/bewerbungsmappe" className="btn-primary mt-4 inline-flex">Zur Bewerbungsmappe</Link>
+          <p className="mt-6 text-[color:var(--color-ink-soft)]">{c.thanksMappe}</p>
+          <div className="mt-4 flex flex-wrap justify-center gap-3">
+            <Link href="/bewerbungsmappe" className="btn-primary">{c.toMappe}</Link>
+            <Link href="/profil" className="btn-outline">{c.toProfile}</Link>
+          </div>
         </div>
       </main>
       <SiteFooter />

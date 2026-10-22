@@ -1,20 +1,27 @@
 import "server-only";
 
-// Buchungen von Zusatz-Services: Stripe-Checkout (wenn konfiguriert), Bezahlt-Markierung, Mails.
+// Buchung des Startpakets (Unterlagen plus Werkzeug): Stripe-Checkout (wenn konfiguriert), Bezahlt-Markierung, Mails.
 import { prisma } from "@/lib/prisma";
 import { getStripe } from "@/lib/stripe";
 import { sendMail, layout, teamAddress } from "@/lib/mail";
 import { SERVICES, BOOKING_STATUS, formatPrice, type ServiceKey } from "@/lib/services";
+import { ANGEBOT } from "@/lib/angebot";
 import { crmMelden } from "@/lib/crm-sync";
 import { euro } from "@/lib/crm-core";
+import { grantToolMonths, paymentTestMode } from "@/lib/werkzeug";
+import { bookingMail } from "@/lib/werkzeug-text";
 
 const baseUrl = () => process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-const SERVICE_NAME: Record<ServiceKey, string> = { "bewerbung-25": "Bewerbungs-Service (25 Bewerbungen)" };
+const SERVICE_NAME: Record<ServiceKey, string> = {
+  startpaket: `Startpaket: Bewerbungsunterlagen und ${ANGEBOT.startpaket.toolMonths} Monate Bewerbungswerkzeug`,
+  "bewerbung-25": "Bewerbungs-Service (alt, 25 Bewerbungen)",
+};
 
-// Stripe-Checkout für eine Buchung starten. Ohne Stripe-Konto: null (Buchung bleibt "angefragt").
+// Stripe-Checkout für eine Buchung starten. Ohne Stripe-Konto: null (Buchung bleibt "angefragt"),
+// im lokalen Testmodus (PAYMENT_TEST_MODE=on) ein Link, der die Zahlung überspringt.
 export async function startCheckout(bookingId: string, origin: string) {
   const stripe = getStripe();
-  if (!stripe) return null;
+  if (!stripe) return paymentTestMode() ? `${origin}/bewerbungsservice/danke?test=${bookingId}` : null;
   const b = await prisma.serviceBooking.findUniqueOrThrow({ where: { id: bookingId }, include: { candidate: { include: { user: true } } } });
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
@@ -32,18 +39,19 @@ export async function startCheckout(bookingId: string, origin: string) {
   return session.url;
 }
 
-// Zahlung bestätigen – idempotent (Webhook und Danke-Seite können beide aufrufen)
+// Zahlung bestätigen – idempotent (Webhook, Danke-Seite und Admin können alle aufrufen).
+// Weg 1: schaltet das Bewerbungswerkzeug für die gebuchten Monate frei (kein Guthaben je Bewerbung).
 export async function markBookingPaid(bookingId: string, stripeSessionId?: string) {
   const res = await prisma.serviceBooking.updateMany({
     where: { id: bookingId, paidAt: null },
     data: { paidAt: new Date(), status: BOOKING_STATUS.PAID, ...(stripeSessionId ? { stripeSessionId } : {}) },
   });
   if (res.count > 0) {
-    await (await import("@/lib/credits")).grantStartCredits(bookingId);
+    const b = await prisma.serviceBooking.findUniqueOrThrow({ where: { id: bookingId }, include: { candidate: true } });
+    await grantToolMonths(b.candidateId, b.toolMonths || ANGEBOT.startpaket.toolMonths);
     await bookingMails(bookingId, "paid");
-    const b = await prisma.serviceBooking.findUnique({ where: { id: bookingId }, include: { candidate: true } });
-    if (b) crmMelden("bezahlt", b.candidateId, { paket: b.packageKey, betrag: euro(b.amountCents), datum: b.paidAt?.toISOString() });
-    if (b) await ensureTask(b.candidateId, "CONTACT", `Erstgespräch Bewerbungs-Service: ${[b.candidate.firstName, b.candidate.lastName].filter(Boolean).join(" ")}`, `Bezahlt. Telefon/WhatsApp: ${b.contactPhone ?? "–"}. Berufe: ${b.targetJobs ?? "–"}. Buchung: /admin/buchungen/${b.id}`);
+    crmMelden("bezahlt", b.candidateId, { paket: b.packageKey, betrag: euro(b.amountCents), datum: b.paidAt?.toISOString() });
+    await ensureTask(b.candidateId, "CONTACT", `Erstgespräch Unterlagen: ${[b.candidate.firstName, b.candidate.lastName].filter(Boolean).join(" ")}`, `Bezahlt. Telefon/WhatsApp: ${b.contactPhone ?? "keine Angabe"}. Berufe: ${b.targetJobs ?? "keine Angabe"}. Buchung: /admin/buchungen/${b.id}`);
   }
   return res.count > 0;
 }
@@ -51,29 +59,28 @@ export async function markBookingPaid(bookingId: string, stripeSessionId?: strin
 export async function bookingMails(bookingId: string, kind: "requested" | "paid") {
   const b = await prisma.serviceBooking.findUnique({ where: { id: bookingId }, include: { candidate: { include: { user: true } } } });
   if (!b) return;
-  const name = [b.candidate.firstName, b.candidate.lastName].filter(Boolean).join(" ") || "du";
-  const price = formatPrice(b.amountCents);
+  const name = [b.candidate.firstName, b.candidate.lastName].filter(Boolean).join(" ") || "Kund:in";
+  const t = bookingMail(b.candidate.user.locale);
+  const price = formatPrice(b.amountCents, b.candidate.user.locale === "fr" ? "fr" : b.candidate.user.locale === "de" ? "de" : "en");
   const svc = SERVICE_NAME[b.packageKey as ServiceKey] ?? b.packageKey;
   const to = b.candidate.user.email || "";
 
   // an die Kundin / den Kunden
-  const title = kind === "paid" ? "Deine Buchung ist bestätigt" : "Wir haben deine Anfrage erhalten";
-  const paras = kind === "paid"
-    ? [`Hallo ${name},`, `vielen Dank! Deine Zahlung über ${price} für den ${svc} ist bei uns eingegangen.`, "Wir melden uns in den nächsten 2 Werktagen bei dir und vereinbaren das Erstgespräch. Lade bis dahin gern deine Zeugnisse und Nachweise in deinem Profil hoch.", "Viele Grüße", "Dein WoYou-Team"]
-    : [`Hallo ${name},`, `danke für deine Anfrage zum ${svc} (${price}).`, "Wir melden uns in den nächsten 2 Werktagen bei dir und schicken dir den Link zur Zahlung. Danach starten wir mit dem Erstgespräch.", "Viele Grüße", "Dein WoYou-Team"];
-  await sendMail({ to, subject: `WoYou: ${title}`, template: `booking_${kind}`, bookingId: b.id, text: paras.join("\n\n"), html: layout(title, paras, { label: "Zu meinem Profil", href: `${baseUrl()}/profil` }) });
+  const title = kind === "paid" ? t.paidSubject : t.requestedSubject;
+  const paras = [t.hello(b.candidate.firstName), ...(kind === "paid" ? t.paid(price, b.toolMonths || ANGEBOT.startpaket.toolMonths) : t.requested(price)), t.sign];
+  await sendMail({ to, subject: `WoYou: ${title}`, template: `booking_${kind}`, bookingId: b.id, text: paras.join("\n\n"), html: layout(title, paras, { label: t.button, href: `${baseUrl()}/profil` }) });
 
   // ans Team
   const team = teamAddress();
   if (team) {
     const tParas = [
-      `${kind === "paid" ? "Bezahlt" : "Neue Anfrage (noch ohne Zahlung)"}: ${svc}, ${price}`,
-      `Kandidat:in: ${name} (${to || "ohne E-Mail"})`,
-      `Telefon/WhatsApp: ${b.contactPhone || "–"}`,
-      `Berufe: ${b.targetJobs || "–"} · Region: ${b.targetRegions || "–"}`,
+      `${kind === "paid" ? "Bezahlt" : "Neue Anfrage (noch ohne Zahlung)"}: ${svc}, ${formatPrice(b.amountCents)}`,
+      `Kund:in: ${name} (${to || "ohne E-Mail"})`,
+      `Telefon/WhatsApp: ${b.contactPhone || "keine Angabe"}`,
+      `Berufe: ${b.targetJobs || "keine Angabe"} · Region: ${b.targetRegions || "keine Angabe"}`,
       b.notes ? `Hinweis: ${b.notes}` : "",
     ].filter(Boolean);
-    await sendMail({ to: team, subject: `Buchung ${kind === "paid" ? "bezahlt" : "angefragt"}: ${name}`, template: `team_booking_${kind}`, bookingId: b.id, text: tParas.join("\n"), html: layout("Neue Buchung Bewerbungs-Service", tParas, { label: "Im Admin öffnen", href: `${baseUrl()}/admin/buchungen` }) });
+    await sendMail({ to: team, subject: `Buchung ${kind === "paid" ? "bezahlt" : "angefragt"}: ${name}`, template: `team_booking_${kind}`, bookingId: b.id, text: tParas.join("\n"), html: layout("Neue Buchung Startpaket", tParas, { label: "Im Admin öffnen", href: `${baseUrl()}/admin/buchungen` }) });
   }
 }
 

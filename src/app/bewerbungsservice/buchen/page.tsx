@@ -7,9 +7,10 @@ import { getT } from "@/lib/i18n";
 import { getSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { ROLE, CANDIDATE_STATUS } from "@/lib/enums";
-import { SERVICES, serviceCopy, formatPrice, BOOKING_STATUS } from "@/lib/services";
+import { SERVICES, SERVICE_KEYS, CURRENT_SERVICE, serviceCopy, formatPrice, BOOKING_STATUS } from "@/lib/services";
 import { getStripe } from "@/lib/stripe";
-import { accountText, fill } from "@/lib/account-text";
+import { paymentTestMode } from "@/lib/werkzeug";
+import { accountText } from "@/lib/account-text";
 
 export default async function BookServicePage(props: { searchParams: Promise<{ abgebrochen?: string }> }) {
   const sp = await props.searchParams;
@@ -20,14 +21,14 @@ export default async function BookServicePage(props: { searchParams: Promise<{ a
   const { locale } = await getT();
   const c = serviceCopy(locale);
   const a = accountText(locale);
-  const svc = SERVICES["bewerbung-25"];
+  const svc = SERVICES[CURRENT_SERVICE];
   const candidate =
     (await prisma.candidate.findUnique({ where: { userId: session.userId } })) ??
     (await prisma.candidate.create({ data: { userId: session.userId!, status: CANDIDATE_STATUS.REGISTERED } }));
 
-  // Laufende Buchung? Dann nicht doppelt buchen lassen
+  // Laufende Buchung (auch ein altes Paket)? Dann nicht doppelt buchen lassen
   const open = await prisma.serviceBooking.findFirst({
-    where: { candidateId: candidate.id, packageKey: "bewerbung-25", status: { in: [BOOKING_STATUS.REQUESTED, BOOKING_STATUS.PAID, BOOKING_STATUS.IN_PROGRESS] } },
+    where: { candidateId: candidate.id, packageKey: { in: SERVICE_KEYS }, status: { in: [BOOKING_STATUS.REQUESTED, BOOKING_STATUS.PAID, BOOKING_STATUS.IN_PROGRESS] } },
     orderBy: { createdAt: "desc" },
   });
 
@@ -36,7 +37,7 @@ export default async function BookServicePage(props: { searchParams: Promise<{ a
       <SiteHeader />
       <main id="main" className="flex-1 bg-[color:var(--color-surface)]">
         <div className="mx-auto max-w-2xl px-6 py-14">
-          <Link href="/bewerbungsservice" className="text-sm text-[color:var(--color-brand)]">← {c.badge}</Link>
+          <Link href="/" className="text-sm text-[color:var(--color-brand)]">{locale === "ar" ? "→" : "←"} {c.badge}</Link>
           <h1 className="mt-3 text-3xl font-bold">{c.bookTitle}</h1>
           <p className="mt-2 text-[color:var(--color-ink-soft)]">{c.bookLead}</p>
 
@@ -44,18 +45,18 @@ export default async function BookServicePage(props: { searchParams: Promise<{ a
             <div><div className="font-semibold">{c.summary}</div><div className="text-sm text-[color:var(--color-ink-soft)]">{c.priceNote}</div></div>
             <div className="text-3xl font-bold text-[color:var(--color-brand)]">{formatPrice(svc.priceCents, locale)}</div>
           </div>
+          <p className="mt-3 text-sm text-[color:var(--color-ink-soft)]">{c.lead}</p>
 
           {sp.abgebrochen && <p className="mt-4 rounded bg-amber-50 border border-amber-200 text-amber-800 p-3 text-sm">{a.payAborted}</p>}
 
           {open ? (
             <div className="card mt-6">
-              <p className="font-semibold">{a.alreadyBooked}</p>
-              <p className="mt-1 text-sm text-[color:var(--color-ink-soft)]">{fill(a.stateSent, { sent: open.applicationsSent })}</p>
+              <p className="font-semibold">{c.alreadyBooked}</p>
               <Link href="/profil" className="btn-primary mt-4 inline-flex">{c.toProfile}</Link>
             </div>
           ) : (
             <BookingForm
-              copy={{ phone: c.phone, jobs: c.jobs, regions: c.regions, notes: c.notes, terms: c.terms, waiver: c.waiver, consent: c.consent, submit: getStripe() ? c.submit : c.submitNoPay }}
+              copy={{ phone: c.phone, jobs: c.jobs, regions: c.regions, notes: c.notes, terms: c.terms, waiver: c.waiver, submit: getStripe() || paymentTestMode() ? c.submit : c.submitNoPay, failed: c.failed }}
               defaults={{ phone: candidate.whatsappNumber || "", jobs: candidate.desiredJobTitle || "", regions: "" }}
             />
           )}
