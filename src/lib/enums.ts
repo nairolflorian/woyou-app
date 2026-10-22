@@ -3,7 +3,7 @@ export const ROLE = {
   COMPANY: "COMPANY",
   ADMIN: "ADMIN",
   SUPER_ADMIN: "SUPER_ADMIN",
-  TEAM: "TEAM", // Bewerbungsteam: Buchungen bearbeiten, Stellen freigeben, bewerben
+  TEAM: "TEAM", // Unterlagen-Team: Buchungen ansehen, Bewerbungsmappen prüfen und korrigieren (Weg 1: keine Stellenauswahl, kein Versand)
 } as const;
 export type Role = (typeof ROLE)[keyof typeof ROLE];
 

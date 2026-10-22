@@ -1,6 +1,7 @@
 import "server-only";
 
-// Stellen je Buchung: übernehmen, Anschreiben erzeugen, Bewerbung versenden (mit Kopie an Kund:in)
+// ABGESCHALTET (Weg 1, siehe src/lib/weg1.ts): Stellen je Buchung durch das Team übernehmen und versenden.
+// Bleibt nur für Altdaten und zum Nachlesen im Repo.
 import { prisma } from "@/lib/prisma";
 import { jobDetails, jobUrl, extractEmails } from "@/lib/jobs-ba";
 import { letterForJob, subjectLine, salutation } from "@/lib/letters";
@@ -11,7 +12,7 @@ import { sendMail, layout, mailEnabled, type Attachment } from "@/lib/mail";
 import { aliasAddress } from "@/lib/alias";
 import { BOOKING_STATUS } from "@/lib/services";
 import { consumeCredit, refundCredit, creditState } from "@/lib/credits";
-import { crmMelden } from "@/lib/crm-sync";
+import { WEG1, Weg1Gesperrt } from "@/lib/weg1";
 
 export const ACTIVE_LEAD = ["SELECTED", "READY", "SENT", "APPLIED_MANUALLY"];
 export const DONE_LEAD = ["SENT", "APPLIED_MANUALLY"];
@@ -29,6 +30,7 @@ async function bookingWithProfile(bookingId: string) {
 }
 
 export async function addLead(bookingId: string, job: { ref?: string | null; title: string; company: string; city?: string | null; url?: string | null; applyUrl?: string | null; email?: string | null; source?: string; description?: string | null }) {
+  if (!WEG1.teamStellenauswahl) throw new Weg1Gesperrt("Die Stellenauswahl durch das Team");
   // Stelle steht schon als Vorschlag in der Liste? Dann diesen übernehmen
   if (job.ref) {
     const existing = await prisma.jobLead.findFirst({ where: { bookingId, sourceRef: job.ref, status: { in: ["SUGGESTED", "HIDDEN"] } } });
@@ -53,6 +55,7 @@ export async function addLead(bookingId: string, job: { ref?: string | null; tit
 
 // Vorschlag übernehmen: zählt dann zu den 25, Anschreiben wird mit der Ausschreibung erstellt
 export async function selectSuggestion(leadId: string) {
+  if (!WEG1.teamStellenauswahl) throw new Weg1Gesperrt("Die Stellenauswahl durch das Team");
   const l = await prisma.jobLead.findUniqueOrThrow({ where: { id: leadId } });
   if (ACTIVE_LEAD.includes(l.status)) return l;
   const b = await bookingWithProfile(l.bookingId);
@@ -74,7 +77,6 @@ export async function recount(bookingId: string) {
   const b = await prisma.serviceBooking.findUniqueOrThrow({ where: { id: bookingId } });
   const status = sent > 0 && (b.status === BOOKING_STATUS.PAID || b.status === BOOKING_STATUS.REQUESTED) ? BOOKING_STATUS.IN_PROGRESS : b.status;
   await prisma.serviceBooking.update({ where: { id: bookingId }, data: { applicationsSent: sent, status } });
-  if (b.applicationsSent === 0 && sent > 0) crmMelden("bewerbungen_laufen", b.candidateId, { paket: b.packageKey });
   return sent;
 }
 
@@ -96,6 +98,7 @@ export async function leadDocuments(leadId: string) {
 }
 
 export async function sendApplication(leadId: string) {
+  if (!WEG1.teamVersand) throw new Weg1Gesperrt("Der Versand von Bewerbungen durch WoYou");
   const { lead, booking, data, files, lang } = await leadDocuments(leadId);
   if (!mailEnabled()) throw new Error("Mailversand ist noch nicht eingerichtet (SMTP fehlt). Bitte vorerst manuell bewerben und als „beworben“ markieren.");
   if (!booking.consentSendAt) throw new Error("Für diese Buchung liegt keine Vollmacht zum Versand vor.");
@@ -139,6 +142,7 @@ export async function sendApplication(leadId: string) {
 
 // „Jetzt bewerben“: alle freigegebenen Stellen (READY) mit E-Mail nacheinander verschicken, solange Guthaben reicht
 export async function applyApproved(bookingId: string) {
+  if (!WEG1.teamVersand) throw new Weg1Gesperrt("Der Versand von Bewerbungen durch WoYou");
   const leads = await prisma.jobLead.findMany({ where: { bookingId, status: "READY" }, orderBy: [{ score: "desc" }, { createdAt: "asc" }] });
   const result = { sent: 0, noEmail: [] as string[], failed: [] as { title: string; error: string }[], stoppedNoCredit: false };
   for (const l of leads) {

@@ -4,6 +4,7 @@ import "server-only";
 // Aktiv erst, wenn MAIL_ALIAS_DOMAIN gesetzt ist (DNS + Mail-Dienst mit Weiterleitung eingerichtet).
 // Bis dahin: Versand über MAIL_FROM, Antworten (Reply-To) gehen direkt an die echte Adresse des Kunden.
 import { prisma } from "@/lib/prisma";
+import { WEG1 } from "@/lib/weg1";
 
 const translit = (s: string) =>
   s.toLowerCase()
@@ -11,9 +12,11 @@ const translit = (s: string) =>
     .normalize("NFKD").replace(/[̀-ͯ]/g, "")
     .replace(/[^a-z0-9]+/g, ".").replace(/^\.+|\.+$/g, "").replace(/\.{2,}/g, ".");
 
-export const aliasDomain = () => process.env.MAIL_ALIAS_DOMAIN || "";
+// ABGESCHALTET (Weg 1): ohne Schalter gibt es keine Alias-Adressen, egal was in MAIL_ALIAS_DOMAIN steht.
+export const aliasDomain = () => (WEG1.aliasUndAntworten ? process.env.MAIL_ALIAS_DOMAIN || "" : "");
 
 export async function ensureAlias(bookingId: string, firstName: string, lastName: string) {
+  if (!WEG1.aliasUndAntworten) return null;
   const b = await prisma.serviceBooking.findUnique({ where: { id: bookingId }, select: { aliasLocal: true } });
   if (b?.aliasLocal) return b.aliasLocal;
   const base = translit(`${firstName} ${lastName}`) || `bewerber.${bookingId.slice(-6)}`;

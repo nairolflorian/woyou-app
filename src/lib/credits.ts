@@ -1,5 +1,7 @@
 import "server-only";
 
+// ABGESCHALTET (Weg 1, siehe src/lib/weg1.ts). Nur noch für Altdaten: Zahlungen alter Käufe werden weiter
+// verbucht (markPurchasePaid), neue Käufe laufen über src/lib/werkzeug.ts.
 // Guthaben an Bewerbungen je Kund:in.
 // Startpaket (199 €) = 25, Nachkauf (149 €) = 25, Abo (50 €/Monat) = unbegrenzt, solange bezahlt.
 // Jede verschickte Bewerbung bucht 1 ab (mit Abo: Eintrag mit 0, damit alles nachvollziehbar bleibt).
@@ -10,6 +12,7 @@ import { sendMail, layout, teamAddress } from "@/lib/mail";
 import { CREDIT_PRODUCTS, formatPrice, type CreditKind } from "@/lib/services";
 import { crmMelden } from "@/lib/crm-sync";
 import { euro } from "@/lib/crm-core";
+import { WEG1, Weg1Gesperrt } from "@/lib/weg1";
 
 const baseUrl = () => process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 type Tx = Prisma.TransactionClient | typeof prisma;
@@ -37,6 +40,7 @@ export async function grantStartCredits(bookingId: string) {
 
 // Vor dem Versand: Guthaben prüfen und 1 abbuchen (atomar, je Bewerbung nur einmal)
 export async function consumeCredit(candidateId: string, leadId: string, bookingId: string, note: string) {
+  if (!WEG1.guthabenJeBewerbung) throw new Weg1Gesperrt("Guthaben je Bewerbung");
   return prisma.$transaction(async (tx) => {
     const already = await tx.creditEntry.findUnique({ where: { leadId } });
     if (already) return already;
@@ -53,6 +57,7 @@ export async function refundCredit(leadId: string) {
 
 // ---------- Kauf: Nachkauf (einmalig) oder Abo (monatlich) ----------
 export async function startPurchase(candidateId: string, kind: CreditKind, origin: string): Promise<{ url: string | null; purchaseId: string }> {
+  if (!WEG1.guthabenJeBewerbung) throw new Weg1Gesperrt("Der Kauf von Bewerbungsguthaben");
   const product = CREDIT_PRODUCTS[kind];
   const c = await prisma.candidate.findUniqueOrThrow({ where: { id: candidateId }, include: { user: true } });
   if (kind === "SUBSCRIPTION") {

@@ -17,6 +17,7 @@ import { CANDIDATE_STATUS, MATCH_STATUS, ROLE } from "@/lib/enums";
 import { audit } from "@/lib/audit";
 import { sendMail, layout } from "@/lib/mail";
 import { mappeText } from "@/lib/mappe-i18n";
+import { WEG1 } from "@/lib/weg1";
 
 const DEDUP_WINDOW_MS = 20 * 60 * 60 * 1000;
 
@@ -48,7 +49,8 @@ async function run() {
 
   // 2. Matches awaiting candidate consent for >24h
   const consentThreshold = new Date(Date.now() - 24 * 60 * 60 * 1000);
-  const consentPending = await prisma.match.findMany({
+  // Weg 1: Matching ist abgeschaltet, keine Erinnerungen zu Vorschlägen an Kund:innen oder Firmen
+  const consentPending = !WEG1.arbeitgeberUndMatching ? [] : await prisma.match.findMany({
     where: {
       status: MATCH_STATUS.AWAITING_CANDIDATE_CONSENT,
       createdAt: { lt: consentThreshold },
@@ -69,7 +71,7 @@ async function run() {
 
   // 3. Matches shared with company but no response in 48h
   const companyThreshold = new Date(Date.now() - 48 * 60 * 60 * 1000);
-  const companyStale = await prisma.match.findMany({
+  const companyStale = !WEG1.arbeitgeberUndMatching ? [] : await prisma.match.findMany({
     where: {
       status: MATCH_STATUS.SHARED_WITH_COMPANY,
       updatedAt: { lt: companyThreshold },

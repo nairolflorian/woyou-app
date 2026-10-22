@@ -3,6 +3,7 @@ import crypto from "node:crypto";
 import { prisma } from "@/lib/prisma";
 import { aliasDomain } from "@/lib/alias";
 import { sendMail, layout } from "@/lib/mail";
+import { WEG1 } from "@/lib/weg1";
 
 // Eingang für Antworten an persönliche WoYou-Adressen (z. B. fatima.benali@bewerbung.woyou.de).
 // Der Mail-Dienst (z. B. Brevo „Inbound Parsing“) ruft diese URL auf:
@@ -28,6 +29,8 @@ function normalize(body: unknown): Item[] {
 }
 
 export async function POST(req: Request) {
+  // Weg 1: WoYou liest und leitet keine Firmenantworten weiter (auch in der Middleware gesperrt)
+  if (!WEG1.aliasUndAntworten) return NextResponse.json({ error: "disabled" }, { status: 410 });
   const want = process.env.MAIL_INBOUND_TOKEN || "";
   const got = new URL(req.url).searchParams.get("token") || "";
   if (!want || !aliasDomain()) return NextResponse.json({ error: "not configured" }, { status: 503 });

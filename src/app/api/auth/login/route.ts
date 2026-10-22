@@ -4,6 +4,7 @@ import { findUserByLogin, verifyPassword } from "@/lib/auth";
 import { getSession } from "@/lib/session";
 import { ROLE, type Role } from "@/lib/enums";
 import { rateLimit, clientIp } from "@/lib/rate-limit";
+import { WEG1 } from "@/lib/weg1";
 
 const schema = z.object({
   login: z.string().min(1),
@@ -30,6 +31,10 @@ export async function POST(req: Request) {
   const ok = await verifyPassword(parsed.data.password, user.passwordHash);
   if (!ok) {
     return NextResponse.json({ error: "WRONG_PASSWORD" }, { status: 401 });
+  }
+  // Weg 1: kein Arbeitgeberbereich mehr, Firmenkonten können sich nicht anmelden
+  if (user.role === ROLE.COMPANY && !WEG1.arbeitgeberUndMatching) {
+    return NextResponse.json({ error: "NOT_FOUND" }, { status: 401 });
   }
   const session = await getSession();
   session.userId = user.id;

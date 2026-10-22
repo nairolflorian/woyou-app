@@ -1,5 +1,6 @@
 import "server-only";
 
+// ABGESCHALTET (Weg 1, siehe src/lib/weg1.ts). Die Stellensuche für Kund:innen steht in src/lib/stellensuche.ts.
 // Automatische Stellenvorschläge je Buchung: sucht mit mehreren Berufsbezeichnungen und Regionen in der
 // Jobbörse der Bundesagentur, lädt die Ausschreibungen und bewertet die Passung zur Bewerbungsmappe.
 // Regeln funktionieren immer; ist die KI aktiv, gibt sie zusätzlich eine Einschätzung ab (Mittelwert).
@@ -10,6 +11,7 @@ import { withProfile } from "@/lib/mappe";
 import { aiEnabled, callAI } from "@/lib/letters";
 import { searchAdzuna, searchArbeitnow, type ExtraJob } from "@/lib/jobs-extra";
 import { searchFeeds, type FeedJob } from "@/lib/jobs-feeds";
+import { WEG1, Weg1Gesperrt } from "@/lib/weg1";
 
 type AnyJob = BaJob & { source?: "BA" | "ADZUNA" | "ARBEITNOW" | "KARRIERESEITE"; description?: string; email?: string | null };
 
@@ -119,6 +121,7 @@ async function pool<T, R>(items: T[], n: number, fn: (x: T) => Promise<R>): Prom
 
 // Läuft für eine Buchung; neue Vorschläge werden gespeichert, vorhandene Stellen übersprungen
 export async function suggestJobs(bookingId: string): Promise<{ added: number; searched: number; terms: string[]; regions: string[] }> {
+  if (!WEG1.teamStellenauswahl) throw new Weg1Gesperrt("Stellenvorschläge des Teams je Kund:in");
   const { booking, profile } = await withProfile(bookingId);
   const d = parseProfile(profile.data);
 

@@ -24,8 +24,8 @@ export const DEMO_ACCOUNTS: DemoAccount[] = [
   {
     email: "vermittler@woyou.demo",
     role: "ADMIN",
-    name: "Vermittler:in",
-    description: "Backoffice: Kandidaten verwalten, Matches vorschlagen, Aufgaben tracken.",
+    name: "Admin",
+    description: "Backoffice: Buchungen, Mappen prüfen, Aufgaben.",
     next: "/admin",
     emoji: "🎯",
     color: "from-indigo-500 to-indigo-700",
@@ -33,8 +33,8 @@ export const DEMO_ACCOUNTS: DemoAccount[] = [
   {
     email: "team@woyou.demo",
     role: "TEAM",
-    name: "Bewerbungsteam",
-    description: "Sieht nur Buchungen und Aufgaben: Mappen prüfen, Stellen freigeben, „Jetzt bewerben“.",
+    name: "Unterlagen-Team",
+    description: "Sieht nur Buchungen und Aufgaben: Bewerbungsmappen prüfen und korrigieren.",
     next: "/admin/buchungen",
     emoji: "📨",
     color: "from-sky-500 to-sky-700",

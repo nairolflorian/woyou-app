@@ -10,10 +10,18 @@
 
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { weg1Gesperrt } from "@/lib/weg1";
 
 const isDev = process.env.NODE_ENV !== "production";
 
 export function middleware(req: NextRequest) {
+  // Weg 1: abgeschaltete Bereiche (Versand durch das Team, Alias, Guthaben, Arbeitgeber, Matching)
+  const gesperrt = weg1Gesperrt(req.nextUrl.pathname);
+  if (gesperrt) {
+    if (req.nextUrl.pathname.startsWith("/api/")) return NextResponse.json({ error: gesperrt }, { status: 410 });
+    return NextResponse.redirect(new URL(gesperrt === "admin" ? "/admin/buchungen" : "/", req.url));
+  }
+
   // Generate one nonce per request.
   const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
 

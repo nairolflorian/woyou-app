@@ -15,7 +15,7 @@ export default async function AdminLayout({
   const session = await getSession();
   if (!session.userId || !isStaff(session.role)) redirect("/anmelden");
   const team = session.role === ROLE.TEAM;
-  // Bewerbungsteam sieht nur Buchungen und Aufgaben
+  // Unterlagen-Team sieht nur Buchungen (Mappen) und Aufgaben
   const path = (await headers()).get("x-pathname") ?? "";
   if (team && !/^\/admin\/(buchungen|aufgaben)(\/|$)/.test(path)) redirect("/admin/buchungen");
 
@@ -30,7 +30,7 @@ export default async function AdminLayout({
                 Admin
               </div>
               <div className="mt-1 text-sm font-semibold">
-                {session.role === ROLE.SUPER_ADMIN ? "Super-Admin" : team ? "Bewerbungsteam" : "Vermittler"}
+                {session.role === ROLE.SUPER_ADMIN ? "Super-Admin" : team ? "Unterlagen-Team" : "Admin"}
               </div>
               <nav className="mt-4 flex flex-col gap-1 text-sm">
                 {!team && <Link href="/admin" className="btn-ghost justify-start">📊 Übersicht</Link>}

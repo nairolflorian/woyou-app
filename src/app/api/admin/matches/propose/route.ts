@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { WEG1 } from "@/lib/weg1";
 import { z } from "zod";
 import { getSession } from "@/lib/session";
 import { isAdmin } from "@/lib/auth";
@@ -13,6 +14,7 @@ const schema = z.object({
 });
 
 export async function POST(req: Request) {
+  if (!WEG1.arbeitgeberUndMatching) return NextResponse.json({ error: "Abgeschaltet (Weg 1)" }, { status: 410 });
   const session = await getSession();
   if (!session.userId || !isAdmin(session.role)) {
     return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });

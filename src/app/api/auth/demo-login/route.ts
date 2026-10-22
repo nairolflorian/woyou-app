@@ -8,7 +8,7 @@ async function loginAndRedirect(req: Request, email: string) {
   if (!DEMO_MODE_ENABLED) {
     return NextResponse.json({ error: "DEMO_MODE_DISABLED" }, { status: 403 });
   }
-  const acc = DEMO_ACCOUNTS.find((a) => a.email === email);
+  const acc = DEMO_ACCOUNTS.find((a) => a.email === email && a.role !== "COMPANY"); // Weg 1: keine Firmenkonten
   if (!acc) {
     return NextResponse.json({ error: "UNKNOWN_DEMO_ACCOUNT" }, { status: 404 });
   }

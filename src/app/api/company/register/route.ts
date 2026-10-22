@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { WEG1 } from "@/lib/weg1";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { createUserWithRole } from "@/lib/auth";
@@ -33,6 +34,7 @@ const schema = z.object({
 });
 
 export async function POST(req: Request) {
+  if (!WEG1.arbeitgeberUndMatching) return NextResponse.json({ error: "Abgeschaltet (Weg 1)" }, { status: 410 });
   const body = await req.json().catch(() => ({}));
   const parsed = schema.safeParse(body);
   if (!parsed.success) {
