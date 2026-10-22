@@ -115,7 +115,10 @@ model Candidate {
   bookings            ServiceBooking[]
   creditEntries       CreditEntry[]
   creditPurchases     CreditPurchase[]
-  subscriptionUntil   DateTime? // Abo „unbegrenzt“ gilt bis hier (inkl. bezahltem Zeitraum nach Kündigung)
+  subscriptionUntil   DateTime? // ALT (vor Weg 1): Abo „unbegrenzt bewerben“ galt bis hier
+  // Weg 1: Bewerbungswerkzeug (Stellensuche, Anschreiben je Stelle, Tracker) ist bis hier freigeschaltet
+  toolAccessUntil     DateTime?
+  savedJobs           SavedJob[]
 }
 
 model LanguageTestAnswer {
@@ -348,8 +351,9 @@ model ServiceBooking {
   applicationsSent Int       @default(0)
   applicationsGoal Int       @default(25)
   adminNote        String?
-  consentSendAt    DateTime? // Vollmacht: Bewerbungen im Namen des Kunden versenden
-  aliasLocal       String?   @unique // z. B. "fatima.benali" → fatima.benali@<MAIL_ALIAS_DOMAIN>
+  consentSendAt    DateTime? // ALT (vor Weg 1): Vollmacht, Bewerbungen im Namen des Kunden zu versenden
+  aliasLocal       String?   @unique // ALT (vor Weg 1): z. B. "fatima.benali" → fatima.benali@<MAIL_ALIAS_DOMAIN>
+  toolMonths       Int       @default(0) // Weg 1: Monate Bewerbungswerkzeug, die mit diesem Paket gebucht wurden
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
 
@@ -378,7 +382,7 @@ model ApplicationProfile {
   updatedAt    DateTime       @updatedAt
 }
 
-// Stelle, auf die für eine Buchung beworben wird (Vorschlag → ausgewählt → verschickt)
+// ALT (vor Weg 1, nicht mehr genutzt): Stelle, die das Team für eine Buchung ausgewählt und verschickt hat
 model JobLead {
   id            String         @id @default(cuid())
   bookingId     String
@@ -424,7 +428,7 @@ model EmailLog {
   @@index([createdAt])
 }
 
-// Guthaben an Bewerbungen: +25 je Paket, -1 je verschickter Bewerbung. Mit aktivem Abo wird nichts abgezogen (Eintrag mit 0).
+// ALT (vor Weg 1, nicht mehr genutzt): Guthaben an Bewerbungen: +25 je Paket, -1 je verschickter Bewerbung. Mit aktivem Abo wird nichts abgezogen (Eintrag mit 0).
 model CreditEntry {
   id          String    @id @default(cuid())
   candidateId String
@@ -440,12 +444,14 @@ model CreditEntry {
   @@index([candidateId])
 }
 
-// Nachkauf (25 Bewerbungen) oder Abo (unbegrenzt, monatlich)
+// Käufe nach dem Startpaket. Weg 1: Verlängerung des Werkzeugs (TOOL_MONTH) oder Monatsabo (TOOL_SUBSCRIPTION).
+// ALT (vor Weg 1): Nachkauf 25 Bewerbungen (PACK_25) oder Abo „unbegrenzt bewerben“ (SUBSCRIPTION).
 model CreditPurchase {
   id                   String    @id @default(cuid())
   candidateId          String
   candidate            Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
-  kind                 String    // PACK_25 | SUBSCRIPTION
+  kind                 String    // TOOL_MONTH | TOOL_SUBSCRIPTION (alt: PACK_25 | SUBSCRIPTION)
+  months               Int?      // Weg 1: so viele Monate Werkzeug schaltet der Kauf frei
   amountCents          Int
   status               String    @default("REQUESTED") // REQUESTED | PENDING_PAYMENT | PAID | ACTIVE | CANCELLING | ENDED | CANCELLED
   stripeSessionId      String?
@@ -483,4 +489,37 @@ model CareerFeed {
   createdAt DateTime @default(now())
 
   @@unique([kind, slug])
+}
+
+// Weg 1: Bewerbungs-Tracker. Stellen, die sich die Kundin bzw. der Kunde in der Stellensuche selbst gemerkt hat,
+// mit eigenem Stand (gemerkt, beworben, Antwort, Gespräch, Absage, Zusage) und Notizen. Nur die Person selbst
+// pflegt diese Liste; das Team wählt hier nichts aus und sieht sie nicht.
+model SavedJob {
+  id          String    @id @default(cuid())
+  candidateId String
+  candidate   Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  source      String    // BA | ARBEITNOW | ADZUNA | KARRIERESEITE | MANUAL
+  sourceRef   String?
+  title       String
+  company     String
+  city        String?
+  url         String?   // Link zur Anzeige
+  applyUrl    String?   // Bewerbungsseite des Arbeitgebers
+  email       String?   // Bewerbungs-E-Mail aus der Anzeige (die Person schreibt selbst aus ihrem Postfach)
+  contactName String?
+  description String?
+  meta        String?   // JSON: Arbeitszeit, Entfernung, gefordertes Deutsch, Veröffentlichung
+  status      String    @default("SAVED") // SAVED | APPLIED | REPLY | INTERVIEW | REJECTED | OFFER
+  appliedAt   DateTime?
+  repliedAt   DateTime?
+  interviewAt DateTime?
+  closedAt    DateTime?
+  notes       String?
+  coverLetter String?
+  letterLang  String    @default("de")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([candidateId, source, sourceRef])
+  @@index([candidateId, status])
 }
