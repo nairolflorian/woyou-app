@@ -1,7 +1,6 @@
 const en: Record<string, string> = {
   "nav.bewerber": "For applicants",
   "nav.service": "Application service",
-  "nav.arbeitgeber": "For employers",
   "nav.so_funktioniert": "How it works",
   "nav.berufe": "Professions",
   "nav.faq": "FAQ",
@@ -13,15 +12,11 @@ const en: Record<string, string> = {
 
   "home.hero_badge": "JOBS & TRAINING FROM ABROAD",
   "home.hero_title": "Your future in Germany. With WoYou",
-  "home.hero_subtitle":
-    "We connect international talent with leading German companies. Build your profile, find the right role, start your adventure.",
   "home.hero_btn_start": "Get started",
   "home.hero_btn_more": "Learn more",
   "home.hero_btn_telegram": "Register via Telegram",
 
-  "home.stats_partners": "Partner companies",
   "home.stats_countries": "Countries of origin",
-  "home.stats_placements": "Successful placements",
 
   "home.process_badge": "PROCESS",
   "home.process_title": "How it works",
@@ -30,21 +25,12 @@ const en: Record<string, string> = {
   "home.process_step1_desc":
     "Online, via Telegram or WhatsApp. Fill in your profile.",
   "home.process_step2_title": "Language test",
-  "home.process_step2_desc":
-    "Quick German test (A1-B2) so we can place you correctly.",
-  "home.process_step3_title": "Unlock profile",
-  "home.process_step3_desc":
-    "One-time fee. Then employers see your profile and you become placeable.",
-  "home.process_step4_title": "Auto-match & arrive",
-  "home.process_step4_desc":
-    "Once your profile is unlocked our system automatically suggests matching companies. We then help with visa & arrival.",
 
   "home.benefits_badge": "WHY WOYOU",
   "home.benefits_title": "Your benefits",
   "home.benefits_subtitle":
     "More than a job board. We walk with you from application to arrival.",
   "home.benefits_card1_title": "International network",
-  "home.benefits_card1_desc": "Direct line to top employers across Germany.",
   "home.benefits_card2_title": "Bureaucracy support",
   "home.benefits_card2_desc":
     "Visa, recognition, insurance. We help every step.",
@@ -57,8 +43,6 @@ const en: Record<string, string> = {
   "home.benefits_card5_desc":
     "Housing, paperwork and cultural orientation.",
   "home.benefits_card6_title": "Fair conditions",
-  "home.benefits_card6_desc":
-    "One-off activation fee. Fully transparent afterwards.",
 
   "home.audience_badge": "FOR WHOM",
   "home.audience_title": "Who is WoYou for?",
@@ -68,8 +52,6 @@ const en: Record<string, string> = {
   "home.audience_card2_title": "Apprentices",
   "home.audience_card2_desc":
     "Young talents looking to start vocational training in Germany.",
-  "home.audience_card3_title": "Companies",
-  "home.audience_card3_desc": "Employers searching for qualified staff.",
 
   "home.cta_title": "Ready for your move to Germany?",
   "home.cta_subtitle": "Build your profile in 5 minutes. For free.",
@@ -102,7 +84,6 @@ const en: Record<string, string> = {
   "reg.next": "Next",
   "reg.back": "Back",
   "reg.save_continue": "Save & continue",
-  "reg.section_personal": "About you",
   "reg.section_contact": "Contact channels",
   "reg.section_job": "Desired job",
   "reg.section_languages": "Languages",
@@ -125,7 +106,6 @@ const en: Record<string, string> = {
   "reg.education": "Highest education",
   "reg.experience": "Years of experience",
   "reg.current_job": "Current job (optional)",
-  "reg.current_employer": "Current employer (optional)",
   "reg.driving_license": "Do you have a driving licence?",
   "reg.relocate": "Willing to relocate anywhere in Germany?",
   "reg.preferred_cities": "Preferred cities (optional)",
@@ -135,15 +115,10 @@ const en: Record<string, string> = {
   "reg.german_level": "German level",
   "reg.english_level": "English level",
   "reg.other_languages": "Other languages",
-  "reg.about_me": "About you (short bio)",
   "reg.motivation": "Why do you want to work in Germany?",
   "reg.family_status": "Marital status",
   "reg.dependents": "Children / dependants",
   "reg.consent_mode": "When may we share your profile?",
-  "reg.consent_blanket":
-    "I allow WoYou to introduce me directly to matching companies.",
-  "reg.consent_per_company":
-    "I want to see each company first and approve case by case.",
   "reg.finish": "Finish profile",
 
   "test.title": "German language test",
@@ -161,16 +136,8 @@ const en: Record<string, string> = {
   "dash.next_steps": "Next steps",
   "dash.do_test": "Take language test",
   "dash.fill_profile": "Complete profile",
-  "dash.unlock": "Unlock profile",
-  "dash.unlock_desc":
-    "With the one-off fee of {fee} we activate your profile for our partner companies.",
-  "dash.unlock_cta": "Unlock now for {fee}",
-  "dash.times_proposed": "Times proposed",
   "dash.times_viewed": "Profile views",
-  "dash.matches": "Current proposals",
-  "dash.no_matches": "No proposals yet.",
   "dash.consent_needed": "Your consent is needed",
-  "dash.see_company": "See company",
   "dash.approve": "Approve",
   "dash.decline": "Decline",
 
@@ -192,7 +159,6 @@ const en: Record<string, string> = {
   "common.error_generic": "Something went wrong.",
   "a11y.skip": "Skip to content",
 
-  "reg.section_personal_h": "About you",
   "reg.section_contact_h": "Contact channels",
   "reg.section_job_h": "Desired job",
   "reg.section_languages_h": "Languages",
@@ -207,7 +173,6 @@ const en: Record<string, string> = {
   "reg.desired_category_required": "Job group *",
   "reg.experience_required": "Years of experience *",
   "reg.earliest_start_required": "Earliest start date *",
-  "reg.about_me_required": "About you (short bio) *",
   "reg.motivation_required": "Why do you want to work in Germany? *",
   "reg.alternative_jobs_csv": "Other jobs you'd consider? (comma-separated)",
   "reg.preferred_cities_csv": "Preferred cities (comma-separated)",
@@ -220,21 +185,13 @@ const en: Record<string, string> = {
   "reg.relocate_yes_de": "Yes, anywhere in Germany",
   "reg.relocate_no": "No, only in a specific region",
   "reg.add_language": "+ Add language",
-  "reg.test_hint":
-    "💡 You can also take our <a>quick language test</a> so employers see your objective level.",
   "reg.consent_blanket_strong": "Blanket consent.",
-  "reg.consent_blanket_text":
-    "WoYou may introduce me directly to matching companies.",
-  "reg.consent_per_company_strong": "Per-company consent.",
-  "reg.consent_per_company_text":
-    "I want to see each company first and approve case by case.",
   "reg.cached_at": "Auto-saved {time}",
   "reg.saving": "Saving…",
 
   "dash.hello": "Hello {name}",
   "dash.activity": "Activity",
   "dash.profile_views": "Profile views",
-  "dash.proposed_to_companies": "Proposed to companies",
   "dash.fee_paid": "Activation fee paid",
   "dash.fee_paid_yes": "Yes ✓",
   "dash.fee_paid_no": "Not yet",
@@ -242,20 +199,12 @@ const en: Record<string, string> = {
   "dash.edit_profile": "Edit profile",
   "dash.do_test_again": "Retake language test (score {score})",
   "dash.do_test_first": "Take language test",
-  "dash.unlock_title": "Last step: unlock your profile",
   "dash.fill_profile_first_title": "Complete your profile first",
-  "dash.fill_profile_first_desc":
-    "Once your profile is at least 80% complete you can unlock it and become visible to companies.",
   "dash.consent_required_h": "Your consent is needed",
   "dash.consent_request": "Request",
   "dash.searches_for": "is looking for",
   "dash.in_city": "in {city}",
-  "dash.proposals_h": "Current proposals & status",
-  "dash.no_other_proposals": "No other proposals yet.",
   "dash.open_chat": "Open chat",
-  "dash.match_score": "Match score",
-  "dash.why_match": "Why this company fits you",
-  "dash.why_match_score": "Score {score}/100",
   "tips.h": "How to make your profile stronger",
   "tips.delta": "+{delta}%",
   "tips.firstName": "Add your first name",
@@ -286,35 +235,22 @@ const en: Record<string, string> = {
   "edit.err_taken": "That email or phone is already in use.",
   "edit.err_no_password": "This account has no password. Sign in via Telegram.",
   "dash.documents_h": "Your documents",
-  "dash.documents_desc":
-    "CV, passport, diplomas and certificates. Visible to you and to companies with an active proposal.",
   "dash.account_h": "My account",
   "dash.account_desc": "Data export and account deletion under GDPR.",
   "dash.telegram_h": "Use the WoYou bot on Telegram",
-  "dash.telegram_desc":
-    "Link your Telegram account so we can reach you there too. And companies can chat with you directly.",
   "dash.telegram_open": "Open bot",
 
   "onb.title_done": "You're ready 🎉",
-  "onb.title_active": "Get your profile placement-ready",
   "onb.progress": "{done} / {total} done",
   "onb.step1_title": "Fill in your profile",
-  "onb.step1_desc": "Currently {percent}%. We need 100% before placement.",
   "onb.step1_cta_done": "Edit",
   "onb.step1_cta": "Continue filling",
   "onb.step2_title": "Take the language test",
-  "onb.step2_desc":
-    "12 multiple-choice questions, ~5 minutes. We show employers your objective level.",
   "onb.step2_cta_done": "Retake",
   "onb.step2_cta": "Start test",
   "onb.step3_title": "Upload at least your CV",
-  "onb.step3_desc":
-    "Interviews go 3× faster. Companies see right away what you can do.",
   "onb.step3_cta_done": "Manage documents",
   "onb.step3_cta": "Upload",
-  "onb.step4_title": "Unlock your profile",
-  "onb.step4_desc":
-    "One-off fee. Then you become visible to our partner companies and are auto-proposed.",
 
   "doc.kind_label": "Document type",
   "doc.file_label": "File (PDF / JPG / PNG, max 5 MB)",
@@ -334,34 +270,18 @@ const en: Record<string, string> = {
   "avatar.upload": "Upload avatar",
   "avatar.replace": "Replace photo",
   "avatar.uploading": "Uploading …",
-  "avatar.hint": "JPG or PNG, max 5 MB. Only shown to companies with an active match.",
+  "avatar.hint": "JPG or PNG, max 5 MB.",
 
   "acc.export_btn": "📥 Download my data as JSON",
   "acc.export_hint":
     "GDPR Art. 15 / 20. Full export of every record we hold about you.",
   "acc.delete_h": "Permanently delete account",
   "acc.delete_desc":
-    "GDPR Art. 17. All your data and documents are erased irreversibly. Active proposals are lost.",
+    "GDPR Art. 17. All your data and documents are erased irreversibly.",
   "acc.delete_confirm_prefix": "Type the word",
   "acc.delete_confirm_suffix": "to confirm:",
   "acc.delete_btn": "Delete account",
   "acc.deleting": "Deleting…",
-
-  "ml.proposal": "Proposal",
-  "ml.consent": "Consent",
-  "ml.review": "Company reviews",
-  "ml.outcome": "Outcome",
-  "ml.aria_label": "Match progress",
-
-  "matchstatus.DRAFT": "Draft",
-  "matchstatus.AWAITING_CANDIDATE_CONSENT": "Awaiting candidate consent",
-  "matchstatus.CANDIDATE_APPROVED": "Candidate approved",
-  "matchstatus.CANDIDATE_DECLINED": "Candidate declined",
-  "matchstatus.SHARED_WITH_COMPANY": "Sent to company",
-  "matchstatus.COMPANY_INTERESTED": "Company interested",
-  "matchstatus.COMPANY_DECLINED": "Company declined",
-  "matchstatus.IN_CONVERSATION": "In conversation",
-  "matchstatus.HIRED": "Hired",
 
   "bell.title": "Notifications",
   "bell.empty": "No notifications yet.",
@@ -388,8 +308,6 @@ const en: Record<string, string> = {
   "test.intro":
     "{count} multiple-choice questions. A1 to B2. About 5 minutes. You can retake it later.",
   "test.bullet1": "✓ Your score is shown on your profile",
-  "test.bullet2": "✓ Companies see your objective level",
-  "test.bullet3": "✓ Helps us match you better",
   "test.passed_h": "Passed!",
   "test.failed_h": "Not passed yet",
   "test.your_result": "Your score: {score} / {total}. Level {level}",

@@ -64,6 +64,26 @@ Bedingungen:
 - Migration `prisma/migrations/20261022120000_weg1_werkzeug` (nur Ergänzungen, gegen Postgres 16 getestet).
 - Tests: `npx tsx scripts/weg1-test.ts` (18 Tests, u. a. ar/hi vollständig und ohne lange Gedankenstriche), Live-Test mit Netz `--conditions=react-server ... --live`.
 
+## Aufgeräumt (23.10.)
+
+- Gelöscht: Seiten `/arbeitgeber`, `/arbeitgeber/registrierung`, `/firmen/dashboard`, `/chat/[matchId]`, `/bewerber`,
+  `/registrierung/profil`, `/sprachtest`, Admin `/admin/matching`, `/admin/firmen`, `/admin/anfragen`, `/admin/chats`,
+  `/admin/analytics`; dazu die nur dort genutzten Komponenten (Firmen-Registrierung, Firmen-Dashboard, Chat, Match-Verlauf,
+  Vorschlagen, Profil-Assistent mit Firmen-Freigabe, Sprachtest) und unbenutzte Team-Komponenten (Stellen übernehmen,
+  „Jetzt bewerben“, Vorschläge, Onboarding „für die Vermittlung“).
+- Weiterleitungen: `next.config.ts` dauerhaft für `/arbeitgeber`, `/firmen`, `/chat`, `/bewerber`, `/registrierung/profil`,
+  `/sprachtest` und die alten Admin-Seiten; die Middleware leitet gesperrte öffentliche Seiten jetzt mit 301 um.
+- Zusätzlich gesperrt: Auto-Matching (`src/lib/auto-match.ts`, auch bei Statuswechsel im Admin), Checkliste nach
+  „vermittelt“ (`visa-workflow.ts`), `/api/cron/re-match` liefert auch ohne Middleware 410, Firmenkonten sehen keine
+  Unterlagen mehr (`/api/documents`).
+- Texte: Demo ohne Firmenkonten und ohne Match-Anleitung, Seed ohne Firmen und Stellenanfragen, Telegram-Bot ohne
+  „für deutsche Unternehmen“ und „Vorschläge“, Admin ohne Match-Geschichte, Kandidaten-Status neutral beschriftet
+  („vorgeschlagen“/„vermittelt“ nur noch als Altdaten), altes Paket heißt „früheres Paket“ (Restguthaben im Admin
+  sichtbar), Mails zu alten Käufen ohne „Wir bewerben dich weiter“. Unbenutzte i18n-Schlüssel mit Firmen-, Matching-
+  und Vermittlungstexten entfernt; Anzeigenvorlagen in `MARKETING.md` entfernt.
+- Server: Falls auf dem alten Server noch `/etc/cron.daily/woyou-rematch` liegt (siehe `SERVER.md`), kann er weg; die
+  Route antwortet nur noch mit 410.
+
 Lokal starten:
 
 ```bash

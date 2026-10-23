@@ -9,6 +9,7 @@ import { BOOKING_STATUS_LABEL, CREDIT_PRODUCTS, type BookingStatus, type CreditK
 import { ANGEBOT, formatPrice } from "@/lib/angebot";
 import { aiEnabled } from "@/lib/letters";
 import { toolAccess } from "@/lib/werkzeug";
+import { creditState } from "@/lib/credits";
 import { getSession } from "@/lib/session";
 import { isAdmin } from "@/lib/auth";
 
@@ -30,6 +31,8 @@ export default async function AdminBookingDetail(props: { params: Promise<{ id: 
   const access = await toolAccess(b.candidateId);
   const purchases = await prisma.creditPurchase.findMany({ where: { candidateId: b.candidateId, status: { not: "CANCELLED" } }, orderBy: { createdAt: "desc" }, take: 10 });
   const admin = isAdmin((await getSession()).role);
+  // Altdaten (vor Weg 1): Restguthaben aus dem früheren Paket nur anzeigen, nichts damit auslösen
+  const legacy = b.packageKey === "bewerbung-25" ? await creditState(b.candidateId) : null;
   const tool = access.active ? `bis ${access.until!.toLocaleDateString("de-DE")}${access.subscription ? ` · Abo ${access.subscription.status === "CANCELLING" ? "gekündigt" : "aktiv"}` : ""}` : access.until ? `abgelaufen am ${access.until.toLocaleDateString("de-DE")}` : "nicht freigeschaltet";
 
   return (
@@ -41,7 +44,7 @@ export default async function AdminBookingDetail(props: { params: Promise<{ id: 
           <span className={`rounded-full px-3 py-1 text-xs font-semibold ${label?.color ?? ""}`}>{label?.de ?? b.status}</span>
         </div>
         <p className="text-sm text-[color:var(--color-ink-soft)]">
-          {b.candidate.user.email} · {b.contactPhone} · gebucht {b.createdAt.toLocaleDateString("de-DE")} · {b.packageKey === "bewerbung-25" ? "altes Paket (25 Bewerbungen)" : "Startpaket"} · {formatPrice(b.amountCents)} · Berufe: {b.targetJobs || "keine Angabe"} · Region: {b.targetRegions || "keine Angabe"}
+          {b.candidate.user.email} · {b.contactPhone} · gebucht {b.createdAt.toLocaleDateString("de-DE")} · {b.packageKey === "bewerbung-25" ? "früheres Paket (vor Weg 1)" : "Startpaket"} · {formatPrice(b.amountCents)} · Berufe: {b.targetJobs || "keine Angabe"} · Region: {b.targetRegions || "keine Angabe"}
         </p>
       </div>
 
@@ -52,6 +55,7 @@ export default async function AdminBookingDetail(props: { params: Promise<{ id: 
       </div>
       <p className="text-xs text-[color:var(--color-ink-soft)]">
         Weg 1: Das Team prüft und korrigiert die Unterlagen. Stellen sucht die Kundin bzw. der Kunde selbst im Werkzeug und bewirbt sich selbst; wir wählen keine Stellen aus, verschicken nichts und sehen den Tracker nicht.
+        {legacy && ` Früheres Paket: Restguthaben laut Altdaten ${legacy.balance}${legacy.unlimited ? `, altes Abo bis ${legacy.until!.toLocaleDateString("de-DE")}` : ""} (wird nicht mehr verbraucht).`}
         {b._count.leads > 0 && ` Aus der Zeit vor Weg 1 liegen ${b._count.leads} alte Stelleneinträge in der Datenbank (nicht mehr angezeigt).`}
       </p>
 

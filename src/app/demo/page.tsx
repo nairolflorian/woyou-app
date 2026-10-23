@@ -11,8 +11,7 @@ const ROLE_GROUPS: Record<string, string> = {
   SUPER_ADMIN: "Backoffice",
   ADMIN: "Backoffice",
   TEAM: "Backoffice",
-  COMPANY: "Unternehmen",
-  CANDIDATE: "Kandidat:innen",
+  CANDIDATE: "Kund:innen",
 };
 
 export default function DemoPage() {
@@ -35,7 +34,7 @@ export default function DemoPage() {
   }
 
   const grouped: Record<string, typeof DEMO_ACCOUNTS> = {};
-  for (const acc of DEMO_ACCOUNTS.filter((a) => a.role !== "COMPANY")) {
+  for (const acc of DEMO_ACCOUNTS.filter((a) => a.role !== "COMPANY")) { // Weg 1: keine Firmenkonten
     const g = ROLE_GROUPS[acc.role];
     grouped[g] = grouped[g] ?? [];
     grouped[g].push(acc);
@@ -92,14 +91,12 @@ export default function DemoPage() {
           </div>
 
           <div className="mt-16 card bg-amber-50 border-amber-200">
-            <h3 className="font-semibold text-amber-900">💡 So testest du den Match-Flow</h3>
+            <h3 className="font-semibold text-amber-900">💡 So testest du den Ablauf</h3>
             <ol className="mt-3 list-decimal ml-5 space-y-1.5 text-sm text-amber-900">
-              <li>Erst als <strong>Vermittler:in</strong> einloggen → Matching → Top-Kandidat:in für die Klinik vorschlagen.</li>
-              <li>Danach als <strong>Fatima</strong> einloggen (Pauschal-Freigabe) — sie ist sofort im Firmen-Pool sichtbar.</li>
-              <li>Oder als <strong>Youssef</strong> (Einzel-Freigabe) — er muss erst zustimmen, bevor die Firma sein Profil sieht.</li>
-              <li>Als <strong>Klinik Berlin</strong> einloggen → „Interesse zeigen" → Chat öffnet sich → Nachricht senden.</li>
-              <li>Zurück als <strong>Fatima</strong> → Antwort senden → schließlich als Klinik „Eingestellt markieren".</li>
-              <li>Status-Wechsel und Visum-Aufgabe für die Vermittler:innen werden automatisch erzeugt.</li>
+              <li>Als <strong>Fatima</strong> einloggen und die Bewerbungsmappe ausfüllen und abschicken.</li>
+              <li>Als <strong>Unterlagen-Team</strong> einloggen, die Mappe unter Buchungen prüfen und freigeben.</li>
+              <li>Wieder als <strong>Fatima</strong>: in der Stellensuche Stellen finden und merken.</li>
+              <li>Unter „Meine Bewerbungen“ je Stelle ein Anschreiben erstellen und die Bewerbung selbst verschicken.</li>
             </ol>
           </div>
 

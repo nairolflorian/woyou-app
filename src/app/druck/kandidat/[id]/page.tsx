@@ -167,8 +167,7 @@ export default async function PrintProfile(props: {
       </dl>
 
       <p className="meta" style={{ marginTop: 32, textAlign: "center" }}>
-        Ausgedruckt aus WoYou — vertraulich, nur für die interne
-        Vermittlungsverwendung.
+        Ausgedruckt aus WoYou. Vertraulich, nur für die interne Verwendung.
       </p>
     </div>
   );

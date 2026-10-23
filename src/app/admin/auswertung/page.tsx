@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
@@ -108,7 +107,6 @@ export default async function Auswertung() {
         </div>
       </section>
 
-      <p className="text-xs text-[color:var(--color-ink-soft)]">Ältere Kennzahlen: <Link href="/admin/analytics" className="underline">Analytics</Link></p>
     </div>
   );
 }

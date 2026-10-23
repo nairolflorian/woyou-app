@@ -15,7 +15,7 @@ export default async function AdminTeam() {
     <div>
       <h1 className="text-2xl font-bold">Team-Mitglieder</h1>
       <p className="text-sm text-[color:var(--color-ink-soft)]">
-        Vermittler:innen und Super-Admins für das Backend.
+        Admins, Unterlagen-Team und Super-Admins für das Backoffice.
       </p>
       <div className="mt-6 grid gap-6 md:grid-cols-2">
         <div className="card">

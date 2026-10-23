@@ -13,7 +13,7 @@ export default async function AdminAufgaben() {
     <div>
       <h1 className="text-2xl font-bold">Aufgaben</h1>
       <p className="text-sm text-[color:var(--color-ink-soft)]">
-        To-dos rund um Vermittlungen — z.B. Visum, Dokumente, Kontaktaufnahme.
+        To-dos rund um Buchungen und Unterlagen, z. B. Erstgespräch, Mappe prüfen, Dokumente.
       </p>
       <div className="mt-6 space-y-3">
         {tasks.map((t) => (

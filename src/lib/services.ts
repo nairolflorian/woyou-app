@@ -18,8 +18,8 @@ export const SERVICES: Record<ServiceKey, { priceCents: number; toolMonths: numb
 // ALT (vor Weg 1): Nachkauf und Abo für Bewerbungsguthaben, nur noch für Altdaten (src/lib/credits.ts)
 export type CreditKind = "PACK_25" | "SUBSCRIPTION";
 export const CREDIT_PRODUCTS: Record<CreditKind, { name: string; priceCents: number; credits: number }> = {
-  PACK_25: { name: "25 weitere Bewerbungen (alt)", priceCents: 14900, credits: 25 },
-  SUBSCRIPTION: { name: "Unbegrenzt bewerben (Abo, alt)", priceCents: 5000, credits: 0 },
+  PACK_25: { name: "Nachkauf zum früheren Paket", priceCents: 14900, credits: 25 },
+  SUBSCRIPTION: { name: "Abo zum früheren Paket", priceCents: 5000, credits: 0 },
 };
 
 export const BOOKING_STATUS = {

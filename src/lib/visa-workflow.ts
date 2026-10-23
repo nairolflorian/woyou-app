@@ -6,6 +6,7 @@ import "server-only";
 // the candidate within the last 30 days.
 
 import { prisma } from "@/lib/prisma";
+import { WEG1 } from "@/lib/weg1";
 
 type TaskTemplate = {
   kind: "VISA" | "DOCUMENT_CHECK" | "VERIFICATION" | "CONTACT" | "OTHER";
@@ -71,6 +72,8 @@ export async function createPlacementChecklist(
   companyId: string,
   matchId?: string | null
 ): Promise<{ created: number }> {
+  // Weg 1: keine Vermittlung, daher auch keine Checkliste nach einer Einstellung
+  if (!WEG1.arbeitgeberUndMatching) return { created: 0 };
   // Skip if a fresh visa task already exists (idempotency for re-triggers).
   const recent = await prisma.adminTask.findFirst({
     where: {

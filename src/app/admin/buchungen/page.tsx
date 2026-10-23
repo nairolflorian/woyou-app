@@ -54,7 +54,7 @@ export default async function AdminBookingsPage() {
       <div className="space-y-4">
         {bookings.map((b) => (
           <BookingRow key={b.id} id={b.id} status={b.status} adminNote={b.adminNote}
-            packageLabel={b.packageKey === "bewerbung-25" ? "altes Paket (25 Bewerbungen)" : "Startpaket"} mappe={MAPPE[b.profile?.status ?? ""] ?? "noch nicht begonnen"}
+            packageLabel={b.packageKey === "bewerbung-25" ? "früheres Paket (vor Weg 1)" : "Startpaket"} mappe={MAPPE[b.profile?.status ?? ""] ?? "noch nicht begonnen"}
             toolUntil={b.candidate.toolAccessUntil && b.candidate.toolAccessUntil > new Date() ? d(b.candidate.toolAccessUntil) : null}
             candidateId={b.candidateId} candidateName={[b.candidate.firstName, b.candidate.lastName].filter(Boolean).join(" ") || "(ohne Namen)"}
             email={b.candidate.user.email} phone={b.contactPhone} jobs={b.targetJobs} regions={b.targetRegions} notes={b.notes}

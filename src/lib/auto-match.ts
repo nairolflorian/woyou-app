@@ -1,5 +1,7 @@
 import "server-only";
 
+// ABGESCHALTET (Weg 1, siehe src/lib/weg1.ts): beide Einstiege kehren sofort ohne Ergebnis zurück.
+
 // Auto-matching: triggered when a candidate becomes placeable, or when a new
 // non-custom job request is created. No human in the loop. Custom requests
 // (isCustomRequest = true) deliberately stay manual — they need a vermittler.
@@ -17,6 +19,7 @@ import { prisma } from "@/lib/prisma";
 import { CANDIDATE_STATUS, MATCH_STATUS } from "@/lib/enums";
 import { scoreCandidate } from "@/lib/matching";
 import { audit } from "@/lib/audit";
+import { WEG1 } from "@/lib/weg1";
 
 const MIN_SCORE = 60;
 const TOP_N = 5;
@@ -44,6 +47,8 @@ type AutoMatchResult = {
 export async function autoMatchForCandidate(
   candidateId: string
 ): Promise<AutoMatchResult> {
+  // Weg 1: kein Matching, keine Vorschläge an Firmen
+  if (!WEG1.arbeitgeberUndMatching) return empty();
   const candidate = await prisma.candidate.findUnique({
     where: { id: candidateId },
   });
@@ -81,6 +86,7 @@ export async function autoMatchForCandidate(
 export async function autoMatchForJobRequest(
   jobRequestId: string
 ): Promise<AutoMatchResult> {
+  if (!WEG1.arbeitgeberUndMatching) return empty();
   const jr = await prisma.jobRequest.findUnique({ where: { id: jobRequestId } });
   if (!jr || jr.status !== "OPEN" || jr.isCustomRequest) return empty();
 

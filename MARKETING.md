@@ -9,9 +9,9 @@ Im Admin unter **Marketing**: Liste der Schritte, wer heute fällig wäre, Vorsc
 | REG_1, REG_3, REG_7 | 1, 3 und 7 Tage nach Registrierung ohne Buchung |
 | PAY_1 | 1 Tag nach Buchung ohne Zahlung |
 | MAPPE_2, MAPPE_5 | 2 und 5 Tage nach Zahlung, Mappe nicht eingereicht |
-| CREDITS_LOW | noch 1 bis 3 Bewerbungen übrig (ohne Abo) |
-| CREDITS_EMPTY | Guthaben aufgebraucht (ohne Abo) |
-| FEEDBACK | 14 Tage nach der letzten von 25 Bewerbungen |
+| TOOL_START | 3 Tage nach Freigabe der Mappe: Werkzeug kurz vorgestellt |
+| TOOL_ENDS | Werkzeug endet in höchstens 7 Tagen, kein Abo |
+| FEEDBACK | 45 Tage nach Zahlung |
 
 Regeln: höchstens eine Mail pro Person und Tag, jeder Schritt nur einmal, Abmeldelink in jeder Mail (Seite `/abmelden`), Sprache nach Kundeneinstellung.
 
@@ -35,23 +35,6 @@ Kanäle immer klein und gleich schreiben (facebook, instagram, tiktok, whatsapp,
 
 ## 3. Anzeigentexte (Vorlagen)
 
-**Deutsch**
-> Bewerbungen in Deutschland kosten Zeit und Nerven? Wir schreiben deinen Lebenslauf nach deutschem Standard und schicken 25 passende Bewerbungen in deinem Namen. Einmalig 199 €. Antworten der Firmen bekommst du direkt.
-> Button: Jetzt starten
+Die bisherigen Vorlagen („25 Bewerbungen in deinem Namen“) sind mit Weg 1 (23.10.2026) entfernt. Neue Anzeigentexte legt Florian fest.
 
-**Englisch**
-> Want a job in Germany but applications take forever? We write your CV to German standards and send 25 matching applications in your name. One-time €199. Companies reply to you directly.
-> Button: Get started
-
-**Französisch**
-> Vous cherchez un emploi en Allemagne ? Nous rédigeons votre CV aux normes allemandes et envoyons 25 candidatures adaptées en votre nom. 199 € une seule fois. Les entreprises vous répondent directement.
-> Bouton : Commencer
-
-**Arabisch**
-> تبحث عن عمل في ألمانيا؟ نكتب سيرتك الذاتية بالمعايير الألمانية ونرسل 25 طلبًا مناسبًا باسمك. 199 € مرة واحدة فقط. ردود الشركات تصلك مباشرة.
-> الزر: ابدأ الآن
-
-**Kurz für Stories und Reels (DE)**
-> 25 Bewerbungen. Ein Lebenslauf nach deutschem Standard. 199 €. Wir machen das für dich.
-
-Hinweise für Anzeigen: keine Job- oder Erfolgsgarantie versprechen (die Entscheidung trifft der Arbeitgeber), Preis immer nennen, auf die Startseite verlinken, nicht auf die Buchungsseite.
+Hinweise für Anzeigen: keine Job- oder Erfolgsgarantie versprechen (die Entscheidung trifft der Arbeitgeber), nicht „wir bewerben dich“, „in deinem Namen“ oder „wir vermitteln“, keine Zahl an Bewerbungen versprechen, Preis immer nennen, auf die Startseite verlinken, nicht auf die Buchungsseite.

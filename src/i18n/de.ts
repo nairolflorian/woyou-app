@@ -1,7 +1,6 @@
 const de: Record<string, string> = {
   "nav.bewerber": "Für Bewerber:innen",
   "nav.service": "Bewerbungs-Service",
-  "nav.arbeitgeber": "Für Arbeitgeber",
   "nav.so_funktioniert": "So funktioniert's",
   "nav.berufe": "Berufe",
   "nav.faq": "FAQ",
@@ -13,15 +12,11 @@ const de: Record<string, string> = {
 
   "home.hero_badge": "JOBS & AUSBILDUNG AUS DEM AUSLAND",
   "home.hero_title": "Deine Zukunft in Deutschland. Mit WoYou",
-  "home.hero_subtitle":
-    "Wir verbinden internationales Talent mit führenden deutschen Unternehmen. Erstelle dein Profil, finde die passende Stelle und starte dein Abenteuer.",
   "home.hero_btn_start": "Jetzt durchstarten",
   "home.hero_btn_more": "Mehr erfahren",
   "home.hero_btn_telegram": "Per Telegram registrieren",
 
-  "home.stats_partners": "Partnerunternehmen",
   "home.stats_countries": "Herkunftsländer",
-  "home.stats_placements": "Erfolgreiche Vermittlungen",
 
   "home.process_badge": "PROZESS",
   "home.process_title": "So einfach geht's",
@@ -31,22 +26,12 @@ const de: Record<string, string> = {
   "home.process_step1_desc":
     "Online, per Telegram oder WhatsApp. Fülle deinen Steckbrief aus.",
   "home.process_step2_title": "Sprachtest",
-  "home.process_step2_desc":
-    "Kurzer Test (Deutsch A1-B2), damit wir dich richtig einstufen.",
-  "home.process_step3_title": "Profil freischalten",
-  "home.process_step3_desc":
-    "Einmalige Gebühr, dann bist du für Unternehmen sichtbar und vermittelbar.",
-  "home.process_step4_title": "Auto-Matching & Start",
-  "home.process_step4_desc":
-    "Sobald dein Profil freigeschaltet ist, schlägt unser System dir automatisch passende Firmen vor. Bei Erfolg helfen wir bei Visum & Ankunft.",
 
   "home.benefits_badge": "WARUM WOYOU",
   "home.benefits_title": "Deine Vorteile",
   "home.benefits_subtitle":
     "Mehr als eine Jobbörse. Wir begleiten dich von der Bewerbung bis zur Ankunft.",
   "home.benefits_card1_title": "Internationales Netzwerk",
-  "home.benefits_card1_desc":
-    "Direkter Draht zu Top-Unternehmen in ganz Deutschland.",
   "home.benefits_card2_title": "Bürokratie-Support",
   "home.benefits_card2_desc":
     "Visum, Anerkennung, Versicherung. Wir helfen Schritt für Schritt.",
@@ -60,8 +45,6 @@ const de: Record<string, string> = {
   "home.benefits_card5_desc":
     "Wohnungssuche, Behördengänge und kulturelle Orientierung.",
   "home.benefits_card6_title": "Faire Konditionen",
-  "home.benefits_card6_desc":
-    "Eine einmalige Freischaltgebühr. Danach ist alles transparent.",
 
   "home.audience_badge": "ZIELGRUPPEN",
   "home.audience_title": "Für wen ist WoYou?",
@@ -71,9 +54,6 @@ const de: Record<string, string> = {
   "home.audience_card2_title": "Auszubildende",
   "home.audience_card2_desc":
     "Junge Talente, die in Deutschland eine Ausbildung starten möchten.",
-  "home.audience_card3_title": "Unternehmen",
-  "home.audience_card3_desc":
-    "Firmen, die qualifizierte Mitarbeiter:innen suchen.",
 
   "home.cta_title": "Bereit für deinen Weg nach Deutschland?",
   "home.cta_subtitle": "Erstelle in 5 Minuten dein Profil. Kostenlos.",
@@ -106,7 +86,6 @@ const de: Record<string, string> = {
   "reg.next": "Weiter",
   "reg.back": "Zurück",
   "reg.save_continue": "Speichern & weiter",
-  "reg.section_personal": "Über dich",
   "reg.section_contact": "Kontaktwege",
   "reg.section_job": "Wunschberuf",
   "reg.section_languages": "Sprachen",
@@ -130,7 +109,6 @@ const de: Record<string, string> = {
   "reg.education": "Höchster Abschluss",
   "reg.experience": "Berufserfahrung in Jahren",
   "reg.current_job": "Aktueller Beruf (optional)",
-  "reg.current_employer": "Aktueller Arbeitgeber (optional)",
   "reg.driving_license": "Führerschein vorhanden?",
   "reg.relocate": "Bist du bereit, deutschlandweit umzuziehen?",
   "reg.preferred_cities": "Wunschstädte (optional)",
@@ -140,15 +118,10 @@ const de: Record<string, string> = {
   "reg.german_level": "Deutschniveau",
   "reg.english_level": "Englischniveau",
   "reg.other_languages": "Weitere Sprachen",
-  "reg.about_me": "Über dich (kurze Selbstbeschreibung)",
   "reg.motivation": "Warum möchtest du in Deutschland arbeiten?",
   "reg.family_status": "Familienstand",
   "reg.dependents": "Anzahl Kinder / Angehörige",
   "reg.consent_mode": "Wann dürfen wir dein Profil weitergeben?",
-  "reg.consent_blanket":
-    "Ich erlaube WoYou, mein Profil passenden Unternehmen direkt vorzustellen.",
-  "reg.consent_per_company":
-    "Ich möchte zuerst das Unternehmen sehen und einzeln zustimmen.",
   "reg.finish": "Profil abschließen",
 
   "test.title": "Sprachtest Deutsch",
@@ -166,16 +139,8 @@ const de: Record<string, string> = {
   "dash.next_steps": "Nächste Schritte",
   "dash.do_test": "Sprachtest durchführen",
   "dash.fill_profile": "Profil vervollständigen",
-  "dash.unlock": "Profil freischalten",
-  "dash.unlock_desc":
-    "Mit der einmaligen Gebühr von {fee} schalten wir dein Profil für unsere Partnerunternehmen frei.",
-  "dash.unlock_cta": "Jetzt für {fee} freischalten",
-  "dash.times_proposed": "Vorschläge an Unternehmen",
   "dash.times_viewed": "Profilaufrufe",
-  "dash.matches": "Aktuelle Vorschläge",
-  "dash.no_matches": "Noch keine Vorschläge.",
   "dash.consent_needed": "Deine Zustimmung wird gebraucht",
-  "dash.see_company": "Unternehmen ansehen",
   "dash.approve": "Zustimmen",
   "dash.decline": "Ablehnen",
 
@@ -198,7 +163,6 @@ const de: Record<string, string> = {
   "a11y.skip": "Zum Inhalt springen",
 
   // Reg wizard. Additional keys for inline strings & options
-  "reg.section_personal_h": "Über dich",
   "reg.section_contact_h": "Kontaktwege",
   "reg.section_job_h": "Wunschberuf",
   "reg.section_languages_h": "Sprachen",
@@ -213,7 +177,6 @@ const de: Record<string, string> = {
   "reg.desired_category_required": "Berufsgruppe *",
   "reg.experience_required": "Berufserfahrung (Jahre) *",
   "reg.earliest_start_required": "Frühestmöglicher Start *",
-  "reg.about_me_required": "Über dich (kurze Selbstbeschreibung) *",
   "reg.motivation_required": "Warum möchtest du in Deutschland arbeiten? *",
   "reg.alternative_jobs_csv":
     "Welche anderen Berufe wären auch denkbar? (Komma-getrennt)",
@@ -227,14 +190,7 @@ const de: Record<string, string> = {
   "reg.relocate_yes_de": "Ja, deutschlandweit",
   "reg.relocate_no": "Nein, nur in einer bestimmten Region",
   "reg.add_language": "+ Sprache hinzufügen",
-  "reg.test_hint":
-    "💡 Du kannst zusätzlich unseren <a>kurzen Sprachtest</a> machen, damit Unternehmen dein Niveau objektiv sehen.",
   "reg.consent_blanket_strong": "Pauschal-Freigabe.",
-  "reg.consent_blanket_text":
-    "WoYou darf mein Profil passenden Unternehmen direkt vorstellen.",
-  "reg.consent_per_company_strong": "Einzel-Freigabe.",
-  "reg.consent_per_company_text":
-    "Ich möchte zuerst das Unternehmen sehen und einzeln zustimmen.",
   "reg.cached_at": "Zwischengespeichert {time}",
   "reg.saving": "Speichere…",
 
@@ -242,7 +198,6 @@ const de: Record<string, string> = {
   "dash.hello": "Hallo {name}",
   "dash.activity": "Aktivität",
   "dash.profile_views": "Profilaufrufe",
-  "dash.proposed_to_companies": "An Unternehmen vorgeschlagen",
   "dash.fee_paid": "Gebühr bezahlt",
   "dash.fee_paid_yes": "Ja ✓",
   "dash.fee_paid_no": "Noch nicht",
@@ -250,20 +205,12 @@ const de: Record<string, string> = {
   "dash.edit_profile": "Profil bearbeiten",
   "dash.do_test_again": "Sprachtest erneut machen (Score {score})",
   "dash.do_test_first": "Sprachtest durchführen",
-  "dash.unlock_title": "Letzter Schritt: Profil freischalten",
   "dash.fill_profile_first_title": "Vervollständige zuerst dein Profil",
-  "dash.fill_profile_first_desc":
-    "Sobald dein Profil zu mind. 80 % ausgefüllt ist, kannst du es freischalten und wirst für Unternehmen sichtbar.",
   "dash.consent_required_h": "Deine Zustimmung wird gebraucht",
   "dash.consent_request": "Anfrage",
   "dash.searches_for": "sucht",
   "dash.in_city": "in {city}",
-  "dash.proposals_h": "Aktuelle Vorschläge & Status",
-  "dash.no_other_proposals": "Noch keine weiteren Vorschläge.",
   "dash.open_chat": "Chat öffnen",
-  "dash.match_score": "Match-Score",
-  "dash.why_match": "Warum diese Firma zu dir passt",
-  "dash.why_match_score": "Score {score}/100",
   "tips.h": "So machst du dein Profil noch stärker",
   "tips.delta": "+{delta}%",
   "tips.firstName": "Vorname eintragen",
@@ -294,37 +241,23 @@ const de: Record<string, string> = {
   "edit.err_taken": "Diese E-Mail oder Telefonnummer ist bereits vergeben.",
   "edit.err_no_password": "Für diesen Account ist kein Passwort gesetzt. Bitte über den Telegram-Login.",
   "dash.documents_h": "Deine Dokumente",
-  "dash.documents_desc":
-    "Lebenslauf, Reisepass, Diplome und Zertifikate. Sichtbar für dich und für Unternehmen, mit denen ein aktiver Vorschlag besteht.",
   "dash.account_h": "Mein Account",
   "dash.account_desc": "Datenexport und Account-Löschung gemäß DSGVO.",
   "dash.telegram_h": "WoYou-Bot auf Telegram nutzen",
-  "dash.telegram_desc":
-    "Verlinke deinen Telegram-Account, damit wir dich auch dort erreichen können. Und Unternehmen direkt mit dir chatten können.",
   "dash.telegram_open": "Bot öffnen",
 
   // Onboarding checklist
   "onb.title_done": "Du bist startklar 🎉",
-  "onb.title_active": "Bring dein Profil zur Vermittelbarkeit",
   "onb.progress": "{done} / {total} erledigt",
   "onb.step1_title": "Profil ausfüllen",
-  "onb.step1_desc":
-    "Aktuell {percent}%. Wir brauchen 100% für die Vermittlung.",
   "onb.step1_cta_done": "Bearbeiten",
   "onb.step1_cta": "Weiter ausfüllen",
   "onb.step2_title": "Sprachtest absolvieren",
-  "onb.step2_desc":
-    "12 Multiple-Choice-Fragen, dauert ca. 5 Minuten. Wir zeigen Unternehmen dein objektives Niveau.",
   "onb.step2_cta_done": "Wiederholen",
   "onb.step2_cta": "Test starten",
   "onb.step3_title": "Mindestens den Lebenslauf hochladen",
-  "onb.step3_desc":
-    "Bewerbungsgespräche werden so 3× schneller. Firmen sehen direkt was du kannst.",
   "onb.step3_cta_done": "Dokumente verwalten",
   "onb.step3_cta": "Hochladen",
-  "onb.step4_title": "Profil freischalten",
-  "onb.step4_desc":
-    "Einmalige Gebühr. Danach bist du für unsere Partnerunternehmen sichtbar und wirst automatisch vorgeschlagen.",
 
   // Documents
   "doc.kind_label": "Dokumenttyp",
@@ -346,7 +279,7 @@ const de: Record<string, string> = {
   "avatar.upload": "Profilbild hochladen",
   "avatar.replace": "Bild ersetzen",
   "avatar.uploading": "Lade hoch …",
-  "avatar.hint": "JPG oder PNG, max. 5 MB. Wird nur Unternehmen mit aktivem Match gezeigt.",
+  "avatar.hint": "JPG oder PNG, max. 5 MB.",
 
   // Account / DSGVO
   "acc.export_btn": "📥 Meine Daten als JSON herunterladen",
@@ -354,29 +287,11 @@ const de: Record<string, string> = {
     "DSGVO Art. 15 / Art. 20. Vollständiger Export aller über dich gespeicherten Daten.",
   "acc.delete_h": "Account dauerhaft löschen",
   "acc.delete_desc":
-    "DSGVO Art. 17. Alle deine Daten und Dokumente werden unwiderruflich entfernt. Aktive Vorschläge gehen verloren.",
+    "DSGVO Art. 17. Alle deine Daten und Dokumente werden unwiderruflich entfernt.",
   "acc.delete_confirm_prefix": "Tipp das Wort",
   "acc.delete_confirm_suffix": "um zu bestätigen:",
   "acc.delete_btn": "Account löschen",
   "acc.deleting": "Lösche…",
-
-  // Match timeline
-  "ml.proposal": "Vorschlag",
-  "ml.consent": "Zustimmung",
-  "ml.review": "Firma prüft",
-  "ml.outcome": "Ergebnis",
-  "ml.aria_label": "Match-Verlauf",
-
-  // Match status (visible to candidate + company)
-  "matchstatus.DRAFT": "Entwurf",
-  "matchstatus.AWAITING_CANDIDATE_CONSENT": "Wartet auf Kandidaten-Zustimmung",
-  "matchstatus.CANDIDATE_APPROVED": "Kandidat hat zugestimmt",
-  "matchstatus.CANDIDATE_DECLINED": "Kandidat hat abgelehnt",
-  "matchstatus.SHARED_WITH_COMPANY": "An Unternehmen gesendet",
-  "matchstatus.COMPANY_INTERESTED": "Unternehmen interessiert",
-  "matchstatus.COMPANY_DECLINED": "Unternehmen hat abgelehnt",
-  "matchstatus.IN_CONVERSATION": "Im Gespräch",
-  "matchstatus.HIRED": "Eingestellt",
 
   // Notifications bell
   "bell.title": "Benachrichtigungen",
@@ -407,8 +322,6 @@ const de: Record<string, string> = {
   "test.intro":
     "{count} Multiple-Choice-Fragen. Von A1 bis B2. Dauert ca. 5 Minuten. Du kannst den Test später wiederholen.",
   "test.bullet1": "✓ Deine Punktzahl wird in deinem Profil angezeigt",
-  "test.bullet2": "✓ Unternehmen sehen dein objektives Niveau",
-  "test.bullet3": "✓ Hilft uns beim passenden Matching",
   "test.passed_h": "Bestanden!",
   "test.failed_h": "Noch nicht bestanden",
   "test.your_result": "Dein Ergebnis: {score} / {total}. Niveau {level}",

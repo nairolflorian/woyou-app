@@ -1,7 +1,6 @@
 const ar: Record<string, string> = {
   "nav.bewerber": "للمتقدمين",
   "nav.service": "خدمة التقديم",
-  "nav.arbeitgeber": "لأصحاب العمل",
   "nav.so_funktioniert": "كيف يعمل",
   "nav.berufe": "المهن",
   "nav.faq": "الأسئلة الشائعة",
@@ -13,15 +12,11 @@ const ar: Record<string, string> = {
 
   "home.hero_badge": "وظائف وتدريب من الخارج",
   "home.hero_title": "مستقبلك في ألمانيا. مع WoYou",
-  "home.hero_subtitle":
-    "نربط المواهب الدولية بأفضل الشركات الألمانية. أنشئ ملفك الشخصي وابدأ مغامرتك.",
   "home.hero_btn_start": "ابدأ الآن",
   "home.hero_btn_more": "اعرف المزيد",
   "home.hero_btn_telegram": "سجل عبر تيليجرام",
 
-  "home.stats_partners": "شركات شريكة",
   "home.stats_countries": "دول المنشأ",
-  "home.stats_placements": "توظيفات ناجحة",
 
   "home.process_badge": "العملية",
   "home.process_title": "بكل بساطة",
@@ -30,20 +25,12 @@ const ar: Record<string, string> = {
   "home.process_step1_desc":
     "عبر الإنترنت أو تيليجرام أو واتساب. املأ ملفك.",
   "home.process_step2_title": "اختبار اللغة",
-  "home.process_step2_desc": "اختبار قصير للألمانية (A1-B2).",
-  "home.process_step3_title": "تفعيل الملف",
-  "home.process_step3_desc":
-    "رسوم لمرة واحدة. ثم تصبح قابلاً للتوظيف.",
-  "home.process_step4_title": "مطابقة آلية ووصول",
-  "home.process_step4_desc":
-    "بمجرد تفعيل ملفك يقترح نظامنا تلقائياً الشركات المناسبة. ثم نساعدك في التأشيرة والوصول.",
 
   "home.benefits_badge": "لماذا WoYou",
   "home.benefits_title": "مزاياك",
   "home.benefits_subtitle":
     "أكثر من مجرد لوحة وظائف. نرافقك من البداية حتى الوصول.",
   "home.benefits_card1_title": "شبكة دولية",
-  "home.benefits_card1_desc": "اتصال مباشر بأفضل الشركات في ألمانيا.",
   "home.benefits_card2_title": "دعم إداري",
   "home.benefits_card2_desc":
     "التأشيرة والاعتراف والتأمين. خطوة بخطوة.",
@@ -56,8 +43,6 @@ const ar: Record<string, string> = {
   "home.benefits_card5_desc":
     "السكن والإجراءات الإدارية والتوجيه الثقافي.",
   "home.benefits_card6_title": "شروط عادلة",
-  "home.benefits_card6_desc":
-    "رسوم تفعيل لمرة واحدة. كل شيء شفاف بعد ذلك.",
 
   "home.audience_badge": "لمن",
   "home.audience_title": "لمن هي WoYou؟",
@@ -67,8 +52,6 @@ const ar: Record<string, string> = {
   "home.audience_card2_title": "متدربون",
   "home.audience_card2_desc":
     "مواهب شابة لبدء التدريب المهني في ألمانيا.",
-  "home.audience_card3_title": "شركات",
-  "home.audience_card3_desc": "شركات تبحث عن موظفين مؤهلين.",
 
   "home.cta_title": "جاهز للانتقال إلى ألمانيا؟",
   "home.cta_subtitle": "أنشئ ملفك في 5 دقائق. مجاناً.",
@@ -101,7 +84,6 @@ const ar: Record<string, string> = {
   "reg.next": "التالي",
   "reg.back": "السابق",
   "reg.save_continue": "حفظ ومتابعة",
-  "reg.section_personal": "عنك",
   "reg.section_contact": "قنوات التواصل",
   "reg.section_job": "الوظيفة المطلوبة",
   "reg.section_languages": "اللغات",
@@ -124,7 +106,6 @@ const ar: Record<string, string> = {
   "reg.education": "أعلى مؤهل",
   "reg.experience": "سنوات الخبرة",
   "reg.current_job": "الوظيفة الحالية (اختياري)",
-  "reg.current_employer": "صاحب العمل الحالي (اختياري)",
   "reg.driving_license": "هل لديك رخصة قيادة؟",
   "reg.relocate": "هل أنت مستعد للانتقال داخل ألمانيا؟",
   "reg.preferred_cities": "المدن المفضلة (اختياري)",
@@ -134,15 +115,10 @@ const ar: Record<string, string> = {
   "reg.german_level": "مستوى الألمانية",
   "reg.english_level": "مستوى الإنجليزية",
   "reg.other_languages": "لغات أخرى",
-  "reg.about_me": "عنك (نبذة قصيرة)",
   "reg.motivation": "لماذا تريد العمل في ألمانيا؟",
   "reg.family_status": "الحالة الاجتماعية",
   "reg.dependents": "الأطفال / المعالون",
   "reg.consent_mode": "متى يمكننا مشاركة ملفك؟",
-  "reg.consent_blanket":
-    "أسمح لـWoYou بتقديم ملفي مباشرة للشركات المناسبة.",
-  "reg.consent_per_company":
-    "أريد أن أرى كل شركة أولاً وأوافق فردياً.",
   "reg.finish": "إنهاء الملف",
 
   "test.title": "اختبار اللغة الألمانية",
@@ -160,16 +136,8 @@ const ar: Record<string, string> = {
   "dash.next_steps": "الخطوات التالية",
   "dash.do_test": "إجراء اختبار اللغة",
   "dash.fill_profile": "إكمال الملف",
-  "dash.unlock": "تفعيل الملف",
-  "dash.unlock_desc":
-    "برسوم لمرة واحدة قدرها {fee} نفعّل ملفك لشركائنا.",
-  "dash.unlock_cta": "فعّل بـ{fee}",
-  "dash.times_proposed": "مرات الاقتراح",
   "dash.times_viewed": "مشاهدات الملف",
-  "dash.matches": "الاقتراحات الحالية",
-  "dash.no_matches": "لا توجد اقتراحات بعد.",
   "dash.consent_needed": "موافقتك مطلوبة",
-  "dash.see_company": "عرض الشركة",
   "dash.approve": "موافق",
   "dash.decline": "رفض",
 
@@ -191,7 +159,6 @@ const ar: Record<string, string> = {
   "common.error_generic": "حدث خطأ ما.",
   "a11y.skip": "تخطّى إلى المحتوى",
 
-  "reg.section_personal_h": "عنك",
   "reg.section_contact_h": "قنوات التواصل",
   "reg.section_job_h": "الوظيفة المطلوبة",
   "reg.section_languages_h": "اللغات",
@@ -206,7 +173,6 @@ const ar: Record<string, string> = {
   "reg.desired_category_required": "مجموعة المهنة *",
   "reg.experience_required": "سنوات الخبرة *",
   "reg.earliest_start_required": "أبكر تاريخ بدء *",
-  "reg.about_me_required": "عنك (نبذة قصيرة) *",
   "reg.motivation_required": "لماذا تريد العمل في ألمانيا؟ *",
   "reg.alternative_jobs_csv": "ما هي المهن الأخرى الممكنة؟ (مفصولة بفواصل)",
   "reg.preferred_cities_csv": "المدن المفضلة (مفصولة بفواصل)",
@@ -219,21 +185,13 @@ const ar: Record<string, string> = {
   "reg.relocate_yes_de": "نعم، في أي مكان في ألمانيا",
   "reg.relocate_no": "لا، فقط في منطقة محددة",
   "reg.add_language": "+ إضافة لغة",
-  "reg.test_hint":
-    "💡 يمكنك أيضاً إجراء <a>اختبار اللغة القصير</a> ليرى أصحاب العمل مستواك.",
   "reg.consent_blanket_strong": "موافقة عامة.",
-  "reg.consent_blanket_text":
-    "أسمح لـWoYou بتقديم ملفي مباشرة للشركات المناسبة.",
-  "reg.consent_per_company_strong": "موافقة فردية.",
-  "reg.consent_per_company_text":
-    "أريد أن أرى كل شركة أولاً وأوافق فردياً.",
   "reg.cached_at": "حُفظ تلقائياً {time}",
   "reg.saving": "جارٍ الحفظ…",
 
   "dash.hello": "مرحباً {name}",
   "dash.activity": "النشاط",
   "dash.profile_views": "مشاهدات الملف",
-  "dash.proposed_to_companies": "مرات الاقتراح للشركات",
   "dash.fee_paid": "تم دفع الرسوم",
   "dash.fee_paid_yes": "نعم ✓",
   "dash.fee_paid_no": "ليس بعد",
@@ -241,20 +199,12 @@ const ar: Record<string, string> = {
   "dash.edit_profile": "تعديل الملف",
   "dash.do_test_again": "إعادة اختبار اللغة (النتيجة {score})",
   "dash.do_test_first": "إجراء اختبار اللغة",
-  "dash.unlock_title": "الخطوة الأخيرة: تفعيل الملف",
   "dash.fill_profile_first_title": "أكمل ملفك أولاً",
-  "dash.fill_profile_first_desc":
-    "بمجرد اكتمال ملفك بنسبة 80٪ يمكنك تفعيله وتصبح مرئياً للشركات.",
   "dash.consent_required_h": "موافقتك مطلوبة",
   "dash.consent_request": "طلب",
   "dash.searches_for": "تبحث عن",
   "dash.in_city": "في {city}",
-  "dash.proposals_h": "الاقتراحات والحالة الحالية",
-  "dash.no_other_proposals": "لا توجد اقتراحات أخرى بعد.",
   "dash.open_chat": "فتح المحادثة",
-  "dash.match_score": "نتيجة المطابقة",
-  "dash.why_match": "لماذا تناسبك هذه الشركة",
-  "dash.why_match_score": "النتيجة {score}/100",
   "tips.h": "كيف تجعل ملفك أقوى",
   "tips.delta": "+{delta}٪",
   "tips.firstName": "أضف الاسم الأول",
@@ -285,35 +235,22 @@ const ar: Record<string, string> = {
   "edit.err_taken": "هذا البريد أو الرقم مستخدم بالفعل.",
   "edit.err_no_password": "هذا الحساب لا يملك كلمة مرور. استخدم Telegram للدخول.",
   "dash.documents_h": "وثائقك",
-  "dash.documents_desc":
-    "السيرة الذاتية وجواز السفر والشهادات. يراها فقط أنت والشركات التي لها اقتراح نشط.",
   "dash.account_h": "حسابي",
   "dash.account_desc": "تصدير البيانات وحذف الحساب وفقاً للائحة العامة لحماية البيانات.",
   "dash.telegram_h": "استخدم بوت WoYou على تيليجرام",
-  "dash.telegram_desc":
-    "اربط حسابك على تيليجرام لنتمكن من الوصول إليك هناك أيضاً ولتتحدث الشركات معك مباشرة.",
   "dash.telegram_open": "افتح البوت",
 
   "onb.title_done": "أنت جاهز 🎉",
-  "onb.title_active": "اجعل ملفك جاهزاً للتوظيف",
   "onb.progress": "{done} / {total} منجز",
   "onb.step1_title": "املأ ملفك",
-  "onb.step1_desc": "حالياً {percent}٪. نحتاج 100٪ للتوظيف.",
   "onb.step1_cta_done": "تعديل",
   "onb.step1_cta": "متابعة الملء",
   "onb.step2_title": "إجراء اختبار اللغة",
-  "onb.step2_desc":
-    "12 سؤالاً متعدد الخيارات، ~5 دقائق. تظهر الشركات مستواك الموضوعي.",
   "onb.step2_cta_done": "إعادة الاختبار",
   "onb.step2_cta": "ابدأ الاختبار",
   "onb.step3_title": "ارفع السيرة الذاتية على الأقل",
-  "onb.step3_desc":
-    "تتم المقابلات أسرع 3×. ترى الشركات قدراتك مباشرة.",
   "onb.step3_cta_done": "إدارة الوثائق",
   "onb.step3_cta": "ارفع",
-  "onb.step4_title": "تفعيل الملف",
-  "onb.step4_desc":
-    "رسوم لمرة واحدة. ثم تصبح مرئياً لشركائنا ويُقترح ملفك تلقائياً.",
 
   "doc.kind_label": "نوع الوثيقة",
   "doc.file_label": "ملف (PDF / JPG / PNG، حد أقصى 5 ميغابايت)",
@@ -334,34 +271,18 @@ const ar: Record<string, string> = {
   "avatar.replace": "استبدال الصورة",
   "avatar.uploading": "جارٍ الرفع …",
   "avatar.hint":
-    "JPG أو PNG، حد أقصى 5 ميغابايت. تُعرض فقط للشركات التي لها مطابقة نشطة.",
+    "JPG أو PNG، حد أقصى 5 ميغابايت.",
 
   "acc.export_btn": "📥 تنزيل بياناتي بصيغة JSON",
   "acc.export_hint":
     "اللائحة العامة لحماية البيانات المادتان 15/20. تصدير كامل لكل البيانات المخزنة عنك.",
   "acc.delete_h": "حذف الحساب نهائياً",
   "acc.delete_desc":
-    "اللائحة العامة لحماية البيانات المادة 17. جميع بياناتك ووثائقك تُحذف بشكل نهائي. تُفقد الاقتراحات النشطة.",
+    "اللائحة العامة لحماية البيانات المادة 17. جميع بياناتك ووثائقك تُحذف بشكل نهائي.",
   "acc.delete_confirm_prefix": "اكتب الكلمة",
   "acc.delete_confirm_suffix": "للتأكيد:",
   "acc.delete_btn": "حذف الحساب",
   "acc.deleting": "جارٍ الحذف…",
-
-  "ml.proposal": "اقتراح",
-  "ml.consent": "موافقة",
-  "ml.review": "مراجعة الشركة",
-  "ml.outcome": "النتيجة",
-  "ml.aria_label": "تقدّم المطابقة",
-
-  "matchstatus.DRAFT": "مسودة",
-  "matchstatus.AWAITING_CANDIDATE_CONSENT": "بانتظار موافقة المرشح",
-  "matchstatus.CANDIDATE_APPROVED": "وافق المرشح",
-  "matchstatus.CANDIDATE_DECLINED": "رفض المرشح",
-  "matchstatus.SHARED_WITH_COMPANY": "أُرسل للشركة",
-  "matchstatus.COMPANY_INTERESTED": "الشركة مهتمة",
-  "matchstatus.COMPANY_DECLINED": "رفضت الشركة",
-  "matchstatus.IN_CONVERSATION": "قيد المحادثة",
-  "matchstatus.HIRED": "تم التوظيف",
 
   "bell.title": "الإشعارات",
   "bell.empty": "لا توجد إشعارات بعد.",
@@ -388,8 +309,6 @@ const ar: Record<string, string> = {
   "test.intro":
     "{count} أسئلة متعددة الخيارات. A1 إلى B2. ~5 دقائق. يمكنك إعادة الاختبار لاحقاً.",
   "test.bullet1": "✓ تظهر نتيجتك في ملفك",
-  "test.bullet2": "✓ ترى الشركات مستواك الموضوعي",
-  "test.bullet3": "✓ يحسّن المطابقة",
   "test.passed_h": "ناجح!",
   "test.failed_h": "غير ناجح بعد",
   "test.your_result": "نتيجتك: {score} / {total}. المستوى {level}",

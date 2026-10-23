@@ -83,7 +83,7 @@ export function getBot(): Bot<Ctx> | null {
     });
     ctx.session.step = "first_name";
     await ctx.reply(
-      `🇩🇪 *Willkommen bei WoYou!*\n\nIch helfe dir, dein Profil für deutsche Unternehmen anzulegen.\n\nWie ist dein *Vorname*?`,
+      `🇩🇪 *Willkommen bei WoYou!*\n\nIch helfe dir, deine Angaben für deine Bewerbungsunterlagen anzulegen.\n\nWie ist dein *Vorname*?`,
       { parse_mode: "Markdown" }
     );
   });
@@ -99,7 +99,7 @@ export function getBot(): Bot<Ctx> | null {
       return;
     }
     await ctx.reply(
-      `📊 *Dein Status*\n\nProfil: ${user.candidate.profileCompleteness}%\nStatus: ${user.candidate.status}\nVorschläge: ${user.candidate.timesProposed}\n\nWeiter im Browser: https://woyou.de/profil`,
+      `📊 *Dein Status*\n\nProfil: ${user.candidate.profileCompleteness}%\n\nWeiter im Browser: https://woyou.de/profil`,
       { parse_mode: "Markdown" }
     );
   });
@@ -149,7 +149,7 @@ export function getBot(): Bot<Ctx> | null {
     const tgId = String(ctx.from?.id);
     const user = await prisma.user.findUnique({ where: { telegramId: tgId } });
     if (!user) return ctx.reply("Bitte zuerst /start ausführen.");
-    await ctx.reply(`Bearbeite dein Profil im Browser: ${process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000"}/registrierung/profil`);
+    await ctx.reply(`Bearbeite deine Bewerbungsmappe im Browser: ${process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000"}/bewerbungsmappe`);
   });
 
   bot.on("message:text", async (ctx) => {
@@ -273,9 +273,9 @@ export function getBot(): Bot<Ctx> | null {
             status,
           },
         });
-        const link = `${process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000"}/registrierung/profil`;
+        const link = `${process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000"}/bewerbungsmappe`;
         await ctx.reply(
-          `✅ *Erste Daten gespeichert!*\n\nProfil-Vollständigkeit: ${completeness}%.\n\nVervollständige es im Browser (Sprachtest, Gehalt, Dokumente, Freischaltung):\n${link}`,
+          `✅ *Erste Daten gespeichert!*\n\nProfil-Vollständigkeit: ${completeness}%.\n\nMach im Browser mit deiner Bewerbungsmappe weiter:\n${link}`,
           { parse_mode: "Markdown" }
         );
         s.pending = {};

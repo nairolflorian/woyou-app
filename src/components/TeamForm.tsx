@@ -44,7 +44,7 @@ export function TeamForm() {
         <label className="label">Rolle</label>
         <select className="select" value={role} onChange={(e) => setRole(e.target.value)}>
           <option value="TEAM">Unterlagen-Team (nur Buchungen und Mappen)</option>
-          <option value="ADMIN">Vermittler</option>
+          <option value="ADMIN">Admin</option>
           <option value="SUPER_ADMIN">Super-Admin</option>
         </select>
       </div>

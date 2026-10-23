@@ -39,8 +39,8 @@ const GESPERRT: { re: RegExp; grund: string }[] = [
   { re: /^\/api\/chat(\/|$)/, grund: "Chats mit Firmen sind abgeschaltet (Weg 1)." },
   { re: /^\/api\/cron\/re-match(\/|$)/, grund: "Matching ist abgeschaltet (Weg 1)." },
   // Seiten
-  { re: /^\/admin\/(matching|firmen|anfragen|chats)(\/|$)/, grund: "admin" },
-  { re: /^\/(arbeitgeber|firmen|chat)(\/|$)/, grund: "seite" },
+  { re: /^\/admin\/(matching|firmen|anfragen|chats|analytics)(\/|$)/, grund: "admin" },
+  { re: /^\/(arbeitgeber|firmen|chat|bewerber)(\/|$)/, grund: "seite" },
 ];
 
 /** null = erlaubt, sonst Grund (bei Seiten: "admin" oder "seite") */

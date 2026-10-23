@@ -12,7 +12,7 @@ export default function robots(): MetadataRoute.Robots {
       }
     : {
         rules: [
-          { userAgent: "*", allow: "/", disallow: ["/admin", "/api", "/profil", "/firmen", "/druck"] },
+          { userAgent: "*", allow: "/", disallow: ["/admin", "/api", "/profil", "/druck", "/meine-bewerbungen", "/stellensuche", "/bewerbungsmappe"] },
         ],
         sitemap: `${BASE}/sitemap.xml`,
         host: BASE,

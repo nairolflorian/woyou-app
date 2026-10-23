@@ -63,10 +63,7 @@ export function TaskRow({
           {candidateName && companyName && " · "}
           {companyName && (
             <>
-              Firma:{" "}
-              <Link href={`/admin/firmen/${companyId}`} className="text-[color:var(--color-brand)]">
-                {companyName}
-              </Link>
+              Firma (alt): {companyName}
             </>
           )}
         </div>

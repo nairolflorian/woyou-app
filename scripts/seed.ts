@@ -30,76 +30,7 @@ async function main() {
     data: { email: "team@woyou.demo", passwordHash: pwd, role: "TEAM", locale: "de" },
   });
 
-  // Two companies
-  const compUserA = await prisma.user.create({
-    data: { email: "hr@klinik-berlin.demo", passwordHash: pwd, role: "COMPANY", locale: "de" },
-  });
-  const companyA = await prisma.company.create({
-    data: {
-      userId: compUserA.id,
-      companyName: "Klinik Berlin",
-      industry: "Pflege",
-      city: "Berlin",
-      country: "DE",
-      contactName: "Anna Schulz",
-      description: "Akutkrankenhaus mit 600 Betten — sucht laufend Pflegekräfte aus dem Ausland.",
-      verified: true,
-    },
-  });
-  const compUserB = await prisma.user.create({
-    data: { email: "jobs@hotel-alpenhof.demo", passwordHash: pwd, role: "COMPANY", locale: "de" },
-  });
-  const companyB = await prisma.company.create({
-    data: {
-      userId: compUserB.id,
-      companyName: "Hotel Alpenhof",
-      industry: "Hotellerie",
-      city: "Garmisch-Partenkirchen",
-      country: "DE",
-      contactName: "Markus Hofer",
-      description: "4*-Familienhotel sucht Köche und Servicekräfte.",
-      verified: true,
-    },
-  });
-
-  await prisma.jobRequest.create({
-    data: {
-      companyId: companyA.id,
-      jobCategory: "krankenpfleger",
-      description: "Examinierte Pflegefachkraft für Innere Station, Vollzeit.",
-      requiredGermanLevel: "B1",
-      minYearsExperience: 2,
-      salaryMin: 3000,
-      salaryMax: 3600,
-      location: "Berlin",
-    },
-  });
-  await prisma.jobRequest.create({
-    data: {
-      companyId: companyB.id,
-      jobCategory: "koch",
-      description: "Koch:in mit Erfahrung in alpenländischer Küche.",
-      requiredGermanLevel: "A2",
-      minYearsExperience: 3,
-      salaryMin: 2800,
-      salaryMax: 3400,
-      location: "Garmisch-Partenkirchen",
-    },
-  });
-  await prisma.jobRequest.create({
-    data: {
-      companyId: companyB.id,
-      jobCategory: "__custom__",
-      customJobTitle: "Hotelmanager-Trainee mit Französisch",
-      description: "Wir suchen einen frankophonen Trainee für unsere Direktion.",
-      requiredGermanLevel: "B2",
-      minYearsExperience: 1,
-      salaryMin: 2500,
-      salaryMax: 3000,
-      location: "Garmisch-Partenkirchen",
-      isCustomRequest: true,
-    },
-  });
+  // Weg 1: keine Firmenkonten, keine Stellenanfragen von Firmen (Arbeitgeberbereich und Matching abgeschaltet)
 
   // Three sample candidates from Morocco
   const candidates = [
@@ -220,9 +151,8 @@ async function main() {
 
   console.log("Done.\n\nDemo accounts (Passwort: woyou1234):");
   console.log("  Super-Admin   admin@woyou.demo");
-  console.log("  Vermittler    vermittler@woyou.demo");
-  console.log("  Firma A       hr@klinik-berlin.demo");
-  console.log("  Firma B       jobs@hotel-alpenhof.demo");
+  console.log("  Admin         vermittler@woyou.demo");
+  console.log("  Team          team@woyou.demo");
   console.log("  Kandidat 1    fatima@example.com");
   console.log("  Kandidat 2    youssef@example.com");
   console.log("  Kandidat 3    aicha@example.com");

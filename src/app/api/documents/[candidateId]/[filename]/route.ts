@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { WEG1 } from "@/lib/weg1";
 import { getSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { ROLE, MATCH_STATUS } from "@/lib/enums";
@@ -32,7 +33,8 @@ export async function GET(
     MATCH_STATUS.IN_CONVERSATION,
     MATCH_STATUS.HIRED,
   ];
-  if (session.role === ROLE.COMPANY) {
+  // Weg 1: Firmenkonten sehen keine Unterlagen mehr
+  if (session.role === ROLE.COMPANY && WEG1.arbeitgeberUndMatching) {
     const company = await prisma.company.findUnique({ where: { userId: session.userId } });
     if (company) {
       isAllowedCompany = candidate.matches.some(

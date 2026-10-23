@@ -1,7 +1,6 @@
 const fr: Record<string, string> = {
   "nav.bewerber": "Candidats",
   "nav.service": "Service candidatures",
-  "nav.arbeitgeber": "Entreprises",
   "nav.so_funktioniert": "Comment ça marche",
   "nav.berufe": "Métiers",
   "nav.faq": "FAQ",
@@ -13,15 +12,11 @@ const fr: Record<string, string> = {
 
   "home.hero_badge": "EMPLOIS & FORMATION DEPUIS L'ÉTRANGER",
   "home.hero_title": "Votre avenir en Allemagne. Avec WoYou",
-  "home.hero_subtitle":
-    "Nous mettons en relation les talents internationaux avec les meilleures entreprises allemandes. Créez votre profil, trouvez le poste idéal et commencez votre aventure.",
   "home.hero_btn_start": "Commencer",
   "home.hero_btn_more": "En savoir plus",
   "home.hero_btn_telegram": "S'inscrire via Telegram",
 
-  "home.stats_partners": "Entreprises partenaires",
   "home.stats_countries": "Pays d'origine",
-  "home.stats_placements": "Placements réussis",
 
   "home.process_badge": "PROCESSUS",
   "home.process_title": "Comment ça marche",
@@ -30,22 +25,12 @@ const fr: Record<string, string> = {
   "home.process_step1_desc":
     "En ligne, par Telegram ou WhatsApp. Remplissez votre profil.",
   "home.process_step2_title": "Test de langue",
-  "home.process_step2_desc":
-    "Court test d'allemand (A1-B2) pour bien vous orienter.",
-  "home.process_step3_title": "Activer le profil",
-  "home.process_step3_desc":
-    "Frais uniques. Votre profil devient visible et plaçable.",
-  "home.process_step4_title": "Matching auto. & arrivée",
-  "home.process_step4_desc":
-    "Dès l'activation de votre profil, notre système vous propose automatiquement les entreprises correspondantes. Nous aidons ensuite pour le visa et l'arrivée.",
 
   "home.benefits_badge": "POURQUOI WOYOU",
   "home.benefits_title": "Vos avantages",
   "home.benefits_subtitle":
     "Plus qu'un site d'emploi. Nous vous accompagnons jusqu'à l'arrivée.",
   "home.benefits_card1_title": "Réseau international",
-  "home.benefits_card1_desc":
-    "Lien direct avec les meilleurs employeurs allemands.",
   "home.benefits_card2_title": "Soutien administratif",
   "home.benefits_card2_desc":
     "Visa, reconnaissance, assurance. Étape par étape.",
@@ -58,8 +43,6 @@ const fr: Record<string, string> = {
   "home.benefits_card5_desc":
     "Logement, démarches et orientation culturelle.",
   "home.benefits_card6_title": "Conditions équitables",
-  "home.benefits_card6_desc":
-    "Frais d'activation uniques. Totalement transparents ensuite.",
 
   "home.audience_badge": "POUR QUI",
   "home.audience_title": "À qui s'adresse WoYou ?",
@@ -69,8 +52,6 @@ const fr: Record<string, string> = {
   "home.audience_card2_title": "Apprentis",
   "home.audience_card2_desc":
     "Jeunes talents souhaitant se former en Allemagne.",
-  "home.audience_card3_title": "Entreprises",
-  "home.audience_card3_desc": "Sociétés à la recherche de personnel qualifié.",
 
   "home.cta_title": "Prêt·e pour l'Allemagne ?",
   "home.cta_subtitle": "Créez votre profil en 5 minutes. Gratuitement.",
@@ -103,7 +84,6 @@ const fr: Record<string, string> = {
   "reg.next": "Suivant",
   "reg.back": "Retour",
   "reg.save_continue": "Enregistrer & continuer",
-  "reg.section_personal": "À propos de vous",
   "reg.section_contact": "Canaux de contact",
   "reg.section_job": "Emploi recherché",
   "reg.section_languages": "Langues",
@@ -126,7 +106,6 @@ const fr: Record<string, string> = {
   "reg.education": "Niveau d'études",
   "reg.experience": "Années d'expérience",
   "reg.current_job": "Emploi actuel (optionnel)",
-  "reg.current_employer": "Employeur actuel (optionnel)",
   "reg.driving_license": "Avez-vous le permis ?",
   "reg.relocate": "Prêt·e à déménager partout en Allemagne ?",
   "reg.preferred_cities": "Villes préférées (optionnel)",
@@ -136,15 +115,10 @@ const fr: Record<string, string> = {
   "reg.german_level": "Niveau d'allemand",
   "reg.english_level": "Niveau d'anglais",
   "reg.other_languages": "Autres langues",
-  "reg.about_me": "À propos de vous (court texte)",
   "reg.motivation": "Pourquoi voulez-vous travailler en Allemagne ?",
   "reg.family_status": "Situation familiale",
   "reg.dependents": "Enfants / personnes à charge",
   "reg.consent_mode": "Quand pouvons-nous partager votre profil ?",
-  "reg.consent_blanket":
-    "J'autorise WoYou à présenter mon profil directement.",
-  "reg.consent_per_company":
-    "Je veux voir chaque entreprise et approuver au cas par cas.",
   "reg.finish": "Finaliser le profil",
 
   "test.title": "Test d'allemand",
@@ -162,16 +136,8 @@ const fr: Record<string, string> = {
   "dash.next_steps": "Étapes suivantes",
   "dash.do_test": "Passer le test de langue",
   "dash.fill_profile": "Compléter le profil",
-  "dash.unlock": "Activer le profil",
-  "dash.unlock_desc":
-    "Avec les frais uniques de {fee} nous activons votre profil pour nos partenaires.",
-  "dash.unlock_cta": "Activer pour {fee}",
-  "dash.times_proposed": "Fois proposé",
   "dash.times_viewed": "Vues du profil",
-  "dash.matches": "Propositions actuelles",
-  "dash.no_matches": "Pas encore de proposition.",
   "dash.consent_needed": "Votre accord est requis",
-  "dash.see_company": "Voir l'entreprise",
   "dash.approve": "Accepter",
   "dash.decline": "Refuser",
 
@@ -193,7 +159,6 @@ const fr: Record<string, string> = {
   "common.error_generic": "Une erreur s'est produite.",
   "a11y.skip": "Aller au contenu",
 
-  "reg.section_personal_h": "À propos de vous",
   "reg.section_contact_h": "Canaux de contact",
   "reg.section_job_h": "Emploi recherché",
   "reg.section_languages_h": "Langues",
@@ -208,7 +173,6 @@ const fr: Record<string, string> = {
   "reg.desired_category_required": "Groupe de métier *",
   "reg.experience_required": "Années d'expérience *",
   "reg.earliest_start_required": "Date de début la plus proche *",
-  "reg.about_me_required": "À propos de vous (court texte) *",
   "reg.motivation_required": "Pourquoi voulez-vous travailler en Allemagne ? *",
   "reg.alternative_jobs_csv":
     "Autres métiers envisageables ? (séparés par des virgules)",
@@ -222,21 +186,13 @@ const fr: Record<string, string> = {
   "reg.relocate_yes_de": "Oui, partout en Allemagne",
   "reg.relocate_no": "Non, seulement dans une région précise",
   "reg.add_language": "+ Ajouter une langue",
-  "reg.test_hint":
-    "💡 Vous pouvez aussi passer notre <a>court test de langue</a> pour que les employeurs voient votre niveau objectif.",
   "reg.consent_blanket_strong": "Accord général.",
-  "reg.consent_blanket_text":
-    "WoYou peut me présenter directement aux entreprises qui correspondent.",
-  "reg.consent_per_company_strong": "Accord au cas par cas.",
-  "reg.consent_per_company_text":
-    "Je veux voir chaque entreprise et approuver individuellement.",
   "reg.cached_at": "Sauvegardé automatiquement {time}",
   "reg.saving": "Enregistrement…",
 
   "dash.hello": "Bonjour {name}",
   "dash.activity": "Activité",
   "dash.profile_views": "Vues du profil",
-  "dash.proposed_to_companies": "Proposé aux entreprises",
   "dash.fee_paid": "Frais payés",
   "dash.fee_paid_yes": "Oui ✓",
   "dash.fee_paid_no": "Pas encore",
@@ -244,20 +200,12 @@ const fr: Record<string, string> = {
   "dash.edit_profile": "Modifier le profil",
   "dash.do_test_again": "Refaire le test (score {score})",
   "dash.do_test_first": "Passer le test de langue",
-  "dash.unlock_title": "Dernière étape : activer votre profil",
   "dash.fill_profile_first_title": "Complétez d'abord votre profil",
-  "dash.fill_profile_first_desc":
-    "Une fois votre profil rempli à 80 % vous pouvez l'activer et devenir visible pour les entreprises.",
   "dash.consent_required_h": "Votre accord est requis",
   "dash.consent_request": "Demande",
   "dash.searches_for": "recherche",
   "dash.in_city": "à {city}",
-  "dash.proposals_h": "Propositions actuelles & statut",
-  "dash.no_other_proposals": "Pas encore d'autres propositions.",
   "dash.open_chat": "Ouvrir le chat",
-  "dash.match_score": "Score de matching",
-  "dash.why_match": "Pourquoi cette entreprise vous correspond",
-  "dash.why_match_score": "Score {score}/100",
   "tips.h": "Comment renforcer votre profil",
   "tips.delta": "+{delta}%",
   "tips.firstName": "Ajouter le prénom",
@@ -288,36 +236,22 @@ const fr: Record<string, string> = {
   "edit.err_taken": "Cet e-mail ou ce numéro est déjà utilisé.",
   "edit.err_no_password": "Ce compte n'a pas de mot de passe. Connectez-vous via Telegram.",
   "dash.documents_h": "Vos documents",
-  "dash.documents_desc":
-    "CV, passeport, diplômes et certificats. Visibles par vous et les entreprises avec une proposition active.",
   "dash.account_h": "Mon compte",
   "dash.account_desc": "Export des données et suppression de compte (RGPD).",
   "dash.telegram_h": "Utiliser le bot WoYou sur Telegram",
-  "dash.telegram_desc":
-    "Liez votre compte Telegram pour qu'on vous joigne aussi là. Et que les entreprises puissent vous écrire directement.",
   "dash.telegram_open": "Ouvrir le bot",
 
   "onb.title_done": "Vous êtes prêt·e 🎉",
-  "onb.title_active": "Rendez votre profil plaçable",
   "onb.progress": "{done} / {total} fait",
   "onb.step1_title": "Remplir votre profil",
-  "onb.step1_desc":
-    "Actuellement {percent}%. Il en faut 100% pour la mise en relation.",
   "onb.step1_cta_done": "Modifier",
   "onb.step1_cta": "Continuer à remplir",
   "onb.step2_title": "Passer le test de langue",
-  "onb.step2_desc":
-    "12 questions à choix multiples, ~5 min. Les entreprises voient votre niveau objectif.",
   "onb.step2_cta_done": "Refaire",
   "onb.step2_cta": "Démarrer le test",
   "onb.step3_title": "Téléverser au moins le CV",
-  "onb.step3_desc":
-    "Les entretiens vont 3× plus vite. Les entreprises voient ce que vous savez faire.",
   "onb.step3_cta_done": "Gérer les documents",
   "onb.step3_cta": "Téléverser",
-  "onb.step4_title": "Activer le profil",
-  "onb.step4_desc":
-    "Frais uniques. Vous devenez visible pour nos partenaires et êtes proposé·e automatiquement.",
 
   "doc.kind_label": "Type de document",
   "doc.file_label": "Fichier (PDF / JPG / PNG, max 5 Mo)",
@@ -338,34 +272,18 @@ const fr: Record<string, string> = {
   "avatar.replace": "Remplacer la photo",
   "avatar.uploading": "Téléversement …",
   "avatar.hint":
-    "JPG ou PNG, max 5 Mo. Visible uniquement par les entreprises avec un match actif.",
+    "JPG ou PNG, max 5 Mo.",
 
   "acc.export_btn": "📥 Télécharger mes données (JSON)",
   "acc.export_hint":
     "RGPD Art. 15 / 20. Export complet de toutes les données vous concernant.",
   "acc.delete_h": "Supprimer définitivement le compte",
   "acc.delete_desc":
-    "RGPD Art. 17. Toutes vos données et documents sont effacés irrémédiablement. Les propositions actives sont perdues.",
+    "RGPD Art. 17. Toutes vos données et documents sont effacés irrémédiablement.",
   "acc.delete_confirm_prefix": "Tapez le mot",
   "acc.delete_confirm_suffix": "pour confirmer :",
   "acc.delete_btn": "Supprimer le compte",
   "acc.deleting": "Suppression…",
-
-  "ml.proposal": "Proposition",
-  "ml.consent": "Consentement",
-  "ml.review": "Examen entreprise",
-  "ml.outcome": "Résultat",
-  "ml.aria_label": "Progression du match",
-
-  "matchstatus.DRAFT": "Brouillon",
-  "matchstatus.AWAITING_CANDIDATE_CONSENT": "En attente de l'accord du candidat",
-  "matchstatus.CANDIDATE_APPROVED": "Candidat·e a accepté",
-  "matchstatus.CANDIDATE_DECLINED": "Candidat·e a refusé",
-  "matchstatus.SHARED_WITH_COMPANY": "Envoyé à l'entreprise",
-  "matchstatus.COMPANY_INTERESTED": "Entreprise intéressée",
-  "matchstatus.COMPANY_DECLINED": "Entreprise a refusé",
-  "matchstatus.IN_CONVERSATION": "En discussion",
-  "matchstatus.HIRED": "Embauché·e",
 
   "bell.title": "Notifications",
   "bell.empty": "Aucune notification.",
@@ -392,8 +310,6 @@ const fr: Record<string, string> = {
   "test.intro":
     "{count} questions à choix multiples. A1 à B2. ~5 minutes. Vous pouvez recommencer plus tard.",
   "test.bullet1": "✓ Votre score apparaît sur votre profil",
-  "test.bullet2": "✓ Les entreprises voient votre niveau objectif",
-  "test.bullet3": "✓ Améliore le matching",
   "test.passed_h": "Réussi !",
   "test.failed_h": "Pas encore réussi",
   "test.your_result": "Votre score : {score} / {total}. Niveau {level}",

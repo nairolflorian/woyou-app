@@ -214,7 +214,6 @@ export default async function CandidateList(props: {
               <th className="text-left">Test</th>
               <th className="text-left">Profil</th>
               <th className="text-left">Status</th>
-              <th className="text-left">Vorschläge</th>
               <th></th>
             </tr>
           </thead>
@@ -255,7 +254,6 @@ export default async function CandidateList(props: {
                   <td>
                     <span className={`badge ${lbl.color}`}>{lbl.de}</span>
                   </td>
-                  <td>{c.timesProposed}</td>
                   <td className="text-right">
                     <Link
                       href={`/admin/kandidaten/${c.id}`}

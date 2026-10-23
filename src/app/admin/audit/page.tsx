@@ -79,13 +79,13 @@ export default async function AuditLogPage(props: {
                       </Link>
                     )}
                     {e.companyId && (
-                      <Link href={`/admin/firmen/${e.companyId}`} className="text-[color:var(--color-brand)] block">
-                        Firma: {e.companyId.slice(0, 8)}…
-                      </Link>
+                      <span className="block text-[color:var(--color-ink-soft)]">
+                        Firma (alt): {e.companyId.slice(0, 8)}…
+                      </span>
                     )}
                     {e.matchId && (
                       <span className="block text-[color:var(--color-ink-soft)]">
-                        Match: {e.matchId.slice(0, 8)}…
+                        Match (alt): {e.matchId.slice(0, 8)}…
                       </span>
                     )}
                   </td>

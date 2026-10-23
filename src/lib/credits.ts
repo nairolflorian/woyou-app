@@ -45,7 +45,7 @@ export async function consumeCredit(candidateId: string, leadId: string, booking
     const already = await tx.creditEntry.findUnique({ where: { leadId } });
     if (already) return already;
     const s = await creditState(candidateId, tx);
-    if (!s.unlimited && s.balance < 1) throw new Error("Kein Guthaben mehr. Die Kundin bzw. der Kunde kann 25 weitere Bewerbungen nachkaufen oder das Abo buchen.");
+    if (!s.unlimited && s.balance < 1) throw new Error("Kein Guthaben mehr.");
     return tx.creditEntry.create({ data: { candidateId, leadId, bookingId, delta: s.unlimited ? 0 : -1, reason: "APPLICATION", note: s.unlimited ? `${note} (Abo)` : note } });
   });
 }
@@ -97,7 +97,7 @@ export async function markPurchasePaid(purchaseId: string, opts: { sessionId?: s
   const now = new Date();
   if (p.kind === "PACK_25") {
     await prisma.creditPurchase.update({ where: { id: p.id }, data: { status: "PAID", paidAt: now, stripeSessionId: opts.sessionId ?? p.stripeSessionId } });
-    await grantCredits(p.candidateId, CREDIT_PRODUCTS.PACK_25.credits, "PACK", { purchaseId: p.id, note: "Nachkauf 25 Bewerbungen" });
+    await grantCredits(p.candidateId, CREDIT_PRODUCTS.PACK_25.credits, "PACK", { purchaseId: p.id, note: "Nachkauf (früheres Paket)" });
   } else {
     const until = opts.periodEnd ?? monthLater(now);
     await prisma.creditPurchase.update({ where: { id: p.id }, data: { status: "ACTIVE", paidAt: now, periodEnd: until, stripeSessionId: opts.sessionId ?? p.stripeSessionId, stripeSubscriptionId: opts.subscriptionId ?? p.stripeSubscriptionId } });
@@ -129,7 +129,7 @@ export async function cancelSubscription(candidateId: string) {
   crmMelden("storniert", candidateId, { paket: p.kind });
   const c = await prisma.candidate.findUniqueOrThrow({ where: { id: candidateId }, include: { user: true } });
   const until = c.subscriptionUntil?.toLocaleDateString("de-DE") ?? "Monatsende";
-  const paras = [`Hallo ${c.firstName ?? ""},`.replace(" ,", ","), `dein Abo ist gekündigt. Du kannst den Service noch bis ${until} unbegrenzt nutzen. Danach wird nichts mehr abgebucht.`, "Viele Grüße", "Dein WoYou-Team"];
+  const paras = [`Hallo ${c.firstName ?? ""},`.replace(" ,", ","), `dein Abo ist gekündigt. Es läuft noch bis ${until}. Danach wird nichts mehr abgebucht.`, "Viele Grüße", "Dein WoYou-Team"];
   if (c.user.email) await sendMail({ to: c.user.email, subject: "WoYou: Kündigung bestätigt", template: "subscription_cancelled", text: paras.join("\n\n"), html: layout("Kündigung bestätigt", paras) });
   return until;
 }
@@ -143,7 +143,7 @@ async function purchaseMails(purchaseId: string, kind: "requested" | "paid") {
   const to = p.candidate.user.email || "";
   const title = kind === "paid" ? "Danke für deinen Kauf" : "Wir haben deine Bestellung erhalten";
   const paras = kind === "paid"
-    ? [`Hallo ${name},`, `vielen Dank! ${product.name} (${price}) ist freigeschaltet. Wir bewerben dich weiter auf passende Stellen.`, "Viele Grüße", "Dein WoYou-Team"]
+    ? [`Hallo ${name},`, `vielen Dank! Deine Zahlung für ${product.name} (${price}) ist eingegangen.`, "Viele Grüße", "Dein WoYou-Team"]
     : [`Hallo ${name},`, `danke für deine Bestellung: ${product.name} (${price}).`, "Wir schicken dir in Kürze den Link zur Zahlung.", "Viele Grüße", "Dein WoYou-Team"];
   if (to) await sendMail({ to, subject: `WoYou: ${title}`, template: `purchase_${kind}`, text: paras.join("\n\n"), html: layout(title, paras, { label: "Zu meinem Bereich", href: `${baseUrl()}/profil` }) });
   const team = teamAddress();

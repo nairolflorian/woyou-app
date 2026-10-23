@@ -1,3 +1,4 @@
+// ABGESCHALTET (Weg 1, siehe src/lib/weg1.ts): liefert 410.
 // Daily re-matching pass. Runs on the server via cron, hitting this endpoint
 // with a shared secret in the Authorization header:
 //
@@ -13,6 +14,7 @@ import { prisma } from "@/lib/prisma";
 import { CANDIDATE_STATUS, MATCH_STATUS } from "@/lib/enums";
 import { autoMatchForCandidate, autoMatchForJobRequest } from "@/lib/auto-match";
 import { audit } from "@/lib/audit";
+import { WEG1 } from "@/lib/weg1";
 
 const MAX_OPEN_MATCHES_PER_CANDIDATE = 5;
 
@@ -73,6 +75,8 @@ async function run() {
 }
 
 export async function POST(req: Request) {
+  // Weg 1: Matching ist abgeschaltet (zusätzlich zur Sperre in der Middleware)
+  if (!WEG1.arbeitgeberUndMatching) return NextResponse.json({ error: "Matching ist abgeschaltet (Weg 1)." }, { status: 410 });
   if (!isAuthorized(req)) {
     return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
   }

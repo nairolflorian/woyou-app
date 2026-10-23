@@ -14,7 +14,7 @@ import { bookingMail, wLang } from "@/lib/werkzeug-text";
 const baseUrl = () => process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 const SERVICE_NAME: Record<ServiceKey, string> = {
   startpaket: `Startpaket: Bewerbungsunterlagen und ${ANGEBOT.startpaket.toolMonths} Monate Bewerbungswerkzeug`,
-  "bewerbung-25": "Bewerbungs-Service (alt, 25 Bewerbungen)",
+  "bewerbung-25": "Bewerbungs-Service (früheres Paket)",
 };
 
 // Stripe-Checkout für eine Buchung starten. Ohne Stripe-Konto: null (Buchung bleibt "angefragt"),

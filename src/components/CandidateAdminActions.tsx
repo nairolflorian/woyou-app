@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { CANDIDATE_STATUS, CANDIDATE_STATUS_LABEL } from "@/lib/enums";
 
-const STATUSES = Object.values(CANDIDATE_STATUS);
+// Weg 1: „vorgeschlagen“ und „vermittelt“ gibt es nicht mehr (nur noch als Altdaten)
+const STATUSES = Object.values(CANDIDATE_STATUS).filter((s) => s !== CANDIDATE_STATUS.PROPOSED && s !== CANDIDATE_STATUS.PLACED);
 
 export function CandidateAdminActions({
   candidateId,
@@ -57,7 +58,7 @@ export function CandidateAdminActions({
           onChange={(e) => changeStatus(e.target.value)}
           disabled={busy}
         >
-          {STATUSES.map((s) => (
+          {(STATUSES.includes(status as (typeof STATUSES)[number]) ? STATUSES : [...STATUSES, status as (typeof STATUSES)[number]]).map((s) => (
             <option key={s} value={s}>
               {CANDIDATE_STATUS_LABEL[s].de}
             </option>

@@ -30,6 +30,11 @@ const nextConfig: NextConfig = {
       to("/registrierung/telegram", "/registrierung"),
       to("/registrierung/profil", "/bewerbungsmappe"),
       to("/chat/:path*", "/profil"),
+      // Weg 1 (23.10.2026): Arbeitgeber-, Firmen-, Matching- und Chat-Bereich entfernt
+      to("/bewerber/:path*", "/"),
+      to("/registrierung/profil/:path*", "/bewerbungsmappe"),
+      to("/sprachtest/:path*", "/"),
+      to("/admin/:bereich(matching|firmen|anfragen|chats|analytics)/:path*", "/admin/buchungen"),
     ];
   },
   images: {

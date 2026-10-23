@@ -1,7 +1,6 @@
 const es: Record<string, string> = {
   "nav.bewerber": "Para candidatos",
   "nav.service": "Servicio de candidaturas",
-  "nav.arbeitgeber": "Para empresas",
   "nav.so_funktioniert": "Cómo funciona",
   "nav.berufe": "Profesiones",
   "nav.faq": "Preguntas frecuentes",
@@ -13,15 +12,11 @@ const es: Record<string, string> = {
 
   "home.hero_badge": "EMPLEO Y FORMACIÓN DESDE EL EXTRANJERO",
   "home.hero_title": "Tu futuro en Alemania. Con WoYou",
-  "home.hero_subtitle":
-    "Conectamos talento internacional con las mejores empresas alemanas. Crea tu perfil, encuentra el puesto adecuado y empieza tu aventura.",
   "home.hero_btn_start": "Empezar",
   "home.hero_btn_more": "Saber más",
   "home.hero_btn_telegram": "Registrarse vía Telegram",
 
-  "home.stats_partners": "Empresas asociadas",
   "home.stats_countries": "Países de origen",
-  "home.stats_placements": "Colocaciones exitosas",
 
   "home.process_badge": "PROCESO",
   "home.process_title": "Cómo funciona",
@@ -30,21 +25,12 @@ const es: Record<string, string> = {
   "home.process_step1_desc":
     "En línea, vía Telegram o WhatsApp. Completa tu perfil.",
   "home.process_step2_title": "Prueba de idioma",
-  "home.process_step2_desc":
-    "Test corto de alemán (A1-B2) para ubicarte correctamente.",
-  "home.process_step3_title": "Activar perfil",
-  "home.process_step3_desc":
-    "Tarifa única. Luego eres visible y ubicable para las empresas.",
-  "home.process_step4_title": "Auto-Matching y llegada",
-  "home.process_step4_desc":
-    "Una vez activo tu perfil, nuestro sistema te propone empresas automáticamente. Después ayudamos con visado y llegada.",
 
   "home.benefits_badge": "POR QUÉ WOYOU",
   "home.benefits_title": "Tus ventajas",
   "home.benefits_subtitle":
     "Más que un portal de empleo. Te acompañamos hasta tu llegada.",
   "home.benefits_card1_title": "Red internacional",
-  "home.benefits_card1_desc": "Acceso directo a las mejores empresas alemanas.",
   "home.benefits_card2_title": "Apoyo burocrático",
   "home.benefits_card2_desc": "Visado, reconocimiento, seguro. Paso a paso.",
   "home.benefits_card3_title": "Coaching personal",
@@ -55,8 +41,6 @@ const es: Record<string, string> = {
   "home.benefits_card5_title": "Apoyo a la llegada",
   "home.benefits_card5_desc": "Vivienda, trámites y orientación cultural.",
   "home.benefits_card6_title": "Condiciones justas",
-  "home.benefits_card6_desc":
-    "Tarifa única de activación. Totalmente transparente después.",
 
   "home.audience_badge": "PARA QUIÉN",
   "home.audience_title": "¿Para quién es WoYou?",
@@ -66,8 +50,6 @@ const es: Record<string, string> = {
   "home.audience_card2_title": "Aprendices",
   "home.audience_card2_desc":
     "Jóvenes que quieren empezar formación profesional en Alemania.",
-  "home.audience_card3_title": "Empresas",
-  "home.audience_card3_desc": "Empresas que buscan personal cualificado.",
 
   "home.cta_title": "¿Listo para tu camino a Alemania?",
   "home.cta_subtitle": "Crea tu perfil en 5 minutos. Gratis.",

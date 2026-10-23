@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { CANDIDATE_STATUS, CANDIDATE_STATUS_LABEL } from "@/lib/enums";
 
-const STATUSES = Object.values(CANDIDATE_STATUS);
+// Weg 1: „vorgeschlagen“ und „vermittelt“ gibt es nicht mehr (nur noch als Altdaten)
+const STATUSES = Object.values(CANDIDATE_STATUS).filter((s) => s !== CANDIDATE_STATUS.PROPOSED && s !== CANDIDATE_STATUS.PLACED);
 
 export function CandidateBulkBar() {
   const [count, setCount] = useState(0);
