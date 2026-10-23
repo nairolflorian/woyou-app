@@ -5,10 +5,11 @@ import { prisma } from "@/lib/prisma";
 import { ROLE } from "@/lib/enums";
 import { createUserWithRole } from "@/lib/auth";
 import { audit } from "@/lib/audit";
+import { PW_MIN_TEAM } from "@/lib/passwort";
 
 const schema = z.object({
   email: z.string().email(),
-  password: z.string().min(6),
+  password: z.string().min(PW_MIN_TEAM), // Team/Admin/Super-Admin: mindestens 12 Zeichen
   role: z.enum([ROLE.ADMIN, ROLE.SUPER_ADMIN, ROLE.TEAM]),
 });
 

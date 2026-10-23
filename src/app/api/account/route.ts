@@ -11,13 +11,14 @@ import { getSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { hashPassword, verifyPassword } from "@/lib/auth";
 import { rateLimit, clientIp } from "@/lib/rate-limit";
+import { PW_MIN_KUNDE, pwMin, pwOk } from "@/lib/passwort";
 
 const schema = z
   .object({
     email: z.string().email().optional(),
     phone: z.string().min(4).max(40).optional(),
     currentPassword: z.string().min(1).optional(),
-    newPassword: z.string().min(6).max(200).optional(),
+    newPassword: z.string().min(PW_MIN_KUNDE).max(200).optional(),
   })
   .refine((d) => d.email || d.phone || d.newPassword, {
     message: "AT_LEAST_ONE_FIELD_REQUIRED",
@@ -58,6 +59,9 @@ export async function PATCH(req: Request) {
       !(await verifyPassword(parsed.data.currentPassword, me.passwordHash))
     ) {
       return NextResponse.json({ error: "WRONG_CURRENT_PASSWORD" }, { status: 401 });
+    }
+    if (!pwOk(parsed.data.newPassword, me.role)) {
+      return NextResponse.json({ error: "PASSWORD_TOO_SHORT", min: pwMin(me.role) }, { status: 400 });
     }
     updates.passwordHash = await hashPassword(parsed.data.newPassword);
   }

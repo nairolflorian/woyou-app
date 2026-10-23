@@ -7,10 +7,11 @@ import { getSession } from "@/lib/session";
 import { ROLE } from "@/lib/enums";
 import { JOB_CATEGORIES } from "@/lib/jobs";
 import { autoMatchForJobRequest } from "@/lib/auto-match";
+import { PW_MIN_KUNDE } from "@/lib/passwort";
 
 const schema = z.object({
   account: z
-    .object({ email: z.string().email(), password: z.string().min(6) })
+    .object({ email: z.string().email(), password: z.string().min(PW_MIN_KUNDE) })
     .nullable()
     .optional(),
   company: z.object({

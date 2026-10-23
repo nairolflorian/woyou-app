@@ -63,17 +63,20 @@ export default function Datenschutz() {
                 {/* ANWALT PRÜFEN (Weg 1): keine Weitergabe an Arbeitgeber durch WoYou */}
                 <li><strong>Arbeitgeber:</strong> Wir geben deine Daten nicht an Arbeitgeber weiter. Deine Bewerbungen verschickst du selbst, aus deinem eigenen E-Mail-Postfach oder über die Seite des Arbeitgebers.</li>
                 <li><strong>Stripe</strong> (Zahlungsabwicklung).</li>
-                <li><strong>Hetzner Online GmbH</strong>, Industriestr. 25, 91710 Gunzenhausen (Server in Deutschland).</li>
+                {/* ANWALT PRÜFEN (23.10.2026): Standort des WoYou-Servers wird noch geklärt, daher nur „in der EU“ */}
+                <li><strong>Hetzner Online GmbH</strong>, Industriestr. 25, 91710 Gunzenhausen (Hosting, Server in der EU).</li>
                 <li><strong>CRM der EuBiA-Gruppe</strong> für Kundenbetreuung und Abrechnung (siehe Abschnitt 5).</li>
                 <li><strong>Unser E-Mail-Anbieter</strong> für Benachrichtigungen an dich (z. B. Buchungsbestätigung).</li>
-                <li><strong>KI-Textdienst</strong> (nur wenn aktiviert): Für Formulierungsvorschläge zum Anschreiben übermitteln wir Angaben aus deiner Mappe und die Stellenbeschreibung an Mistral AI SAS (Paris, Frankreich), mit dem ein Vertrag zur Auftragsverarbeitung besteht. Die Daten werden nicht zum Training verwendet. Du prüfst jedes Anschreiben selbst, bevor du es verwendest.</li>
+                {/* ANWALT PRÜFEN (23.10.2026): KI-Textdienst ist in Produktion nicht aktiv (kein Schlüssel gesetzt), es besteht
+                    derzeit kein Vertrag mit einem KI-Anbieter. Vor einer Aktivierung Anbieter, AV-Vertrag und diesen Absatz ergänzen. */}
+                <li><strong>KI-Textdienst:</strong> Derzeit nicht im Einsatz. Deine Anschreiben entstehen aus unseren Vorlagen, ohne dass Daten an einen KI-Dienst gehen. Falls wir künftig einen KI-Textdienst nutzen, informieren wir dich vorher hier und nennen den Anbieter, die übermittelten Angaben und die Rechtsgrundlage.</li>
               </ul>
               {/* ANWALT PRÜFEN (Weg 1): Quellen der Stellensuche und mailto-Funktion */}
               <p className="mt-2">Für die Stellensuche fragen wir die Jobbörse der Bundesagentur für Arbeit und weitere öffentliche Stellenbörsen ab (Arbeitnow, Karriereseiten von Arbeitgebern über Personio, Greenhouse oder Lever und, falls eingerichtet, Adzuna). Dabei übermitteln wir nur Suchbegriff und Ort, keine Daten über dich.</p>
               <p className="mt-2">Wenn du „In meinem E-Mail-Programm öffnen“ nutzt, öffnet sich dein eigenes E-Mail-Programm. Die Nachricht verschickst du selbst; WoYou ist daran nicht beteiligt und bekommt keine Kopie und keine Antworten.</p>
             </section>
 
-            {/* ANWALT PRÜFEN (23.10.2026): neuer Abschnitt Weitergabe an das CRM der EuBiA-Gruppe. Beschreibt genau die
+            {/* ANWALT PRÜFEN (23.10.2026): neuer Abschnitt Weitergabe an das CRM der EuBiA-Gruppe. Standort CRM: Hetzner, Helsinki (Finnland, EU). Beschreibt genau die
                 Felder aus src/lib/crm-core.ts (candidatePayload, sendCrmEvent). Achtung: "land" ist das Wohnland und nur
                 ersatzweise die Staatsangehörigkeit. Löschung im CRM nach Kontolöschung ist derzeit ein manueller Schritt
                 (kein automatisches Löschereignis an das CRM). Grundlage: Vereinbarung zur Auftragsverarbeitung mit EuBiA. */}
@@ -81,8 +84,8 @@ export default function Datenschutz() {
               <h2 className="font-semibold text-base">5. Weitergabe an das CRM der EuBiA-Gruppe</h2>
               <p>
                 WoYou ist ein Angebot der {COMPANY.name}, eines Unternehmens der EuBiA-Gruppe. Für die Betreuung unserer
-                Kund:innen nutzen wir das interne CRM (Kundenverwaltung) der EuBiA-Gruppe. Es wird auf Servern der Hetzner
-                Online GmbH in Deutschland betrieben. Verantwortlich für deine Daten bleibt die {COMPANY.name}. Die
+                Kund:innen nutzen wir das interne CRM (Kundenverwaltung) der EuBiA-Gruppe. Es wird auf einem Server der Hetzner
+                Online GmbH in der EU betrieben (Rechenzentrum in Helsinki, Finnland). Verantwortlich für deine Daten bleibt die {COMPANY.name}. Die
                 Verarbeitung im CRM erfolgt auf Grundlage einer Vereinbarung zur Auftragsverarbeitung.
               </p>
               <p className="mt-2">

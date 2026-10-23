@@ -50,6 +50,7 @@ export function LoginEditForm({
       WRONG_CURRENT_PASSWORD: t("edit.err_wrong_password"),
       ALREADY_TAKEN: t("edit.err_taken"),
       NO_PASSWORD_SET: t("edit.err_no_password"),
+      PASSWORD_TOO_SHORT: t("edit.err_pw_short"),
       RATE_LIMITED: t("common.error_generic"),
     };
     setMsg({

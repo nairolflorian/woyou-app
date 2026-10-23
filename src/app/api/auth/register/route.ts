@@ -6,11 +6,12 @@ import { getSession } from "@/lib/session";
 import { ROLE, CANDIDATE_STATUS } from "@/lib/enums";
 import { rateLimit, clientIp } from "@/lib/rate-limit";
 import { crmMelden } from "@/lib/crm-sync";
+import { PW_MIN_KUNDE } from "@/lib/passwort";
 
 const schema = z.object({
   email: z.string().email().optional().or(z.literal("")),
   phone: z.string().optional(),
-  password: z.string().min(6),
+  password: z.string().min(PW_MIN_KUNDE),
   role: z.literal(ROLE.CANDIDATE).default(ROLE.CANDIDATE),
   locale: z.string().optional(),
   // Honeypot: a hidden field that real users never see and bots usually fill.

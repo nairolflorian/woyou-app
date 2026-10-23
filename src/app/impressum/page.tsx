@@ -1,6 +1,7 @@
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { COMPANY } from "@/lib/company";
+import { FOTOS } from "@/lib/fotos";
 
 export const metadata = { title: "Impressum" };
 
@@ -76,6 +77,19 @@ export default function Impressum() {
               deutschen Urheberrecht. Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung
               außerhalb der Grenzen des Urheberrechts bedürfen der schriftlichen Zustimmung.
             </p>
+
+            <h2 className="font-semibold text-base">Bildnachweis</h2>
+            <p>
+              Die Fotos auf der Startseite stammen von Unsplash und werden unter der Unsplash-Lizenz genutzt.
+              Sie zeigen Berufe, keine Kundinnen und Kunden von WoYou. Danke an:
+            </p>
+            <ul className="list-disc pl-5 text-[color:var(--color-ink-soft)]">
+              {Object.values(FOTOS).map((f) => (
+                <li key={f.datei}>
+                  {f.motiv}: <a href={f.seite} target="_blank" rel="noopener noreferrer" className="underline">{f.von}</a>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </main>

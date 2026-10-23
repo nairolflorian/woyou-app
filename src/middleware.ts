@@ -36,7 +36,7 @@ export function middleware(req: NextRequest) {
     scriptSrc,
     // Style-src stays loose: Next.js + Tailwind 4 inline some critical CSS.
     "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' data: https://images.unsplash.com",
+    "img-src 'self' data:", // Fotos liegen lokal (public/bilder), nichts Externes
     "font-src 'self' data:",
     "connect-src 'self'",
     "frame-ancestors 'none'",

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useT } from "@/components/TranslationProvider";
 import { formText } from "@/lib/form-text";
+import { PW_MIN_KUNDE } from "@/lib/passwort";
 
 type Method = "email" | "phone";
 
@@ -19,7 +20,7 @@ export function RegisterForm() {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    if (password.length < 6) {
+    if (password.length < PW_MIN_KUNDE) {
       setError(f.pwShort);
       return;
     }

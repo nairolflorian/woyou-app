@@ -261,12 +261,14 @@ schritt "7. Tägliche Sicherung und Zeitplan für Produktion"
 mkdir -p "$PROD_SICHERUNG" && chmod 700 "$PROD_SICHERUNG"
 cat > "$CRON_DAILY/woyou-prod-backup" <<CRON
 #!/usr/bin/env bash
-# WoYou Produktion: tägliches pg_dump (angelegt von scripts/prod-einrichten.sh)
-CONTAINER=woyou_postgres_prod DBUSER=woyou DBNAME=woyou DEST=$PROD_SICHERUNG PREFIX=woyou-prod KEEP=14 \\
+# WoYou Produktion: tägliches pg_dump plus Upload-Volume, 14 Tage (angelegt von scripts/prod-einrichten.sh)
+CONTAINER=woyou_postgres_prod DBUSER=woyou DBNAME=woyou DEST=$PROD_SICHERUNG PREFIX=woyou-prod KEEP=14 VOLUME=woyou_prod_uploads \\
   bash $REPO/scripts/server/backup-postgres.sh
+# Sicherungen vor Updates (prod-einrichten-*) nach 14 Tagen löschen, alte statische Seite bleibt
+SICHERUNG=$SICHERUNG TAGE=14 bash $REPO/scripts/server/sicherungen-aufraeumen.sh
 CRON
 chmod 755 "$CRON_DAILY/woyou-prod-backup"
-ok "$CRON_DAILY/woyou-prod-backup (14 Tage)"
+ok "$CRON_DAILY/woyou-prod-backup (Datenbank + Uploads, 14 Tage; Update-Sicherungen nach 14 Tagen weg)"
 # Erinnerungen und Aufräumen (Marketing-Mails erst, wenn SMTP eingerichtet ist)
 cat > "$CRON_D/woyou-prod" <<CRON
 # WoYou Produktion (angelegt von scripts/prod-einrichten.sh). Liest CRON_SECRET aus $REPO/$ENVP.

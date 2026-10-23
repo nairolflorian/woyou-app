@@ -16,6 +16,15 @@ import { SchemaOrg } from "@/components/SchemaOrg";
 // Hero mit Grenze, Preis neben „Bitte beachte“, Das machen wir | nicht, realistische Erwartung, Muster, Selbstcheck, Ablauf, FAQ.
 const Check = () => <span aria-hidden className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-emerald-700 text-[11px] font-bold text-white">✓</span>;
 const Cross = () => <span aria-hidden className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-slate-500 text-[11px] font-bold text-white">✕</span>;
+// Angezeigte Breiten je Bildrahmen (Container max-w-6xl = 1152 px, 24 px Rand je Seite), damit der Browser
+// aus dem srcset die passende Größe für 1x/2x/3x-Bildschirme wählt.
+const SIZES = {
+  hero: "(min-width: 1152px) 500px, (min-width: 768px) 46vw, calc(100vw - 48px)",
+  side: "(min-width: 1152px) 430px, (min-width: 768px) 40vw, calc(100vw - 48px)",
+  sample: "(min-width: 1152px) 540px, (min-width: 640px) 50vw, calc(100vw - 48px)",
+  design: "(min-width: 1152px) 264px, (min-width: 640px) 25vw, 50vw",
+};
+
 const FACT_ICONS = [
   <path key="a" d="M4 21V9l8-6 8 6v12h-5v-6H9v6z" />,
   <path key="b" d="M4 6h16v4H4zm0 8h16v4H4zm3-6h.01M7 16h.01" />,
@@ -38,7 +47,7 @@ export async function ServiceLanding() {
       <SchemaOrg />
       <SiteHeader />
       <main id="main" className="flex-1">
-        {/* 1 · Hero: Versprechen und Grenze im selben Blick */}
+        {/* 1 · Hero: Versprechen und Grenze im selben Blick. Erstes Bild wird vorgeladen (LCP), die übrigen vier erst danach mit niedriger Priorität */}
         <section className="bg-white">
           <div className="mx-auto max-w-6xl px-6 py-12 md:py-16 grid gap-10 md:grid-cols-[1.15fr_1fr] items-center">
             <div>
@@ -57,7 +66,7 @@ export async function ServiceLanding() {
             <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl bg-slate-100 shadow-lg fade-stack">
               {IMAGES.hero.map((src, i) => (
                 <figure key={src} className="absolute inset-0" style={{ animationDelay: `${i * 5}s` }}>
-                  <Image src={src} alt={c.jobs[i]} fill priority={i === 0} sizes="(min-width: 768px) 480px, 100vw" className="object-cover" />
+                  <Image src={src} alt={c.jobs[i]} fill preload={i === 0} fetchPriority={i === 0 ? undefined : "low"} quality={85} sizes={SIZES.hero} className="object-cover" />
                   <figcaption className="absolute bottom-3 left-3 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-[color:var(--color-ink)]">{c.jobs[i]}</figcaption>
                 </figure>
               ))}
@@ -116,7 +125,7 @@ export async function ServiceLanding() {
         <section className="bg-white">
           <div className="mx-auto max-w-6xl px-6 py-14 grid gap-8 md:grid-cols-[0.8fr_1.2fr] items-stretch">
             <div className="relative min-h-72 overflow-hidden rounded-2xl">
-              <Image src={IMAGES.papers} alt="" fill sizes="(min-width: 768px) 400px, 100vw" className="object-cover" />
+              <Image src={IMAGES.papers} alt="" fill quality={85} sizes={SIZES.side} className="object-cover" />
             </div>
             <div>
               <h2 className="text-2xl md:text-3xl font-bold">{c.realTitle}</h2>
@@ -138,10 +147,10 @@ export async function ServiceLanding() {
             <h2 className="text-2xl md:text-3xl font-bold">{c.sampleTitle}</h2>
             <p className="mt-2 text-[color:var(--color-ink-soft)]">{c.sampleLead}</p>
             <div className="mt-8 grid gap-6 sm:grid-cols-2">
-              {[{ img: "/muster/muster-lebenslauf.png", pdf: "/muster/muster-lebenslauf.pdf", label: c.sampleCv }, { img: "/muster/muster-anschreiben.png", pdf: "/muster/muster-anschreiben.pdf", label: c.sampleLetter }].map((m) => (
+              {[{ img: "/muster/muster-lebenslauf.webp", pdf: "/muster/muster-lebenslauf.pdf", label: c.sampleCv }, { img: "/muster/muster-anschreiben.webp", pdf: "/muster/muster-anschreiben.pdf", label: c.sampleLetter }].map((m) => (
                 <a key={m.img} href={m.pdf} target="_blank" className="group block">
                   <div className="relative overflow-hidden rounded-xl border border-[color:var(--color-border)] bg-white shadow-sm transition group-hover:shadow-md">
-                    <Image src={m.img} alt={m.label} width={707} height={1000} className="h-auto w-full" />
+                    <Image src={m.img} alt={m.label} width={1414} height={2000} quality={90} sizes={SIZES.sample} className="h-auto w-full" />
                     <span className="absolute right-3 top-3 rounded-full bg-[color:var(--color-ink)] px-3 py-1 text-xs font-semibold text-white">{c.sampleNote}</span>
                   </div>
                   <div className="mt-2 text-sm font-semibold text-[color:var(--color-brand-deep)]">{m.label} (PDF) ↗</div>
@@ -152,7 +161,7 @@ export async function ServiceLanding() {
             <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
               {DESIGN_TEMPLATES.map((t) => (
                 <figure key={t}>
-                  <Image src={`/muster/design-${t}.png`} alt={mappeText(locale).designs[t]} width={424} height={600} className="h-auto w-full rounded-lg border border-[color:var(--color-border)] bg-white shadow-sm" />
+                  <Image src={`/muster/design-${t}.webp`} alt={mappeText(locale).designs[t]} width={1272} height={1800} quality={90} sizes={SIZES.design} className="h-auto w-full rounded-lg border border-[color:var(--color-border)] bg-white shadow-sm" />
                   <figcaption className="mt-1.5 text-center text-sm text-[color:var(--color-ink-soft)]">{mappeText(locale).designs[t]}</figcaption>
                 </figure>
               ))}
@@ -169,7 +178,7 @@ export async function ServiceLanding() {
               <Link href="/selbstcheck" className="btn-primary mt-6 inline-flex">{c.checkBtn}</Link>
             </div>
             <div className="relative aspect-[4/3] overflow-hidden rounded-2xl">
-              <Image src={IMAGES.talk} alt="" fill sizes="(min-width: 768px) 380px, 100vw" className="object-cover" />
+              <Image src={IMAGES.talk} alt="" fill quality={85} sizes={SIZES.side} className="object-cover" />
             </div>
           </div>
         </section>
@@ -221,7 +230,7 @@ export async function ServiceLanding() {
               <p className="mt-2 text-sm text-[color:var(--color-ink-soft)]">{st.contactLead}</p>
               <ul className="mt-5 space-y-2 text-sm">
                 <li><a className="font-semibold text-[color:var(--color-brand-deep)]" href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a></li>
-                <li><a className="font-semibold text-[color:var(--color-brand-deep)]" href={`tel:${COMPANY.phone.replace(/\s/g, "")}`} dir="ltr">{COMPANY.phone}</a></li>
+                <li><a className="font-semibold text-[color:var(--color-brand-deep)]" href={`tel:${COMPANY.phoneTel}`} dir="ltr">{COMPANY.phone}</a></li>
                 <li>{st.hours}</li>
                 <li className="text-[color:var(--color-ink-soft)]">{COMPANY.name} · {COMPANY.street} · {COMPANY.zipCity} · {COMPANY.register}</li>
               </ul>

@@ -1,4 +1,4 @@
-// Muster-Unterlagen für die Startseite erzeugen (erfundene Person): npx tsx scripts/muster/render.tsx public/muster
+// Muster-Unterlagen für die Startseite erzeugen (erfundene Person). Normalerweise über npx tsx scripts/bilder.ts (PDFs + Vorschaubilder); direkt: npx tsx scripts/muster/render.tsx public/muster
 import { writeFileSync, mkdirSync } from "node:fs";
 import { cvPdf, letterPdf } from "./pdf";
 import * as app from "../../src/lib/application";

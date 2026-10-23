@@ -285,10 +285,11 @@ async function main() {
     const { COMPANY } = await import("../src/lib/company");
     assert.equal(COMPANY.email, "service@karrierekind.de");
     assert.equal(COMPANY.legalEmail, "info@karrierekind.de");
-    assert.equal(COMPANY.phone, "+49 1511 2213968");
+    assert.equal(COMPANY.phone, "0800 40 40 055", "Telefon: Hotline der EuBiA wie auf www.eubia.de");
+    assert.equal(COMPANY.phoneTel, "+498004040055");
     assert.ok(!("vatId" in COMPANY) && !("ustId" in COMPANY), "USt-ID gibt es bei KarriereKind nicht");
     const walk = (d: string): string[] => fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? walk(`${d}/${e.name}`) : /\.(tsx?|json)$/.test(e.name) ? [`${d}/${e.name}`] : []));
-    const treffer = [...walk("src"), ...(fs.existsSync("messages") ? walk("messages") : [])].filter((f) => /info@woyou\.de|160 626 ?6208/.test(fs.readFileSync(f, "utf8")));
+    const treffer = [...walk("src"), ...(fs.existsSync("messages") ? walk("messages") : [])].filter((f) => /info@woyou\.de|160 ?626 ?6208|1511 ?2213968|15112213968/.test(fs.readFileSync(f, "utf8")));
     assert.deepEqual(treffer, [], `alte Kontaktangaben in ${treffer.join(", ")}`);
     assert.match(fs.readFileSync("src/app/impressum/page.tsx", "utf8"), /COMPANY\.legalEmail/);
     for (const f of ["src/components/LoginForm.tsx", "src/components/SiteFooter.tsx", "src/components/SelfCheck.tsx", "src/app/abmelden/page.tsx", "src/app/datenschutz/page.tsx", "src/app/agb/page.tsx"])
@@ -452,6 +453,50 @@ async function main() {
     assert.ok(/29[.,]50/.test(hi) && hi.includes("€"), hi);
     assert.ok(/22.*10.*2026/.test(new Date(2026, 9, 22).toLocaleDateString(dateLocaleOf("ar"))));
     assert.ok(/22.*10.*2026/.test(new Date(2026, 9, 22).toLocaleDateString(dateLocaleOf("hi"))));
+  });
+
+  await test("Bilder: Fotos lokal und groß genug, nichts von Unsplash im Browser, Muster in hoher Auflösung", async () => {
+    const fs = await import("node:fs");
+    const { FOTOS, fotoSrc } = await import("../src/lib/fotos");
+    for (const f of Object.values(FOTOS)) {
+      const b = fs.readFileSync(`public${fotoSrc(f)}`);
+      assert.ok(b.length < 400 * 1024, `${f.datei}.jpg zu groß`);
+      const sof = b.findIndex((x, i) => x === 0xff && (b[i + 1] === 0xc0 || b[i + 1] === 0xc2)); // JPEG-Maße aus dem SOF-Block
+      assert.deepEqual([b.readUInt16BE(sof + 7), b.readUInt16BE(sof + 5)], [f.w, f.h], `${f.datei}.jpg Maße`);
+      assert.ok(f.w >= 1000 && f.von && f.seite.startsWith("https://unsplash.com/"), f.datei);
+    }
+    assert.ok(!/unsplash/i.test(fs.readFileSync("src/middleware.ts", "utf8")), "CSP erlaubt noch Unsplash");
+    assert.ok(!/images\.unsplash\.com/.test(fs.readFileSync("next.config.ts", "utf8") + fs.readFileSync("src/lib/landing-copy.ts", "utf8")), "Bilder noch extern");
+    assert.match(fs.readFileSync("src/app/impressum/page.tsx", "utf8"), /Bildnachweis/);
+    for (const n of ["muster-lebenslauf", "muster-anschreiben", "design-klassisch", "design-modern", "design-kompakt", "design-elegant"]) {
+      const b = fs.readFileSync(`public/muster/${n}.webp`);
+      assert.equal(b.toString("ascii", 8, 12), "WEBP", n);
+      assert.ok(b.length < 400 * 1024, n);
+    }
+    for (const f of ["src/app/opengraph-image.png", "src/app/icon.png", "src/app/apple-icon.png", "src/app/favicon.ico", "public/Logo.png"]) assert.ok(fs.existsSync(f), f);
+    const og = fs.readFileSync("src/app/opengraph-image.png");
+    assert.deepEqual([og.readUInt32BE(16), og.readUInt32BE(20)], [1200, 630], "Social-Preview 1200x630");
+  });
+
+  await test("Passwörter: Team/Admin/Super-Admin mindestens 12 Zeichen, Kund:innen mindestens 8", async () => {
+    const fs = await import("node:fs");
+    const { pwMin, pwOk, PW_MIN_KUNDE, PW_MIN_TEAM } = await import("../src/lib/passwort");
+    assert.equal(PW_MIN_KUNDE, 8); assert.equal(PW_MIN_TEAM, 12);
+    for (const r of ["TEAM", "ADMIN", "SUPER_ADMIN"]) { assert.equal(pwMin(r), 12, r); assert.ok(!pwOk("elf-zeichen", r)); assert.ok(pwOk("zwoelf-zeich", r)); }
+    assert.equal(pwMin("CANDIDATE"), 8); assert.ok(!pwOk("sieben7", "CANDIDATE")); assert.ok(pwOk("achtacht", "CANDIDATE"));
+    assert.match(fs.readFileSync("src/app/api/admin/team/route.ts", "utf8"), /min\(PW_MIN_TEAM\)/);
+    assert.match(fs.readFileSync("src/app/api/account/route.ts", "utf8"), /pwOk\(parsed\.data\.newPassword, me\.role\)/);
+    assert.match(fs.readFileSync("src/app/api/auth/register/route.ts", "utf8"), /min\(PW_MIN_KUNDE\)/);
+    assert.ok(!/\b6 (Zeichen|characters|caractères)/.test(fs.readFileSync("src/lib/form-text.ts", "utf8")), "Formulartexte nennen noch 6 Zeichen");
+  });
+
+  await test("Datenschutz: CRM in Finnland (EU), App-Server nur „in der EU“, KI-Textdienst nicht im Einsatz", async () => {
+    const fs = await import("node:fs");
+    const t = fs.readFileSync("src/app/datenschutz/page.tsx", "utf8").replace(/\{\/\*[\s\S]*?\*\/\}/g, "");
+    assert.match(t, /Helsinki, Finnland/);
+    assert.ok(!/Server in Deutschland|Servern der Hetzner\s+Online GmbH in Deutschland/.test(t));
+    assert.ok(!/Mistral/.test(t) && /Derzeit nicht im Einsatz/.test(t), "KI-Absatz");
+    assert.ok(!/Server in Deutschland|Servers in Germany/.test(fs.readFileSync("src/lib/landing-copy.ts", "utf8")));
   });
 
   if (process.argv.includes("--live")) {

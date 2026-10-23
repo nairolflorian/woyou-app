@@ -38,9 +38,9 @@ const nextConfig: NextConfig = {
     ];
   },
   images: {
-    remotePatterns: [
-      { protocol: "https", hostname: "images.unsplash.com" },
-    ],
+    // erlaubte Qualitätsstufen für next/image (ab Next 16 Pflicht): 75 Standard, 85 Fotos, 90 Dokument-Vorschauen mit Schrift
+    qualities: [75, 85, 90],
+    // keine externen Bildquellen: alle Fotos liegen unter public/bilder (Datenschutz, siehe src/lib/fotos.ts)
   },
 };
 

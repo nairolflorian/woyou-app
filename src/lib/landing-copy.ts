@@ -5,6 +5,7 @@
 // Preise kommen aus src/lib/angebot.ts.
 import { ANGEBOT, formatPrice } from "@/lib/angebot";
 import { arMonths } from "@/lib/werkzeug-text";
+import { FOTOS, fotoSrc } from "@/lib/fotos";
 
 export type Lang = "de" | "en" | "fr" | "ar" | "hi";
 
@@ -86,7 +87,7 @@ function build(lang: Lang): Landing {
       { q: "Can I use my documents myself?", a: "Yes. You can download your CV and cover letters at any time and use them for any application, also after the tool has expired." },
       { q: "How do I pay?", a: "Securely online by card through our payment provider Stripe." },
     ],
-    facts: ["KarriereKind GmbH, Düsseldorf", "Servers in Germany", "Payment via Stripe", "Personal contact"],
+    facts: ["KarriereKind GmbH, Düsseldorf", "Servers in the EU", "Payment via Stripe", "Personal contact"],
     jobs: ["Care", "Hospitality", "Skilled trades", "Office", "Technology"],
   };
   // Übersetzung bitte von Muttersprachler:in prüfen lassen (Arabisch, Hocharabisch für Marokko)
@@ -151,7 +152,7 @@ function build(lang: Lang): Landing {
       { q: "هل يمكنني استخدام مستنداتي بنفسي؟", a: "نعم. يمكنك تحميل سيرتك الذاتية ورسائل التحفيز في أي وقت واستخدامها في أي طلب، حتى بعد انتهاء مدة الأداة." },
       { q: "كيف أدفع؟", a: "عبر الإنترنت بالبطاقة وبشكل آمن، من خلال مزوّد الدفع Stripe." },
     ],
-    facts: ["KarriereKind GmbH، دوسلدورف", "خوادم في ألمانيا", "الدفع عبر Stripe", "شخص تتواصل معه مباشرة"],
+    facts: ["KarriereKind GmbH، دوسلدورف", "خوادم في الاتحاد الأوروبي", "الدفع عبر Stripe", "شخص تتواصل معه مباشرة"],
     jobs: ["التمريض والرعاية", "المطاعم والفنادق", "الحِرف", "المكتب", "التقنية"],
   };
   // Übersetzung bitte von Muttersprachler:in prüfen lassen (Hindi)
@@ -216,7 +217,7 @@ function build(lang: Lang): Landing {
       { q: "क्या मैं अपने दस्तावेज़ ख़ुद इस्तेमाल कर सकता/सकती हूँ?", a: "हाँ। आप अपना बायोडाटा और कवर लेटर कभी भी डाउनलोड करके किसी भी आवेदन में इस्तेमाल कर सकते हैं, टूल की अवधि ख़त्म होने के बाद भी।" },
       { q: "भुगतान कैसे करें?", a: "हमारे भुगतान सेवा प्रदाता Stripe के ज़रिए कार्ड से, सुरक्षित रूप से ऑनलाइन।" },
     ],
-    facts: ["KarriereKind GmbH, डसेलडॉर्फ़", "जर्मनी में सर्वर", "Stripe से भुगतान", "व्यक्तिगत संपर्क"],
+    facts: ["KarriereKind GmbH, डसेलडॉर्फ़", "EU में सर्वर", "Stripe से भुगतान", "व्यक्तिगत संपर्क"],
     jobs: ["देखभाल", "होटल और रेस्तराँ", "कारीगरी", "ऑफ़िस", "तकनीक"],
   };
   if (lang === "fr") return {
@@ -280,7 +281,7 @@ function build(lang: Lang): Landing {
       { q: "Puis-je utiliser mes documents moi-même ?", a: "Oui. Vous pouvez télécharger votre CV et vos lettres à tout moment et les utiliser pour toute candidature, même après la fin de l'outil." },
       { q: "Comment payer ?", a: "En ligne par carte, de façon sécurisée, via notre prestataire de paiement Stripe." },
     ],
-    facts: ["KarriereKind GmbH, Düsseldorf", "Serveurs en Allemagne", "Paiement via Stripe", "Interlocuteur personnel"],
+    facts: ["KarriereKind GmbH, Düsseldorf", "Serveurs dans l'UE", "Paiement via Stripe", "Interlocuteur personnel"],
     jobs: ["Soins", "Restauration", "Artisanat", "Bureau", "Technique"],
   };
   return {
@@ -344,7 +345,7 @@ function build(lang: Lang): Landing {
       { q: "Darf ich meine Unterlagen selbst nutzen?", a: "Ja. Lebenslauf und Anschreiben kannst du jederzeit herunterladen und für jede Bewerbung verwenden, auch wenn das Werkzeug abgelaufen ist." },
       { q: "Wie bezahle ich?", a: "Sicher online mit Karte über unseren Zahlungsanbieter Stripe." },
     ],
-    facts: ["KarriereKind GmbH, Düsseldorf", "Server in Deutschland", "Zahlung über Stripe", "Persönliche Ansprechperson"],
+    facts: ["KarriereKind GmbH, Düsseldorf", "Server in der EU", "Zahlung über Stripe", "Persönliche Ansprechperson"],
     jobs: ["Pflege", "Gastronomie", "Handwerk", "Büro", "Technik"],
   };
 }
@@ -352,16 +353,11 @@ function build(lang: Lang): Landing {
 export const LANDING: Record<Lang, Landing> = { de: build("de"), en: build("en"), fr: build("fr"), ar: build("ar"), hi: build("hi") };
 export const landingCopy = (locale: string) => LANDING[(locale in LANDING ? locale : "en") as Lang];
 
-// Bildwelt (siehe BILDWELT.md): echte Menschen bei der Arbeit, fünf Berufe im Wechsel, freie Unsplash-Lizenz
-const U = (id: string, w = 1200) => `https://images.unsplash.com/${id}?w=${w}&q=75&auto=format&fit=crop`;
+// Bildwelt (siehe BILDWELT.md): echte Menschen bei der Arbeit, fünf Berufe im Wechsel, freie Unsplash-Lizenz.
+// Die Fotos liegen in hoher Auflösung unter public/bilder (Liste und Bildnachweis in src/lib/fotos.ts);
+// next/image erzeugt daraus je Gerät passende Größen, nichts wird von Unsplash geladen.
 export const IMAGES = {
-  hero: [
-    U("photo-1765896387387-0538bc9f997e"), // Pflege: Pflegekraft mit älterer Dame
-    U("photo-1577219491135-ce391730fb2c"), // Gastronomie: Koch in der Küche
-    U("photo-1646640381839-02748ae8ddf0"), // Handwerk: Handwerker mit Bohrmaschine
-    U("photo-1758876202618-7197443c717f"), // Büro: Kollegin am Arbeitsplatz
-    U("photo-1621905251189-08b45d6a269e"), // Technik: Elektriker mit Helm
-  ],
-  talk: U("photo-1573497620053-ea5300f94f21", 900), // Erstgespräch
-  papers: U("photo-1664382953403-fc1ac77073a0", 900), // Logistik: zwei Kolleginnen im Lager
+  hero: [FOTOS.pflege, FOTOS.gastro, FOTOS.handwerk, FOTOS.buero, FOTOS.technik].map(fotoSrc), // je 1200x1500 (4:5)
+  talk: fotoSrc(FOTOS.gespraech), // 1000x750 (4:3)
+  papers: fotoSrc(FOTOS.lager), // 1000x1150
 };

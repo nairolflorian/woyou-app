@@ -1,8 +1,9 @@
 // Betreiberangaben (Impressum, Kontakt, Datenschutz, AGB, Fußzeile) zentral hier pflegen.
 // Firma, Anschrift, Vertretung, Register und Datenschutzbeauftragte übernommen von https://karrierekind.de/impressum
 // und https://karrierekind.de/datenschutz (Stand 23.10.2026, gleiche Gesellschaft). Eine USt-ID steht dort nicht,
-// deshalb hier auch keine. Kontakt wie bei KarriereKind (Stand 23.10.2026): Fußzeile/Kontakt service@karrierekind.de und
-// +49 1511 2213968, im Impressum info@karrierekind.de. Kein eigenes WoYou-Postfach, damit Anfragen in einem gelesenen Postfach landen.
+// deshalb hier auch keine. Kontakt wie bei KarriereKind (Stand 23.10.2026): Fußzeile/Kontakt service@karrierekind.de,
+// im Impressum info@karrierekind.de. Kein eigenes WoYou-Postfach, damit Anfragen in einem gelesenen Postfach landen.
+// Telefon (Entscheidung Florian 23.10.2026): keine Handynummer, sondern die kostenlose Hotline der EuBiA wie auf www.eubia.de.
 export const COMPANY = {
   name: "KarriereKind GmbH",
   street: "Berliner Allee 51",
@@ -13,7 +14,8 @@ export const COMPANY = {
   register: "HRB 99139",
   email: "service@karrierekind.de", // Kundenkontakt: Fußzeile, Kontakt, Login, Selbstcheck, AGB, Datenschutz, Antwortadresse der Mails
   legalEmail: "info@karrierekind.de", // Impressum (wie im Impressum von karrierekind.de)
-  phone: "+49 1511 2213968",
+  phone: "0800 40 40 055", // Anzeige wie auf www.eubia.de (kostenlose Hotline der EuBiA)
+  phoneTel: "+498004040055", // für tel:-Links
   seat: "Düsseldorf",
   // Externe Datenschutzbeauftragte (wie bei KarriereKind)
   dpo: { name: "DPP Data Protection GmbH", person: "Rudolf Fiedler", street: "Zum Gottschalkhof 2", zipCity: "60594 Frankfurt am Main", email: "info@dataprotectionpartner.de" },

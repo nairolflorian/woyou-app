@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { PW_MIN_TEAM } from "@/lib/passwort";
 
 export function TeamForm() {
   const [email, setEmail] = useState("");
@@ -37,8 +38,8 @@ export function TeamForm() {
         <input className="input" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
       </div>
       <div>
-        <label className="label">Passwort</label>
-        <input className="input" type="password" minLength={6} required value={password} onChange={(e) => setPassword(e.target.value)} />
+        <label className="label">Passwort (mindestens {PW_MIN_TEAM} Zeichen)</label>
+        <input className="input" type="password" minLength={PW_MIN_TEAM} required value={password} onChange={(e) => setPassword(e.target.value)} />
       </div>
       <div>
         <label className="label">Rolle</label>
