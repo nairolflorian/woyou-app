@@ -1,6 +1,7 @@
 /**
  * Kleine Tests für die Kernlogik nach Weg 1 (ohne Datenbank, ohne Netz):
- * Angebot (nur Startpaket), Stripe-Schutz im DEMO_MODE, Demo-Beispielstellen, Deutsch-Hinweis, Filter, Sortierung, Dubletten, Suchvorschläge, Tracker-Stand,
+ * Angebot (nur Startpaket), Stripe je Umgebung (Staging nur Test, Produktion nur Live), CRM nur in Produktion, Produktion ohne /demo,
+ * Staging-Leiste, getrenntes Prod-Compose, Rechtstexte ohne Platzhalter, Demo-Beispielstellen, Deutsch-Hinweis, Filter, Sortierung, Dubletten, Suchvorschläge, Tracker-Stand,
  * E-Mail-Link und die Sperrliste der abgeschalteten Bereiche.
  *   npx tsx scripts/weg1-test.ts
  * Optional mit Live-Abfrage der Jobbörse (Netz nötig):
@@ -8,7 +9,9 @@
  */
 import assert from "node:assert/strict";
 import { ANGEBOT, addMonths, extendUntil, toolState, formatPrice, isLegacyToolKind } from "../src/lib/angebot";
-import { stripeKeyMode, stripeKeyAllowed } from "../src/lib/stripe-mode";
+import { stripeKeyMode, stripeKeyAllowed, appEnv, allowedKeyMode } from "../src/lib/stripe-mode";
+import { crmConfig } from "../src/lib/crm-core";
+import { readFileSync } from "node:fs";
 import { DEMO_JOBS, DEMO_TOOL_EMAILS, demoJobRow } from "../src/lib/demo-jobs";
 import {
   germanRequired, parseLevel, germanFit, matchesHours, matchesGerman, dedupe, rank, profileTerms, profileRegion,
@@ -180,6 +183,68 @@ async function main() {
     }
     assert.equal(stripeKeyAllowed("sk_live_abc", "false"), true);
     assert.equal(stripeKeyAllowed("", "false"), false);
+  });
+  await test("Stripe: Produktion (DEMO_MODE=false) nur Live-Schlüssel, nie Test oder Unbekanntes", () => {
+    assert.equal(appEnv("false"), "prod"); assert.equal(appEnv(undefined), "staging"); assert.equal(appEnv("true"), "staging");
+    assert.equal(allowedKeyMode("false"), "live"); assert.equal(allowedKeyMode("true"), "test");
+    assert.equal(stripeKeyAllowed("sk_live_abc", "false"), true);
+    assert.equal(stripeKeyAllowed("rk_live_abc", "false"), true);
+    assert.equal(stripeKeyAllowed("sk_test_abc", "false"), false, "Test-Schlüssel in Produktion");
+    assert.equal(stripeKeyAllowed("rk_test_abc", "false"), false);
+    assert.equal(stripeKeyAllowed("irgendwas", "false"), false);
+    assert.equal(stripeKeyAllowed(undefined, "false"), false);
+  });
+  await test("CRM: Staging meldet nie an das echte CRM, Produktion nur mit Freigabe", () => {
+    const keep = { ...process.env };
+    try {
+      Object.assign(process.env, { EUBIA_CRM_URL: "https://crm.example.com/", EUBIA_CRM_TOKEN: "t", EUBIA_CRM_SYNC: "on" });
+      for (const d of [undefined, "true", ""]) {
+        if (d === undefined) delete process.env.DEMO_MODE; else process.env.DEMO_MODE = d;
+        assert.equal(crmConfig(), null, `Staging (${d})`);
+      }
+      process.env.DEMO_MODE = "false";
+      assert.deepEqual(crmConfig(), { url: "https://crm.example.com", token: "t" });
+      process.env.EUBIA_CRM_SYNC = "off";
+      assert.equal(crmConfig(), null, "ohne Freigabe");
+    } finally {
+      for (const k of ["EUBIA_CRM_URL", "EUBIA_CRM_TOKEN", "EUBIA_CRM_SYNC", "DEMO_MODE"]) { if (k in keep) process.env[k] = keep[k]; else delete process.env[k]; }
+    }
+  });
+  await test("Produktion: keine /demo-Seite, kein Demo-Login, Staging-Leiste und -Abzeichen nur mit DEMO_MODE", () => {
+    const src = (f: string) => readFileSync(new URL(`../${f}`, import.meta.url), "utf8");
+    assert.match(src("src/app/demo/page.tsx"), /if \(!DEMO_MODE_ENABLED\) notFound\(\);/);
+    assert.match(src("src/app/api/auth/demo-login/route.ts"), /if \(!DEMO_MODE_ENABLED\) \{\s*return NextResponse\.json\(\{ error: "NOT_FOUND" \}, \{ status: 404 \}\)/);
+    const banner = src("src/components/StagingBanner.tsx");
+    assert.match(banner, /if \(!DEMO_MODE_ENABLED\) return null;/); assert.match(banner, /STAGING/); assert.match(banner, /data-umgebung="staging"/);
+    assert.match(src("src/app/layout.tsx"), /<StagingBanner \/>/);
+    assert.match(src("src/components/SiteHeader.tsx"), /\{DEMO_MODE_ENABLED && \(/);
+    assert.ok(!/>\s*DEMO\s*</.test(src("src/components/SiteHeader.tsx") + src("src/components/DemoModeBarClient.tsx")), "altes DEMO-Abzeichen");
+    assert.equal(process.env.DEMO_MODE === "false" ? "prod" : "staging", appEnv(process.env.DEMO_MODE));
+    assert.match(src("scripts/seed.ts"), /if \(process\.env\.DEMO_MODE === "false"\) \{[^}]*process\.exit\(1\)/, "Seed muss in Produktion abbrechen");
+    for (const f of ["src/app/robots.ts", "src/app/sitemap.ts"]) assert.match(src(f), /export const dynamic = "force-dynamic"/, f);
+  });
+  await test("Produktion: Compose getrennt (eigenes Projekt, keine ${...}-Werte aus Staging, migrate ohne Seed)", () => {
+    const y = readFileSync(new URL("../docker-compose.prod.yml", import.meta.url), "utf8");
+    const code = y.split("\n").filter((l) => !l.trim().startsWith("#")).join("\n");
+    assert.match(code, /^name: woyou-prod$/m);
+    assert.ok(!/\$\{/.test(code), "keine Interpolation aus .env");
+    assert.match(code, /container_name: woyou_app_prod/); assert.match(code, /container_name: woyou_postgres_prod/);
+    assert.match(code, /"127\.0\.0\.1:3051:3000"/);
+    assert.ok(!/seed/i.test(code), "kein Seed in Produktion");
+    assert.match(code, /command: \["npx", "prisma", "migrate", "deploy"\]/);
+    assert.match(code, /name: woyou_prod_pg/); assert.match(code, /name: woyou_prod_uploads/);
+    assert.match(readFileSync(new URL("../.gitignore", import.meta.url), "utf8"), /^\.env\.prod$/m);
+  });
+  await test("Rechtstexte: keine Platzhalter, kein sichtbares „Entwurf“, ANWALT PRÜFEN nur als Kommentar, Angaben wie KarriereKind", async () => {
+    const { COMPANY } = await import("../src/lib/company");
+    assert.equal(COMPANY.name, "KarriereKind GmbH"); assert.equal(COMPANY.zipCity, "40212 Düsseldorf");
+    assert.equal(COMPANY.register, "HRB 99139"); assert.equal(COMPANY.court, "Amtsgericht Düsseldorf"); assert.equal(COMPANY.ceo, "Rachid Debdoubi");
+    for (const f of ["src/app/impressum/page.tsx", "src/app/datenschutz/page.tsx", "src/app/agb/page.tsx"]) {
+      const t = readFileSync(new URL(`../${f}`, import.meta.url), "utf8");
+      assert.ok(!/Platzhalter|Entwurf|lorem|TODO|XXX|\[[^\]]*eintragen/i.test(t.replace(/\{\/\*[\s\S]*?\*\/\}|\/\/.*$/gm, "")), `Platzhalter in ${f}`);
+      for (const line of t.split("\n")) if (/ANWALT PRÜFEN/.test(line)) assert.match(line, /^\s*(\/\/|\{\/\*)/, `sichtbarer ANWALT-Hinweis in ${f}: ${line.trim()}`);
+      assert.ok(!/[–—]/.test(t.replace(/\{\/\*[\s\S]*?\*\/\}|\/\/.*$/gm, "")), `langer Gedankenstrich in ${f}`);
+    }
   });
   await test("Demo: Beispielstellen klar erfunden (Beispiel-Firmen, nur example.com), mit/ohne Mail, eine beworben", () => {
     assert.deepEqual([...DEMO_TOOL_EMAILS], ["fatima@example.com", "youssef@example.com"]);

@@ -24,6 +24,7 @@ export default function Impressum() {
               <br />
               {COMPANY.country}
             </p>
+            <p>WoYou ist ein Angebot der {COMPANY.name}, eines Unternehmens der EuBiA-Gruppe.</p>
 
             <h2 className="font-semibold text-base">Vertreten durch den Geschäftsführer</h2>
             <p>{COMPANY.ceo}</p>
@@ -37,7 +38,7 @@ export default function Impressum() {
 
             <h2 className="font-semibold text-base">Registereintrag</h2>
             <p>
-              Sitz der Gesellschaft: Düsseldorf
+              Sitz der Gesellschaft: {COMPANY.seat}
               <br />
               Registergericht: {COMPANY.court}
               <br />

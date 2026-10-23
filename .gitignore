@@ -35,6 +35,11 @@ yarn-error.log*
 .env.local
 .env.production
 .env.*.local
+# Produktion und Sicherungen der Env-Dateien (Server), nie ins Repo
+.env.prod
+.env.prod.*
+.env.vor-*
+.prod-stand-*
 !.env.example
 
 # vercel

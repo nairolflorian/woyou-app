@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { BookingRow } from "@/components/BookingRow";
 import { BOOKING_STATUS, BOOKING_STATUS_LABEL, formatPrice } from "@/lib/services";
 import { mailEnabled } from "@/lib/mail";
-import { getStripe, stripeKeyMode, stripeBlockedByDemo } from "@/lib/stripe";
+import { getStripe, stripeKeyMode, stripeBlocked, stripeExpectedMode } from "@/lib/stripe";
 import { monthlyReport } from "@/lib/report";
 import { getSession } from "@/lib/session";
 import { isAdmin } from "@/lib/auth";
@@ -24,8 +24,8 @@ export default async function AdminBookingsPage() {
       <div>
         <h1 className="text-2xl font-bold">Buchungen · Unterlagen und Werkzeug</h1>
         <p className="text-sm text-[color:var(--color-ink-soft)]">
-          Zahlung: {getStripe() ? <span className="text-emerald-700 font-semibold">Stripe aktiv ({stripeKeyMode() === "test" ? "Testmodus, kein echtes Geld" : "live"})</span> : stripeBlockedByDemo() ? <span className="text-amber-700 font-semibold">Stripe-Schlüssel ist kein Test-Schlüssel und DEMO_MODE ist an: Zahlungen gesperrt, Buchungen kommen als „Angefragt“</span> : <span className="text-amber-700 font-semibold">noch kein Stripe-Konto, Buchungen kommen als „Angefragt“</span>}
-          {" · "}Mailversand: {mailEnabled() ? <span className="text-emerald-700 font-semibold">aktiv</span> : <span className="text-amber-700 font-semibold">noch kein SMTP – Mails werden nur protokolliert</span>}
+          Zahlung: {getStripe() ? <span className="text-emerald-700 font-semibold">Stripe aktiv ({stripeKeyMode() === "test" ? "Testmodus, kein echtes Geld" : "live"})</span> : stripeBlocked() ? <span className="text-amber-700 font-semibold">{stripeExpectedMode() === "test" ? "Staging nimmt nur Stripe-Test-Schlüssel" : "Produktion nimmt nur Stripe-Live-Schlüssel"}: der hinterlegte Schlüssel passt nicht, Zahlungen gesperrt, Buchungen kommen als „Angefragt“</span> : <span className="text-amber-700 font-semibold">noch kein Stripe-Konto, Buchungen kommen als „Angefragt“</span>}
+          {" · "}Mailversand: {mailEnabled() ? <span className="text-emerald-700 font-semibold">aktiv</span> : <span className="text-amber-700 font-semibold">noch kein SMTP, Mails werden nur protokolliert</span>}
         </p>
       </div>
       <div className="grid gap-3 sm:grid-cols-4">

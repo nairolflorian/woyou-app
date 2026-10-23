@@ -16,9 +16,7 @@ export default function Datenschutz() {
           <span className="section-tag">Rechtliches</span>
           <h1 className="text-3xl font-bold">Datenschutzerklärung</h1>
 
-          <div className="mt-3 rounded-lg bg-amber-50 border border-amber-200 p-3 text-sm text-amber-900">
-            Entwurf. Wird vor dem Start anwaltlich geprüft.
-          </div>
+          {/* ANWALT PRÜFEN: Texte vor dem Start anwaltlich prüfen lassen (Hinweis nur im Code, nicht sichtbar) */}
 
           <div className="mt-8 card space-y-5 text-sm leading-relaxed">
             <section>
@@ -26,6 +24,10 @@ export default function Datenschutz() {
               <p>
                 {COMPANY.name}, {COMPANY.street}, {COMPANY.zipCity}, vertreten durch den Geschäftsführer {COMPANY.ceo}.
                 E-Mail: {COMPANY.email}, Telefon: <span dir="ltr">{COMPANY.phone}</span>.
+              </p>
+              <p className="mt-2">
+                <strong>Datenschutzbeauftragte:</strong> {COMPANY.dpo.name}, {COMPANY.dpo.person}, {COMPANY.dpo.street},{" "}
+                {COMPANY.dpo.zipCity}, E-Mail: {COMPANY.dpo.email}.
               </p>
             </section>
 
@@ -61,7 +63,7 @@ export default function Datenschutz() {
                 {/* ANWALT PRÜFEN (Weg 1): keine Weitergabe an Arbeitgeber durch WoYou */}
                 <li><strong>Arbeitgeber:</strong> Wir geben deine Daten nicht an Arbeitgeber weiter. Deine Bewerbungen verschickst du selbst, aus deinem eigenen E-Mail-Postfach oder über die Seite des Arbeitgebers.</li>
                 <li><strong>Stripe</strong> (Zahlungsabwicklung).</li>
-                <li><strong>Hetzner Online GmbH</strong> (Server in Deutschland).</li>
+                <li><strong>Hetzner Online GmbH</strong>, Industriestr. 25, 91710 Gunzenhausen (Server in Deutschland).</li>
                 <li><strong>Unser E-Mail-Anbieter</strong> für Benachrichtigungen an dich (z. B. Buchungsbestätigung).</li>
                 <li><strong>KI-Textdienst</strong> (nur wenn aktiviert): Für Formulierungsvorschläge zum Anschreiben übermitteln wir Angaben aus deiner Mappe und die Stellenbeschreibung an Mistral AI SAS (Paris, Frankreich), mit dem ein Vertrag zur Auftragsverarbeitung besteht. Die Daten werden nicht zum Training verwendet. Du prüfst jedes Anschreiben selbst, bevor du es verwendest.</li>
               </ul>
@@ -98,7 +100,7 @@ export default function Datenschutz() {
 
             <section>
               <h2 className="font-semibold text-base">7. Kontakt</h2>
-              <p>Fragen zum Datenschutz: {COMPANY.email}</p>
+              <p>Fragen zum Datenschutz: {COMPANY.email} oder direkt an unsere Datenschutzbeauftragte: {COMPANY.dpo.email}</p>
             </section>
           </div>
         </div>

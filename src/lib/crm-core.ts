@@ -22,8 +22,11 @@ export type CrmPayload = {
   datum?: string;
 };
 
-// Weitergabe nur, wenn URL, Schlüssel UND die ausdrückliche Freigabe EUBIA_CRM_SYNC=on gesetzt sind
+// Weitergabe nur in der Produktion (DEMO_MODE=false, woyou.de) und nur, wenn URL, Schlüssel UND die ausdrückliche
+// Freigabe EUBIA_CRM_SYNC=on gesetzt sind. Staging (DEMO_MODE an) meldet nie etwas an das echte CRM, auch wenn
+// dort versehentlich CRM-Werte stehen.
 export function crmConfig() {
+  if (process.env.DEMO_MODE !== "false") return null;
   const url = process.env.EUBIA_CRM_URL?.trim().replace(/\/+$/, "");
   const token = process.env.EUBIA_CRM_TOKEN?.trim();
   if (!url || !token || process.env.EUBIA_CRM_SYNC !== "on") return null;

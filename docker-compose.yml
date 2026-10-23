@@ -1,3 +1,5 @@
+# STAGING (woyou-app.46.225.109.84.nip.io, DEMO_MODE an). Produktion woyou.de: docker-compose.prod.yml, docs/PRODUKTION.md
+#
 # Two-stack compose for the WoYou demo:
 #
 #   - `postgres` always runs.

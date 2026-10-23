@@ -2,6 +2,7 @@
 
 import { useT } from "@/components/TranslationProvider";
 import { formText } from "@/lib/form-text";
+import { COMPANY } from "@/lib/company";
 import { useState } from "react";
 
 export function LoginForm() {
@@ -62,6 +63,12 @@ export function LoginForm() {
       <button className="btn-primary w-full" disabled={loading}>
         {loading ? "…" : f.signIn}
       </button>
+      {/* Es gibt (noch) keinen Mail-Versand für ein neues Passwort: freundlicher Hinweis statt Fehler. Das Team setzt es im Admin zurück. */}
+      <p className="text-sm text-[color:var(--color-ink-soft)]" data-hinweis="passwort-vergessen">
+        {f.forgot.split("{mail}")[0]}
+        <a href={`mailto:${COMPANY.email}`} className="font-semibold text-[color:var(--color-brand)]">{COMPANY.email}</a>
+        {f.forgot.split("{mail}")[1]}
+      </p>
 
     </form>
   );

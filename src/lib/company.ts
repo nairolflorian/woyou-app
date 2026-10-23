@@ -1,14 +1,20 @@
-// Betreiberangaben (Impressum, Kontakt, Datenschutz, Fußzeile) – zentral hier pflegen
+// Betreiberangaben (Impressum, Kontakt, Datenschutz, AGB, Fußzeile) zentral hier pflegen.
+// Firma, Anschrift, Vertretung, Register und Datenschutzbeauftragte übernommen von https://karrierekind.de/impressum
+// und https://karrierekind.de/datenschutz (Stand 23.10.2026, gleiche Gesellschaft). Eine USt-ID steht dort nicht,
+// deshalb hier auch keine. Kontakt (E-Mail, Telefon) ist der WoYou-Kontakt.
 export const COMPANY = {
   name: "KarriereKind GmbH",
   street: "Berliner Allee 51",
-  zipCity: "40229 Düsseldorf",
+  zipCity: "40212 Düsseldorf",
   country: "Deutschland",
   ceo: "Rachid Debdoubi",
   court: "Amtsgericht Düsseldorf",
   register: "HRB 99139",
   email: "info@woyou.de",
   phone: "+49 160 626 6208",
+  seat: "Düsseldorf",
+  // Externe Datenschutzbeauftragte (wie bei KarriereKind)
+  dpo: { name: "DPP Data Protection GmbH", person: "Rudolf Fiedler", street: "Zum Gottschalkhof 2", zipCity: "60594 Frankfurt am Main", email: "info@dataprotectionpartner.de" },
 };
 
 type L = "de" | "en" | "fr" | "ar" | "hi";

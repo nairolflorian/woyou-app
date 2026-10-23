@@ -1,3 +1,5 @@
+> Überholt am 23.10.2026: Produktion läuft getrennt von Staging, siehe `docs/PRODUKTION.md` und `scripts/prod-einrichten.sh`.
+
 # Go-live woyou.de
 
 Stand: App läuft als Test unter https://woyou-app.46.225.109.84.nip.io. woyou.de zeigt noch auf die statische Seite (`/var/www/woyou-preview`). DNS muss nicht geändert werden, die Domain zeigt bereits auf diesen Server.

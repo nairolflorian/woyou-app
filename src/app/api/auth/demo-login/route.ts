@@ -7,7 +7,7 @@ import { prepareDemoCustomer } from "@/lib/demo-setup";
 
 async function loginAndRedirect(req: Request, email: string) {
   if (!DEMO_MODE_ENABLED) {
-    return NextResponse.json({ error: "DEMO_MODE_DISABLED" }, { status: 403 });
+    return NextResponse.json({ error: "NOT_FOUND" }, { status: 404 }); // Produktion: keine Demo-Logins
   }
   const acc = DEMO_ACCOUNTS.find((a) => a.email === email); // Weg 1: nur Backoffice und Kund:innen, keine Firmenkonten
   if (!acc) {

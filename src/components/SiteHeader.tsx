@@ -8,6 +8,7 @@ import { isAdmin, isStaff } from "@/lib/auth";
 import { siteText } from "@/lib/company";
 import { werkzeugText } from "@/lib/werkzeug-text";
 import { ROLE } from "@/lib/enums";
+import { DEMO_MODE_ENABLED } from "@/lib/demo-accounts";
 
 export async function SiteHeader() {
   const { t, locale } = await getT();
@@ -45,9 +46,11 @@ export async function SiteHeader() {
           <span className="text-xl font-bold tracking-tight text-[color:var(--color-brand)]">
             Wo<span className="text-[color:var(--color-ink)]">You</span>
           </span>
-          <span className="hidden md:inline rounded-full bg-amber-100 text-amber-800 text-[10px] font-semibold px-2 py-0.5">
-            DEMO
-          </span>
+          {DEMO_MODE_ENABLED && (
+            <span className="hidden md:inline rounded-full bg-amber-100 text-amber-800 text-[10px] font-semibold px-2 py-0.5">
+              STAGING
+            </span>
+          )}
         </Link>
 
         <nav className="hidden md:flex items-center gap-1 text-sm text-[color:var(--color-ink-soft)]">

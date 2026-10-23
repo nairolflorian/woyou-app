@@ -22,7 +22,7 @@ export function DemoModeBarClient({
           className="flex items-center gap-3 rounded-full bg-[#1a1a1a]/95 text-white pl-3 pr-5 py-2 shadow-2xl backdrop-blur border border-white/10 hover:bg-[#1a1a1a] transition"
         >
           <span className="rounded-full bg-amber-400 text-amber-900 text-[10px] font-bold px-2 py-0.5 tracking-widest">
-            DEMO
+            STAGING
           </span>
           <span className="text-sm">
             {current ? (
@@ -77,7 +77,7 @@ export function DemoModeBarClient({
             </div>
             <div className="p-3 border-t border-[color:var(--color-border)] flex justify-between gap-2">
               <a href="/demo" className="btn-ghost text-xs">
-                🎬 Test-Übersicht
+                🎬 Rollen-Übersicht
               </a>
               <form action="/api/auth/logout" method="post">
                 <button type="submit" className="btn-ghost text-xs">

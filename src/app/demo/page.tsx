@@ -1,10 +1,12 @@
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { DEMO_ACCOUNTS, DEMO_MODE_ENABLED } from "@/lib/demo-accounts";
 
 export const metadata = {
-  title: "WoYou: Demo-Modus",
+  title: "WoYou Staging: Rollen",
+  robots: { index: false, follow: false },
 };
 
 const ROLE_GROUPS: Record<string, string> = {
@@ -15,23 +17,8 @@ const ROLE_GROUPS: Record<string, string> = {
 };
 
 export default function DemoPage() {
-  if (!DEMO_MODE_ENABLED) {
-    return (
-      <>
-        <SiteHeader />
-        <main id="main" className="flex-1 bg-[color:var(--color-surface)]">
-          <div className="mx-auto max-w-2xl px-6 py-20 text-center">
-            <h1 className="text-2xl font-bold">Demo-Modus deaktiviert</h1>
-            <p className="mt-3 text-[color:var(--color-ink-soft)]">
-              Setze <code>DEMO_MODE=true</code> in deinen Umgebungsvariablen um
-              den Rollen-Switcher zu aktivieren.
-            </p>
-          </div>
-        </main>
-        <SiteFooter />
-      </>
-    );
-  }
+  // Produktion (DEMO_MODE=false, woyou.de): diese Seite gibt es nicht
+  if (!DEMO_MODE_ENABLED) notFound();
 
   const grouped: Record<string, typeof DEMO_ACCOUNTS> = {};
   for (const acc of DEMO_ACCOUNTS) { // Weg 1: nur Backoffice und Kund:innen
@@ -46,12 +33,12 @@ export default function DemoPage() {
       <main id="main" className="flex-1 bg-[color:var(--color-surface)]">
         <div className="mx-auto max-w-5xl px-6 py-12">
           <div className="text-center">
-            <span className="section-tag">Demo-Modus</span>
+            <span className="section-tag">Staging</span>
             <h1 className="text-3xl md:text-4xl font-bold">
               Klick eine Rolle an, dann bist du drin.
             </h1>
             <p className="mt-3 text-[color:var(--color-ink-soft)] max-w-2xl mx-auto">
-              Diese Seite ist nur in der Demo aktiv. Jeder Klick loggt dich
+              Diese Seite gibt es nur in Staging, der Testumgebung mit Beispieldaten. Jeder Klick loggt dich
               automatisch als die jeweilige Person ein und springt direkt in
               ihren Bereich. Du kannst jederzeit über die Leiste unten rechts
               die Rolle wechseln.

@@ -7,6 +7,11 @@ import { DEMO_JOBS, demoJobRow } from "../src/lib/demo-jobs";
 const prisma = new PrismaClient();
 
 async function main() {
+  // Schutz: Der Seed löscht ALLE Daten. Nie in der Produktion (DEMO_MODE=false, woyou.de) ausführen.
+  if (process.env.DEMO_MODE === "false") {
+    console.error("Abbruch: DEMO_MODE=false (Produktion). Der Seed löscht alle Daten und läuft nur in Staging/lokal.");
+    process.exit(1);
+  }
   console.log("Seeding…");
   await prisma.notification.deleteMany();
   await prisma.adminTask.deleteMany();

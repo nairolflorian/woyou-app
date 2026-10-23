@@ -1,0 +1,74 @@
+# WoYou PRODUKTION (https://woyou.de). Eigenes Compose-Projekt "woyou-prod", völlig getrennt von Staging:
+#
+#   Staging (bisher):   docker compose up -d app                        -> woyou_app / woyou_postgres, Datei .env
+#   Produktion:         docker compose -p woyou-prod -f docker-compose.prod.yml --env-file .env.prod up -d app
+#                       (bequemer: bash scripts/prod-einrichten.sh)
+#
+# - Eigene Datenbank in eigenem Container (woyou_postgres_prod, Volume woyou_prod_pg), eigenes Passwort,
+#   kein Port nach außen. Staging-Zugangsdaten kommen an die echten Kundendaten nicht heran.
+# - Eigene Uploads (Volume woyou_prod_uploads), eigenes Image (woyou-app-prod:latest), Port 127.0.0.1:3051.
+# - Alle Werte aus .env.prod (Rechte 600, nie im Repo). In dieser Datei gibt es absichtlich KEINE ${...}-Platzhalter,
+#   damit nie ein Wert aus der Staging-.env hineinrutscht.
+# - "migrate" führt NUR "prisma migrate deploy" aus. Es gibt hier keinen Seed und kein db-init.
+name: woyou-prod
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: woyou_postgres_prod
+    restart: unless-stopped
+    env_file: .env.prod   # POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB
+    volumes:
+      - woyou_prod_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - woyou_prod_net
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runner
+    image: woyou-app-prod:latest
+    container_name: woyou_app_prod
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file: .env.prod   # DATABASE_URL (Host "postgres"), SESSION_PASSWORD, DEMO_MODE=false, NEXT_PUBLIC_BASE_URL, STRIPE_*, …
+    volumes:
+      - woyou_prod_uploads:/app/uploads
+    ports:
+      - "127.0.0.1:3051:3000"
+    networks:
+      - woyou_prod_net
+
+  migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: builder
+    image: woyou-tools-prod:latest
+    profiles: ["tools"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file: .env.prod
+    # NUR Migrationen. Kein Seed. Andere Befehle ausdrücklich angeben (z. B. scripts/admin-anlegen.ts).
+    command: ["npx", "prisma", "migrate", "deploy"]
+    networks:
+      - woyou_prod_net
+
+volumes:
+  woyou_prod_pg:
+    name: woyou_prod_pg
+  woyou_prod_uploads:
+    name: woyou_prod_uploads
+
+networks:
+  woyou_prod_net:
+    name: woyou_prod_net

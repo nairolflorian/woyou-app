@@ -19,14 +19,12 @@ export default function AGB() {
           <span className="section-tag">Rechtliches</span>
           <h1 className="text-3xl font-bold">Allgemeine Geschäftsbedingungen</h1>
 
-          <div className="mt-3 rounded-lg bg-amber-50 border border-amber-200 p-3 text-sm text-amber-900">
-            Entwurf. Wird vor dem Start anwaltlich geprüft.
-          </div>
+          {/* ANWALT PRÜFEN: Texte vor dem Start anwaltlich prüfen lassen (Hinweis nur im Code, nicht sichtbar) */}
 
           <div className="mt-8 card space-y-5 text-sm leading-relaxed">
             {/* ANWALT PRÜFEN (Weg 1): Geltungsbereich auf das neue Angebot umgestellt */}
             <Section title="§ 1 Anbieter und Geltungsbereich">
-              Anbieter ist die {COMPANY.name}, {COMPANY.street}, {COMPANY.zipCity}. Diese AGB gelten für das Angebot
+              Anbieter ist die {COMPANY.name}, {COMPANY.street}, {COMPANY.zipCity}, vertreten durch den Geschäftsführer {COMPANY.ceo}, eingetragen beim {COMPANY.court} unter {COMPANY.register}. Kontakt: {COMPANY.email}. Diese AGB gelten für das Angebot
               „Bewerbungsunterlagen plus Bewerbungswerkzeug“ von WoYou, das Verbraucher:innen über woyou.de buchen.
             </Section>
             {/* ANWALT PRÜFEN (Weg 1): Leistung ohne Stellenauswahl, ohne Versand, ohne Vermittlung */}

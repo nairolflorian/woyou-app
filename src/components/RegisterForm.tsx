@@ -152,7 +152,8 @@ export function RegisterForm() {
       </button>
 
       <p className="text-xs text-[color:var(--color-ink-soft)] text-center">
-        Mit „Konto anlegen" akzeptierst du die Demo-Bedingungen.
+        {f.terms}{" "}
+        <a href="/agb" className="underline">{f.agb}</a> · <a href="/datenschutz" className="underline">{f.privacy}</a>
       </p>
     </form>
   );

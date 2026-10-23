@@ -1,6 +1,10 @@
-# Server-Deployment — Hosting
+# Server-Deployment, Hosting
 
-Diese Datei dokumentiert, wie und wo die Demo aktuell live läuft.
+> Seit 23.10.2026: **Produktion auf https://woyou.de** (eigener Container `woyou_app_prod`, eigene Datenbank, `.env.prod`).
+> Die hier beschriebene Umgebung ist jetzt **Staging** (Demo-Daten, Stripe-Testmodus). Alles zur Produktion, zum Einrichten
+> und zum Rückweg: `docs/PRODUKTION.md`.
+
+Diese Datei dokumentiert, wie und wo Staging (früher „die Demo“) läuft.
 
 ## Aktuelle Live-URL
 

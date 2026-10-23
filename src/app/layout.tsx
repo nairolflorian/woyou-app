@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { getDictForClient } from "@/lib/i18n";
 import { DemoModeBar } from "@/components/DemoModeBar";
+import { StagingBanner } from "@/components/StagingBanner";
 import { CookieBanner } from "@/components/CookieBanner";
 import { TranslationProvider } from "@/components/TranslationProvider";
 import { UtmCapture } from "@/components/UtmCapture";
@@ -65,6 +66,7 @@ export default async function RootLayout({
           >
             {dict["a11y.skip"] ?? "Zum Inhalt springen"}
           </a>
+          <StagingBanner />
           {children}
           <CookieBanner />
           <DemoModeBar />
