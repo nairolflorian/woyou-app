@@ -4,6 +4,7 @@ import { cvPdf, letterPdf, type DocLang } from "@/lib/pdf";
 import { gapLetter } from "@/lib/letters";
 import { docx, type DocPara } from "@/lib/docx";
 import { parseProfile } from "@/lib/application";
+import { isEmail } from "@/lib/stellensuche-core";
 
 // Unterlagen zum Herunterladen und freien Weiterverwenden (Kund:in für die eigene Mappe, Team mit bookingId):
 //   ?doc=cv            Lebenslauf als PDF (eigener hochgeladener Lebenslauf, wenn so eingestellt)
@@ -15,7 +16,10 @@ export async function GET(req: Request) {
   const m = await mappeForRequest(url.searchParams.get("bookingId"));
   if (!m) return NextResponse.json({ error: "Nicht gefunden" }, { status: 404 });
   const lang: DocLang = url.searchParams.get("lang") === "en" ? "en" : "de";
-  const d = lang === "en" && m.profile.dataEn ? { ...parseProfile(m.profile.dataEn), design: m.data.design } : m.data; // Design gilt für beide Sprachen
+  const d0 = lang === "en" && m.profile.dataEn ? { ...parseProfile(m.profile.dataEn), design: m.data.design } : m.data; // Design gilt für beide Sprachen
+  // eigene Bewerbungs-Adresse aus dem Profil (Weg 1), sonst die Adresse aus der Mappe
+  const appMail = m.booking.candidate.applicationEmail;
+  const d = appMail && isEmail(appMail) ? { ...d0, email: appMail.trim() } : d0;
   const name = `${d.firstName}_${d.lastName}`.replace(/[^A-Za-z0-9_-]+/g, "") || "Bewerbung";
   const en = lang === "en";
   const doc = url.searchParams.get("doc");

@@ -13,6 +13,8 @@ import { AccountControls } from "@/components/AccountControls";
 import { LoginEditForm } from "@/components/LoginEditForm";
 import { ToolShop } from "@/components/ToolShop";
 import { MyDocuments } from "@/components/MyDocuments";
+import { VersandAdresse } from "@/components/VersandAdresse";
+import { versandText } from "@/lib/versand-text";
 import { toolAccess, markToolPurchasePaid, paymentTestMode } from "@/lib/werkzeug";
 import { getStripe } from "@/lib/stripe";
 import { accountText, fill } from "@/lib/account-text";
@@ -117,6 +119,13 @@ export default async function CandidateDashboardPage(props: { searchParams: Prom
                 <p className="mt-1 text-sm text-[color:var(--color-ink-soft)]">{sc.lead}</p>
               </div>
               <Link href="/bewerbungsservice/buchen" className="btn-primary">{sc.cta} · {formatPrice(ANGEBOT.startpaket.priceCents, locale)}</Link>
+            </div>
+          )}
+
+          {booking && (
+            <div id="bewerbungsmail" className="mt-8 card scroll-mt-20">
+              <h2 className="text-xl font-bold">{versandText(locale).profileHead}</h2>
+              <div className="mt-2"><VersandAdresse locale={locale} initial={candidate.applicationEmail} loginEmail={candidate.user.email} /></div>
             </div>
           )}
 

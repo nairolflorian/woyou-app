@@ -7,7 +7,7 @@ const nextConfig: NextConfig = {
   // WoYou bietet nur noch den Bewerbungs-Service an: frühere Bereiche und die alten .html-Adressen
   // der statischen Seite leiten dauerhaft auf die passende Stelle weiter.
   async redirects() {
-    const to = (source: string, destination: string) => ({ source, destination, permanent: true });
+    const to = (source: string, destination: string) => ({ source, destination, statusCode: 301 as const }); // 301: dauerhaft, wie von allen Suchmaschinen erwartet
     return [
       to("/index.html", "/"),
       to("/leistungen.html", "/#angebot"),

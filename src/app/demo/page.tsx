@@ -4,7 +4,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { DEMO_ACCOUNTS, DEMO_MODE_ENABLED } from "@/lib/demo-accounts";
 
 export const metadata = {
-  title: "WoYou — Demo-Modus",
+  title: "WoYou: Demo-Modus",
 };
 
 const ROLE_GROUPS: Record<string, string> = {
@@ -48,7 +48,7 @@ export default function DemoPage() {
           <div className="text-center">
             <span className="section-tag">Demo-Modus</span>
             <h1 className="text-3xl md:text-4xl font-bold">
-              Klick eine Rolle — und du bist drin.
+              Klick eine Rolle an, dann bist du drin.
             </h1>
             <p className="mt-3 text-[color:var(--color-ink-soft)] max-w-2xl mx-auto">
               Diese Seite ist nur in der Demo aktiv. Jeder Klick loggt dich

@@ -84,6 +84,62 @@ Bedingungen:
 - Server: Falls auf dem alten Server noch `/etc/cron.daily/woyou-rematch` liegt (siehe `SERVER.md`), kann er weg; die
   Route antwortet nur noch mit 410.
 
+## Selbstversand (23.10.2026)
+
+Je gemerkter Stelle in „Meine Bewerbungen“ gibt es „Bewerbung prüfen und senden“ in drei Schritten:
+
+1. **Prüfen**: Anschreiben (beim ersten Öffnen aus der Mappe erstellt, editierbar), Lebenslauf ansehen bzw. in der
+   Mappe ändern, Empfänger (aus der Anzeige, sonst Feld mit Hinweis auf das Bewerbungsportal), Betreff und Mailtext
+   (vorbelegt, editierbar, „Vorschlag wiederherstellen“). Absender ist die eigene Adresse der Person.
+2. **Senden**: „In meinem Mailprogramm öffnen“ (mailto nach RFC 6068, CRLF, höchstens 1800 Zeichen, sonst gekürzt mit
+   Hinweis), „Anschreiben und Lebenslauf (eine PDF)“ bzw. einzeln (mit eigenem hochgeladenem Lebenslauf: zwei Dateien),
+   am Desktop „Fertige E-Mail mit Anhängen (.eml)“ (`X-Unsent: 1`, multipart/mixed, beide PDFs, From = eigene
+   Adresse), Kopierknöpfe für Adresse, Betreff, Text, kurze Anleitung für Outlook/Apple Mail/Thunderbird, Gmail,
+   iPhone Mail, Outlook-App.
+3. **Eintragen**: „Ich habe gesendet“ mit Datum, optional Erinnerung zum Nachfassen (Standard +7 Tage, wird im
+   Tracker angezeigt und ist fällig, solange der Stand „beworben“ ist).
+
+Im Profil („Mein Bereich“) gibt es „E-Mail-Adresse für Bewerbungen“ (leer = Login-Mail). Sie steht in Anschreiben,
+Lebenslauf und Mailentwurf. WoYou speichert keine Mail-Passwörter und verschickt keine Bewerbungen.
+
+Code: `src/components/VersandPanel.tsx`, `src/components/VersandAdresse.tsx`, `src/lib/versand-text.ts` (de/en/fr/ar/hi),
+`src/lib/eml.ts`, `src/lib/tracker.ts` (`sendFiles`, `emlFile`), `src/lib/pdf.tsx` (`bundlePdf`), Routen
+`/api/stellen/[id]/dokument?format=pdf|docx|cv|bundle`, `/api/stellen/[id]/eml`, `/api/account/bewerbungsmail`.
+Migration `20261023120000_weg1_selbstversand` (nur neue, leere Spalten: `Candidate.applicationEmail`,
+`SavedJob.mailTo/mailSubject/mailBody/followUpAt`).
+
+## Deploy (Server 46.225.109.84, `/var/www/woyou-app/repo`)
+
+Wichtig: `docker compose --profile init run --rm db-init` OHNE Befehl spielt die Demo-Daten neu ein (der Dienst
+bekommt `DEMO_MODE` nicht durchgereicht). Für Migrationen immer ausdrücklich `npx prisma migrate deploy` angeben.
+
+```bash
+ssh -i ~/.ssh/webserver root@46.225.109.84
+cd /var/www/woyou-app/repo
+git status -sb                                   # muss sauber sein, Stand main
+git rev-parse HEAD > /root/woyou-vor-weg1.txt     # alter Stand für den Rückweg
+# 1. Sicherung
+docker exec woyou_postgres pg_dump -U woyou -d woyou | gzip > /var/backups/woyou/vor-weg1-$(date -u +%Y%m%dT%H%M%SZ).sql.gz
+ls -la /var/backups/woyou/ | tail -2             # Datei > 0 Byte prüfen
+# 2. Code
+git pull --ff-only
+# 3. Migrationen (nur Ergänzungen: 20261022120000_weg1_werkzeug, 20261023120000_weg1_selbstversand)
+docker compose --profile init build db-init
+docker compose --profile init run --rm db-init npx prisma migrate deploy
+# 4. App
+docker compose build app && docker compose up -d app
+docker builder prune -f && docker image prune -f
+# 5. Altlast im Zeitplan (Route antwortet nur noch 410)
+rm -f /etc/cron.daily/woyou-rematch
+# 6. Prüfen
+curl -sI https://woyou-app.46.225.109.84.nip.io/arbeitgeber | head -3          # 301 auf /
+curl -s -o /dev/null -w "%{http_code}\n" -X POST https://woyou-app.46.225.109.84.nip.io/api/admin/leads/x/send   # 410
+docker logs --tail 50 woyou_app
+```
+
+Zurück: `git reset --hard $(cat /root/woyou-vor-weg1.txt) && docker compose build app && docker compose up -d app`. Die neuen Spalten und
+die Tabelle `SavedJob` stören den alten Stand nicht. Nur bei Bedarf die Sicherung einspielen.
+
 Lokal starten:
 
 ```bash

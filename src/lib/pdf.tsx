@@ -7,6 +7,7 @@ import "server-only";
 //   elegant:  Serifenschrift (Times), Name zentriert, feine Linien
 // Die Farbe (siehe DESIGN_COLORS) färbt Name, Überschriften bzw. Leiste und Band. Anschreiben passt sich an.
 import { Document, Page, Text, View, Image, StyleSheet, renderToBuffer } from "@react-pdf/renderer";
+import type { ReactNode } from "react";
 import type { ProfileData, Station } from "@/lib/application";
 import { DESIGN_COLORS, type DesignTemplate } from "@/lib/design";
 
@@ -93,7 +94,8 @@ function StationList({ items, sep, s }: { items: Station[]; sep?: string; s: S }
   );
 }
 
-export function CvDocument({ d, photo, lang = "de" }: { d: ProfileData; photo?: Buffer | null; lang?: DocLang }) {
+export function CvDocument({ d, photo, lang = "de", bare = false }: { d: ProfileData; photo?: Buffer | null; lang?: DocLang; bare?: boolean }) {
+  const Doc = bare ? Bare : Document;
   const l = L[lang], t = themeOf(d), s = styles(t);
   const name = `${d.firstName} ${d.lastName}`.trim();
   const address = [d.street, d.zipCity].filter(Boolean).join(", ");
@@ -125,7 +127,7 @@ export function CvDocument({ d, photo, lang = "de" }: { d: ProfileData; photo?: 
 
   if (t.template === "modern") {
     return (
-      <Document title={`${l.cv} ${name}`} author={name}>
+      <Doc title={`${l.cv} ${name}`} author={name}>
         <Page size="A4" style={s.page}>
           <View style={s.sideBg} fixed />
           <View style={s.side}>
@@ -143,12 +145,12 @@ export function CvDocument({ d, photo, lang = "de" }: { d: ProfileData; photo?: 
           <Main />
           {footer}
         </Page>
-      </Document>
+      </Doc>
     );
   }
 
   return (
-    <Document title={`${l.cv} ${name}`} author={name}>
+    <Doc title={`${l.cv} ${name}`} author={name}>
       <Page size="A4" style={s.page}>
         {t.template === "kompakt" ? (
           <View style={s.band}>
@@ -183,11 +185,12 @@ export function CvDocument({ d, photo, lang = "de" }: { d: ProfileData; photo?: 
         <Skills />
         {footer}
       </Page>
-    </Document>
+    </Doc>
   );
 }
 
-export function LetterDocument({ d, recipient, subject, text, date, lang = "de" }: { d: ProfileData; recipient: string[]; subject: string; text: string; date?: string; lang?: DocLang }) {
+export function LetterDocument({ d, recipient, subject, text, date, lang = "de", bare = false }: { d: ProfileData; recipient: string[]; subject: string; text: string; date?: string; lang?: DocLang; bare?: boolean }) {
+  const Doc = bare ? Bare : Document;
   const l = L[lang], t = themeOf(d), s = styles(t);
   const name = `${d.firstName} ${d.lastName}`.trim();
   const sender = [name, d.street, d.zipCity, d.phone, d.email].filter(Boolean).join("  ·  ");
@@ -196,7 +199,7 @@ export function LetterDocument({ d, recipient, subject, text, date, lang = "de" 
   const dateLine = [d.zipCity.replace(/^\d+\s*/, ""), date || new Date().toLocaleDateString(l.dateLocale, lang === "en" ? { day: "numeric", month: "long", year: "numeric" } : undefined)].filter(Boolean).join(", ");
   const pageStyle = t.template === "modern" ? [s.page, { paddingLeft: 56, paddingRight: 56 }] : t.template === "kompakt" ? [s.page, { fontSize: 10, lineHeight: 1.45 }] : s.page;
   return (
-    <Document title={subject} author={name}>
+    <Doc title={subject} author={name}>
       <Page size="A4" style={pageStyle}>
         {t.template === "modern" && <View style={s.stripe} fixed />}
         {t.template === "kompakt" ? (
@@ -222,6 +225,20 @@ export function LetterDocument({ d, recipient, subject, text, date, lang = "de" 
         {paras.map((p, i) => <Text key={i} style={s.para}>{p}</Text>)}
         <Text style={{ marginTop: 14, color: SOFT, fontSize: 9 }}>{l.enclosure}</Text>
       </Page>
+    </Doc>
+  );
+}
+
+// ohne eigenes <Document>, damit Anschreiben und Lebenslauf in einer PDF landen können
+function Bare({ children }: { children?: ReactNode; title?: string; author?: string }) { return <>{children}</>; }
+
+/** Anschreiben und Lebenslauf in einer PDF (Anschreiben zuerst, wie in Deutschland üblich) */
+export async function bundlePdf(d: ProfileData, photo: Buffer | null, recipient: string[], subject: string, text: string, lang: DocLang = "de") {
+  const name = `${d.firstName} ${d.lastName}`.trim();
+  return renderToBuffer(
+    <Document title={subject} author={name}>
+      <LetterDocument d={d} recipient={recipient} subject={subject} text={text} lang={lang} bare />
+      <CvDocument d={d} photo={photo} lang={lang} bare />
     </Document>
   );
 }

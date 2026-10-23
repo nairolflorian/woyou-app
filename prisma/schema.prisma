@@ -53,6 +53,9 @@ model Candidate {
   preferredChannel    String    @default("EMAIL") // EMAIL | TELEGRAM | WHATSAPP | PHONE
   telegramHandle      String?
   whatsappNumber      String?
+  // Weg 1: eigene E-Mail-Adresse für Bewerbungen (leer = Login-Mail). Nur für Unterlagen und den E-Mail-Entwurf,
+  // WoYou verschickt darüber nichts.
+  applicationEmail    String?
 
   // Job preferences
   desiredJobCategory  String?
@@ -517,6 +520,11 @@ model SavedJob {
   notes       String?
   coverLetter String?
   letterLang  String    @default("de")
+  // Entwurf der E-Mail, die die Person selbst aus dem eigenen Postfach schickt (leer = Vorschlag)
+  mailTo      String?
+  mailSubject String?
+  mailBody    String?
+  followUpAt  DateTime? // eigene Erinnerung zum Nachfassen
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 

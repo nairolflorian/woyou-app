@@ -135,19 +135,34 @@ const EMAIL = /^[^@\s<>"]+@[^@\s<>"]+\.[^@\s<>"]+$/;
 export const isEmail = (s: string | null | undefined): s is string => !!s && EMAIL.test(s.trim());
 export const isHttpUrl = (s: string | null | undefined): s is string => { try { const u = new URL(String(s)); return u.protocol === "https:" || u.protocol === "http:"; } catch { return false; } };
 
-/** mailto-Link mit Betreff und Text. Lange Texte werden gekürzt, weil manche Programme sonst nichts öffnen. */
-export function mailtoHref(to: string, subject: string, body: string, maxLength = 1800): string | null {
-  if (!isEmail(to)) return null;
+/**
+ * mailto-Link nach RFC 6068 mit Empfänger, Betreff und Text. Zeilenumbrüche als %0D%0A, das @ bleibt lesbar.
+ * Lange Texte werden an einer Zeilen- oder Wortgrenze gekürzt, weil manche Programme (z. B. Outlook unter
+ * Windows) Links über etwa 2000 Zeichen nicht öffnen. truncated sagt, ob gekürzt wurde (dann Text kopieren).
+ * Ohne gültige Adresse entsteht ein Link ohne Empfänger (die Person trägt ihn im Mailprogramm ein).
+ */
+export function mailtoLink(to: string | null | undefined, subject: string, body: string, maxLength = 1800): { href: string; truncated: boolean } {
+  const addr = isEmail(to) ? to.trim().replace(/[%?&#]/g, (c) => encodeURIComponent(c)) : "";
+  const enc = (x: string) => encodeURIComponent(x.replace(/\r?\n/g, "\r\n"));
+  const href = (x: string) => `mailto:${addr}?subject=${enc(subject)}&body=${enc(x)}`;
+  if (href(body).length <= maxLength) return { href: href(body), truncated: false };
   let b = body;
-  const href = (x: string) => `mailto:${encodeURIComponent(to.trim())}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(x)}`;
-  while (href(b).length > maxLength && b.length > 50) b = b.slice(0, Math.floor(b.length * 0.9));
-  return href(b);
+  while (b.length > 20 && href(b + "\n…").length > maxLength) {
+    const cut = Math.max(b.lastIndexOf("\n", b.length - 1), b.lastIndexOf(" ", b.length - 1));
+    b = (cut > 20 ? b.slice(0, cut) : b.slice(0, Math.floor(b.length * 0.9))).trimEnd();
+  }
+  return { href: href(b + "\n…"), truncated: true };
+}
+
+/** Kurzform: nur mit gültiger Adresse, sonst null */
+export function mailtoHref(to: string, subject: string, body: string, maxLength = 1800): string | null {
+  return isEmail(to) ? mailtoLink(to, subject, body, maxLength).href : null;
 }
 
 /** Kurzer Begleittext für die E-Mail (das Anschreiben selbst hängt die Person als PDF an) */
-export function coverMail(o: { lang: "de" | "en"; title: string; salutation: string; name: string; phone?: string }) {
+export function coverMail(o: { lang: "de" | "en"; title: string; salutation: string; name: string; phone?: string; email?: string }) {
   const lines = o.lang === "en"
-    ? [o.salutation, "", `Please find attached my application for the position of ${o.title}, including my cover letter and CV.`, "", "I look forward to hearing from you.", "", "Kind regards", o.name, o.phone ?? ""]
-    : [o.salutation, "", `anbei sende ich Ihnen meine Bewerbung als ${o.title}. Mein Anschreiben und meinen Lebenslauf finden Sie im Anhang.`, "", "Ich freue mich auf Ihre Rückmeldung.", "", "Mit freundlichen Grüßen", o.name, o.phone ?? ""];
-  return lines.join("\n").trim();
+    ? [o.salutation, "", `Please find attached my application for the position of ${o.title}, including my cover letter and CV.`, "", "I look forward to hearing from you.", "", "Kind regards", ...[o.name, o.phone, o.email].filter((x): x is string => !!x)]
+    : [o.salutation, "", `anbei sende ich Ihnen meine Bewerbung als ${o.title}. Mein Anschreiben und meinen Lebenslauf finden Sie im Anhang.`, "", "Ich freue mich auf Ihre Rückmeldung.", "", "Mit freundlichen Grüßen", ...[o.name, o.phone, o.email].filter((x): x is string => !!x)];
+  return lines.join("\n").replace(/\n{3,}/g, "\n\n").trim();
 }

@@ -5,6 +5,8 @@ import Link from "next/link";
 import { fillIn, dateLocaleOf, wLang, type werkzeugText } from "@/lib/werkzeug-text";
 import { TRACKER_STATUS, type TrackerStatus } from "@/lib/stellensuche-core";
 import type { TrackerItem } from "@/lib/tracker";
+import { versandText, type VersandUI } from "@/lib/versand-text";
+import { VersandPanel } from "@/components/VersandPanel";
 
 type T = ReturnType<typeof werkzeugText>;
 const STATUS_CLASS: Record<TrackerStatus, string> = {
@@ -14,7 +16,8 @@ const STATUS_CLASS: Record<TrackerStatus, string> = {
 
 // Meine Bewerbungen: Die Person pflegt Stand, Datum und Notizen selbst, erstellt Anschreiben je Stelle
 // und bewirbt sich selbst (eigenes E-Mail-Programm oder Seite des Arbeitgebers).
-export function BewerbungsTracker({ t, locale, initial, active }: { t: T; locale: string; initial: TrackerItem[]; active: boolean }) {
+export function BewerbungsTracker({ t, locale, initial, active, fromEmail, ownCv }: { t: T; locale: string; initial: TrackerItem[]; active: boolean; fromEmail: string; ownCv: boolean }) {
+  const v = versandText(locale);
   const [items, setItems] = useState(initial);
   const [filter, setFilter] = useState<TrackerStatus | "ALL">("ALL");
   const [adding, setAdding] = useState(false);
@@ -61,17 +64,15 @@ export function BewerbungsTracker({ t, locale, initial, active }: { t: T; locale
       {msg && <p className="text-sm bg-rose-50 border border-rose-200 text-rose-700 rounded p-2">{msg}</p>}
       {items.length === 0 && <div className="card text-sm text-[color:var(--color-ink-soft)]">{t.empty}</div>}
       <ul className="space-y-3">
-        {shown.map((x) => <Item key={x.id} x={x} t={t} dl={dl} active={active} onChange={replace} onRemove={() => setItems((xs) => xs.filter((y) => y.id !== x.id))} />)}
+        {shown.map((x) => <Item key={x.id} x={x} t={t} v={v} dl={dl} active={active} fromEmail={fromEmail} ownCv={ownCv} onChange={replace} onRemove={() => setItems((xs) => xs.filter((y) => y.id !== x.id))} />)}
       </ul>
     </div>
   );
 }
 
-function Item({ x, t, dl, active, onChange, onRemove }: { x: TrackerItem; t: T; dl: string; active: boolean; onChange: (x: TrackerItem) => void; onRemove: () => void }) {
+function Item({ x, t, v, dl, active, fromEmail, ownCv, onChange, onRemove }: { x: TrackerItem; t: T; v: VersandUI; dl: string; active: boolean; fromEmail: string; ownCv: boolean; onChange: (x: TrackerItem) => void; onRemove: () => void }) {
   const [busy, setBusy] = useState<string | null>(null);
   const [notes, setNotes] = useState(x.notes);
-  const [letter, setLetter] = useState(x.coverLetter ?? "");
-  const [lang, setLang] = useState(x.letterLang);
   const [msg, setMsg] = useState<{ ok: boolean; t: string } | null>(null);
   const date = (s: string | null) => (s ? new Date(s).toLocaleDateString(dl) : "");
 
@@ -82,15 +83,7 @@ function Item({ x, t, dl, active, onChange, onRemove }: { x: TrackerItem; t: T; 
     setBusy(null);
     if (!r.ok) { setMsg({ ok: false, t: j.error ?? t.failed }); return; }
     onChange(j.item);
-    if (label === "notes" || label === "letter") setMsg({ ok: true, t: t.savedOk });
-  }
-  async function generate() {
-    setBusy("generate"); setMsg(null);
-    const r = await fetch(`/api/stellen/${x.id}/anschreiben`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ lang }) });
-    const j = await r.json().catch(() => ({}));
-    setBusy(null);
-    if (!r.ok) { setMsg({ ok: false, t: j.error ?? t.failed }); return; }
-    onChange(j.item); setLetter(j.item.coverLetter ?? "");
+    if (label === "notes") setMsg({ ok: true, t: t.savedOk });
   }
   async function remove() {
     if (!confirm(t.removeAsk)) return;
@@ -98,7 +91,8 @@ function Item({ x, t, dl, active, onChange, onRemove }: { x: TrackerItem; t: T; 
     if (r.ok) onRemove(); else setMsg({ ok: false, t: t.failed });
   }
 
-  const employer = x.applyUrl ?? x.url;
+  // Erinnerung zum Nachfassen: null = keine, true = fällig (nur solange noch keine Antwort eingetragen ist)
+  const followDue = x.followUpAt && x.status === "APPLIED" ? new Date(x.followUpAt) <= new Date() : null;
   return (
     <li className="card space-y-3">
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -117,40 +111,14 @@ function Item({ x, t, dl, active, onChange, onRemove }: { x: TrackerItem; t: T; 
         </label>
       </div>
 
-      <details className="rounded-xl border border-[color:var(--color-border)] p-3" open={x.status === "SAVED"}>
-        <summary className="cursor-pointer text-sm font-semibold">{t.letterTitle}</summary>
-        <div className="mt-3 space-y-3 text-sm">
-          <p className="text-xs text-[color:var(--color-ink-soft)]">{t.letterHint}</p>
-          <div className="flex flex-wrap items-center gap-2">
-            {x.hasEnglish && (
-              <label className="text-xs">{t.letterLang}{" "}
-                <select className="input inline-block w-auto py-1" value={lang} disabled={!active} onChange={(e) => setLang(e.target.value as "de" | "en")}><option value="de">Deutsch</option><option value="en">English</option></select>
-              </label>
-            )}
-            {active && <button className="btn-outline" disabled={!!busy} onClick={generate}>{busy === "generate" ? t.generating : x.coverLetter ? t.regenerate : t.generate}</button>}
-          </div>
-          {x.coverLetter !== null && (
-            <>
-              <textarea className="input min-h-64 font-mono text-xs" value={letter} disabled={!active} onChange={(e) => setLetter(e.target.value)} onBlur={() => letter !== (x.coverLetter ?? "") && patch({ coverLetter: letter }, "letter")} maxLength={6000} />
-              <div className="flex flex-wrap gap-2">
-                <a className="btn-outline py-1" href={`/api/stellen/${x.id}/dokument?format=pdf`}>{t.pdf}</a>
-                <a className="btn-outline py-1" href={`/api/stellen/${x.id}/dokument?format=docx`}>{t.word}</a>
-                <a className="btn-outline py-1" href={`/api/mappe/download?doc=cv${x.letterLang === "en" ? "&lang=en" : ""}`}>{t.cv}</a>
-              </div>
-            </>
-          )}
-          <div className="border-t border-[color:var(--color-border)] pt-3 space-y-2">
-            {x.mailto ? (
-              <>
-                <a className="btn-primary" href={x.mailto}>{t.mail}</a>
-                <p className="text-xs text-[color:var(--color-ink-soft)]">{t.mailHint}</p>
-              </>
-            ) : <p className="text-xs text-[color:var(--color-ink-soft)]">{t.noEmail}</p>}
-            {employer && <a className="btn-outline inline-flex" href={employer} target="_blank" rel="noreferrer noopener">{t.employer} ↗</a>}
-            {active && x.status === "SAVED" && <div><button className="btn-ghost" disabled={!!busy} onClick={() => patch({ status: "APPLIED" }, "status")}>✓ {t.markApplied}</button></div>}
-          </div>
+      {followDue !== null && x.followUpAt && (
+        <div className={`flex flex-wrap items-center gap-2 rounded-lg p-2 text-xs ${followDue ? "bg-amber-50 text-amber-900 border border-amber-200" : "bg-[color:var(--color-surface)] text-[color:var(--color-ink-soft)]"}`}>
+          <span>⏰ {fillIn(followDue ? v.followUpDue : v.followUpOn, { date: date(x.followUpAt) })}</span>
+          {active && <button className="btn-ghost text-xs py-0" disabled={!!busy} onClick={() => patch({ followUpAt: null }, "follow")}>{v.followUpClear}</button>}
         </div>
-      </details>
+      )}
+      <VersandPanel x={x} t={t} v={v} dl={dl} active={active} fromEmail={fromEmail} ownCv={ownCv} onChange={onChange} />
+      {x.coverLetter !== null && <a className="text-xs text-[color:var(--color-brand)]" href={`/api/stellen/${x.id}/dokument?format=docx`}>{t.word}</a>}
 
       <div className="grid gap-2 md:grid-cols-[1fr_auto] md:items-end">
         <label className="block text-xs">{t.notes}

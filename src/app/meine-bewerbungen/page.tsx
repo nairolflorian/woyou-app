@@ -19,7 +19,7 @@ export default async function MeineBewerbungenPage() {
   if (!s) redirect(`/anmelden?next=${encodeURIComponent("/meine-bewerbungen")}`);
   const { locale } = await getT();
   const t = werkzeugText(locale);
-  const { items } = await trackerItems(s.candidate.id);
+  const { items, ctx, ownCv } = await trackerItems(s.candidate.id);
   const neverActive = !s.access.active && !s.access.until && items.length === 0;
 
   return (
@@ -35,7 +35,7 @@ export default async function MeineBewerbungenPage() {
           {neverActive ? <ToolGate t={t} expired={false} /> : (
             <>
               {!s.access.active && <ToolGate t={t} expired />}
-              <BewerbungsTracker t={t} locale={locale} initial={items} active={s.access.active} />
+              <BewerbungsTracker t={t} locale={locale} initial={items} active={s.access.active} fromEmail={ctx.email} ownCv={ownCv} />
             </>
           )}
         </div>

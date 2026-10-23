@@ -2,14 +2,18 @@
 
 🌐 **Live: https://woyou-app.46.225.109.84.nip.io** · 🎬 **Test-Seite: https://woyou-app.46.225.109.84.nip.io/demo**
 
-Eine vollständige Vermittlungsplattform für internationale Fachkräfte (Marokko → Deutschland) im Look von [woyou.de](https://woyou.de).
+WoYou verkauft Bewerbungsunterlagen nach deutschem Standard und ein Bewerbungswerkzeug. WoYou ist keine
+Arbeitsvermittlung: Kund:innen suchen und wählen Stellen selbst, schicken ihre Bewerbungen selbst aus dem eigenen
+Postfach und bekommen die Antworten direkt. Es gibt keinen Arbeitgeberbereich, keinen Firmen-Pool und kein Matching.
+Stand und Hintergrund: [docs/WEG1-UMBAU.md](./docs/WEG1-UMBAU.md).
 
-Dreiseitig:
-- **Kandidat:innen** → Onboarding, Sprachtest, Stripe-Bezahlung, Profil-Status, Match-Zustimmung, Chat.
-- **Vermittler / Betreiber (Admin)** → Übersicht, Kandidaten- & Firmenverwaltung, Status-Steuerung, Matching-Engine, Aufgaben (Visum etc.), Team-Mitglieder.
-- **Unternehmen** → Registrierung mit Stellenanfrage (auch Sonderwunsch), Vorschläge sehen, Feedback geben, Chat.
+- **Kund:innen**: Startpaket buchen, Bewerbungsmappe (Lebenslauf, Anschreiben), Stellensuche, eigener
+  Bewerbungs-Tracker mit Selbstversand (Mailprogramm öffnen, PDF, fertige .eml-Datei, „Ich habe gesendet“).
+- **Team (Admin)**: Buchungen, Prüfung der Unterlagen, Stellenquellen, Auswertung. Das Team wählt keine Stellen aus
+  und schreibt keine Firmen an.
 
-Multi-Channel-Kommunikation: Plattform-Chat, E-Mail, Telegram (mit echtem Bot), WhatsApp (im Schema vorbereitet).
+Hinweis: Einige Abschnitte weiter unten beschreiben noch den früheren Prototyp (Matching, Firmen). Diese Bereiche sind
+abgeschaltet bzw. entfernt.
 
 ---
 
