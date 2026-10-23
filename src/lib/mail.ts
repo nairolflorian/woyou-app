@@ -5,9 +5,11 @@ import "server-only";
 //
 // .env:  SMTP_HOST, SMTP_PORT (587), SMTP_SECURE ("true" bei Port 465), SMTP_USER, SMTP_PASS,
 //        MAIL_FROM ("WoYou <service@woyou.de>"), MAIL_TEAM (Empfänger für interne Hinweise)
+// Ohne eigenes Reply-To antworten Kund:innen an COMPANY.email (gelesenes Postfach), nicht an die no-reply-Adresse.
 
 import nodemailer, { type Transporter } from "nodemailer";
 import { prisma } from "@/lib/prisma";
+import { COMPANY } from "@/lib/company";
 
 let transport: Transporter | null | undefined;
 function getTransport(): Transporter | null {
@@ -54,7 +56,7 @@ export async function sendMail(opts: { to: string; subject: string; html: string
     return { status: "SKIPPED" as const };
   }
   try {
-    await t.sendMail({ from: opts.from || process.env.MAIL_FROM || "WoYou <no-reply@woyou.de>", to: opts.to, replyTo: opts.replyTo, bcc: opts.bcc, subject: opts.subject, html: opts.html, text: opts.text, attachments: opts.attachments, headers: opts.headers });
+    await t.sendMail({ from: opts.from || process.env.MAIL_FROM || "WoYou <no-reply@woyou.de>", to: opts.to, replyTo: opts.replyTo || COMPANY.email, bcc: opts.bcc, subject: opts.subject, html: opts.html, text: opts.text, attachments: opts.attachments, headers: opts.headers });
     await prisma.emailLog.create({ data: { to: opts.to, subject: opts.subject, template: opts.template, status: "SENT", bookingId: opts.bookingId } }).catch(() => {});
     return { status: "SENT" as const };
   } catch (e) {

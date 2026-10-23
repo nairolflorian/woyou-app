@@ -246,6 +246,35 @@ async function main() {
       assert.ok(!/[–—]/.test(t.replace(/\{\/\*[\s\S]*?\*\/\}|\/\/.*$/gm, "")), `langer Gedankenstrich in ${f}`);
     }
   });
+  await test("Kontakt wie KarriereKind: gelesene Postfächer, keine info@woyou.de mehr, keine USt-ID", async () => {
+    const fs = await import("node:fs");
+    const { COMPANY } = await import("../src/lib/company");
+    assert.equal(COMPANY.email, "service@karrierekind.de");
+    assert.equal(COMPANY.legalEmail, "info@karrierekind.de");
+    assert.equal(COMPANY.phone, "+49 1511 2213968");
+    assert.ok(!("vatId" in COMPANY) && !("ustId" in COMPANY), "USt-ID gibt es bei KarriereKind nicht");
+    const walk = (d: string): string[] => fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? walk(`${d}/${e.name}`) : /\.(tsx?|json)$/.test(e.name) ? [`${d}/${e.name}`] : []));
+    const treffer = [...walk("src"), ...(fs.existsSync("messages") ? walk("messages") : [])].filter((f) => /info@woyou\.de|160 626 ?6208/.test(fs.readFileSync(f, "utf8")));
+    assert.deepEqual(treffer, [], `alte Kontaktangaben in ${treffer.join(", ")}`);
+    assert.match(fs.readFileSync("src/app/impressum/page.tsx", "utf8"), /COMPANY\.legalEmail/);
+    for (const f of ["src/components/LoginForm.tsx", "src/components/SiteFooter.tsx", "src/components/SelfCheck.tsx", "src/app/abmelden/page.tsx", "src/app/datenschutz/page.tsx", "src/app/agb/page.tsx"])
+      assert.match(fs.readFileSync(f, "utf8"), /COMPANY\.email/, f);
+    assert.match(fs.readFileSync("src/lib/mail.ts", "utf8"), /replyTo: opts\.replyTo \|\| COMPANY\.email/, "Mails ohne Antwortadresse");
+  });
+  await test("Datenschutz: Abschnitt zur Weitergabe an das CRM der EuBiA-Gruppe passt zu den gesendeten Feldern", async () => {
+    const fs = await import("node:fs");
+    const t = fs.readFileSync("src/app/datenschutz/page.tsx", "utf8");
+    const sichtbar = t.replace(/\{\/\*[\s\S]*?\*\/\}|\/\/.*$/gm, "");
+    assert.match(sichtbar, /Weitergabe an das CRM der EuBiA-Gruppe/);
+    for (const w of ["Hetzner Online GmbH", "Vereinbarung zur Auftragsverarbeitung", "Art. 6 Abs. 1 lit. b DSGVO", "Art. 6 Abs. 1 lit. f DSGVO", "Speicherdauer", "Getrennt von anderen Bereichen", "keinen Lebenslauf", "Staatsangehörigkeit", "Zielberuf", "Telefonnummer", "Betrag"])
+      assert.ok(sichtbar.includes(w), `fehlt im CRM-Abschnitt: ${w}`);
+    assert.match(t, /\{\/\* ANWALT PRÜFEN[^\n]*CRM/);
+    // Felder, die das CRM bekommt, müssen genau die beschriebenen sein
+    const core = fs.readFileSync("src/lib/crm-core.ts", "utf8");
+    const felder = core.match(/export type CrmPayload = \{([\s\S]*?)\};/)![1].match(/^\s*(\w+)\??:/gm)!.map((x) => x.replace(/[\s?:]/g, ""));
+    assert.deepEqual(felder, ["woyouId", "email", "vorname", "nachname", "telefon", "land", "zielberuf", "paket", "betrag", "datum"], "CRM-Felder geändert: Datenschutzerklärung anpassen");
+    assert.match(fs.readFileSync("src/app/agb/page.tsx", "utf8"), /CRM der EuBiA-Gruppe/);
+  });
   await test("Demo: Beispielstellen klar erfunden (Beispiel-Firmen, nur example.com), mit/ohne Mail, eine beworben", () => {
     assert.deepEqual([...DEMO_TOOL_EMAILS], ["fatima@example.com", "youssef@example.com"]);
     assert.ok(DEMO_JOBS.length >= 2 && DEMO_JOBS.length <= 3);

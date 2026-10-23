@@ -73,7 +73,9 @@ export default function AGB() {
               Vertragspflichten und begrenzt auf den vorhersehbaren, typischen Schaden.
             </Section>
             <Section title="§ 8 Datenschutz">
-              Es gilt unsere Datenschutzerklärung.
+              {/* ANWALT PRÜFEN (23.10.2026): Verweis auf die Weitergabe an das CRM der EuBiA-Gruppe */}
+              Es gilt unsere Datenschutzerklärung. Dort steht auch, welche Angaben wir zur Kundenbetreuung und
+              Abrechnung an das interne CRM der EuBiA-Gruppe übermitteln (Abschnitt 5).
             </Section>
             <Section title="§ 9 Schlussbestimmungen">
               Es gilt deutsches Recht. Zwingende Verbraucherschutzvorschriften deines Wohnsitzstaates bleiben

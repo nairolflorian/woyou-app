@@ -33,7 +33,7 @@ export default function Impressum() {
             <p>
               Telefon: <span dir="ltr">{COMPANY.phone}</span>
               <br />
-              E-Mail: {COMPANY.email}
+              E-Mail: {COMPANY.legalEmail}
             </p>
 
             <h2 className="font-semibold text-base">Registereintrag</h2>

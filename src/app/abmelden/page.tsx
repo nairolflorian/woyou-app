@@ -1,6 +1,7 @@
 import crypto from "node:crypto";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { COMPANY } from "@/lib/company";
 import { prisma } from "@/lib/prisma";
 import { unsubToken } from "@/lib/marketing";
 
@@ -22,7 +23,7 @@ export default async function Abmelden(props: { searchParams: Promise<{ u?: stri
         <div className="mx-auto max-w-xl px-6 py-20 text-center">
           <h1 className="text-2xl font-bold">{ok ? "Du bist abgemeldet" : "Link ungültig"}</h1>
           <p className="mt-3 text-[color:var(--color-ink-soft)]">
-            {ok ? "Du bekommst keine Hinweis-Mails mehr von uns. Mails zu deinen Bewerbungen (z. B. Kopien und Bestätigungen) schicken wir weiterhin." : "Der Abmeldelink ist nicht gültig. Schreib uns gern an info@woyou.de, dann tragen wir dich aus."}
+            {ok ? "Du bekommst keine Hinweis-Mails mehr von uns. Mails zu deinen Bewerbungen (z. B. Kopien und Bestätigungen) schicken wir weiterhin." : `Der Abmeldelink ist nicht gültig. Schreib uns gern an ${COMPANY.email}, dann tragen wir dich aus.`}
           </p>
         </div>
       </main>

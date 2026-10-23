@@ -64,6 +64,7 @@ export default function Datenschutz() {
                 <li><strong>Arbeitgeber:</strong> Wir geben deine Daten nicht an Arbeitgeber weiter. Deine Bewerbungen verschickst du selbst, aus deinem eigenen E-Mail-Postfach oder über die Seite des Arbeitgebers.</li>
                 <li><strong>Stripe</strong> (Zahlungsabwicklung).</li>
                 <li><strong>Hetzner Online GmbH</strong>, Industriestr. 25, 91710 Gunzenhausen (Server in Deutschland).</li>
+                <li><strong>CRM der EuBiA-Gruppe</strong> für Kundenbetreuung und Abrechnung (siehe Abschnitt 5).</li>
                 <li><strong>Unser E-Mail-Anbieter</strong> für Benachrichtigungen an dich (z. B. Buchungsbestätigung).</li>
                 <li><strong>KI-Textdienst</strong> (nur wenn aktiviert): Für Formulierungsvorschläge zum Anschreiben übermitteln wir Angaben aus deiner Mappe und die Stellenbeschreibung an Mistral AI SAS (Paris, Frankreich), mit dem ein Vertrag zur Auftragsverarbeitung besteht. Die Daten werden nicht zum Training verwendet. Du prüfst jedes Anschreiben selbst, bevor du es verwendest.</li>
               </ul>
@@ -72,8 +73,57 @@ export default function Datenschutz() {
               <p className="mt-2">Wenn du „In meinem E-Mail-Programm öffnen“ nutzt, öffnet sich dein eigenes E-Mail-Programm. Die Nachricht verschickst du selbst; WoYou ist daran nicht beteiligt und bekommt keine Kopie und keine Antworten.</p>
             </section>
 
+            {/* ANWALT PRÜFEN (23.10.2026): neuer Abschnitt Weitergabe an das CRM der EuBiA-Gruppe. Beschreibt genau die
+                Felder aus src/lib/crm-core.ts (candidatePayload, sendCrmEvent). Achtung: "land" ist das Wohnland und nur
+                ersatzweise die Staatsangehörigkeit. Löschung im CRM nach Kontolöschung ist derzeit ein manueller Schritt
+                (kein automatisches Löschereignis an das CRM). Grundlage: Vereinbarung zur Auftragsverarbeitung mit EuBiA. */}
             <section>
-              <h2 className="font-semibold text-base">5. Speicherdauer</h2>
+              <h2 className="font-semibold text-base">5. Weitergabe an das CRM der EuBiA-Gruppe</h2>
+              <p>
+                WoYou ist ein Angebot der {COMPANY.name}, eines Unternehmens der EuBiA-Gruppe. Für die Betreuung unserer
+                Kund:innen nutzen wir das interne CRM (Kundenverwaltung) der EuBiA-Gruppe. Es wird auf Servern der Hetzner
+                Online GmbH in Deutschland betrieben. Verantwortlich für deine Daten bleibt die {COMPANY.name}. Die
+                Verarbeitung im CRM erfolgt auf Grundlage einer Vereinbarung zur Auftragsverarbeitung.
+              </p>
+              <p className="mt-2">
+                <strong>Zweck:</strong> Wir nutzen die Angaben, um dich bei Fragen zu betreuen, Buchungen und Zahlungen
+                abzurechnen und auszuwerten, wie Kund:innen durch unser Angebot gehen (zum Beispiel wie viele nach der
+                Registrierung buchen).
+              </p>
+              <p className="mt-2"><strong>Diese Angaben übermitteln wir:</strong></p>
+              <ul className="list-disc ml-5 space-y-1">
+                <li>deine Kundennummer bei WoYou, Vorname, Nachname und E-Mail-Adresse,</li>
+                <li>deine Telefonnummer (aus der Buchung, sonst deine WhatsApp- oder Konto-Nummer),</li>
+                <li>dein Land (Wohnland, wenn du keins angegeben hast, deine Staatsangehörigkeit),</li>
+                <li>deinen Zielberuf und das gebuchte Paket,</li>
+                <li>den Stand deiner Buchung: registriert, gebucht, bezahlt, Unterlagen eingereicht, Bewerbungswerkzeug freigeschaltet oder storniert, jeweils mit Datum, bei einer Zahlung auch den Betrag.</li>
+              </ul>
+              <p className="mt-2">
+                Deine Bewerbungsunterlagen übermitteln wir nicht an das CRM: keinen Lebenslauf, kein Foto, kein
+                Geburtsdatum, keine Anschreiben, keine Suchbegriffe und keine Einträge aus deinem Bewerbungstracker.
+                Zahlungsdaten wie Kartennummern liegen nur bei Stripe.
+              </p>
+              <p className="mt-2">
+                <strong>Rechtsgrundlage:</strong> Die Übermittlung ist nötig, um deinen Vertrag mit uns zu erfüllen und
+                abzurechnen (Art. 6 Abs. 1 lit. b DSGVO). Die Auswertung des Kundenwegs beruht auf unserem berechtigten
+                Interesse, unser Angebot zu verbessern (Art. 6 Abs. 1 lit. f DSGVO). Dem kannst du jederzeit
+                widersprechen.
+              </p>
+              <p className="mt-2">
+                <strong>Speicherdauer:</strong> Wir speichern die Angaben im CRM, solange du bei uns ein Konto hast.
+                Löschst du dein Konto, löschen wir auch deinen Eintrag im CRM innerhalb von 30 Tagen. Angaben zu
+                Zahlungen bewahren wir auf, solange das Steuer- und Handelsrecht es verlangt (bis zu 10 Jahre).
+              </p>
+              <p className="mt-2">
+                <strong>Getrennt von anderen Bereichen:</strong> Im CRM liegen die WoYou-Angaben in einem eigenen
+                Bereich. Zugriff haben nur die Personen, die WoYou-Kund:innen betreuen, und die Verwaltung des CRM. Wir
+                nutzen die Angaben nicht für andere Angebote der EuBiA-Gruppe, etwa Weiterbildungen oder den
+                Unternehmensservice, und geben sie nicht an andere Unternehmen der Gruppe weiter.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="font-semibold text-base">6. Speicherdauer</h2>
               <p>
                 Solange dein Konto besteht. Nach der Löschung deines Kontos entfernen wir deine Daten innerhalb
                 von 30 Tagen, soweit keine gesetzlichen Aufbewahrungspflichten bestehen.
@@ -88,7 +138,7 @@ export default function Datenschutz() {
             </section>
 
             <section>
-              <h2 className="font-semibold text-base">6. Deine Rechte</h2>
+              <h2 className="font-semibold text-base">7. Deine Rechte</h2>
               <p>
                 Du hast das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung,
                 Datenübertragbarkeit und Widerspruch. Einwilligungen kannst du jederzeit widerrufen. Deine Daten
@@ -99,7 +149,7 @@ export default function Datenschutz() {
             </section>
 
             <section>
-              <h2 className="font-semibold text-base">7. Kontakt</h2>
+              <h2 className="font-semibold text-base">8. Kontakt</h2>
               <p>Fragen zum Datenschutz: {COMPANY.email} oder direkt an unsere Datenschutzbeauftragte: {COMPANY.dpo.email}</p>
             </section>
           </div>

@@ -41,7 +41,7 @@ Weitere Skripte:
 - `bash scripts/stripe-einrichten.sh prod`: Live-Schlüssel direkt eingeben. Webhook im Live-Modus: `https://woyou.de/api/webhooks/stripe`,
   Ereignis `checkout.session.completed`.
 - `bash scripts/admin-anlegen.sh --neues-passwort`: neues Passwort für ein Admin-/Team-Konto (es gibt noch keinen Mail-Versand).
-- `bash deploy/crm-einrichten.sh`: CRM-Anbindung, schreibt jetzt in `.env.prod` (vorher Datenschutzerklärung ergänzen, siehe unten).
+- `bash deploy/crm-einrichten.sh`: CRM-Anbindung, schreibt jetzt in `.env.prod` (Datenschutzerklärung Abschnitt 5 ist ergänzt, siehe unten).
 
 Update Produktion: `git pull --ff-only && bash scripts/prod-einrichten.sh`.
 Update Staging wie bisher: `docker compose build app && docker compose up -d app` (nie `db-init` ohne Befehl).
@@ -49,7 +49,7 @@ Update Staging wie bisher: `docker compose build app && docker compose up -d app
 ## Ohne SMTP
 
 Läuft: Registrierung und Anmeldung brauchen keine Mail. Mails werden nur protokolliert (Admin > Buchungen „Letzte Mails“).
-„Passwort vergessen?“ zeigt unter dem Login den Hinweis, an info@woyou.de zu schreiben; das Team setzt das Passwort im Admin
+„Passwort vergessen?“ zeigt unter dem Login den Hinweis, an service@karrierekind.de (COMPANY.email) zu schreiben; das Team setzt das Passwort im Admin
 (Kund:in > Passwort) oder per `admin-anlegen.sh --neues-passwort` zurück. Buchungsbestätigung und Zahlungslink per Mail kommen
 erst mit SMTP; mit Stripe läuft die Zahlung direkt im Checkout nach der Buchung.
 
@@ -73,6 +73,6 @@ Daten der Produktion bleiben bei 1. und 2. erhalten (Volumes `woyou_prod_pg`, `w
 
 - Anwälte: AGB, Datenschutz, Angebot (Stellen mit `ANWALT PRÜFEN` im Code).
 - USt-ID: steht auch auf karrierekind.de nicht; falls vorhanden in `src/lib/company.ts` und Impressum ergänzen.
-- CRM: Datenschutzerklärung um die Weitergabe an das EuBiA-CRM ergänzen, dann `bash deploy/crm-einrichten.sh`.
+- CRM: Datenschutzerklärung Abschnitt 5 (Weitergabe an das EuBiA-CRM) ist seit 23.10.2026 drin, ANWALT PRÜFEN. Vor `bash deploy/crm-einrichten.sh`: AV-Vereinbarung mit EuBiA abschließen; Kontolöschung muss den CRM-Eintrag innerhalb von 30 Tagen entfernen (derzeit von Hand, kein Löschereignis).
 - SMTP für System-Mails, danach Marketing-Zeitplan für Produktion.
 - Telegram-Bot: ein Bot kann nur einen Webhook haben; bleibt vorerst bei Staging.
