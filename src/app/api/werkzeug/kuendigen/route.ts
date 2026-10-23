@@ -1,20 +1,8 @@
 import { NextResponse } from "next/server";
-import { getSession } from "@/lib/session";
-import { prisma } from "@/lib/prisma";
-import { ROLE } from "@/lib/enums";
-import { cancelToolSubscription } from "@/lib/werkzeug";
-import { purchaseMail } from "@/lib/werkzeug-text";
 
-// Monatsabo kündigen (Kündigungsbutton, § 312k BGB): Zugang bleibt bis zum Ende des bezahlten Zeitraums
-export async function POST() {
-  const session = await getSession();
-  if (!session.userId || session.role !== ROLE.CANDIDATE) return NextResponse.json({ error: "Bitte melde dich an." }, { status: 401 });
-  const c = await prisma.candidate.findUnique({ where: { userId: session.userId }, include: { user: true } });
-  if (!c) return NextResponse.json({ error: "Profil nicht gefunden." }, { status: 404 });
-  try {
-    const until = await cancelToolSubscription(c.id);
-    return NextResponse.json({ ok: true, until: until.toLocaleDateString(purchaseMail(c.user.locale).dateLocale) });
-  } catch (e) {
-    return NextResponse.json({ error: e instanceof Error ? e.message : "Fehler" }, { status: 400 });
-  }
+// Früher: Monatsabo kündigen. Seit 23.10.2026 gibt es kein Abo mehr (es wurde nie eines abgeschlossen;
+// Stand Server 23.10.: keine Werkzeug-Käufe in der Datenbank). Die Route antwortet nur noch mit 410.
+// Sollte doch ein Altabo auftauchen: in Stripe kündigen, der Webhook (customer.subscription.deleted) beendet es hier.
+export function POST() {
+  return NextResponse.json({ error: "Es gibt kein Abo mehr, das gekündigt werden müsste." }, { status: 410 });
 }

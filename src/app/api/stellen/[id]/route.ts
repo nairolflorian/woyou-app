@@ -12,7 +12,7 @@ const day = (v: unknown) => { if (typeof v !== "string" || !/^\d{4}-\d{2}-\d{2}$
 export async function PATCH(req: Request, ctx: Ctx) {
   const s = await toolSession();
   if (!s) return NextResponse.json({ error: "Bitte melde dich an." }, { status: 401 });
-  if (!s.access.active) return NextResponse.json({ error: "Nur lesbar, solange das Werkzeug nicht verlängert ist." }, { status: 403 });
+  if (!s.access.active) return NextResponse.json({ error: "Das Bewerbungswerkzeug ist abgelaufen." }, { status: 403 });
   const { id } = await ctx.params;
   const j = await ownJob(s.candidate.id, id);
   if (!j) return NextResponse.json({ error: "Nicht gefunden" }, { status: 404 });

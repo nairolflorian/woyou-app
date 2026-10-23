@@ -7,6 +7,8 @@ import { emlFile } from "@/lib/tracker";
 export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> }) {
   const s = await toolSession();
   if (!s) return NextResponse.json({ error: "Bitte melde dich an." }, { status: 401 });
+  // Teil des Versand-Werkzeugs: nach Ablauf gesperrt (PDFs bleiben über /dokument herunterladbar)
+  if (!s.access.active) return NextResponse.json({ error: "Das Bewerbungswerkzeug ist abgelaufen." }, { status: 403 });
   const { id } = await ctx.params;
   const f = await emlFile(s.candidate.id, id);
   if (!f) return NextResponse.json({ error: "Kein Anschreiben vorhanden" }, { status: 404 });

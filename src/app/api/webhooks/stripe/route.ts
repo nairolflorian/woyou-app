@@ -5,7 +5,8 @@ import { markPurchasePaid, extendSubscription, endSubscription } from "@/lib/cre
 import { markToolPurchasePaid, extendToolSubscription, endToolSubscription } from "@/lib/werkzeug";
 
 // Stripe-Webhook. In Stripe als Endpunkt eintragen: https://<domain>/api/webhooks/stripe
-// Events: checkout.session.completed, invoice.paid, customer.subscription.deleted
+// Event: checkout.session.completed (Startpaket). invoice.paid und customer.subscription.deleted werden nur noch
+// für Altdaten verarbeitet (Verlängerung/Abo gibt es seit 23.10.2026 nicht mehr), damit nichts verloren geht.
 // Signing-Secret als STRIPE_WEBHOOK_SECRET setzen.
 export async function POST(req: Request) {
   const stripe = getStripe();
@@ -28,7 +29,7 @@ export async function POST(req: Request) {
       await markBookingPaid(cs.metadata.bookingId, cs.id);
     }
     const subId = typeof cs.subscription === "string" ? cs.subscription : cs.subscription?.id;
-    // Weg 1: Verlängerung des Werkzeugs (Zahlung) oder Monatsabo (ggf. mit Probezeit bis Ende des bezahlten Zeitraums)
+    // ALT: frühere Verlängerung/Abo aus offenen Sitzungen noch verbuchen (es werden keine neuen mehr angelegt)
     if (cs.metadata?.kind === "tool_purchase" && cs.metadata.purchaseId && (cs.payment_status === "paid" || cs.mode === "subscription")) {
       let periodEnd: Date | undefined, trialing = false;
       if (subId) {

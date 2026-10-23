@@ -88,6 +88,8 @@ services:
         condition: service_healthy
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-woyou}:${POSTGRES_PASSWORD:-woyou}@postgres:5432/${POSTGRES_DB:-woyou}?schema=public
+      # Seed nur, wenn DEMO_MODE nicht "false" ist (siehe command). Früher fehlte die Variable hier, dann lief der Seed immer.
+      DEMO_MODE: ${DEMO_MODE:-true}
       # für scripts/crm-nachtragen.ts
       EUBIA_CRM_URL: ${EUBIA_CRM_URL:-}
       EUBIA_CRM_TOKEN: ${EUBIA_CRM_TOKEN:-}

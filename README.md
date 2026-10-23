@@ -37,28 +37,26 @@ Demo-Logins (Passwort für alle: **`woyou1234`**):
 | Rolle | E-Mail |
 |---|---|
 | Super-Admin | `admin@woyou.demo` |
-| Vermittler | `vermittler@woyou.demo` |
-| Firma A (Klinik) | `hr@klinik-berlin.demo` |
-| Firma B (Hotel) | `jobs@hotel-alpenhof.demo` |
-| Kandidatin (vermittelbar) | `fatima@example.com` |
-| Kandidat (Einzel-Consent) | `youssef@example.com` |
-| Kandidatin (Profil unvollständig) | `aicha@example.com` |
+| Admin (Backoffice) | `backoffice@woyou.demo` (ältere Seeds: `vermittler@woyou.demo`) |
+| Unterlagen-Team | `team@woyou.demo` |
+| Kundin, Werkzeug aktiv, Beispielstellen | `fatima@example.com` |
+| Kunde, Werkzeug aktiv | `youssef@example.com` |
+| Kundin, noch nicht gebucht | `aicha@example.com` |
+
+Weg 1 (seit 22.10.2026): keine Firmenkonten, keine Vermittlung. Im DEMO_MODE bekommen Fatima und Youssef beim
+Demo-Login automatisch ein aktives Werkzeug, Fatima dazu drei erfundene Beispielstellen (`src/lib/demo-setup.ts`).
 
 ---
 
 ## End-to-End-Flow zum Klicken
 
 Für einen geführten Durchlauf nutze **`/demo`** (Test-Seite mit Rollen-Switcher) oder die schwebende Demo-Leiste unten rechts auf jeder Seite.
+Ablauf und Hintergrund: [docs/WEG1-UMBAU.md](./docs/WEG1-UMBAU.md).
 
-1. **Landing** öffnen, Sprache wechseln (DE/EN/FR/AR mit RTL).
-2. **Registrierung** → E-Mail/Telefon → mehrstufiger Profil-Wizard.
-3. **Sprachtest** machen → Niveau wird automatisch ins Profil übernommen.
-4. **Profil freischalten** → Stripe-Checkout (oder Demo-Bypass — siehe „Stripe").
-5. Als **Admin** einloggen → Matching → einen Top-Kandidaten der Klinik vorschlagen.
-6. Als **Kandidat** einloggen → unter „Deine Zustimmung wird gebraucht" annehmen.
-7. Als **Firma** einloggen → „Interesse zeigen" → Chat öffnet automatisch.
-8. Im Chat Nachrichten austauschen (Kanal wählen: Plattform / E-Mail / Telegram / WhatsApp).
-9. Firma → „Eingestellt markieren" → Kandidat-Status springt auf `PLACED`, Visum-Aufgabe wird im Admin-Dashboard erzeugt.
+1. **Startseite**: Angebot ist nur das Startpaket (199 €, inklusive 3 Monate Werkzeug, keine Verlängerung, kein Abo).
+2. Als **Fatima** einloggen → Mein Bereich → Stellensuche → Stellen merken.
+3. **Meine Bewerbungen** → je Stelle „Bewerbung prüfen und senden“ → im eigenen Mailprogramm öffnen → „Ich habe gesendet“.
+4. Als **Unterlagen-Team** einloggen → Buchungen → Mappe prüfen und freigeben.
 
 ---
 

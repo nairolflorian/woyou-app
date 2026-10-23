@@ -6,7 +6,7 @@ import { letterFile, sendFiles } from "@/lib/tracker";
 //   ?format=pdf      Anschreiben als PDF        ?format=docx   Anschreiben als Word
 //   ?format=cv       Lebenslauf als PDF         ?format=bundle Anschreiben und Lebenslauf in einer PDF
 //   &inline=1        im Browser ansehen statt speichern
-// Bleibt auch nach Ablauf des Werkzeugs möglich: die Unterlagen gehören der Person.
+// Bleibt auch nach Ablauf des Werkzeugs möglich (keine Verlängerung nötig): die Unterlagen gehören der Person.
 export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }) {
   const s = await toolSession();
   if (!s) return NextResponse.json({ error: "Bitte melde dich an." }, { status: 401 });

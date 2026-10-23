@@ -9,7 +9,7 @@ export async function GET() {
   const bookings = await prisma.serviceBooking.findMany({ orderBy: { createdAt: "desc" }, include: { candidate: { include: { user: true } } } });
   const q = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
   const d = (x: Date | null) => (x ? x.toISOString().slice(0, 10) : "");
-  const rows = [["Vorname", "Nachname", "E-Mail", "Telefon", "Sprache", "Herkunft", "Registriert", "Gebucht", "Bezahlt", "Status", "Betrag (€)", "Wunschberufe", "Regionen", "Paket", "Werkzeug bis", "Abo"]];
+  const rows = [["Vorname", "Nachname", "E-Mail", "Telefon", "Sprache", "Herkunft", "Registriert", "Gebucht", "Bezahlt", "Status", "Betrag (€)", "Wunschberufe", "Regionen", "Paket", "Werkzeug bis", "Abo (alt)"]];
   for (const b of bookings) {
     const u = b.candidate.user, ta = await toolAccess(b.candidateId);
     rows.push([b.candidate.firstName, b.candidate.lastName, u.email, b.contactPhone ?? u.phone, u.locale, u.signupSource, d(u.createdAt), d(b.createdAt), d(b.paidAt), b.status, (b.amountCents / 100).toFixed(2).replace(".", ","), b.targetJobs, b.targetRegions, b.packageKey, d(ta.until), ta.subscription ? (ta.subscription.status === "CANCELLING" ? "gekündigt" : "aktiv") : ""].map(q) as string[]);

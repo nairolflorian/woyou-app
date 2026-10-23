@@ -34,7 +34,7 @@ export default function DemoPage() {
   }
 
   const grouped: Record<string, typeof DEMO_ACCOUNTS> = {};
-  for (const acc of DEMO_ACCOUNTS.filter((a) => a.role !== "COMPANY")) { // Weg 1: keine Firmenkonten
+  for (const acc of DEMO_ACCOUNTS) { // Weg 1: nur Backoffice und Kund:innen
     const g = ROLE_GROUPS[acc.role];
     grouped[g] = grouped[g] ?? [];
     grouped[g].push(acc);

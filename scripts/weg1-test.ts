@@ -1,13 +1,15 @@
 /**
  * Kleine Tests für die Kernlogik nach Weg 1 (ohne Datenbank, ohne Netz):
- * Preise und Laufzeiten, Deutsch-Hinweis, Filter, Sortierung, Dubletten, Suchvorschläge, Tracker-Stand,
+ * Angebot (nur Startpaket), Stripe-Schutz im DEMO_MODE, Demo-Beispielstellen, Deutsch-Hinweis, Filter, Sortierung, Dubletten, Suchvorschläge, Tracker-Stand,
  * E-Mail-Link und die Sperrliste der abgeschalteten Bereiche.
  *   npx tsx scripts/weg1-test.ts
  * Optional mit Live-Abfrage der Jobbörse (Netz nötig):
  *   npx tsx --conditions=react-server scripts/weg1-test.ts --live
  */
 import assert from "node:assert/strict";
-import { ANGEBOT, addMonths, extendUntil, toolState, formatPrice } from "../src/lib/angebot";
+import { ANGEBOT, addMonths, extendUntil, toolState, formatPrice, isLegacyToolKind } from "../src/lib/angebot";
+import { stripeKeyMode, stripeKeyAllowed } from "../src/lib/stripe-mode";
+import { DEMO_JOBS, DEMO_TOOL_EMAILS, demoJobRow } from "../src/lib/demo-jobs";
 import {
   germanRequired, parseLevel, germanFit, matchesHours, matchesGerman, dedupe, rank, profileTerms, profileRegion,
   nextTrackerState, mailtoHref, mailtoLink, coverMail, isEmail, isHttpUrl, type Treffer,
@@ -19,10 +21,11 @@ let n = 0;
 const test = (name: string, fn: () => void | Promise<void>) => Promise.resolve().then(fn).then(() => { n++; console.log(`ok  ${name}`); }, (e) => { console.error(`FEHLER  ${name}\n${e instanceof Error ? e.stack : e}`); process.exitCode = 1; });
 
 async function main() {
-  await test("Preise sind Platzhalter in Cent und plausibel", () => {
+  await test("Angebot: nur das Startpaket für 199 € mit 3 Monaten Werkzeug, keine Verlängerung, kein Abo", () => {
+    assert.deepEqual(Object.keys(ANGEBOT), ["startpaket"]);
     assert.equal(ANGEBOT.startpaket.priceCents, 19900);
-    assert.ok(ANGEBOT.startpaket.toolMonths >= 1);
-    assert.ok(ANGEBOT.abo.priceCents > 0 && ANGEBOT.verlaengerung.priceCents > 0);
+    assert.equal(ANGEBOT.startpaket.toolMonths, 3);
+    assert.ok(isLegacyToolKind("TOOL_MONTH") && isLegacyToolKind("TOOL_SUBSCRIPTION") && !isLegacyToolKind("PACK_25"));
     assert.equal(formatPrice(19900, "de").replace(/\s/g, " "), "199 €");
     assert.equal(formatPrice(2950, "de").replace(/\s/g, " "), "29,50 €");
   });
@@ -31,7 +34,7 @@ async function main() {
     assert.equal(addMonths(new Date(2028, 0, 31), 1).getDate(), 29);
     assert.equal(addMonths(new Date(2026, 9, 22), 3).getMonth(), 0);
   });
-  await test("Verlängerung hängt an laufenden Zugang an, sonst ab heute", () => {
+  await test("Freischaltung hängt an laufenden Zugang an, sonst ab heute", () => {
     const now = new Date(2026, 9, 22);
     assert.deepEqual(extendUntil(null, 3, now), new Date(2027, 0, 22));
     assert.deepEqual(extendUntil(new Date(2026, 11, 1), 1, now), new Date(2027, 0, 1));
@@ -164,9 +167,71 @@ async function main() {
     for (const p of ["/stellensuche", "/meine-bewerbungen", "/api/stellensuche", "/api/stellen/1", "/api/werkzeug/kaufen", "/api/admin/bookings", "/api/admin/bookings/export", "/admin/buchungen/abc", "/api/mappe/freigeben", "/api/webhooks/stripe", "/firmenlauf"])
       assert.equal(weg1Gesperrt(p), null, p);
   });
+  await test("Stripe: im DEMO_MODE nie ein Live-Schlüssel, nur Test-Schlüssel", () => {
+    assert.equal(stripeKeyMode(""), "none"); assert.equal(stripeKeyMode(undefined), "none");
+    assert.equal(stripeKeyMode("sk_test_abc"), "test"); assert.equal(stripeKeyMode("rk_test_abc"), "test");
+    assert.equal(stripeKeyMode("sk_live_abc"), "live"); assert.equal(stripeKeyMode("rk_live_abc"), "live");
+    assert.equal(stripeKeyMode("pk_live_abc"), "unknown");
+    for (const demo of [undefined, "", "true", "1"]) {
+      assert.equal(stripeKeyAllowed("sk_live_abc", demo), false, `Live im Demo (${demo})`);
+      assert.equal(stripeKeyAllowed("rk_live_abc", demo), false);
+      assert.equal(stripeKeyAllowed("irgendwas", demo), false);
+      assert.equal(stripeKeyAllowed("sk_test_abc", demo), true);
+    }
+    assert.equal(stripeKeyAllowed("sk_live_abc", "false"), true);
+    assert.equal(stripeKeyAllowed("", "false"), false);
+  });
+  await test("Demo: Beispielstellen klar erfunden (Beispiel-Firmen, nur example.com), mit/ohne Mail, eine beworben", () => {
+    assert.deepEqual([...DEMO_TOOL_EMAILS], ["fatima@example.com", "youssef@example.com"]);
+    assert.ok(DEMO_JOBS.length >= 2 && DEMO_JOBS.length <= 3);
+    for (const j of DEMO_JOBS) {
+      assert.match(j.company, /Beispiel/, j.company);
+      if (j.email) assert.match(j.email, /@example\.com$/, j.email);
+      for (const u of [j.url, j.applyUrl]) if (u) assert.match(u, /^https:\/\/example\.com\//, u);
+      assert.ok(!/[–—]/.test(j.title + j.description));
+    }
+    assert.ok(DEMO_JOBS.some((j) => j.email && j.status === "SAVED"), "Stelle mit E-Mail");
+    assert.ok(DEMO_JOBS.some((j) => !j.email), "Stelle ohne E-Mail");
+    assert.ok(DEMO_JOBS.some((j) => j.status === "APPLIED"), "Stelle schon beworben");
+    assert.equal(new Set(DEMO_JOBS.map((j) => j.sourceRef)).size, DEMO_JOBS.length, "sourceRef eindeutig (idempotent)");
+    const now = Date.UTC(2026, 9, 26), r = demoJobRow(DEMO_JOBS.find((j) => j.status === "APPLIED")!, now);
+    assert.equal(r.source, "MANUAL"); assert.ok(r.appliedAt && r.appliedAt.getTime() < now && r.followUpAt && r.followUpAt.getTime() > now);
+  });
+  await test("Nur Startpaket: keine Verlängerung, kein Abo, keine Monatspreise in Kundentexten und Kaufwegen", async () => {
+    const fs = await import("node:fs");
+    const code = (f: string) => fs.readFileSync(f, "utf8").split("\n").filter((l) => !/^\s*(\/\/|\*|\/\*)/.test(l) && !/\{\/\*/.test(l)).join("\n");
+    for (const f of ["src/lib/landing-copy.ts", "src/lib/services.ts", "src/lib/account-text.ts", "src/lib/werkzeug-text.ts", "src/lib/marketing.ts", "src/app/agb/page.tsx", "src/app/profil/page.tsx", "src/components/ToolGate.tsx"]) {
+      const s = code(f);
+      assert.ok(!/verlaengerung|ANGEBOT\.abo|#verlaengern|\/api\/werkzeug\/kaufen/.test(s), `${f}: Verweis auf Verlängerung/Abo`);
+      assert.ok(!/je Monat|im Monat|per month|a month|par mois|شهريًا|لكل شهر|प्रति माह/.test(s), `${f}: Monatspreis`);
+      assert.ok(!/verlängern|verlängerst|Werkzeug verlängern|extend the tool|prolonger l'outil|تمديد الأداة|मدّد|अवधि बढ़ाएँ/i.test(s), `${f}: Verlängern-Aufforderung`);
+      assert.ok(!/Monatsabo|monthly subscription|abonnement mensuel|اشتراك شهري|मासिक सदस्यता/i.test(s), `${f}: Abo-Angebot`);
+    }
+    assert.equal(fs.existsSync("src/components/ToolShop.tsx"), false, "Verlängern-Knöpfe entfernt");
+    const { landingCopy } = await import("../src/lib/landing-copy");
+    const de = landingCopy("de");
+    assert.match(de.priceNote, /inklusive 3 Monate Zugang zum Bewerbungswerkzeug/);
+    assert.match(de.priceNote, /deine Unterlagen behältst du/);
+    assert.ok(de.faq.some((x) => /keine Verlängerung und kein Abo/.test(x.a)), "FAQ zu Kosten");
+    assert.ok(de.faq.some((x) => /Was passiert nach 3 Monaten/.test(x.q)), "FAQ nach Ablauf");
+    for (const l of ["en", "fr", "ar", "hi"] as const) assert.equal(landingCopy(l).faq.length, de.faq.length, `FAQ ${l}`);
+    const { accountText } = await import("../src/lib/account-text");
+    assert.match(accountText("de").toolIncluded, /keine Verlängerung und kein Abo/);
+    assert.match(accountText("de").toolExpiredLead, /weiter herunterladen/);
+    const w = await import("../src/lib/werkzeug-text");
+    assert.match(w.werkzeugText("de").expiredLead, /gesperrt/);
+    assert.match(w.werkzeugText("de").expiredLead, /herunterladen/);
+  });
+  await test("Kaufwege für Verlängerung und Abo antworten mit 410", async () => {
+    const kaufen = await import("../src/app/api/werkzeug/kaufen/route");
+    const kuendigen = await import("../src/app/api/werkzeug/kuendigen/route");
+    assert.equal(kaufen.POST().status, 410);
+    assert.equal(kaufen.GET().status, 410);
+    assert.equal(kuendigen.POST().status, 410);
+  });
   await test("Texte: keine langen Gedankenstriche und keine alten Versprechen in den neuen Kundentexten", async () => {
     const fs = await import("node:fs");
-    for (const f of ["src/lib/werkzeug-text.ts", "src/lib/account-text.ts", "src/lib/services.ts", "src/lib/landing-copy.ts", "src/lib/marketing.ts", "src/lib/mappe-i18n.ts", "src/lib/company.ts", "src/lib/selfcheck.ts", "src/components/SelfCheck.tsx", "src/components/MyDocuments.tsx", "src/lib/versand-text.ts", "src/components/VersandPanel.tsx", "src/components/VersandAdresse.tsx", "src/app/demo/page.tsx", "src/lib/auto-match.ts"]) {
+    for (const f of ["src/lib/werkzeug-text.ts", "src/lib/account-text.ts", "src/lib/services.ts", "src/lib/landing-copy.ts", "src/lib/marketing.ts", "src/lib/mappe-i18n.ts", "src/lib/company.ts", "src/lib/selfcheck.ts", "src/components/SelfCheck.tsx", "src/components/MyDocuments.tsx", "src/lib/versand-text.ts", "src/components/VersandPanel.tsx", "src/components/VersandAdresse.tsx", "src/app/demo/page.tsx", "src/lib/auto-match.ts", "src/lib/demo-jobs.ts", "src/components/MeineAnschreiben.tsx", "src/components/ToolGate.tsx", "src/app/agb/page.tsx", "src/app/datenschutz/page.tsx"]) {
       const s = fs.readFileSync(f, "utf8").split("\n").filter((l) => !/^\s*\/\//.test(l)).join("\n");
       assert.ok(!/[–—]/.test(s), `${f}: langer Gedankenstrich`);
       assert.ok(!/25 Bewerbungen|bewerben dich|in deinem Namen|in your name|en votre nom/i.test(s), `${f}: altes Versprechen`);
@@ -216,7 +281,8 @@ async function main() {
     checkLang("werkzeugText", w.werkzeugText("de"), w.werkzeugText("ar"), w.werkzeugText("hi"));
     const strip = <T extends { dir: string }>(o: T) => { const { dir, ...rest } = o; void dir; return rest; };
     const mailParts = (m: (l: string) => object, l: string) => { const o = m(l) as Record<string, unknown>; const { lang, dateLocale, ...rest } = o; void lang; void dateLocale; return strip(rest as { dir: string }); };
-    for (const [n, f] of [["mappeMail", w.mappeMail], ["purchaseMail", w.purchaseMail], ["bookingMail", w.bookingMail]] as const)
+    assert.equal("purchaseMail" in w, false, "Mails zu Verlängerung/Abo gibt es nicht mehr");
+    for (const [n, f] of [["mappeMail", w.mappeMail], ["bookingMail", w.bookingMail]] as const)
       checkLang(n, mailParts(f, "de"), mailParts(f, "ar"), mailParts(f, "hi"));
     assert.equal(w.mappeMail("ar").dir, "rtl");
     assert.equal(w.mappeMail("ar").hello("Fatima"), "مرحبًا Fatima،");

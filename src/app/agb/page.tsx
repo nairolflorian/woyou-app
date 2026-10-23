@@ -8,10 +8,9 @@ export const metadata = { title: "AGB" };
 
 // ANWALT PRÜFEN (Weg 1, 22.10.2026): §§ 1 bis 5 und der Hinweis in § 6 wurden für das neue Angebot
 // (Unterlagen plus Bewerbungswerkzeug, kein Versand durch WoYou, keine Vermittlung) umgeschrieben.
-// Preise und Laufzeiten kommen aus src/lib/angebot.ts (Platzhalter, Rachid legt sie fest).
+// Preise und Laufzeiten kommen aus src/lib/angebot.ts (seit 23.10.2026: nur Startpaket, keine Verlängerung, kein Abo).
 export default function AGB() {
   const p = formatPrice(ANGEBOT.startpaket.priceCents), months = ANGEBOT.startpaket.toolMonths;
-  const month = formatPrice(ANGEBOT.verlaengerung.priceCents), abo = formatPrice(ANGEBOT.abo.priceCents);
   return (
     <>
       <SiteHeader />
@@ -52,15 +51,15 @@ export default function AGB() {
             {/* ANWALT PRÜFEN (Weg 1): frühere Vollmacht zum Versand entfällt ersatzlos */}
             <Section title="§ 4 Laufzeit des Werkzeugs">
               Das Startpaket enthält {months} Monate Zugang zum Bewerbungswerkzeug ab Zahlungseingang. Danach
-              endet der Zugang automatisch, ohne dass du kündigen musst. Deine Unterlagen und die Anschreiben, die du
-              erstellt hast, kannst du auch danach herunterladen; deine Übersicht bleibt lesbar.
+              endet der Zugang automatisch, ohne dass du kündigen musst. Eine Verlängerung oder ein Abo bieten wir
+              nicht an. Nach Ablauf sind Stellensuche und deine Übersicht „Meine Bewerbungen“ gesperrt. Deine
+              Unterlagen (Lebenslauf, Anschreiben-Vorlage) und die Anschreiben, die du zu deinen Stellen erstellt hast,
+              kannst du auch danach als PDF herunterladen.
             </Section>
-            {/* ANWALT PRÜFEN (Weg 1): Preise, Verlängerung und Abo (Werte aus src/lib/angebot.ts) */}
+            {/* ANWALT PRÜFEN (23.10.2026): nur noch Einmalzahlung, keine Verlängerung, kein Abo (Werte aus src/lib/angebot.ts) */}
             <Section title="§ 5 Preis und Zahlung">
-              Das Startpaket kostet einmalig {p} inklusive Umsatzsteuer. Danach kannst du das Werkzeug für {month} um
-              einen Monat verlängern (endet automatisch) oder ein Abo zu {abo} im Monat abschließen. Das Abo beginnt,
-              wenn dein bezahlter Zeitraum endet, verlängert sich monatlich und ist jederzeit zum Ende des bezahlten
-              Monats kündbar, direkt in deinem Bereich auf woyou.de. Die Zahlung erfolgt online über Stripe.
+              Das Startpaket kostet einmalig {p} inklusive Umsatzsteuer. Weitere Kosten entstehen nicht, es gibt
+              keine wiederkehrenden Zahlungen. Die Zahlung erfolgt online über Stripe.
             </Section>
             {/* ANWALT PRÜFEN (Weg 1): Widerruf bei sofortiger Freischaltung des Werkzeugs (digitale Leistung) */}
             <Section title="§ 6 Widerrufsrecht">

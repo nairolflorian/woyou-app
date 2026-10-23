@@ -89,7 +89,7 @@ Aktuell läuft die Demo im **DEMO_MODE=true**, d.h. der Rollen-Switcher unter `/
 
 1. `DEMO_MODE=false` in `/var/www/woyou-app/repo/.env` setzen.
 2. Eigene Domain (z.B. `demo.woyou.de` oder direkt `woyou.de`, falls die Static-Site abgelöst wird) als zweiten `server_name` in der nginx-Config eintragen.
-3. Echtes Stripe-Key-Paar setzen (`STRIPE_SECRET_KEY`, `STRIPE_PUBLISHABLE_KEY`).
+3. Echtes Stripe-Key-Paar setzen (`STRIPE_SECRET_KEY`, `STRIPE_PUBLISHABLE_KEY`). Achtung: Live-Schlüssel wirken erst mit `DEMO_MODE=false`; im DEMO_MODE nimmt die App nur `sk_test_`/`rk_test_`.
 4. Telegram-Bot-Token + Username setzen, Webhook setzen mit `npm run telegram:set-webhook -- https://…/api/telegram/webhook`.
 5. SMTP für E-Mail-Versand ergänzen (in der App noch nicht implementiert — Phase 2).
 6. Impressum, Datenschutzerklärung und AGB ausfüllen (aktuell Demo-Platzhalter mit „⚠ Demo-Platzhalter"-Banner).

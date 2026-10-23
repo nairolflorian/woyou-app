@@ -6,7 +6,7 @@ import { MyDocuments } from "@/components/MyDocuments";
 import { PurchaseList } from "@/components/PurchaseList";
 import { parseProfile, missingFields, prefillFromCandidate } from "@/lib/application";
 import { BOOKING_STATUS_LABEL, CREDIT_PRODUCTS, type BookingStatus, type CreditKind } from "@/lib/services";
-import { ANGEBOT, formatPrice } from "@/lib/angebot";
+import { formatPrice } from "@/lib/angebot";
 import { aiEnabled } from "@/lib/letters";
 import { toolAccess } from "@/lib/werkzeug";
 import { creditState } from "@/lib/credits";
@@ -17,7 +17,7 @@ export const dynamic = "force-dynamic";
 const PROFILE_STATUS: Record<string, string> = { DRAFT: "Kund:in füllt aus", SUBMITTED: "Eingereicht, bitte prüfen", APPROVED: "Freigegeben" };
 const PURCHASE_STATUS: Record<string, string> = { REQUESTED: "bestellt, Zahlung offen", PENDING_PAYMENT: "Zahlung offen", PAID: "bezahlt", ACTIVE: "aktiv", CANCELLING: "gekündigt", ENDED: "beendet" };
 const purchaseLabel = (kind: string) =>
-  kind === ANGEBOT.verlaengerung.kind ? "Werkzeug 1 Monat" : kind === ANGEBOT.abo.kind ? "Werkzeug Monatsabo" : CREDIT_PRODUCTS[kind as CreditKind]?.name ?? kind;
+  kind === "TOOL_MONTH" ? "Werkzeug 1 Monat (alt)" : kind === "TOOL_SUBSCRIPTION" ? "Werkzeug Monatsabo (alt)" : CREDIT_PRODUCTS[kind as CreditKind]?.name ?? kind;
 
 // Buchung im Admin (Weg 1): Unterlagen-Service. Das Team prüft und korrigiert die Mappe und gibt sie frei.
 // Stellen sucht und wählt nur die Kundin bzw. der Kunde selbst; hier gibt es keine Stellenauswahl und keinen Versand.
@@ -77,10 +77,11 @@ export default async function AdminBookingDetail(props: { params: Promise<{ id: 
 
       <MyDocuments locale="de" bookingId={b.id} hasEnglish={!!b.profile?.dataEn} />
 
-      <section className="card space-y-2">
-        <h2 className="font-semibold">Verlängerungen und Abo</h2>
+      {purchases.length > 0 && <section className="card space-y-2">
+        <h2 className="font-semibold">Frühere Käufe (Altdaten)</h2>
+        <p className="text-xs text-[color:var(--color-ink-soft)]">Verlängerung und Abo werden nicht mehr angeboten. Hier stehen nur Käufe aus der Zeit davor.</p>
         <PurchaseList isAdmin={admin} purchases={purchases.map((x) => ({ id: x.id, label: purchaseLabel(x.kind), status: PURCHASE_STATUS[x.status] ?? x.status, open: x.status === "REQUESTED" || x.status === "PENDING_PAYMENT", createdAt: x.createdAt.toLocaleDateString("de-DE") }))} />
-      </section>
+      </section>}
     </div>
   );
 }

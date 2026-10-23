@@ -1,22 +1,25 @@
 // Angebot nach Weg 1: Bewerbungsunterlagen plus Bewerbungswerkzeug.
 // Kein Guthaben je Bewerbung, kein Versand durch WoYou, kein Jobversprechen.
 //
-// PLATZHALTER: Preise und Laufzeiten legt Rachid fest. Alles (Startseite, Buchung, Kundenbereich, Mails,
-// AGB, Stripe) liest nur von hier, eine Änderung reicht also.
+// Entscheidung Geschäftsführung (23.10.2026): Es gibt NUR das Startpaket. Keine Verlängerung, kein Abo.
+// Nach Ablauf der Werkzeug-Monate sind Stellensuche und Tracker gesperrt; die eigenen Unterlagen
+// (Mappe, Lebenslauf, Anschreiben als PDF) bleiben herunterladbar.
+// Alles (Startseite, Buchung, Kundenbereich, Mails, AGB, Stripe) liest nur von hier.
 // Diese Datei hat keine Server-Importe und wird auch von Testskripten genutzt.
 
 export const ANGEBOT = {
   /** Startpaket: Unterlagen nach deutschem Standard (Lebenslauf, Anschreiben-Vorlage, Prüfung) plus Werkzeug */
   startpaket: { key: "startpaket", priceCents: 19900, toolMonths: 3 },
-  /** Verlängerung des Werkzeugs, einmalig je Monat (läuft ohne Kündigung aus) */
-  verlaengerung: { kind: "TOOL_MONTH", priceCents: 2900, months: 1 },
-  /** Monatsabo für das Werkzeug, monatlich kündbar; beginnt erst, wenn der bezahlte Zeitraum endet */
-  abo: { kind: "TOOL_SUBSCRIPTION", priceCents: 1900, months: 1 },
 } as const;
 
-export type ToolKind = typeof ANGEBOT.verlaengerung.kind | typeof ANGEBOT.abo.kind;
-export const TOOL_KINDS: ToolKind[] = [ANGEBOT.verlaengerung.kind, ANGEBOT.abo.kind];
-export const toolProduct = (kind: ToolKind) => (kind === ANGEBOT.abo.kind ? ANGEBOT.abo : ANGEBOT.verlaengerung);
+/**
+ * ALT: frühere Werkzeug-Verlängerung (TOOL_MONTH) und Monatsabo (TOOL_SUBSCRIPTION). Wurden nie verkauft und
+ * können nicht mehr angelegt werden. Nur noch, damit Admin, Auswertung und Stripe-Webhook alte Datensätze bzw.
+ * Ereignisse erkennen (Sicherheit), falls doch einmal welche auftauchen.
+ */
+export const LEGACY_TOOL_KINDS = ["TOOL_MONTH", "TOOL_SUBSCRIPTION"] as const;
+export type LegacyToolKind = (typeof LEGACY_TOOL_KINDS)[number];
+export const isLegacyToolKind = (kind: string): kind is LegacyToolKind => (LEGACY_TOOL_KINDS as readonly string[]).includes(kind);
 
 /** Monate zu einem Datum addieren; am Monatsende auf den letzten Tag des Zielmonats kappen (31.01. + 1 = 28./29.02.) */
 export function addMonths(from: Date, months: number): Date {

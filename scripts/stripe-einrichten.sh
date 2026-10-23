@@ -16,7 +16,7 @@ echo
 echo "WoYou · Stripe einrichten"
 echo "1. Im Stripe-Dashboard unter Entwickler > Webhooks einen Endpunkt anlegen:"
 echo "     $URL/api/webhooks/stripe"
-echo "   Ereignisse: checkout.session.completed, invoice.paid, customer.subscription.deleted"
+echo "   Ereignis: checkout.session.completed (nur Startpaket; Verlängerung und Abo gibt es nicht mehr)"
 echo "2. Danach hier die Schlüssel eingeben (Eingabe bleibt unsichtbar)."
 echo
 
@@ -49,4 +49,8 @@ unset SK PK WH
 docker compose up -d app >/dev/null
 echo
 echo "Gespeichert (Modus: $modus_sk) und App neu gestartet. Vorherige .env liegt in $ENV.vor-stripe."
-echo "Hinweis: Solange DEMO_MODE=true ist, bleibt die Seite eine Testumgebung."
+echo "Hinweis: Solange DEMO_MODE nicht false ist, nutzt die App NUR Test-Schlüssel (sk_test_/rk_test_)."
+if [ "$modus_sk" = "live" ] && ! grep -q '^DEMO_MODE=false' "$ENV"; then
+  echo "Achtung: Live-Schlüssel gespeichert, aber DEMO_MODE ist an. Die App ignoriert ihn, es gibt keine echten Zahlungen,"
+  echo "Buchungen kommen als „Angefragt“. Für echte Zahlungen DEMO_MODE=false setzen (dann auch keine Demo-Logins mehr)."
+fi

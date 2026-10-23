@@ -25,7 +25,6 @@ type Landing = {
 function build(lang: Lang): Landing {
   const f = (c: number) => formatPrice(c, lang);
   const price = f(ANGEBOT.startpaket.priceCents), months = ANGEBOT.startpaket.toolMonths;
-  const month = f(ANGEBOT.verlaengerung.priceCents), abo = f(ANGEBOT.abo.priceCents);
   if (lang === "en") return {
     badge: "APPLYING IN GERMANY",
     h1: "Your application documents to German standards. And a tool to apply yourself.",
@@ -33,7 +32,7 @@ function build(lang: Lang): Landing {
     ctaStart: `Start now · ${price}`, ctaCheck: "Self-check first",
     trust: ["No placement", "No guarantee", "You apply yourself"],
     trustNote: "We cannot guarantee a job. But we tell you upfront where you stand.",
-    priceTitle: `Starter package · documents and ${months} months of the tool`, priceNote: `one-time · then ${month} per month or ${abo} a month as a subscription, cancellable monthly`,
+    priceTitle: `Starter package · documents and ${months} months of the tool`, priceNote: `one-time · includes ${months} months of access to the application tool · you keep your documents`,
     ctaLogin: "Log in and book", register: "No account yet? Register for free",
     careTitle: "Please note",
     care: [
@@ -61,7 +60,7 @@ function build(lang: Lang): Landing {
     realTitle: "What you realistically get",
     real: [
       { n: "1", t: "CV the way German companies expect it", d: "In German, cleanly designed and checked by us. Plus a cover letter template." },
-      { n: String(months), t: "months of the application tool", d: "Job search, a cover letter for each job and your overview. After that you extend if you want to." },
+      { n: String(months), t: "months of the application tool", d: "Job search, a cover letter for each job and your overview. After that, access simply ends. No subscription, nothing to cancel." },
       { n: "100 %", t: "your decision", d: "You choose the jobs and send every application yourself, from your own inbox or via the employer's website. Replies come straight to you." },
       { n: "+", t: "documents that belong to you", d: "Download your CV and cover letters at any time and use them anywhere, also after the tool has expired." },
     ],
@@ -82,7 +81,8 @@ function build(lang: Lang): Landing {
       { q: "Do you apply to companies for me?", a: "No. You decide where you apply and send your application from your own email address or via the employer's website. We have no contact with employers and don't read any replies." },
       { q: "Where do the jobs come from?", a: "From the job board of the German Federal Employment Agency and other public job boards. The search is prefilled with your profile. You can filter by job, place, radius and working hours and see which German level is required." },
       { q: "Do I get my money back if it doesn't work out?", a: "No. You pay for your documents and the time with the tool, not for a job. Your statutory right of withdrawal is not affected." },
-      { q: "Are there any extra costs?", a: `The starter package costs ${price} once and includes ${months} months of the application tool. After that you can extend: ${month} for one month or ${abo} a month as a subscription, cancellable at the end of any month. If you don't extend, your access simply ends. No hidden fees.` },
+      { q: "Are there any extra costs?", a: `No. The starter package costs ${price} once and includes ${months} months of access to the application tool. After that, access simply ends. There is no extension and no subscription, so there is nothing to cancel. You keep your documents and can still download them. No hidden fees.` },
+      { q: `What happens after ${months} months?`, a: "The job search and your overview “My applications” are locked. You can still download your CV, the cover letter template and the cover letters you created for your jobs as PDF." },
       { q: "Can I use my documents myself?", a: "Yes. You can download your CV and cover letters at any time and use them for any application, also after the tool has expired." },
       { q: "How do I pay?", a: "Securely online by card through our payment provider Stripe." },
     ],
@@ -97,7 +97,7 @@ function build(lang: Lang): Landing {
     ctaStart: `ابدأ الآن · ${price}`, ctaCheck: "الاختبار الذاتي أولًا",
     trust: ["لا وساطة في التوظيف", "لا ضمان", "تتقدّم بنفسك"],
     trustNote: "لا نضمن لك وظيفة. لكننا نقول لك من البداية أين تقف.",
-    priceTitle: `باقة البداية · المستندات و${arMonths(months)} من الأداة`, priceNote: `دفعة واحدة · بعدها ${month} لكل شهر أو ${abo} شهريًا باشتراك يمكن إلغاؤه كل شهر`,
+    priceTitle: `باقة البداية · المستندات و${arMonths(months)} من الأداة`, priceNote: `دفعة واحدة · تشمل ${arMonths(months)} من الوصول إلى أداة التقديم · مستنداتك تبقى لك`,
     ctaLogin: "سجّل الدخول واحجز", register: "ليس لديك حساب؟ سجّل مجانًا",
     careTitle: "يرجى الانتباه مع ذلك",
     care: [
@@ -125,7 +125,7 @@ function build(lang: Lang): Landing {
     realTitle: "ما تحصل عليه واقعيًا",
     real: [
       { n: "1", t: "سيرة ذاتية كما تتوقعها الشركات الألمانية", d: "بالألمانية، بتصميم مرتب ومراجَعة من طرفنا. ومعها نموذج لرسالة التحفيز." },
-      { n: String(months), t: `${months >= 3 && months <= 10 ? "أشهر" : months > 10 ? "شهرًا" : "شهر"} من أداة التقديم`, d: "بحث عن وظائف، ورسالة تحفيز لكل وظيفة، ونظرة عامة على طلباتك. بعدها تمدّد إذا أردت." },
+      { n: String(months), t: `${months >= 3 && months <= 10 ? "أشهر" : months > 10 ? "شهرًا" : "شهر"} من أداة التقديم`, d: "بحث عن وظائف، ورسالة تحفيز لكل وظيفة، ونظرة عامة على طلباتك. بعدها ينتهي الوصول تلقائيًا، بلا اشتراك وبلا إلغاء." },
       { n: "100 %", t: "قرارك أنت", d: "تختار الوظائف وترسل كل طلب بنفسك، من بريدك أو عبر موقع صاحب العمل. وتصلك الردود مباشرة." },
       { n: "+", t: "مستندات ملك لك", d: "حمّل سيرتك الذاتية ورسائلك في أي وقت واستخدمها أينما شئت، حتى بعد انتهاء مدة الأداة." },
     ],
@@ -146,7 +146,8 @@ function build(lang: Lang): Landing {
       { q: "هل تتقدّمون بدلًا مني لدى الشركات؟", a: "لا. أنت تقرر بنفسك أين تتقدّم، وترسل طلبك من بريدك الإلكتروني أو عبر موقع صاحب العمل. ليس لدينا أي تواصل مع أصحاب العمل ولا نقرأ الردود." },
       { q: "من أين تأتي الوظائف؟", a: "من منصة الوظائف التابعة للوكالة الاتحادية الألمانية للتشغيل ومن منصات وظائف عامة أخرى. البحث يبدأ ببيانات ملفك. تصفّي النتائج حسب المهنة والمكان والمسافة ووقت العمل، وترى مستوى الألمانية المطلوب." },
       { q: "هل أسترجع مالي إذا لم ينجح الأمر؟", a: "لا. أنت تدفع مقابل مستنداتك ومدة استخدام الأداة، وليس مقابل وظيفة. حقك القانوني في الانسحاب يبقى كما هو." },
-      { q: "هل هناك تكاليف إضافية؟", a: `باقة البداية تكلّف ${price} مرة واحدة وتشمل ${arMonths(months)} من أداة التقديم. بعدها يمكنك التمديد: ${month} لشهر واحد أو ${abo} شهريًا باشتراك يمكن إلغاؤه في نهاية أي شهر. إذا لم تمدّد، ينتهي الوصول ببساطة. لا توجد رسوم مخفية.` },
+      { q: "هل هناك تكاليف إضافية؟", a: `لا. باقة البداية تكلّف ${price} مرة واحدة وتشمل ${arMonths(months)} من الوصول إلى أداة التقديم. بعدها ينتهي الوصول تلقائيًا. لا يوجد تمديد ولا اشتراك، لذلك لا حاجة لإلغاء أي شيء. مستنداتك تبقى لك ويمكنك الاستمرار في تحميلها. لا توجد رسوم مخفية.` },
+      { q: `ماذا يحدث بعد ${arMonths(months)}؟`, a: "يُغلق البحث عن وظيفة ونظرتك العامة «طلباتي». يمكنك الاستمرار في تحميل سيرتك الذاتية ونموذج رسالة التحفيز ورسائل التحفيز التي أنشأتها لوظائفك بصيغة PDF." },
       { q: "هل يمكنني استخدام مستنداتي بنفسي؟", a: "نعم. يمكنك تحميل سيرتك الذاتية ورسائل التحفيز في أي وقت واستخدامها في أي طلب، حتى بعد انتهاء مدة الأداة." },
       { q: "كيف أدفع؟", a: "عبر الإنترنت بالبطاقة وبشكل آمن، من خلال مزوّد الدفع Stripe." },
     ],
@@ -161,7 +162,7 @@ function build(lang: Lang): Landing {
     ctaStart: `अभी शुरू करें · ${price}`, ctaCheck: "पहले सेल्फ़-चेक करें",
     trust: ["नौकरी दिलाने का काम नहीं", "कोई गारंटी नहीं", "आवेदन आप ख़ुद करते हैं"],
     trustNote: "हम नौकरी की गारंटी नहीं देते। लेकिन पहले ही बता देते हैं कि आप कहाँ खड़े हैं।",
-    priceTitle: `स्टार्टर पैकेज · दस्तावेज़ और ${months} महीने का टूल`, priceNote: `एक बार का भुगतान · उसके बाद ${month} प्रति माह या सदस्यता में ${abo} प्रति माह, हर महीने रद्द कर सकते हैं`,
+    priceTitle: `स्टार्टर पैकेज · दस्तावेज़ और ${months} महीने का टूल`, priceNote: `एक बार का भुगतान · ${months} महीने आवेदन टूल का इस्तेमाल शामिल · आपके दस्तावेज़ आपके पास रहते हैं`,
     ctaLogin: "लॉग इन करें और बुक करें", register: "अभी खाता नहीं है? मुफ़्त में रजिस्टर करें",
     careTitle: "फिर भी ध्यान दें",
     care: [
@@ -189,7 +190,7 @@ function build(lang: Lang): Landing {
     realTitle: "आपको असल में क्या मिलता है",
     real: [
       { n: "1", t: "बायोडाटा, जैसा जर्मन कंपनियाँ चाहती हैं", d: "जर्मन में, साफ़ डिज़ाइन में और हमारी जाँच के साथ। साथ में कवर लेटर का नमूना।" },
-      { n: String(months), t: "महीने आवेदन टूल", d: "नौकरी खोज, हर नौकरी के लिए कवर लेटर और आपकी सूची। उसके बाद चाहें तो अवधि बढ़ाएँ।" },
+      { n: String(months), t: "महीने आवेदन टूल", d: "नौकरी खोज, हर नौकरी के लिए कवर लेटर और आपकी सूची। उसके बाद पहुँच अपने-आप ख़त्म हो जाती है, न सदस्यता, न कुछ रद्द करना।" },
       { n: "100 %", t: "आपका फ़ैसला", d: "नौकरियाँ आप चुनते हैं और हर आवेदन ख़ुद भेजते हैं, अपने ईमेल से या नियोक्ता की वेबसाइट से। जवाब सीधे आपको मिलते हैं।" },
       { n: "+", t: "दस्तावेज़ जो आपके अपने हैं", d: "अपना बायोडाटा और कवर लेटर कभी भी डाउनलोड करें और कहीं भी इस्तेमाल करें, टूल की अवधि ख़त्म होने के बाद भी।" },
     ],
@@ -210,7 +211,8 @@ function build(lang: Lang): Landing {
       { q: "क्या आप मेरी जगह कंपनियों में आवेदन करते हैं?", a: "नहीं। कहाँ आवेदन करना है, यह आप ख़ुद तय करते हैं, और आवेदन अपने ईमेल से या नियोक्ता की वेबसाइट से भेजते हैं। हमारा नियोक्ताओं से कोई संपर्क नहीं है और हम कोई जवाब नहीं पढ़ते।" },
       { q: "नौकरियाँ कहाँ से आती हैं?", a: "जर्मनी की संघीय रोज़गार एजेंसी के जॉब बोर्ड और दूसरे सार्वजनिक जॉब बोर्ड से। खोज में आपकी प्रोफ़ाइल पहले से भरी होती है। आप पेशा, जगह, दायरा और काम के समय से छाँट सकते हैं और देख सकते हैं कि कौन-सा जर्मन स्तर चाहिए।" },
       { q: "अगर बात नहीं बनी, तो क्या मेरे पैसे वापस मिलेंगे?", a: "नहीं। आप अपने दस्तावेज़ों और टूल के समय के लिए भुगतान करते हैं, नौकरी के लिए नहीं। अनुबंध वापस लेने का आपका क़ानूनी अधिकार इससे प्रभावित नहीं होता।" },
-      { q: "क्या कोई और ख़र्च है?", a: `स्टार्टर पैकेज की कीमत एक बार ${price} है और इसमें ${months} महीने का आवेदन टूल शामिल है। उसके बाद आप अवधि बढ़ा सकते हैं: एक महीने के लिए ${month} या सदस्यता में ${abo} प्रति माह, जिसे किसी भी महीने के अंत में रद्द कर सकते हैं। अगर आप अवधि नहीं बढ़ाते, तो पहुँच बस ख़त्म हो जाती है। कोई छिपी फ़ीस नहीं।` },
+      { q: "क्या कोई और ख़र्च है?", a: `नहीं। स्टार्टर पैकेज की कीमत एक बार ${price} है और इसमें ${months} महीने आवेदन टूल का इस्तेमाल शामिल है। उसके बाद पहुँच अपने-आप ख़त्म हो जाती है। न अवधि बढ़ाने का विकल्प है, न सदस्यता, इसलिए कुछ रद्द करने की ज़रूरत नहीं। आपके दस्तावेज़ आपके पास रहते हैं और आप उन्हें आगे भी डाउनलोड कर सकते हैं। कोई छिपी फ़ीस नहीं।` },
+      { q: `${months} महीने के बाद क्या होता है?`, a: "नौकरी खोज और आपकी सूची “मेरे आवेदन” बंद हो जाती है। अपना बायोडाटा, कवर लेटर का नमूना और अपनी नौकरियों के लिए बनाए गए कवर लेटर आप PDF में आगे भी डाउनलोड कर सकते हैं।" },
       { q: "क्या मैं अपने दस्तावेज़ ख़ुद इस्तेमाल कर सकता/सकती हूँ?", a: "हाँ। आप अपना बायोडाटा और कवर लेटर कभी भी डाउनलोड करके किसी भी आवेदन में इस्तेमाल कर सकते हैं, टूल की अवधि ख़त्म होने के बाद भी।" },
       { q: "भुगतान कैसे करें?", a: "हमारे भुगतान सेवा प्रदाता Stripe के ज़रिए कार्ड से, सुरक्षित रूप से ऑनलाइन।" },
     ],
@@ -224,7 +226,7 @@ function build(lang: Lang): Landing {
     ctaStart: `Commencer · ${price}`, ctaCheck: "D'abord l'auto-test",
     trust: ["Pas de placement", "Pas de garantie", "Vous postulez vous-même"],
     trustNote: "Nous ne garantissons pas d'emploi. Mais nous vous disons dès le départ où vous en êtes.",
-    priceTitle: `Pack de départ · dossier et ${months} mois d'outil`, priceNote: `paiement unique · ensuite ${month} par mois ou ${abo} par mois en abonnement, résiliable chaque mois`,
+    priceTitle: `Pack de départ · dossier et ${months} mois d'outil`, priceNote: `paiement unique · ${months} mois d'accès à l'outil de candidature inclus · vous gardez vos documents`,
     ctaLogin: "Se connecter et réserver", register: "Pas encore de compte ? Inscription gratuite",
     careTitle: "À noter malgré tout",
     care: [
@@ -252,7 +254,7 @@ function build(lang: Lang): Landing {
     realTitle: "Ce que vous obtenez réellement",
     real: [
       { n: "1", t: "CV comme l'attendent les entreprises allemandes", d: "En allemand, soigné et vérifié par nous. Plus un modèle de lettre." },
-      { n: String(months), t: "mois d'outil de candidature", d: "Recherche d'emploi, une lettre par offre et votre suivi. Ensuite, vous prolongez si vous le souhaitez." },
+      { n: String(months), t: "mois d'outil de candidature", d: "Recherche d'emploi, une lettre par offre et votre suivi. Ensuite, l'accès s'arrête de lui-même. Sans abonnement, rien à résilier." },
       { n: "100 %", t: "votre décision", d: "Vous choisissez les offres et envoyez chaque candidature vous-même, depuis votre boîte e-mail ou sur le site de l'employeur. Les réponses vous arrivent directement." },
       { n: "+", t: "des documents qui vous appartiennent", d: "Téléchargez votre CV et vos lettres à tout moment et utilisez-les partout, même après la fin de l'outil." },
     ],
@@ -273,7 +275,8 @@ function build(lang: Lang): Landing {
       { q: "Postulez-vous pour moi auprès des entreprises ?", a: "Non. Vous décidez où vous postulez et envoyez votre candidature depuis votre propre adresse e-mail ou sur le site de l'employeur. Nous n'avons aucun contact avec les employeurs et ne lisons pas les réponses." },
       { q: "D'où viennent les offres ?", a: "De la bourse de l'emploi de l'Agence fédérale allemande pour l'emploi et d'autres bourses publiques. La recherche reprend votre profil. Vous filtrez par métier, lieu, rayon et temps de travail, et vous voyez le niveau d'allemand demandé." },
       { q: "Suis-je remboursé si cela ne marche pas ?", a: "Non. Vous payez pour votre dossier et le temps avec l'outil, pas pour un poste. Votre droit légal de rétractation n'est pas concerné." },
-      { q: "Y a-t-il d'autres frais ?", a: `Le pack de départ coûte ${price} une seule fois et comprend ${months} mois d'outil de candidature. Ensuite, vous pouvez prolonger : ${month} pour un mois ou ${abo} par mois en abonnement, résiliable à la fin de chaque mois. Sans prolongation, l'accès s'arrête simplement. Aucun frais caché.` },
+      { q: "Y a-t-il d'autres frais ?", a: `Non. Le pack de départ coûte ${price} une seule fois et comprend ${months} mois d'accès à l'outil de candidature. Ensuite, l'accès s'arrête de lui-même. Il n'y a ni prolongation ni abonnement, vous n'avez donc rien à résilier. Vous gardez vos documents et pouvez toujours les télécharger. Aucun frais caché.` },
+      { q: `Que se passe-t-il après ${months} mois ?`, a: "La recherche d'emploi et votre suivi « Mes candidatures » sont fermés. Vous pouvez toujours télécharger en PDF votre CV, le modèle de lettre et les lettres créées pour vos offres." },
       { q: "Puis-je utiliser mes documents moi-même ?", a: "Oui. Vous pouvez télécharger votre CV et vos lettres à tout moment et les utiliser pour toute candidature, même après la fin de l'outil." },
       { q: "Comment payer ?", a: "En ligne par carte, de façon sécurisée, via notre prestataire de paiement Stripe." },
     ],
@@ -287,7 +290,7 @@ function build(lang: Lang): Landing {
     ctaStart: `Jetzt starten · ${price}`, ctaCheck: "Erst Selbstcheck",
     trust: ["Keine Vermittlung", "Keine Garantie", "Du bewirbst dich selbst"],
     trustNote: "Eine Jobgarantie gibt es bei uns nicht. Dafür sagen wir dir vorher, woran du bist.",
-    priceTitle: `Startpaket · Unterlagen und ${months} Monate Werkzeug`, priceNote: `einmalig · danach ${month} je Monat oder ${abo} im Monat im Abo, monatlich kündbar`,
+    priceTitle: `Startpaket · Unterlagen und ${months} Monate Werkzeug`, priceNote: `einmalig · inklusive ${months} Monate Zugang zum Bewerbungswerkzeug · deine Unterlagen behältst du`,
     ctaLogin: "Anmelden und buchen", register: "Noch kein Konto? Kostenlos registrieren",
     careTitle: "Bitte beachte trotzdem",
     care: [
@@ -315,7 +318,7 @@ function build(lang: Lang): Landing {
     realTitle: "Was du realistisch bekommst",
     real: [
       { n: "1", t: "Lebenslauf, wie ihn deutsche Firmen erwarten", d: "Auf Deutsch, sauber gestaltet und von uns geprüft. Dazu eine Anschreiben-Vorlage." },
-      { n: String(months), t: "Monate Bewerbungswerkzeug", d: "Stellensuche, Anschreiben je Stelle und deine Übersicht. Danach verlängerst du, wenn du willst." },
+      { n: String(months), t: "Monate Bewerbungswerkzeug", d: "Stellensuche, Anschreiben je Stelle und deine Übersicht. Danach endet der Zugang von selbst, ohne Abo und ohne Kündigung." },
       { n: "100 %", t: "deine Entscheidung", d: "Du wählst die Stellen aus und schickst jede Bewerbung selbst, aus deinem Postfach oder über die Seite des Arbeitgebers. Antworten kommen direkt zu dir." },
       { n: "+", t: "Unterlagen, die dir gehören", d: "Lebenslauf und Anschreiben kannst du jederzeit herunterladen und überall nutzen, auch wenn das Werkzeug abgelaufen ist." },
     ],
@@ -336,7 +339,8 @@ function build(lang: Lang): Landing {
       { q: "Bewerbt ihr mich bei Firmen?", a: "Nein. Du entscheidest selbst, wo du dich bewirbst, und schickst die Bewerbung aus deinem eigenen E-Mail-Postfach oder über die Seite des Arbeitgebers. Wir haben keinen Kontakt zu Arbeitgebern und lesen keine Antworten mit." },
       { q: "Woher kommen die Stellen?", a: "Aus der Jobbörse der Bundesagentur für Arbeit und weiteren öffentlichen Stellenbörsen. Die Suche ist mit deinem Profil vorbelegt. Du filterst nach Beruf, Ort, Umkreis und Arbeitszeit und siehst, welches Deutsch verlangt wird." },
       { q: "Bekomme ich mein Geld zurück, wenn es nicht klappt?", a: "Nein. Du bezahlst für deine Unterlagen und die Zeit mit dem Werkzeug, nicht für eine Stelle. Dein gesetzliches Widerrufsrecht bleibt davon unberührt." },
-      { q: "Kommen noch weitere Kosten dazu?", a: `Das Startpaket kostet einmalig ${price} und enthält ${months} Monate Bewerbungswerkzeug. Danach kannst du verlängern: ${month} für einen Monat oder ${abo} im Monat im Abo, jederzeit zum Monatsende kündbar. Wenn du nichts verlängerst, endet der Zugang einfach. Versteckte Gebühren gibt es nicht.` },
+      { q: "Kommen noch weitere Kosten dazu?", a: `Nein. Das Startpaket kostet einmalig ${price} und enthält ${months} Monate Zugang zum Bewerbungswerkzeug. Danach endet der Zugang von selbst. Es gibt keine Verlängerung und kein Abo, du musst also nichts kündigen. Deine Unterlagen behältst du und kannst sie weiter herunterladen. Versteckte Gebühren gibt es nicht.` },
+      { q: `Was passiert nach ${months} Monaten?`, a: "Die Stellensuche und deine Übersicht „Meine Bewerbungen“ werden gesperrt. Deinen Lebenslauf, die Anschreiben-Vorlage und die Anschreiben, die du zu deinen Stellen erstellt hast, kannst du weiter als PDF herunterladen." },
       { q: "Darf ich meine Unterlagen selbst nutzen?", a: "Ja. Lebenslauf und Anschreiben kannst du jederzeit herunterladen und für jede Bewerbung verwenden, auch wenn das Werkzeug abgelaufen ist." },
       { q: "Wie bezahle ich?", a: "Sicher online mit Karte über unseren Zahlungsanbieter Stripe." },
     ],

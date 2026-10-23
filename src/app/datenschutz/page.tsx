@@ -76,6 +76,13 @@ export default function Datenschutz() {
                 Solange dein Konto besteht. Nach der Löschung deines Kontos entfernen wir deine Daten innerhalb
                 von 30 Tagen, soweit keine gesetzlichen Aufbewahrungspflichten bestehen.
               </p>
+              {/* ANWALT PRÜFEN (23.10.2026): Werkzeug nur 3 Monate, keine Verlängerung; Daten danach bis zur Kontolöschung */}
+              <p className="mt-2">
+                Das Bewerbungswerkzeug läuft nur für die im Startpaket enthaltene Zeit. Danach sind Stellensuche und
+                Tracker gesperrt, deine Daten löschen wir dadurch aber nicht automatisch: Deine Unterlagen und die
+                Anschreiben zu deinen Stellen kannst du weiter herunterladen. Wenn du das nicht mehr brauchst, kannst du
+                einzelne Stellen entfernen oder dein Konto löschen.
+              </p>
             </section>
 
             <section>

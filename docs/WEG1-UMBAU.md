@@ -1,6 +1,6 @@
 # Weg 1: Umbau auf Unterlagen plus Bewerbungswerkzeug
 
-Stand: 22.10.2026, Zweig `weg1-werkzeug` (nicht auf main, nicht deployt).
+Stand: 23.10.2026, auf `main`.
 
 ## Warum
 
@@ -37,10 +37,10 @@ Bedingungen:
    Vorlage), als PDF oder Word laden, „In meinem E-Mail-Programm öffnen“ (mailto) oder Link zur
    Bewerbungsseite des Arbeitgebers.
 3. **Angebot**: „Bewerbungsunterlagen plus Bewerbungswerkzeug“. Preise zentral in `src/lib/angebot.ts`
-   (Platzhalter, Rachid legt fest): Startpaket inkl. Werkzeug für einige Monate, Verlängerung je Monat oder
-   Monatsabo. Kein Guthaben je Bewerbung. Stripe: Startpaket als Einmalzahlung, Verlängerung als
-   Einmalzahlung, Abo als Stripe-Abo mit Beginn nach Ablauf des bezahlten Zeitraums. Ohne Stripe-Schlüssel
-   testbar (Buchung als „Angefragt“ plus Admin „bezahlt“, lokal zusätzlich `PAYMENT_TEST_MODE=on`).
+   **Stand 23.10.2026 (Entscheidung Geschäftsführung): nur das Startpaket für 199 € inklusive 3 Monate
+   Werkzeug. Keine Verlängerung, kein Abo** (siehe Abschnitt „Nur Startpaket“ unten). Kein Guthaben je
+   Bewerbung. Stripe: Startpaket als Einmalzahlung. Ohne Stripe-Schlüssel testbar (Buchung als „Angefragt“
+   plus Admin „bezahlt“, lokal zusätzlich `PAYMENT_TEST_MODE=on`).
 4. **Texte**: Landing, Buchung, Kundenbereich, Mails, AGB/Datenschutz ohne „Wir bewerben dich“ und
    „25 Bewerbungen“. Deutsch, Englisch, Französisch, Arabisch (rechts nach links, auch in den Mails) und
    Hindi; die ar/hi-Texte sind im Code mit „Übersetzung bitte von Muttersprachler:in prüfen lassen“ markiert.
@@ -108,7 +108,50 @@ Code: `src/components/VersandPanel.tsx`, `src/components/VersandAdresse.tsx`, `s
 Migration `20261023120000_weg1_selbstversand` (nur neue, leere Spalten: `Candidate.applicationEmail`,
 `SavedJob.mailTo/mailSubject/mailBody/followUpAt`).
 
+## Nur Startpaket, keine Verlängerung, kein Abo (23.10.2026)
+
+Entscheidung Geschäftsführung: Es gibt nur noch das Startpaket (199 €, inklusive 3 Monate Zugang zum Bewerbungswerkzeug).
+Nach den 3 Monaten endet der Zugang von selbst, es gibt nichts zu kündigen.
+
+- Nach Ablauf: Stellensuche und „Meine Bewerbungen“ (Tracker, Versand-Schritte, .eml) sind gesperrt, mit freundlichem Hinweis.
+  Herunterladbar bleiben: Lebenslauf und Anschreiben-Vorlage (Mappe, `/api/mappe/download`) und die Anschreiben je Stelle
+  (`/api/stellen/[id]/dokument`, Liste `MeineAnschreiben` auf `/meine-bewerbungen`). Einzelne Stellen löschen geht weiter,
+  der DSGVO-Export (`/api/account/export`) enthält jetzt auch Tracker und Mappe.
+- Entfernt: Verlängern-Knöpfe und Abo-Hinweise (`ToolShop`), Kauf-Rückkehr im Kundenbereich, Mails zu Verlängerung/Abo
+  (`purchaseMail`), Verlängerungs-Werbung in der Mail „Werkzeug läuft bald ab“ (jetzt reiner Hinweis), Preise/Texte auf
+  Startseite, Buchung, FAQ, AGB, Datenschutz (de/en/fr/ar/hi), Verlängerungen in Monatsreport und Auswertung.
+- `/api/werkzeug/kaufen` und `/api/werkzeug/kuendigen` antworten mit 410. Stand Server 23.10.: keine einzige Zeile in
+  `CreditPurchase`, kein Stripe-Schlüssel gesetzt, es kann also kein Altabo geben.
+- Zur Sicherheit bleibt: Stripe-Webhook verbucht alte `tool_purchase`-Sitzungen, `invoice.paid` und
+  `customer.subscription.deleted` weiter (ohne Mails), Admin kann Altkäufe als bezahlt markieren. Neu angelegt wird nichts.
+
+## Vorführung (DEMO_MODE)
+
+- `src/lib/demo-setup.ts`: Beim Demo-Login (`/demo`, `/api/auth/demo-login`) bekommen **nur** `fatima@example.com` und
+  `youssef@example.com` und **nur** bei DEMO_MODE ungleich `false`: ein bezahltes Startpaket, falls keine Buchung da ist
+  (direkt in der DB, ohne Mails, CRM oder Zahlung), und `toolAccessUntil` = heute + 3 Monate, falls weniger als 14 Tage übrig.
+  Fatima bekommt drei erfundene Beispielstellen (`src/lib/demo-jobs.ts`: Firmen mit „Beispiel“, Adressen @example.com):
+  eine mit E-Mail, eine nur über die Bewerbungsseite, eine schon „beworben“ mit Anschreiben und Erinnerung.
+  Idempotent (eindeutig über `source=MANUAL` + `sourceRef=demo-…`), Änderungen aus der Vorführung bleiben erhalten.
+- Seed (lokal) legt dasselbe an. `/demo` zeigt nur Backoffice-Rollen und Kund:innen. Das Admin-Demokonto heißt jetzt
+  `backoffice@woyou.demo`; das alte `vermittler@woyou.demo` auf dem Server wird beim Demo-Login als Alias erkannt.
+- DEMO_MODE wird zur Laufzeit gelesen (`process.env.DEMO_MODE !== "false"`), der App-Container bekommt es aus `.env`
+  (Server: `DEMO_MODE=true`). `db-init` bekommt es jetzt auch, damit der Seed bei `DEMO_MODE=false` nicht mehr läuft.
+
+## Stripe im DEMO_MODE
+
+`src/lib/stripe-mode.ts` / `src/lib/stripe.ts`: Solange DEMO_MODE nicht `false` ist, benutzt die App **nur Test-Schlüssel**
+(`sk_test_`/`rk_test_`). Ein Live-Schlüssel (`sk_live_`/`rk_live_`) oder ein unbekannter Wert wird ignoriert: `getStripe()`
+liefert `null`, es startet nie ein Checkout, Buchungen landen als „Angefragt“ (keine Zahlung), der Webhook antwortet 503,
+im Admin unter Buchungen steht „Zahlungen gesperrt“, im Log eine Warnung. Mit Test-Schlüssel läuft ein normaler
+Stripe-Testcheckout (kein echtes Geld). Echte Zahlungen erst mit `DEMO_MODE=false` (dann gibt es auch keine Demo-Logins mehr).
+`scripts/stripe-einrichten.sh` weist darauf hin.
+
 ## Deploy (Server 46.225.109.84, `/var/www/woyou-app/repo`)
+
+Stand „Nur Startpaket“ (23.10.): keine neue Migration. Schritte: Sicherung, `git pull --ff-only`, `migrate deploy`
+(meldet „No pending migrations“, schadet nicht), `docker compose build app && docker compose up -d app`.
+Nicht `db-init` ohne Befehl starten (spielt den Seed neu ein und löscht alle Daten).
 
 Wichtig: `docker compose --profile init run --rm db-init` OHNE Befehl spielt die Demo-Daten neu ein (der Dienst
 bekommt `DEMO_MODE` nicht durchgereicht). Für Migrationen immer ausdrücklich `npx prisma migrate deploy` angeben.
@@ -153,9 +196,9 @@ PAYMENT_TEST_MODE=on npm run dev          # http://localhost:3000/demo, z. B. al
 
 ## Offene Fragen für Rachid
 
-- Preise: Startpaket, Verlängerung je Monat, Monatsabo (Platzhalter in `src/lib/angebot.ts`).
-- Laufzeit des Werkzeugs im Startpaket (Platzhalter: 3 Monate). Was passiert mit den Daten nach Ablauf
-  (Platzhalter: Tracker bleibt lesbar, Suche und neue Anschreiben gesperrt)?
+- Erledigt 23.10.: nur Startpaket 199 € mit 3 Monaten Werkzeug, keine Verlängerung, kein Abo; nach Ablauf Werkzeug
+  gesperrt, Unterlagen bleiben herunterladbar. Offen: Wie lange speichern wir Tracker-Daten nach Ablauf (bisher bis
+  zur Kontolöschung, Hinweis in der Datenschutzerklärung, ANWALT PRÜFEN)?
 - Korrigiert das Team weiter jede Mappe (Freigabe), oder nur auf Wunsch? Bleibt das Erstgespräch?
 - Bestandskund:innen mit altem Paket „25 Bewerbungen“: wie lange Werkzeug-Zugang, Umgang mit Restguthaben?
 - Karriereseiten-Feeds im Admin (Stellenquellen): bleibt das als reine Datenquelle, oder ist das aus Sicht
@@ -163,4 +206,4 @@ PAYMENT_TEST_MODE=on npm run dev          # http://localhost:3000/demo, z. B. al
 - Arabisch und Hindi: Übersetzungen der neuen Texte liegen vor (Hocharabisch für Marokko, Hindi für Indien), müssen aber von Muttersprachler:innen geprüft werden.
 - CRM: neue Ereignisse `werkzeug_aktiv` muss das EuBiA-CRM noch annehmen (`apps/crm/eingang.js`).
 - Anwälte: Dürfen Summen aus dem Tracker (Quelle, Stand) anonym in der Admin-Auswertung stehen?
-- Kündigung des Abos meldet kein „storniert“ mehr ans CRM (früher: Deal „Verloren“). So lassen?
+- CRM-Ereignis „nachkauf“ fällt weg (keine Verlängerung mehr).

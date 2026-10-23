@@ -1,7 +1,7 @@
 import "server-only";
 
 // Anbindung an das EuBiA-CRM: WoYou meldet Kundenereignisse (registriert, gebucht, bezahlt, Mappe eingereicht,
-// Werkzeug aktiv, Nachkauf bzw. Verlängerung, storniert), damit jede WoYou-Kund:in dort mit eigener Pipeline erscheint.
+// Werkzeug aktiv, storniert; „nachkauf“ nur noch für Altdaten), damit jede WoYou-Kund:in dort mit eigener Pipeline erscheint.
 //   POST {EUBIA_CRM_URL}/hook/woyou?t={EUBIA_CRM_TOKEN}   (JSON, Antwort 200/201 = ok)
 //
 // DATENSCHUTZ: Gesendet wird nur, wenn zusätzlich EUBIA_CRM_SYNC=on gesetzt ist (Standard: aus).

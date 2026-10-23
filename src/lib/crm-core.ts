@@ -5,7 +5,7 @@ import type { PrismaClient } from "@prisma/client";
 // Weg 1 (22.10.2026): "bewerbungen_laufen" entfällt. WoYou verschickt keine Bewerbungen mehr, und was Kund:innen
 // in ihrem eigenen Tracker eintragen, geht weder WoYou noch das CRM etwas an. Neu: "werkzeug_aktiv" = Unterlagen
 // fertig (Mappe vom Team freigegeben), die Person arbeitet ab jetzt selbst mit dem Werkzeug.
-// "nachkauf" = Verlängerung des Werkzeugs oder Monatsabo bezahlt.
+// "nachkauf" = ALT (Verlängerung/Abo gibt es seit 23.10.2026 nicht mehr; wird nicht mehr gesendet, Typ bleibt fürs Nachtragen).
 // Achtung: Das EuBiA-CRM (apps/crm/eingang.js) muss "werkzeug_aktiv" noch annehmen, sonst antwortet es mit 400.
 export type CrmEventName = "registriert" | "gebucht" | "bezahlt" | "mappe_eingereicht" | "werkzeug_aktiv" | "nachkauf" | "storniert";
 

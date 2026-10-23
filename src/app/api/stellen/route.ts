@@ -10,8 +10,10 @@ import { trackerItems, toItem } from "@/lib/tracker";
 export async function GET() {
   const s = await toolSession();
   if (!s) return NextResponse.json({ error: "Bitte melde dich an." }, { status: 401 });
+  // Nach Ablauf ist der Tracker gesperrt (Anschreiben bleiben über /api/stellen/[id]/dokument herunterladbar)
+  if (!s.access.active) return NextResponse.json({ error: "Das Bewerbungswerkzeug ist abgelaufen." }, { status: 403 });
   const { items } = await trackerItems(s.candidate.id);
-  return NextResponse.json({ items, active: s.access.active });
+  return NextResponse.json({ items, active: true });
 }
 
 // Body: { key } für einen Suchtreffer oder { manual: { title, company, city, url, email } } für eine selbst gefundene Stelle

@@ -1,6 +1,8 @@
 import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { ANGEBOT, addMonths } from "../src/lib/angebot";
+import { DEMO_JOBS, demoJobRow } from "../src/lib/demo-jobs";
 
 const prisma = new PrismaClient();
 
@@ -24,7 +26,7 @@ async function main() {
     data: { email: "admin@woyou.demo", passwordHash: pwd, role: "SUPER_ADMIN", locale: "de" },
   });
   await prisma.user.create({
-    data: { email: "vermittler@woyou.demo", passwordHash: pwd, role: "ADMIN", locale: "de" },
+    data: { email: "backoffice@woyou.demo", passwordHash: pwd, role: "ADMIN", locale: "de" },
   });
   await prisma.user.create({
     data: { email: "team@woyou.demo", passwordHash: pwd, role: "TEAM", locale: "de" },
@@ -76,7 +78,7 @@ async function main() {
     const u = await prisma.user.create({
       data: { email: c.email, passwordHash: pwd, role: "CANDIDATE", locale: "fr" },
     });
-    await prisma.candidate.create({
+    const cand = await prisma.candidate.create({
       data: {
         userId: u.id,
         firstName: c.first,
@@ -120,8 +122,25 @@ async function main() {
         profileCompleteness: 100,
         status: c.paid ? "PAID_PLACEABLE" : "INCOMPLETE",
         paidAt: c.paid ? new Date() : null,
+        // Weg 1: bezahlte Demo-Kund:innen haben das Werkzeug aus dem Startpaket aktiv (3 Monate ab heute)
+        toolAccessUntil: c.paid ? addMonths(new Date(), ANGEBOT.startpaket.toolMonths) : null,
       },
     });
+    if (c.paid) {
+      const now = new Date();
+      await prisma.serviceBooking.create({
+        data: {
+          candidateId: cand.id, packageKey: "startpaket", amountCents: ANGEBOT.startpaket.priceCents, applicationsGoal: 0,
+          toolMonths: ANGEBOT.startpaket.toolMonths, contactPhone: "+212 600 000 000", targetJobs: c.cat === "krankenpfleger" ? "Pflegefachkraft" : "Koch",
+          targetRegions: "Nordrhein-Westfalen", acceptedTermsAt: now, waiverAcceptedAt: now, status: "PAID", paidAt: now,
+          adminNote: "Demo-Buchung aus dem Seed, keine echte Zahlung",
+        },
+      });
+    }
+    // Fatima: drei erfundene Beispielstellen im Tracker (Anschreiben zum „beworben“-Beispiel ergänzt der Demo-Login)
+    if (c.email === "fatima@example.com") {
+      for (const j of DEMO_JOBS) await prisma.savedJob.create({ data: { candidateId: cand.id, ...demoJobRow(j) } });
+    }
   }
 
   // One sample admin task
@@ -151,10 +170,10 @@ async function main() {
 
   console.log("Done.\n\nDemo accounts (Passwort: woyou1234):");
   console.log("  Super-Admin   admin@woyou.demo");
-  console.log("  Admin         vermittler@woyou.demo");
+  console.log("  Admin         backoffice@woyou.demo");
   console.log("  Team          team@woyou.demo");
-  console.log("  Kandidat 1    fatima@example.com");
-  console.log("  Kandidat 2    youssef@example.com");
+  console.log("  Kandidat 1    fatima@example.com  (Werkzeug aktiv, 3 Beispielstellen)");
+  console.log("  Kandidat 2    youssef@example.com (Werkzeug aktiv)");
   console.log("  Kandidat 3    aicha@example.com");
 }
 

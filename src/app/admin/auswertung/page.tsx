@@ -57,7 +57,7 @@ export default async function Auswertung() {
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[
-          ["Umsatz gesamt", formatPrice(revenue), `${paid.length} Startpakete, ${purchases.length} Verlängerungen/Abos`],
+          ["Umsatz gesamt", formatPrice(revenue), purchases.length ? `${paid.length} Startpakete, ${purchases.length} frühere Käufe` : `${paid.length} Startpakete`],
           ["Umsatz 30 Tage", formatPrice(revenue30), ""],
           ["Werkzeug aktiv", String(toolActive), "Kund:innen mit laufendem Zugang"],
           ["Gemerkte Stellen", String(saved), `bei ${users.length} Kund:innen`],

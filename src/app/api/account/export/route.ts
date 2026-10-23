@@ -14,7 +14,7 @@ export async function GET() {
   const user = await prisma.user.findUnique({
     where: { id: session.userId },
     include: {
-      candidate: { include: { matches: true, testAnswers: true, tasks: true } },
+      candidate: { include: { matches: true, testAnswers: true, tasks: true, savedJobs: true, bookings: { include: { profile: true } } } }, // savedJobs: Tracker (auch nach Ablauf des Werkzeugs exportierbar)
       company: { include: { jobRequests: true, matches: true, tasks: true } },
       sentMessages: true,
       notifications: true,

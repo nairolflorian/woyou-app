@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { BookingRow } from "@/components/BookingRow";
 import { BOOKING_STATUS, BOOKING_STATUS_LABEL, formatPrice } from "@/lib/services";
 import { mailEnabled } from "@/lib/mail";
-import { getStripe } from "@/lib/stripe";
+import { getStripe, stripeKeyMode, stripeBlockedByDemo } from "@/lib/stripe";
 import { monthlyReport } from "@/lib/report";
 import { getSession } from "@/lib/session";
 import { isAdmin } from "@/lib/auth";
@@ -24,7 +24,7 @@ export default async function AdminBookingsPage() {
       <div>
         <h1 className="text-2xl font-bold">Buchungen · Unterlagen und Werkzeug</h1>
         <p className="text-sm text-[color:var(--color-ink-soft)]">
-          Zahlung: {getStripe() ? <span className="text-emerald-700 font-semibold">Stripe aktiv</span> : <span className="text-amber-700 font-semibold">noch kein Stripe-Konto – Buchungen kommen als „Angefragt“</span>}
+          Zahlung: {getStripe() ? <span className="text-emerald-700 font-semibold">Stripe aktiv ({stripeKeyMode() === "test" ? "Testmodus, kein echtes Geld" : "live"})</span> : stripeBlockedByDemo() ? <span className="text-amber-700 font-semibold">Stripe-Schlüssel ist kein Test-Schlüssel und DEMO_MODE ist an: Zahlungen gesperrt, Buchungen kommen als „Angefragt“</span> : <span className="text-amber-700 font-semibold">noch kein Stripe-Konto, Buchungen kommen als „Angefragt“</span>}
           {" · "}Mailversand: {mailEnabled() ? <span className="text-emerald-700 font-semibold">aktiv</span> : <span className="text-amber-700 font-semibold">noch kein SMTP – Mails werden nur protokolliert</span>}
         </p>
       </div>
@@ -42,9 +42,9 @@ export default async function AdminBookingsPage() {
           <a href="/api/admin/bookings/export" className="btn-outline py-1">Kunden und Buchungen (CSV)</a>
         </div>
         <table className="mt-3 w-full text-sm">
-          <thead><tr className="text-left text-xs text-[color:var(--color-ink-soft)]"><th className="py-1">Monat</th><th>Registrierungen</th><th>Buchungen</th><th>bezahlt</th><th>Umsatz Startpaket</th><th>Mappen</th><th>Verlängerungen</th><th>Umsatz Verlängerung</th><th>Buchungsquote</th></tr></thead>
+          <thead><tr className="text-left text-xs text-[color:var(--color-ink-soft)]"><th className="py-1">Monat</th><th>Registrierungen</th><th>Buchungen</th><th>bezahlt</th><th>Umsatz Startpaket</th><th>Mappen</th><th>Buchungsquote</th></tr></thead>
           <tbody>{report.map((r) => (
-            <tr key={r.month} className="border-t"><td className="py-1 font-semibold">{r.month}</td><td>{r.registrations}</td><td>{r.bookings}</td><td>{r.bookingsPaid}</td><td>{formatPrice(r.serviceRevenueCents)}</td><td>{r.mappenSubmitted}</td><td>{r.toolPurchases}</td><td>{formatPrice(r.toolRevenueCents)}</td><td>{r.conversionPct === null ? "–" : `${r.conversionPct.toLocaleString("de-DE")} %`}</td></tr>
+            <tr key={r.month} className="border-t"><td className="py-1 font-semibold">{r.month}</td><td>{r.registrations}</td><td>{r.bookings}</td><td>{r.bookingsPaid}</td><td>{formatPrice(r.serviceRevenueCents)}</td><td>{r.mappenSubmitted}</td><td>{r.conversionPct === null ? "–" : `${r.conversionPct.toLocaleString("de-DE")} %`}</td></tr>
           ))}</tbody>
         </table>
         <p className="mt-2 text-xs text-[color:var(--color-ink-soft)]">Buchungsquote = Buchungen des Startpakets je neue Registrierung im Monat. Demo-Zahlungen zählen nicht als Umsatz.</p>

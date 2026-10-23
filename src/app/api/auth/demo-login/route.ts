@@ -3,22 +3,25 @@ import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
 import type { Role } from "@/lib/enums";
 import { DEMO_ACCOUNTS, DEMO_MODE_ENABLED } from "@/lib/demo-accounts";
+import { prepareDemoCustomer } from "@/lib/demo-setup";
 
 async function loginAndRedirect(req: Request, email: string) {
   if (!DEMO_MODE_ENABLED) {
     return NextResponse.json({ error: "DEMO_MODE_DISABLED" }, { status: 403 });
   }
-  const acc = DEMO_ACCOUNTS.find((a) => a.email === email && a.role !== "COMPANY"); // Weg 1: keine Firmenkonten
+  const acc = DEMO_ACCOUNTS.find((a) => a.email === email); // Weg 1: nur Backoffice und Kund:innen, keine Firmenkonten
   if (!acc) {
     return NextResponse.json({ error: "UNKNOWN_DEMO_ACCOUNT" }, { status: 404 });
   }
-  const user = await prisma.user.findUnique({ where: { email: acc.email } });
+  const user = await prisma.user.findFirst({ where: { email: { in: [acc.email, ...(acc.aliases ?? [])] } }, orderBy: { createdAt: "asc" } });
   if (!user) {
     return NextResponse.json(
       { error: "ACCOUNT_NOT_SEEDED", hint: "Run npm run db:seed first." },
       { status: 404 }
     );
   }
+  // Vorführung: Fatima und Youssef haben immer ein aktives Werkzeug, Fatima dazu Beispielstellen (nur DEMO_MODE)
+  if (acc.role === "CANDIDATE") await prepareDemoCustomer(acc.email).catch((e) => console.error("[demo] Vorbereitung fehlgeschlagen", e));
   const session = await getSession();
   session.userId = user.id;
   session.role = user.role as Role;

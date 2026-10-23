@@ -4,11 +4,12 @@ import { useState } from "react";
 
 type Purchase = { id: string; label: string; status: string; open: boolean; createdAt: string };
 
-// Käufe nach dem Startpaket (Verlängerung, Abo) mit „als bezahlt markieren“ für Admins (z. B. Überweisung)
+// ALT: frühere Käufe nach dem Startpaket (Verlängerung, Abo, Guthaben) mit „als bezahlt markieren“ für Admins.
+// Neue Käufe dieser Art gibt es seit 23.10.2026 nicht mehr.
 export function PurchaseList(p: { purchases: Purchase[]; isAdmin: boolean }) {
   const [msg, setMsg] = useState<string | null>(null);
   async function paid(id: string) {
-    if (!confirm("Zahlung eingegangen? Dann wird das Werkzeug verlängert bzw. das Abo aktiv.")) return;
+    if (!confirm("Zahlung für diesen Altkauf eingegangen? Dann wird er als bezahlt verbucht.")) return;
     const r = await fetch(`/api/admin/purchases/${id}/paid`, { method: "POST" });
     if (r.ok) window.location.reload(); else setMsg("Das hat nicht geklappt.");
   }

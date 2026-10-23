@@ -53,12 +53,11 @@ type Copy = {
 function build(lang: "de" | "en" | "fr" | "ar" | "hi"): Copy {
   const f = (c: number) => formatPrice(c, lang);
   const start = f(ANGEBOT.startpaket.priceCents), months = ANGEBOT.startpaket.toolMonths;
-  const month = f(ANGEBOT.verlaengerung.priceCents), abo = f(ANGEBOT.abo.priceCents);
   if (lang === "en") return {
     badge: "APPLICATION DOCUMENTS AND TOOL",
     title: "Your application documents to German standards. And a tool to apply yourself.",
     lead: "We create your application documents to German standards and give you a tool to find suitable jobs and apply yourself. You decide where you apply, and every reply comes straight to you.",
-    priceNote: `one-time · includes ${months} months of the application tool · then ${month} per month or ${abo} a month as a subscription`,
+    priceNote: `one-time · includes ${months} months of access to the application tool · no subscription · you keep your documents`,
     cta: "Book now", ctaLogin: "Log in and book",
     bookTitle: "Book the starter package", bookLead: "Please check your details. We use your desired jobs and region as a suggestion for your job search.",
     phone: "Phone / WhatsApp for questions about your documents", jobs: "Desired jobs", regions: "Preferred region in Germany (optional)", notes: "Anything else we should know? (optional)",
@@ -76,7 +75,7 @@ function build(lang: "de" | "en" | "fr" | "ar" | "hi"): Copy {
     badge: "مستندات التقديم والأداة",
     title: "مستندات التقديم بالمعايير الألمانية. وأداة تتقدّم بها بنفسك.",
     lead: "نُعدّ مستندات التقديم الخاصة بك بالمعايير الألمانية، ونعطيك أداة تجد بها وظائف مناسبة وتتقدّم إليها بنفسك. أنت من يقرر أين تتقدّم، وتصلك كل الردود مباشرة.",
-    priceNote: `دفعة واحدة · تشمل ${arMonths(months)} من أداة التقديم · بعدها ${month} لكل شهر أو ${abo} شهريًا باشتراك`,
+    priceNote: `دفعة واحدة · تشمل ${arMonths(months)} من الوصول إلى أداة التقديم · بلا اشتراك · مستنداتك تبقى لك`,
     cta: "احجز الآن", ctaLogin: "سجّل الدخول واحجز",
     bookTitle: "حجز باقة البداية", bookLead: "يرجى التحقق من بياناتك. نستخدم المهن والمنطقة التي تفضّلها كاقتراح للبحث عن وظيفة.",
     phone: "الهاتف / واتساب للأسئلة حول مستنداتك", jobs: "المهن المرغوبة", regions: "المنطقة المفضلة في ألمانيا (اختياري)", notes: "هل هناك شيء آخر يجب أن نعرفه؟ (اختياري)",
@@ -94,7 +93,7 @@ function build(lang: "de" | "en" | "fr" | "ar" | "hi"): Copy {
     badge: "आवेदन दस्तावेज़ और टूल",
     title: "जर्मन मानक के अनुसार आपके आवेदन दस्तावेज़। और एक टूल, जिससे आप ख़ुद आवेदन करते हैं।",
     lead: "हम जर्मन मानक के अनुसार आपके आवेदन दस्तावेज़ बनाते हैं और आपको एक टूल देते हैं, जिससे आप उपयुक्त नौकरियाँ ढूँढते हैं और ख़ुद आवेदन करते हैं। कहाँ आवेदन करना है, यह आप तय करते हैं, और सभी जवाब सीधे आपको मिलते हैं।",
-    priceNote: `एक बार का भुगतान · ${months} महीने का आवेदन टूल शामिल · उसके बाद ${month} प्रति माह या सदस्यता में ${abo} प्रति माह`,
+    priceNote: `एक बार का भुगतान · ${months} महीने आवेदन टूल का इस्तेमाल शामिल · कोई सदस्यता नहीं · आपके दस्तावेज़ आपके पास रहते हैं`,
     cta: "अभी बुक करें", ctaLogin: "लॉग इन करें और बुक करें",
     bookTitle: "स्टार्टर पैकेज बुक करें", bookLead: "कृपया अपनी जानकारी जाँच लें। आपके पसंदीदा पेशे और क्षेत्र को हम आपकी नौकरी खोज के सुझाव के रूप में इस्तेमाल करते हैं।",
     phone: "आपके दस्तावेज़ों के बारे में सवालों के लिए फ़ोन / WhatsApp", jobs: "पसंदीदा पेशे", regions: "जर्मनी में पसंदीदा क्षेत्र (वैकल्पिक)", notes: "कुछ और जो हमें जानना चाहिए? (वैकल्पिक)",
@@ -111,7 +110,7 @@ function build(lang: "de" | "en" | "fr" | "ar" | "hi"): Copy {
     badge: "DOSSIER DE CANDIDATURE ET OUTIL",
     title: "Votre dossier de candidature aux normes allemandes. Et un outil pour postuler vous-même.",
     lead: "Nous créons votre dossier de candidature aux normes allemandes et vous donnons un outil pour trouver des offres adaptées et postuler vous-même. Vous décidez où vous postulez et vous recevez toutes les réponses directement.",
-    priceNote: `paiement unique · ${months} mois d'outil inclus · ensuite ${month} par mois ou ${abo} par mois en abonnement`,
+    priceNote: `paiement unique · ${months} mois d'accès à l'outil inclus · sans abonnement · vous gardez vos documents`,
     cta: "Réserver", ctaLogin: "Se connecter et réserver",
     bookTitle: "Réserver le pack de départ", bookLead: "Vérifiez vos informations. Vos métiers et votre région servent de suggestion pour votre recherche d'emploi.",
     phone: "Téléphone / WhatsApp pour les questions sur votre dossier", jobs: "Métiers souhaités", regions: "Région souhaitée en Allemagne (facultatif)", notes: "Autre chose à nous dire ? (facultatif)",
@@ -128,7 +127,7 @@ function build(lang: "de" | "en" | "fr" | "ar" | "hi"): Copy {
     badge: "BEWERBUNGSUNTERLAGEN UND WERKZEUG",
     title: "Deine Bewerbungsunterlagen nach deutschem Standard. Und ein Werkzeug, mit dem du dich selbst bewirbst.",
     lead: "Wir erstellen deine Bewerbungsunterlagen nach deutschem Standard und geben dir ein Werkzeug, mit dem du passende Stellen findest und dich selbst bewirbst. Du entscheidest, wo du dich bewirbst, und bekommst alle Antworten direkt.",
-    priceNote: `einmalig · inklusive ${months} Monate Bewerbungswerkzeug · danach ${month} je Monat oder ${abo} im Monat im Abo`,
+    priceNote: `einmalig · inklusive ${months} Monate Zugang zum Bewerbungswerkzeug · kein Abo · deine Unterlagen behältst du`,
     cta: "Jetzt buchen", ctaLogin: "Anmelden und buchen",
     bookTitle: "Startpaket buchen", bookLead: "Prüfe kurz deine Angaben. Deine Wunschberufe und deine Region nutzen wir als Vorschlag für deine Stellensuche.",
     phone: "Telefon / WhatsApp für Rückfragen zu deinen Unterlagen", jobs: "Gewünschte Berufe", regions: "Wunschregion in Deutschland (optional)", notes: "Was sollen wir noch wissen? (optional)",

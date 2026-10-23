@@ -11,18 +11,17 @@ import { ANGEBOT, formatPrice } from "@/lib/angebot";
 import { DocumentUpload } from "@/components/DocumentUpload";
 import { AccountControls } from "@/components/AccountControls";
 import { LoginEditForm } from "@/components/LoginEditForm";
-import { ToolShop } from "@/components/ToolShop";
 import { MyDocuments } from "@/components/MyDocuments";
 import { VersandAdresse } from "@/components/VersandAdresse";
 import { versandText } from "@/lib/versand-text";
-import { toolAccess, markToolPurchasePaid, paymentTestMode } from "@/lib/werkzeug";
-import { getStripe } from "@/lib/stripe";
+import { toolAccess } from "@/lib/werkzeug";
+import { arMonths } from "@/lib/werkzeug-text";
 import { accountText, fill } from "@/lib/account-text";
 
 export const dynamic = "force-dynamic";
 
-// Mein Bereich (Weg 1): Startpaket, Stand der Unterlagen, Bewerbungswerkzeug, Verlängerung, Konto
-export default async function CandidateDashboardPage(props: { searchParams: Promise<{ kauf?: string; session_id?: string; test?: string }> }) {
+// Mein Bereich (Weg 1): Startpaket, Stand der Unterlagen, Bewerbungswerkzeug (3 Monate inklusive, keine Verlängerung), Konto
+export default async function CandidateDashboardPage() {
   const session = await getSession();
   if (!session.userId || session.role !== ROLE.CANDIDATE) redirect("/anmelden");
   const candidate = await prisma.candidate.findUnique({ where: { userId: session.userId! }, include: { user: true } });
@@ -32,21 +31,6 @@ export default async function CandidateDashboardPage(props: { searchParams: Prom
   const sc = serviceCopy(locale);
   const a = accountText(locale);
   const dl = locale === "de" ? "de-DE" : locale === "fr" ? "fr-FR" : locale === "ar" ? "ar-MA" : locale === "hi" ? "hi-IN" : "en-GB";
-  const sp = await props.searchParams;
-
-  // Rückkehr vom Kauf: Stripe-Sitzung prüfen (zusätzlich zum Webhook) bzw. lokaler Testmodus ohne Zahlung
-  if (sp.kauf === "ok" && (sp.session_id || sp.test)) {
-    const p = await prisma.creditPurchase.findFirst({ where: sp.session_id ? { stripeSessionId: sp.session_id } : { id: sp.test } });
-    if (p && p.candidateId === candidate.id) {
-      if (sp.test && paymentTestMode()) await markToolPurchasePaid(p.id);
-      const stripe = getStripe();
-      if (sp.session_id && stripe) {
-        const cs = await stripe.checkout.sessions.retrieve(sp.session_id).catch(() => null);
-        if (cs && cs.metadata?.purchaseId === p.id && cs.payment_status === "paid" && cs.mode === "payment") await markToolPurchasePaid(p.id, { sessionId: cs.id });
-      }
-    }
-  }
-
   const booking = await prisma.serviceBooking.findFirst({
     where: { candidateId: candidate.id, status: { not: "CANCELLED" } },
     orderBy: { createdAt: "desc" },
@@ -58,6 +42,7 @@ export default async function CandidateDashboardPage(props: { searchParams: Prom
     prisma.savedJob.count({ where: { candidateId: candidate.id, status: { not: "SAVED" } } }),
   ]);
   const untilStr = access.until?.toLocaleDateString(dl) ?? null;
+  const months = locale === "ar" ? arMonths(booking?.toolMonths || ANGEBOT.startpaket.toolMonths) : String(booking?.toolMonths || ANGEBOT.startpaket.toolMonths);
   const mappeState = (booking?.profile?.status ?? "NONE") as keyof typeof a.mappe;
 
   return (
@@ -68,8 +53,6 @@ export default async function CandidateDashboardPage(props: { searchParams: Prom
           <h1 className="text-2xl md:text-3xl font-bold">{t("dash.hello", { name: candidate.firstName ?? "👋" })}</h1>
           <p className="text-sm text-[color:var(--color-ink-soft)]">{candidate.user.email ?? candidate.user.phone}</p>
 
-          {sp.kauf === "ok" && <div className="mt-6 card bg-emerald-50 border-emerald-200 text-sm text-emerald-900">{a.paidThanks}</div>}
-          {sp.kauf === "abgebrochen" && <div className="mt-6 card bg-amber-50 border-amber-200 text-sm text-amber-900">{a.payAborted}</div>}
           {booking ? (
             <>
               <div className="mt-8 card">
@@ -93,24 +76,26 @@ export default async function CandidateDashboardPage(props: { searchParams: Prom
                     {access.active ? fill(a.toolActive, { date: untilStr ?? "" }) : access.until ? fill(a.toolExpired, { date: untilStr ?? "" }) : a.toolInactive}
                   </span>
                 </div>
-                <p className="mt-1 text-sm text-[color:var(--color-ink-soft)]">{access.until || access.active ? a.toolLead : a.toolInactiveLead}</p>
-                {access.subscription && <p className="mt-1 text-xs text-[color:var(--color-ink-soft)]">{access.subscription.status === "CANCELLING" ? fill(a.toolAboCancelling, { date: untilStr ?? "" }) : a.toolAbo}</p>}
-                {(access.active || saved > 0) && (
+                {access.active || !access.until ? (
+                  <>
+                    <p className="mt-1 text-sm text-[color:var(--color-ink-soft)]">{access.active ? a.toolLead : a.toolInactiveLead}</p>
+                    <p className="mt-2 text-xs text-[color:var(--color-ink-soft)]">{fill(a.toolIncluded, { months })}</p>
+                  </>
+                ) : <p className="mt-2 text-sm rounded-lg bg-amber-50 border border-amber-200 p-3 text-amber-900">{fill(a.toolExpiredLead, { months })}</p>}
+                {access.active ? (
                   <div className="mt-4 flex flex-wrap items-center gap-2">
-                    {access.active && <Link href="/stellensuche" className="btn-primary">{a.openSearch}</Link>}
+                    <Link href="/stellensuche" className="btn-primary">{a.openSearch}</Link>
                     <Link href="/meine-bewerbungen" className="btn-outline">{a.openTracker}</Link>
                     <span className="text-sm text-[color:var(--color-ink-soft)]">{fill(a.counts, { saved, applied })}</span>
                   </div>
-                )}
-                {booking.paidAt && (
-                  <div id="verlaengern" className="mt-6 border-t border-[color:var(--color-border)] pt-4 scroll-mt-20">
-                    <h3 className="font-semibold text-sm">{a.extendTitle}</h3>
-                    <p className="text-xs text-[color:var(--color-ink-soft)] mb-3">{a.extendLead}</p>
-                    <ToolShop abo={access.subscription?.status ?? null} until={untilStr} locale={locale} monthPrice={formatPrice(ANGEBOT.verlaengerung.priceCents, locale)} aboPrice={formatPrice(ANGEBOT.abo.priceCents, locale)} stripe={!!getStripe() || paymentTestMode()} />
+                ) : access.until && (
+                  <div className="mt-4 flex flex-wrap items-center gap-2">
+                    {saved > 0 && <Link href="/meine-bewerbungen" className="btn-outline">{a.myLetters}</Link>}
+                    <Link href="/bewerbungsmappe" className="btn-ghost">{a.myMappe}</Link>
                   </div>
                 )}
               </div>
-              <div className="mt-8"><MyDocuments locale={locale} /></div>
+              <div id="unterlagen" className="mt-8 scroll-mt-20"><MyDocuments locale={locale} /></div>
             </>
           ) : (
             <div className="mt-8 card flex flex-wrap items-center justify-between gap-4">

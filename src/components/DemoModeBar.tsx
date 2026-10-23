@@ -13,10 +13,13 @@ export async function DemoModeBar() {
       select: { email: true },
     });
     currentEmail = u?.email ?? null;
+    // ältere Adresse eines Demo-Kontos (z. B. aus einem früheren Seed) auf die aktuelle abbilden
+    const alias = DEMO_ACCOUNTS.find((a) => currentEmail && a.aliases?.includes(currentEmail));
+    if (alias) currentEmail = alias.email;
   }
   return (
     <DemoModeBarClient
-      accounts={DEMO_ACCOUNTS.filter((a) => a.role !== "COMPANY")}
+      accounts={DEMO_ACCOUNTS}
       currentEmail={currentEmail}
     />
   );

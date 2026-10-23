@@ -25,6 +25,8 @@ type UI = {
   published: string; km: string; source: string; alsoSearch: string; alsoHint: string; searchError: string;
   // gesperrt
   lockedTitle: string; lockedLead: string; lockedCta: string; expiredTitle: string; expiredLead: string; expiredCta: string;
+  // nach Ablauf: Anschreiben je Stelle bleiben herunterladbar
+  lettersTitle: string; lettersLead: string; noLetters: string;
   // Tracker
   trackerTitle: string; trackerLead: string; empty: string; toSearch: string; toTracker: string; all: string;
   status: Record<TrackerStatus, string>; statusLabel: string; appliedOn: string; repliedOn: string; interviewOn: string;
@@ -48,7 +50,8 @@ const de: UI = {
   alsoSearch: "Auch dort selbst suchen:", alsoHint: "Die Seiten öffnen sich in einem neuen Fenster. Wir lesen dort nichts aus und übernehmen nichts automatisch.",
   searchError: "Die Suche hat gerade nicht geklappt. Bitte versuch es gleich noch einmal.",
   lockedTitle: "Die Stellensuche gehört zum Startpaket", lockedLead: "Mit dem Startpaket bekommst du deine Bewerbungsunterlagen nach deutschem Standard und das Bewerbungswerkzeug: Stellensuche, Anschreiben für jede Stelle und deine eigene Übersicht.", lockedCta: "Startpaket ansehen",
-  expiredTitle: "Dein Bewerbungswerkzeug ist abgelaufen", expiredLead: "Deine gemerkten Stellen und Notizen bleiben lesbar, und deine Unterlagen kannst du weiter herunterladen. Für neue Suchen und Anschreiben verlängere das Werkzeug.", expiredCta: "Werkzeug verlängern",
+  expiredTitle: "Dein Bewerbungswerkzeug ist abgelaufen", expiredLead: "Die Monate mit dem Werkzeug aus deinem Startpaket sind vorbei. Stellensuche und „Meine Bewerbungen“ sind jetzt gesperrt. Deine Unterlagen gehören dir: Lebenslauf, Anschreiben-Vorlage und die Anschreiben zu deinen Stellen kannst du weiter herunterladen.", expiredCta: "Zu meinen Unterlagen",
+  lettersTitle: "Deine Anschreiben zum Herunterladen", lettersLead: "Für jede Stelle, zu der du ein Anschreiben erstellt hast, kannst du es hier weiter als PDF oder Word laden, dazu deinen Lebenslauf.", noLetters: "Du hast zu keiner Stelle ein Anschreiben erstellt. Deinen Lebenslauf und die Anschreiben-Vorlage findest du in deinem Bereich.",
   trackerTitle: "Meine Bewerbungen", trackerLead: "Deine gemerkten Stellen und wie es bei jeder steht. Diese Liste pflegst nur du. Wir schreiben keine Firmen an und lesen keine Antworten mit.",
   empty: "Du hast dir noch keine Stelle gemerkt. In der Stellensuche findest du passende Angebote.", toSearch: "Zur Stellensuche", toTracker: "Meine Bewerbungen ({n})", all: "Alle",
   status: { SAVED: "gemerkt", APPLIED: "beworben", REPLY: "Antwort erhalten", INTERVIEW: "Gespräch", REJECTED: "Absage", OFFER: "Zusage" },
@@ -61,7 +64,7 @@ const de: UI = {
   noEmail: "In der Anzeige steht keine E-Mail-Adresse. Bewirb dich über die Seite des Arbeitgebers.", employer: "Zur Bewerbungsseite des Arbeitgebers", markApplied: "Ich habe mich beworben",
   addOwn: "Stelle selbst eintragen", addOwnLead: "Du hast eine Stelle woanders gefunden, z. B. auf einem Portal oder einer Firmenseite? Trag sie hier ein, dann hast du alles an einem Ort.",
   ownTitle: "Stellenbezeichnung", ownCompany: "Firma", ownCity: "Ort (optional)", ownUrl: "Link zur Anzeige (optional)", ownEmail: "Bewerbungs-E-Mail (optional)", add: "Eintragen",
-  failed: "Das hat nicht geklappt.", readOnly: "Nur lesbar, solange dein Werkzeug nicht verlängert ist.", back: "Mein Bereich", navSearch: "Stellensuche", navTracker: "Meine Bewerbungen", navMappe: "Bewerbungsmappe",
+  failed: "Das hat nicht geklappt.", readOnly: "Dein Werkzeug ist abgelaufen. Deine Anschreiben kannst du weiter herunterladen.", back: "Mein Bereich", navSearch: "Stellensuche", navTracker: "Meine Bewerbungen", navMappe: "Bewerbungsmappe",
 };
 
 const en: UI = {
@@ -77,7 +80,8 @@ const en: UI = {
   alsoSearch: "Also search there yourself:", alsoHint: "These sites open in a new window. We don't read anything there or copy anything automatically.",
   searchError: "The search didn't work just now. Please try again in a moment.",
   lockedTitle: "Job search is part of the starter package", lockedLead: "With the starter package you get your application documents to German standards and the application tool: job search, a cover letter for every job and your own overview.", lockedCta: "See the starter package",
-  expiredTitle: "Your application tool has expired", expiredLead: "Your saved jobs and notes stay readable, and you can still download your documents. To search and create new cover letters, extend the tool.", expiredCta: "Extend the tool",
+  expiredTitle: "Your application tool has expired", expiredLead: "The months with the tool from your starter package are over. Job search and “My applications” are now locked. Your documents belong to you: you can still download your CV, your cover letter template and the cover letters for your jobs.", expiredCta: "Go to my documents",
+  lettersTitle: "Your cover letters to download", lettersLead: "For every job you created a cover letter for, you can still download it here as PDF or Word, together with your CV.", noLetters: "You haven't created a cover letter for a job. Your CV and the cover letter template are in your area.",
   trackerTitle: "My applications", trackerLead: "Your saved jobs and where you stand with each one. Only you keep this list. We don't contact companies and don't read replies.",
   empty: "You haven't saved a job yet. The job search shows you suitable offers.", toSearch: "Go to job search", toTracker: "My applications ({n})", all: "All",
   status: { SAVED: "saved", APPLIED: "applied", REPLY: "reply received", INTERVIEW: "interview", REJECTED: "rejection", OFFER: "offer" },
@@ -90,7 +94,7 @@ const en: UI = {
   noEmail: "The advert doesn't give an email address. Apply via the employer's website.", employer: "Go to the employer's application page", markApplied: "I have applied",
   addOwn: "Add a job yourself", addOwnLead: "Found a job somewhere else, e.g. on a job portal or a company website? Add it here to keep everything in one place.",
   ownTitle: "Job title", ownCompany: "Company", ownCity: "City (optional)", ownUrl: "Link to the advert (optional)", ownEmail: "Application email (optional)", add: "Add",
-  failed: "That didn't work.", readOnly: "Read only until you extend your tool.", back: "My area", navSearch: "Job search", navTracker: "My applications", navMappe: "Application folder",
+  failed: "That didn't work.", readOnly: "Your tool has expired. You can still download your cover letters.", back: "My area", navSearch: "Job search", navTracker: "My applications", navMappe: "Application folder",
 };
 
 const fr: UI = {
@@ -106,7 +110,8 @@ const fr: UI = {
   alsoSearch: "Cherchez aussi vous-même ici :", alsoHint: "Ces sites s'ouvrent dans une nouvelle fenêtre. Nous n'y lisons rien et ne reprenons rien automatiquement.",
   searchError: "La recherche n'a pas fonctionné. Merci de réessayer dans un instant.",
   lockedTitle: "La recherche d'emploi fait partie du pack de départ", lockedLead: "Avec le pack de départ, vous recevez votre dossier de candidature aux normes allemandes et l'outil de candidature : recherche d'emploi, une lettre pour chaque offre et votre propre suivi.", lockedCta: "Voir le pack de départ",
-  expiredTitle: "Votre outil de candidature a expiré", expiredLead: "Vos offres gardées et vos notes restent lisibles, et vous pouvez toujours télécharger vos documents. Pour de nouvelles recherches et lettres, prolongez l'outil.", expiredCta: "Prolonger l'outil",
+  expiredTitle: "Votre outil de candidature a expiré", expiredLead: "Les mois d'outil compris dans votre pack de départ sont terminés. La recherche d'emploi et « Mes candidatures » sont maintenant fermées. Vos documents vous appartiennent : vous pouvez toujours télécharger votre CV, votre modèle de lettre et les lettres créées pour vos offres.", expiredCta: "Vers mes documents",
+  lettersTitle: "Vos lettres à télécharger", lettersLead: "Pour chaque offre pour laquelle vous avez créé une lettre, vous pouvez toujours la télécharger ici en PDF ou en Word, avec votre CV.", noLetters: "Vous n'avez créé de lettre pour aucune offre. Votre CV et le modèle de lettre se trouvent dans votre espace.",
   trackerTitle: "Mes candidatures", trackerLead: "Vos offres gardées et où vous en êtes pour chacune. Vous seul tenez cette liste. Nous ne contactons pas d'entreprises et ne lisons pas les réponses.",
   empty: "Vous n'avez encore gardé aucune offre. La recherche d'emploi vous montre des offres adaptées.", toSearch: "Vers la recherche", toTracker: "Mes candidatures ({n})", all: "Toutes",
   status: { SAVED: "gardée", APPLIED: "candidature envoyée", REPLY: "réponse reçue", INTERVIEW: "entretien", REJECTED: "refus", OFFER: "offre reçue" },
@@ -119,7 +124,7 @@ const fr: UI = {
   noEmail: "L'annonce n'indique pas d'adresse e-mail. Postulez sur le site de l'employeur.", employer: "Vers la page de candidature de l'employeur", markApplied: "J'ai postulé",
   addOwn: "Ajouter une offre vous-même", addOwnLead: "Vous avez trouvé une offre ailleurs, p. ex. sur un portail ou le site d'une entreprise ? Ajoutez-la ici pour tout garder au même endroit.",
   ownTitle: "Intitulé du poste", ownCompany: "Entreprise", ownCity: "Ville (facultatif)", ownUrl: "Lien vers l'annonce (facultatif)", ownEmail: "E-mail de candidature (facultatif)", add: "Ajouter",
-  failed: "Cela n'a pas fonctionné.", readOnly: "Lecture seule tant que l'outil n'est pas prolongé.", back: "Mon espace", navSearch: "Recherche", navTracker: "Mes candidatures", navMappe: "Dossier",
+  failed: "Cela n'a pas fonctionné.", readOnly: "Votre outil a expiré. Vous pouvez toujours télécharger vos lettres.", back: "Mon espace", navSearch: "Recherche", navTracker: "Mes candidatures", navMappe: "Dossier",
 };
 
 // Übersetzung bitte von Muttersprachler:in prüfen lassen (Arabisch, Hocharabisch für Marokko)
@@ -136,7 +141,8 @@ const ar: UI = {
   alsoSearch: "ابحث بنفسك هناك أيضًا:", alsoHint: "تُفتح هذه المواقع في نافذة جديدة. لا نقرأ منها شيئًا ولا ننقل منها شيئًا تلقائيًا.",
   searchError: "لم ينجح البحث الآن. يرجى المحاولة مرة أخرى بعد قليل.",
   lockedTitle: "البحث عن وظيفة جزء من باقة البداية", lockedLead: "مع باقة البداية تحصل على مستندات التقديم بالمعايير الألمانية وعلى أداة التقديم: البحث عن وظائف، ورسالة تحفيز لكل وظيفة، ونظرة عامة خاصة بك.", lockedCta: "عرض باقة البداية",
-  expiredTitle: "انتهت مدة أداة التقديم", expiredLead: "تبقى وظائفك المحفوظة وملاحظاتك قابلة للقراءة، ويمكنك الاستمرار في تحميل مستنداتك. للبحث من جديد وإنشاء رسائل جديدة، مدّد الأداة.", expiredCta: "تمديد الأداة",
+  expiredTitle: "انتهت مدة أداة التقديم", expiredLead: "انتهت أشهر الأداة المشمولة في باقة البداية. البحث عن وظيفة و«طلباتي» مغلقان الآن. مستنداتك ملك لك: يمكنك الاستمرار في تحميل سيرتك الذاتية ونموذج رسالة التحفيز ورسائل التحفيز الخاصة بوظائفك.", expiredCta: "إلى مستنداتي",
+  lettersTitle: "رسائل التحفيز الخاصة بك للتحميل", lettersLead: "لكل وظيفة أنشأت لها رسالة تحفيز، يمكنك الاستمرار في تحميلها هنا بصيغة PDF أو Word، مع سيرتك الذاتية.", noLetters: "لم تُنشئ رسالة تحفيز لأي وظيفة. تجد سيرتك الذاتية ونموذج رسالة التحفيز في حسابك.",
   trackerTitle: "طلباتي", trackerLead: "وظائفك المحفوظة وأين وصلت في كل واحدة منها. أنت وحدك من يدير هذه القائمة. نحن لا نراسل الشركات ولا نقرأ الردود.",
   empty: "لم تحفظ أي وظيفة بعد. في البحث عن وظيفة تجد عروضًا مناسبة.", toSearch: "إلى البحث عن وظيفة", toTracker: "طلباتي ({n})", all: "الكل",
   status: { SAVED: "محفوظة", APPLIED: "تم التقديم", REPLY: "وصل رد", INTERVIEW: "مقابلة", REJECTED: "رفض", OFFER: "قبول" },
@@ -149,7 +155,7 @@ const ar: UI = {
   noEmail: "لا يوجد عنوان بريد إلكتروني في الإعلان. قدّم طلبك عبر موقع صاحب العمل.", employer: "إلى صفحة التقديم لدى صاحب العمل", markApplied: "لقد قدّمت طلبي",
   addOwn: "أضف وظيفة بنفسك", addOwnLead: "وجدت وظيفة في مكان آخر، مثلًا على منصة وظائف أو موقع شركة؟ أضفها هنا ليكون كل شيء في مكان واحد.",
   ownTitle: "المسمى الوظيفي", ownCompany: "الشركة", ownCity: "المدينة (اختياري)", ownUrl: "رابط الإعلان (اختياري)", ownEmail: "بريد التقديم (اختياري)", add: "إضافة",
-  failed: "لم ينجح ذلك.", readOnly: "للقراءة فقط إلى أن تمدّد الأداة.", back: "حسابي", navSearch: "البحث عن وظيفة", navTracker: "طلباتي", navMappe: "ملف التقديم",
+  failed: "لم ينجح ذلك.", readOnly: "انتهت مدة أداتك. يمكنك الاستمرار في تحميل رسائل التحفيز الخاصة بك.", back: "حسابي", navSearch: "البحث عن وظيفة", navTracker: "طلباتي", navMappe: "ملف التقديم",
 };
 
 // Übersetzung bitte von Muttersprachler:in prüfen lassen (Hindi)
@@ -166,7 +172,8 @@ const hi: UI = {
   alsoSearch: "वहाँ भी ख़ुद खोजें:", alsoHint: "ये वेबसाइटें नई विंडो में खुलती हैं। हम वहाँ से कुछ नहीं पढ़ते और अपने-आप कुछ नहीं लेते।",
   searchError: "अभी खोज नहीं हो पाई। कृपया थोड़ी देर में फिर कोशिश करें।",
   lockedTitle: "नौकरी खोज स्टार्टर पैकेज का हिस्सा है", lockedLead: "स्टार्टर पैकेज में आपको जर्मन मानक के अनुसार आवेदन दस्तावेज़ और आवेदन टूल मिलता है: नौकरी खोज, हर नौकरी के लिए कवर लेटर और आपकी अपनी सूची।", lockedCta: "स्टार्टर पैकेज देखें",
-  expiredTitle: "आपका आवेदन टूल समाप्त हो गया है", expiredLead: "आपकी सहेजी गई नौकरियाँ और नोट्स पढ़े जा सकते हैं, और आप अपने दस्तावेज़ अब भी डाउनलोड कर सकते हैं। नई खोज और नए कवर लेटर के लिए टूल की अवधि बढ़ाएँ।", expiredCta: "टूल की अवधि बढ़ाएँ",
+  expiredTitle: "आपका आवेदन टूल समाप्त हो गया है", expiredLead: "स्टार्टर पैकेज में शामिल टूल के महीने पूरे हो गए हैं। नौकरी खोज और “मेरे आवेदन” अब बंद हैं। आपके दस्तावेज़ आपके अपने हैं: अपना बायोडाटा, कवर लेटर का नमूना और अपनी नौकरियों के कवर लेटर आप अब भी डाउनलोड कर सकते हैं।", expiredCta: "मेरे दस्तावेज़ों पर जाएँ",
+  lettersTitle: "डाउनलोड के लिए आपके कवर लेटर", lettersLead: "जिस भी नौकरी के लिए आपने कवर लेटर बनाया है, उसे आप यहाँ अब भी PDF या Word में डाउनलोड कर सकते हैं, साथ में अपना बायोडाटा भी।", noLetters: "आपने किसी नौकरी के लिए कवर लेटर नहीं बनाया है। आपका बायोडाटा और कवर लेटर का नमूना आपके खाते में है।",
   trackerTitle: "मेरे आवेदन", trackerLead: "आपकी सहेजी गई नौकरियाँ और हर एक में आप कहाँ तक पहुँचे। यह सूची सिर्फ़ आप रखते हैं। हम कंपनियों से संपर्क नहीं करते और जवाब नहीं पढ़ते।",
   empty: "आपने अभी तक कोई नौकरी नहीं सहेजी है। नौकरी खोज में आपको उपयुक्त नौकरियाँ मिलेंगी।", toSearch: "नौकरी खोज पर जाएँ", toTracker: "मेरे आवेदन ({n})", all: "सभी",
   status: { SAVED: "सहेजी गई", APPLIED: "आवेदन किया", REPLY: "जवाब आया", INTERVIEW: "इंटरव्यू", REJECTED: "अस्वीकार", OFFER: "नौकरी का प्रस्ताव" },
@@ -179,7 +186,7 @@ const hi: UI = {
   noEmail: "विज्ञापन में कोई ईमेल पता नहीं है। नियोक्ता की वेबसाइट से आवेदन करें।", employer: "नियोक्ता के आवेदन पेज पर जाएँ", markApplied: "मैंने आवेदन कर दिया",
   addOwn: "ख़ुद नौकरी जोड़ें", addOwnLead: "आपको कहीं और नौकरी मिली, जैसे किसी जॉब पोर्टल या कंपनी की वेबसाइट पर? उसे यहाँ जोड़ें, ताकि सब कुछ एक जगह रहे।",
   ownTitle: "पद का नाम", ownCompany: "कंपनी", ownCity: "शहर (वैकल्पिक)", ownUrl: "विज्ञापन का लिंक (वैकल्पिक)", ownEmail: "आवेदन का ईमेल (वैकल्पिक)", add: "जोड़ें",
-  failed: "यह काम नहीं किया।", readOnly: "जब तक आप टूल की अवधि नहीं बढ़ाते, आप सिर्फ़ पढ़ सकते हैं।", back: "मेरा खाता", navSearch: "नौकरी खोज", navTracker: "मेरे आवेदन", navMappe: "आवेदन फ़ाइल",
+  failed: "यह काम नहीं किया।", readOnly: "आपका टूल समाप्त हो गया है। अपने कवर लेटर आप अब भी डाउनलोड कर सकते हैं।", back: "मेरा खाता", navSearch: "नौकरी खोज", navTracker: "मेरे आवेदन", navMappe: "आवेदन फ़ाइल",
 };
 
 const UI_ALL: Record<WLang, UI> = { de, en, fr, ar, hi };
@@ -200,33 +207,6 @@ export function mappeMail(locale?: string | null) {
   if (l === "en") return { dir: dirOf(l), subject: "Your application documents are ready", hello: hello(l), button: "Open job search", paras: ["we have checked your application folder. Your CV and your cover letter template are ready, and you can download them in your area at any time.", "Now you can start: in the job search you find suitable jobs, save the ones you like and create a cover letter for each. You apply yourself, from your own email address or via the employer's website, and replies come straight to you.", SIGN.en] };
   if (l === "fr") return { dir: dirOf(l), subject: "Votre dossier de candidature est prêt", hello: hello(l), button: "Ouvrir la recherche", paras: ["nous avons vérifié votre dossier. Votre CV et votre modèle de lettre sont prêts, vous pouvez les télécharger à tout moment dans votre espace.", "Vous pouvez commencer : dans la recherche d'emploi, vous trouvez des offres adaptées, gardez celles qui vous plaisent et créez une lettre pour chacune. Vous postulez vous-même, depuis votre propre adresse e-mail ou sur le site de l'employeur, et les réponses vous arrivent directement.", SIGN.fr] };
   return { dir: dirOf(l), subject: "Deine Bewerbungsunterlagen sind fertig", hello: hello(l), button: "Stellensuche öffnen", paras: ["wir haben deine Bewerbungsmappe geprüft. Dein Lebenslauf und deine Anschreiben-Vorlage sind fertig, du kannst sie jederzeit in deinem Bereich herunterladen.", "Jetzt kannst du loslegen: In der Stellensuche findest du passende Stellen, merkst dir die, die dir gefallen, und erstellst für jede ein Anschreiben. Du bewirbst dich selbst, aus deinem eigenen E-Mail-Postfach oder über die Seite des Arbeitgebers, und bekommst die Antworten direkt.", SIGN.de] };
-}
-
-/** Mails zu Verlängerung und Abo */
-export function purchaseMail(locale?: string | null) {
-  const l = wLang(locale);
-  const base = { lang: l, dir: dirOf(l), dateLocale: dateLocaleOf(l), hello: hello(l), sign: SIGN[l] };
-  // Übersetzung bitte von Muttersprachler:in prüfen lassen (ar, hi)
-  if (l === "ar") return { ...base, button: "إلى حسابي", aboName: (p: string) => `الاشتراك الشهري في أداة التقديم (${p} شهريًا)`, monthName: (n: number, p: string) => `${n === 1 ? "شهر إضافي" : n === 2 ? "شهران إضافيان" : n <= 10 ? `${n} أشهر إضافية` : `${n} شهرًا إضافيًا`} من أداة التقديم (${p})`,
-    paidSubject: "شكرًا، تم تمديد أداتك", requestedSubject: "استلمنا طلبك", cancelledSubject: "تم تأكيد الإلغاء",
-    paid: (w: string) => `شكرًا جزيلًا! تم التفعيل: ${w}.`, requested: (w: string) => `شكرًا على طلبك: ${w}. سنرسل لك رابط الدفع قريبًا.`,
-    cancelled: (d: string) => `تم إلغاء اشتراكك. يمكنك استخدام أداة التقديم حتى ${d}. بعد ذلك لن يُخصم منك أي مبلغ.` };
-  if (l === "hi") return { ...base, button: "मेरे खाते पर जाएँ", aboName: (p: string) => `आवेदन टूल की मासिक सदस्यता (${p} प्रति माह)`, monthName: (n: number, p: string) => `आवेदन टूल के ${n} और ${n === 1 ? "महीने" : "महीनों"} (${p})`,
-    paidSubject: "धन्यवाद, आपके टूल की अवधि बढ़ा दी गई है", requestedSubject: "हमें आपका ऑर्डर मिल गया है", cancelledSubject: "सदस्यता रद्द होने की पुष्टि",
-    paid: (w: string) => `बहुत धन्यवाद! अब आपके लिए चालू है: ${w}।`, requested: (w: string) => `आपके ऑर्डर के लिए धन्यवाद: ${w}। हम जल्द ही आपको भुगतान का लिंक भेजेंगे।`,
-    cancelled: (d: string) => `आपकी सदस्यता रद्द हो गई है। आप ${d} तक आवेदन टूल इस्तेमाल कर सकते हैं। उसके बाद कोई पैसा नहीं कटेगा।` };
-  if (l === "en") return { ...base, button: "Go to my area", aboName: (p: string) => `the monthly subscription for the application tool (${p} a month)`, monthName: (n: number, p: string) => `${n} more month${n === 1 ? "" : "s"} of the application tool (${p})`,
-    paidSubject: "Thank you, your tool is extended", requestedSubject: "We received your order", cancelledSubject: "Cancellation confirmed",
-    paid: (w: string) => `thank you! We have unlocked ${w}.`, requested: (w: string) => `thank you for your order: ${w}. We will send you the payment link shortly.`,
-    cancelled: (d: string) => `your subscription is cancelled. You can keep using the application tool until ${d}. After that, nothing more will be charged.` };
-  if (l === "fr") return { ...base, button: "Vers mon espace", aboName: (p: string) => `l'abonnement mensuel à l'outil de candidature (${p} par mois)`, monthName: (n: number, p: string) => `${n} mois supplémentaire${n === 1 ? "" : "s"} d'outil de candidature (${p})`,
-    paidSubject: "Merci, votre outil est prolongé", requestedSubject: "Nous avons reçu votre commande", cancelledSubject: "Résiliation confirmée",
-    paid: (w: string) => `merci ! Nous avons activé ${w}.`, requested: (w: string) => `merci pour votre commande : ${w}. Nous vous envoyons bientôt le lien de paiement.`,
-    cancelled: (d: string) => `votre abonnement est résilié. Vous pouvez utiliser l'outil jusqu'au ${d}. Ensuite, plus rien ne sera prélevé.` };
-  return { ...base, button: "Zu meinem Bereich", aboName: (p: string) => `das Monatsabo für das Bewerbungswerkzeug (${p} im Monat)`, monthName: (n: number, p: string) => `${n} weiteren Monat Bewerbungswerkzeug (${p})`,
-    paidSubject: "Danke, dein Werkzeug ist verlängert", requestedSubject: "Wir haben deine Bestellung erhalten", cancelledSubject: "Kündigung bestätigt",
-    paid: (w: string) => `vielen Dank! Wir haben ${w} freigeschaltet.`, requested: (w: string) => `danke für deine Bestellung: ${w}. Wir schicken dir in Kürze den Link zur Zahlung.`,
-    cancelled: (d: string) => `dein Abo ist gekündigt. Du kannst das Bewerbungswerkzeug noch bis ${d} nutzen. Danach wird nichts mehr abgebucht.` };
 }
 
 /** Mails zur Buchung des Startpakets */

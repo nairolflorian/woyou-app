@@ -17,7 +17,7 @@ import { arMonths, dateLocaleOf, dirOf } from "@/lib/werkzeug-text";
 type Lang = "de" | "en" | "fr" | "ar" | "hi";
 type Text = { subject: string; title: string; paras: string[]; button: string };
 type Step = { key: string; name: string; when: string; path: string; text: Record<Lang, (v: Vars) => Text> };
-type Vars = { name: string; price: string; months: number; month: string; abo: string; until: string };
+type Vars = { name: string; price: string; months: number; until: string };
 
 const day = 864e5;
 const base = () => process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
@@ -52,12 +52,12 @@ export const STEPS: Step[] = [
   {
     key: "REG_7", name: "Registriert, noch nicht gebucht (Tag 7)", when: "7 Tage nach Registrierung, keine Buchung", path: "/bewerbungsservice/buchen",
     text: {
-      de: (v) => ({ subject: "Noch Fragen zu WoYou?", title: `Hallo ${v.name},`, paras: [`wir haben gesehen, dass du dich noch nicht entschieden hast. Das Startpaket kostet einmalig ${v.price} und enthält deine Unterlagen und ${v.months} Monate Bewerbungswerkzeug. Danach verlängerst du nur, wenn du willst. Versteckte Kosten gibt es nicht.`, "Wenn dir etwas unklar ist, antworte auf diese Mail oder ruf uns an. Das ist unsere letzte Erinnerung."], button: "Jetzt buchen" }),
-      en: (v) => ({ subject: "Any questions about WoYou?", title: `Hi ${v.name},`, paras: [`We noticed you haven't decided yet. The starter package costs ${v.price} once and includes your documents and ${v.months} months of the application tool. After that you only extend if you want to. No hidden costs.`, "If anything is unclear, reply to this email or call us. This is our last reminder."], button: "Book now" }),
-      fr: (v) => ({ subject: "Des questions sur WoYou ?", title: `Bonjour ${v.name},`, paras: [`Vous n'avez pas encore réservé. Le pack de départ coûte ${v.price} une seule fois et comprend votre dossier et ${v.months} mois d'outil de candidature. Ensuite, vous prolongez seulement si vous le souhaitez. Sans frais cachés.`, "Si quelque chose n'est pas clair, répondez à cet e-mail ou appelez-nous. C'est notre dernier rappel."], button: "Réserver" }),
+      de: (v) => ({ subject: "Noch Fragen zu WoYou?", title: `Hallo ${v.name},`, paras: [`wir haben gesehen, dass du dich noch nicht entschieden hast. Das Startpaket kostet einmalig ${v.price} und enthält deine Unterlagen und ${v.months} Monate Bewerbungswerkzeug. Danach endet der Zugang von selbst, ohne Abo. Versteckte Kosten gibt es nicht.`, "Wenn dir etwas unklar ist, antworte auf diese Mail oder ruf uns an. Das ist unsere letzte Erinnerung."], button: "Jetzt buchen" }),
+      en: (v) => ({ subject: "Any questions about WoYou?", title: `Hi ${v.name},`, paras: [`We noticed you haven't decided yet. The starter package costs ${v.price} once and includes your documents and ${v.months} months of the application tool. After that, access simply ends, with no subscription. No hidden costs.`, "If anything is unclear, reply to this email or call us. This is our last reminder."], button: "Book now" }),
+      fr: (v) => ({ subject: "Des questions sur WoYou ?", title: `Bonjour ${v.name},`, paras: [`Vous n'avez pas encore réservé. Le pack de départ coûte ${v.price} une seule fois et comprend votre dossier et ${v.months} mois d'outil de candidature. Ensuite, l'accès s'arrête de lui-même, sans abonnement. Sans frais cachés.`, "Si quelque chose n'est pas clair, répondez à cet e-mail ou appelez-nous. C'est notre dernier rappel."], button: "Réserver" }),
       // ar/hi: Übersetzung bitte von Muttersprachler:in prüfen lassen
-      ar: (v) => ({ subject: "هل لديك أسئلة عن WoYou؟", title: `مرحبًا ${v.name}،`, paras: [`لاحظنا أنك لم تقرر بعد. باقة البداية تكلّف ${v.price} مرة واحدة وتشمل مستنداتك و${arMonths(v.months)} من أداة التقديم. بعدها تمدّد فقط إذا أردت. لا توجد تكاليف مخفية.`, "إذا كان هناك ما هو غير واضح، رد على هذه الرسالة أو اتصل بنا. هذا آخر تذكير منا."], button: "احجز الآن" }),
-      hi: (v) => ({ subject: "WoYou के बारे में कोई सवाल?", title: `नमस्ते ${v.name},`, paras: [`हमने देखा कि आपने अभी फ़ैसला नहीं किया है। स्टार्टर पैकेज की कीमत एक बार ${v.price} है और इसमें आपके दस्तावेज़ और ${v.months} महीने का आवेदन टूल शामिल है। उसके बाद आप तभी अवधि बढ़ाते हैं, जब आप चाहें। कोई छिपा ख़र्च नहीं।`, "अगर कुछ साफ़ नहीं है, तो इस ईमेल का जवाब दें या हमें फ़ोन करें। यह हमारा आख़िरी रिमाइंडर है।"], button: "अभी बुक करें" }),
+      ar: (v) => ({ subject: "هل لديك أسئلة عن WoYou؟", title: `مرحبًا ${v.name}،`, paras: [`لاحظنا أنك لم تقرر بعد. باقة البداية تكلّف ${v.price} مرة واحدة وتشمل مستنداتك و${arMonths(v.months)} من أداة التقديم. بعدها ينتهي الوصول تلقائيًا، بلا اشتراك. لا توجد تكاليف مخفية.`, "إذا كان هناك ما هو غير واضح، رد على هذه الرسالة أو اتصل بنا. هذا آخر تذكير منا."], button: "احجز الآن" }),
+      hi: (v) => ({ subject: "WoYou के बारे में कोई सवाल?", title: `नमस्ते ${v.name},`, paras: [`हमने देखा कि आपने अभी फ़ैसला नहीं किया है। स्टार्टर पैकेज की कीमत एक बार ${v.price} है और इसमें आपके दस्तावेज़ और ${v.months} महीने का आवेदन टूल शामिल है। उसके बाद पहुँच अपने-आप ख़त्म हो जाती है, कोई सदस्यता नहीं। कोई छिपा ख़र्च नहीं।`, "अगर कुछ साफ़ नहीं है, तो इस ईमेल का जवाब दें या हमें फ़ोन करें। यह हमारा आख़िरी रिमाइंडर है।"], button: "अभी बुक करें" }),
     },
   },
   {
@@ -105,14 +105,14 @@ export const STEPS: Step[] = [
     },
   },
   {
-    key: "TOOL_ENDS", name: "Werkzeug läuft bald ab", when: "Werkzeug endet in höchstens 7 Tagen, kein Abo", path: "/profil#verlaengern",
+    key: "TOOL_ENDS", name: "Werkzeug läuft bald ab", when: "Werkzeug endet in höchstens 7 Tagen (reiner Hinweis, kein Verkauf: es gibt keine Verlängerung)", path: "/meine-bewerbungen",
     text: {
-      de: (v) => ({ subject: `Dein Bewerbungswerkzeug läuft am ${v.until} ab`, title: `Hallo ${v.name},`, paras: [`dein Bewerbungswerkzeug läuft am ${v.until} ab. Wenn du weiter suchen und Anschreiben erstellen willst, kannst du für ${v.month} einen Monat verlängern oder ein Abo für ${v.abo} im Monat abschließen, monatlich kündbar.`, "Wenn nicht, musst du nichts tun. Der Zugang endet einfach, und deine Unterlagen kannst du weiter herunterladen."], button: "Werkzeug verlängern" }),
-      en: (v) => ({ subject: `Your application tool expires on ${v.until}`, title: `Hi ${v.name},`, paras: [`Your application tool expires on ${v.until}. If you want to keep searching and creating cover letters, you can extend by one month for ${v.month} or take a subscription for ${v.abo} a month, cancellable monthly.`, "If not, you don't need to do anything. Your access simply ends, and you can still download your documents."], button: "Extend the tool" }),
-      fr: (v) => ({ subject: `Votre outil de candidature expire le ${v.until}`, title: `Bonjour ${v.name},`, paras: [`Votre outil de candidature expire le ${v.until}. Pour continuer à chercher et créer des lettres, vous pouvez prolonger d'un mois pour ${v.month} ou prendre un abonnement à ${v.abo} par mois, résiliable chaque mois.`, "Sinon, vous n'avez rien à faire. L'accès s'arrête simplement et vous pouvez toujours télécharger vos documents."], button: "Prolonger l'outil" }),
+      de: (v) => ({ subject: `Dein Bewerbungswerkzeug läuft am ${v.until} ab`, title: `Hallo ${v.name},`, paras: [`dein Bewerbungswerkzeug läuft am ${v.until} ab. Bis dahin kannst du noch suchen, Stellen merken und Anschreiben erstellen.`, "Danach musst du nichts tun: Es gibt kein Abo und nichts zu kündigen. Stellensuche und Tracker werden gesperrt, deine Unterlagen und die Anschreiben zu deinen Stellen kannst du weiter herunterladen."], button: "Meine Bewerbungen" }),
+      en: (v) => ({ subject: `Your application tool expires on ${v.until}`, title: `Hi ${v.name},`, paras: [`Your application tool expires on ${v.until}. Until then you can still search, save jobs and create cover letters.`, "After that you don't need to do anything: there is no subscription and nothing to cancel. Job search and the tracker are locked, and you can still download your documents and the cover letters for your jobs."], button: "My applications" }),
+      fr: (v) => ({ subject: `Votre outil de candidature expire le ${v.until}`, title: `Bonjour ${v.name},`, paras: [`Votre outil de candidature expire le ${v.until}. D'ici là, vous pouvez encore chercher, garder des offres et créer des lettres.`, "Ensuite, vous n'avez rien à faire : il n'y a pas d'abonnement et rien à résilier. La recherche et le suivi sont fermés, et vous pouvez toujours télécharger vos documents et les lettres créées pour vos offres."], button: "Mes candidatures" }),
       // ar/hi: Übersetzung bitte von Muttersprachler:in prüfen lassen
-      ar: (v) => ({ subject: `تنتهي أداة التقديم في ${v.until}`, title: `مرحبًا ${v.name}،`, paras: [`تنتهي مدة أداة التقديم الخاصة بك في ${v.until}. إذا أردت مواصلة البحث وإنشاء رسائل التحفيز، يمكنك التمديد شهرًا واحدًا مقابل ${v.month} أو الاشتراك مقابل ${v.abo} شهريًا، مع إمكانية الإلغاء كل شهر.`, "وإن لم ترد ذلك، فلا داعي لفعل أي شيء. ينتهي الوصول ببساطة، ويمكنك الاستمرار في تحميل مستنداتك."], button: "تمديد الأداة" }),
-      hi: (v) => ({ subject: `आपका आवेदन टूल ${v.until} को समाप्त हो रहा है`, title: `नमस्ते ${v.name},`, paras: [`आपका आवेदन टूल ${v.until} को समाप्त हो रहा है। अगर आप आगे भी खोजना और कवर लेटर बनाना चाहते हैं, तो ${v.month} में एक महीने के लिए अवधि बढ़ा सकते हैं या ${v.abo} प्रति माह की सदस्यता ले सकते हैं, जिसे हर महीने रद्द किया जा सकता है।`, "अगर नहीं, तो आपको कुछ करने की ज़रूरत नहीं है। पहुँच बस ख़त्म हो जाएगी, और आप अपने दस्तावेज़ फिर भी डाउनलोड कर सकते हैं।"], button: "टूल की अवधि बढ़ाएँ" }),
+      ar: (v) => ({ subject: `تنتهي أداة التقديم في ${v.until}`, title: `مرحبًا ${v.name}،`, paras: [`تنتهي مدة أداة التقديم الخاصة بك في ${v.until}. حتى ذلك الحين يمكنك مواصلة البحث وحفظ الوظائف وإنشاء رسائل التحفيز.`, "بعد ذلك لا داعي لفعل أي شيء: لا يوجد اشتراك ولا شيء للإلغاء. يُغلق البحث والمتابعة، ويمكنك الاستمرار في تحميل مستنداتك ورسائل التحفيز الخاصة بوظائفك."], button: "طلباتي" }),
+      hi: (v) => ({ subject: `आपका आवेदन टूल ${v.until} को समाप्त हो रहा है`, title: `नमस्ते ${v.name},`, paras: [`आपका आवेदन टूल ${v.until} को समाप्त हो रहा है। तब तक आप खोज सकते हैं, नौकरियाँ सहेज सकते हैं और कवर लेटर बना सकते हैं।`, "उसके बाद आपको कुछ नहीं करना है: कोई सदस्यता नहीं है और कुछ रद्द नहीं करना। नौकरी खोज और सूची बंद हो जाती है, और आप अपने दस्तावेज़ और अपनी नौकरियों के कवर लेटर आगे भी डाउनलोड कर सकते हैं।"], button: "मेरे आवेदन" }),
     },
   },
   {
@@ -154,7 +154,7 @@ export function render(step: Step, lang: Lang, v: Vars, userId: string) {
 
 export function sampleVars(lang: Lang = "de"): Vars {
   const f = (c: number) => formatPrice(c, lang);
-  return { name: "Fatima", price: f(ANGEBOT.startpaket.priceCents), months: ANGEBOT.startpaket.toolMonths, month: f(ANGEBOT.verlaengerung.priceCents), abo: f(ANGEBOT.abo.priceCents), until: new Date(Date.now() + 5 * day).toLocaleDateString(dateLocaleOf(lang)) };
+  return { name: "Fatima", price: f(ANGEBOT.startpaket.priceCents), months: ANGEBOT.startpaket.toolMonths, until: new Date(Date.now() + 5 * day).toLocaleDateString(dateLocaleOf(lang)) };
 }
 
 type Due = { userId: string; email: string; lang: Lang; step: Step; vars: Vars };
@@ -169,7 +169,6 @@ export async function dueMails(limit = 500): Promise<Due[]> {
       candidate: {
         select: {
           firstName: true, toolAccessUntil: true,
-          creditPurchases: { where: { kind: ANGEBOT.abo.kind, status: "ACTIVE" }, select: { id: true }, take: 1 },
           bookings: { where: { status: { not: BOOKING_STATUS.CANCELLED } }, orderBy: { createdAt: "desc" }, take: 1, include: { profile: { select: { status: true, approvedAt: true } } } },
         },
       },
@@ -194,9 +193,8 @@ export async function dueMails(limit = 500): Promise<Due[]> {
       const sincePaid = now - b.paidAt.getTime();
       const submitted = b.profile?.status === "SUBMITTED" || b.profile?.status === "APPROVED";
       const until = c?.toolAccessUntil?.getTime() ?? 0;
-      const abo = (c?.creditPurchases.length ?? 0) > 0;
       if (!submitted) key = sincePaid > 5 * day ? "MAPPE_5" : sincePaid > 2 * day ? "MAPPE_2" : null;
-      else if (until > now && until - now <= 7 * day && !abo && !done.has("TOOL_ENDS")) key = "TOOL_ENDS";
+      else if (until > now && until - now <= 7 * day && !done.has("TOOL_ENDS")) key = "TOOL_ENDS";
       else if (b.profile?.approvedAt && now - b.profile.approvedAt.getTime() > 3 * day && !done.has("TOOL_START")) key = "TOOL_START";
       else if (sincePaid > 45 * day) key = "FEEDBACK";
     }
