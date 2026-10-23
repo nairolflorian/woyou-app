@@ -1,5 +1,7 @@
 // Hard-deletes users who were soft-deleted more than 30 days ago.
 // Bearer-token protected via CRON_SECRET. Audited.
+// CRM: Das Ereignis "konto_geloescht" geht schon bei der Kontolöschung (api/account/delete) raus, solange die
+// E-Mail noch vorhanden ist. Hier wird bewusst nichts mehr gemeldet (E-Mail ist dann schon entfernt).
 
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";

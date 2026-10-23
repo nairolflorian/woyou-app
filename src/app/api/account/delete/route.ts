@@ -11,6 +11,7 @@ import { getSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { ROLE } from "@/lib/enums";
 import { audit } from "@/lib/audit";
+import { crmKontoGeloescht } from "@/lib/crm-sync";
 
 const schema = z.object({ confirm: z.literal("DELETE") });
 
@@ -43,6 +44,12 @@ export async function POST(req: Request) {
   await audit(req, "ACCOUNT_SELF_DELETE", {
     candidateId: user.candidate?.id ?? null,
   });
+
+  // CRM informieren, solange die E-Mail noch unverändert ist (nur woyouId, email, datum; nur Produktion mit
+  // Freigabe, nie Demo-Adressen). Fehler werden geloggt und verhindern die Löschung nicht.
+  if (user.candidate) {
+    await crmKontoGeloescht(user.candidate.id, user.email).catch(() => false);
+  }
 
   // Free email/phone/telegramId so the user can re-register, and disable
   // password login. We move identity into a deletedAtMarker prefix so

@@ -6,8 +6,10 @@ import type { PrismaClient } from "@prisma/client";
 // in ihrem eigenen Tracker eintragen, geht weder WoYou noch das CRM etwas an. Neu: "werkzeug_aktiv" = Unterlagen
 // fertig (Mappe vom Team freigegeben), die Person arbeitet ab jetzt selbst mit dem Werkzeug.
 // "nachkauf" = ALT (Verlängerung/Abo gibt es seit 23.10.2026 nicht mehr; wird nicht mehr gesendet, Typ bleibt fürs Nachtragen).
-// Achtung: Das EuBiA-CRM (apps/crm/eingang.js) muss "werkzeug_aktiv" noch annehmen, sonst antwortet es mit 400.
-export type CrmEventName = "registriert" | "gebucht" | "bezahlt" | "mappe_eingereicht" | "werkzeug_aktiv" | "nachkauf" | "storniert";
+// "konto_geloescht" (23.10.2026): Kund:in hat das WoYou-Konto gelöscht; das CRM löscht bzw. anonymisiert den Eintrag
+// innerhalb von 30 Tagen. Payload NUR woyouId, email, datum (siehe kontoGeloeschtPayload).
+// Achtung: Das EuBiA-CRM (apps/crm/eingang.js) muss "werkzeug_aktiv" und "konto_geloescht" noch annehmen, sonst antwortet es mit 400.
+export type CrmEventName = "registriert" | "gebucht" | "bezahlt" | "mappe_eingereicht" | "werkzeug_aktiv" | "nachkauf" | "storniert" | "konto_geloescht";
 
 export type CrmPayload = {
   woyouId: string;
@@ -86,6 +88,26 @@ export function isDemoEmail(email?: string | null) {
   if (!email) return false;
   const e = email.toLowerCase();
   return /\.demo$/.test(e) || /@(example\.(com|org|net)|test\.(de|com)|woyou\.test)$/.test(e) || e.endsWith(".invalid") || e.endsWith(".local");
+}
+
+// Kontolöschung: bewusst nur Kennung, E-Mail (zum Zuordnen im CRM) und Datum, keine weiteren Daten
+export function kontoGeloeschtPayload(woyouId: string, email?: string | null, datum: Date = new Date()): CrmPayload {
+  return { woyouId, email: email ?? undefined, datum: datum.toISOString() };
+}
+
+// Kontolöschung an das CRM melden, VOR dem Löschen der Daten aufrufen und abwarten. Wirft nie, damit die Löschung
+// nie daran scheitert. Nur in der Produktion mit Freigabe (crmConfig), nie für Demo-Adressen.
+// Im Log bei einem Fehler nur die woyouId, keine weiteren Personendaten.
+export async function crmKontoGeloescht(woyouId: string, email?: string | null): Promise<boolean> {
+  if (!crmConfig() || isDemoEmail(email)) return false;
+  try {
+    const ok = await sendCrmEvent("konto_geloescht", kontoGeloeschtPayload(woyouId, email));
+    if (!ok) console.error(`[crm] konto_geloescht nicht gemeldet (woyouId ${woyouId})`);
+    return ok;
+  } catch {
+    console.error(`[crm] konto_geloescht nicht gemeldet (woyouId ${woyouId})`);
+    return false;
+  }
 }
 
 export const euro = (cents: number) => Math.round(cents) / 100;

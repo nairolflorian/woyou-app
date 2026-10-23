@@ -111,8 +111,8 @@ export default function Datenschutz() {
               </p>
               <p className="mt-2">
                 <strong>Speicherdauer:</strong> Wir speichern die Angaben im CRM, solange du bei uns ein Konto hast.
-                Löschst du dein Konto, löschen wir auch deinen Eintrag im CRM innerhalb von 30 Tagen. Angaben zu
-                Zahlungen bewahren wir auf, solange das Steuer- und Handelsrecht es verlangt (bis zu 10 Jahre).
+                Löschst du dein Konto, informieren wir das CRM automatisch, und dein Eintrag wird innerhalb von 30
+                Tagen gelöscht bzw. anonymisiert. Angaben zu Zahlungen bewahren wir auf, solange das Steuer- und Handelsrecht es verlangt (bis zu 10 Jahre).
               </p>
               <p className="mt-2">
                 <strong>Getrennt von anderen Bereichen:</strong> Im CRM liegen die WoYou-Angaben in einem eigenen

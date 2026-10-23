@@ -1,7 +1,7 @@
 import "server-only";
 
 // Anbindung an das EuBiA-CRM: WoYou meldet Kundenereignisse (registriert, gebucht, bezahlt, Mappe eingereicht,
-// Werkzeug aktiv, storniert; „nachkauf“ nur noch für Altdaten), damit jede WoYou-Kund:in dort mit eigener Pipeline erscheint.
+// Werkzeug aktiv, storniert, Konto gelöscht; „nachkauf“ nur noch für Altdaten), damit jede WoYou-Kund:in dort mit eigener Pipeline erscheint.
 //   POST {EUBIA_CRM_URL}/hook/woyou?t={EUBIA_CRM_TOKEN}   (JSON, Antwort 200/201 = ok)
 //
 // DATENSCHUTZ: Gesendet wird nur, wenn zusätzlich EUBIA_CRM_SYNC=on gesetzt ist (Standard: aus).
@@ -17,6 +17,8 @@ import { prisma } from "@/lib/prisma";
 import { crmConfig, sendCrmEvent, candidatePayload, isDemoEmail, type CrmEventName, type CrmPayload } from "@/lib/crm-core";
 
 export type { CrmEventName, CrmPayload };
+// Kontolöschung: abgewartet VOR dem Löschen aufrufen (nicht über after(), sonst ist die E-Mail schon entfernt)
+export { crmKontoGeloescht } from "@/lib/crm-core";
 
 // Ein fertiges Ereignis senden (still, wenn nicht eingerichtet oder nicht freigegeben)
 export async function crmEvent(event: CrmEventName, data: CrmPayload): Promise<void> {

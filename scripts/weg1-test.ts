@@ -1,6 +1,6 @@
 /**
  * Kleine Tests für die Kernlogik nach Weg 1 (ohne Datenbank, ohne Netz):
- * Angebot (nur Startpaket), Stripe je Umgebung (Staging nur Test, Produktion nur Live), CRM nur in Produktion, Produktion ohne /demo,
+ * Angebot (nur Startpaket), Stripe je Umgebung (Staging nur Test, Produktion nur Live), CRM nur in Produktion, CRM bei Kontolöschung, Produktion ohne /demo,
  * Staging-Leiste, getrenntes Prod-Compose, Rechtstexte ohne Platzhalter, Demo-Beispielstellen, Deutsch-Hinweis, Filter, Sortierung, Dubletten, Suchvorschläge, Tracker-Stand,
  * E-Mail-Link und die Sperrliste der abgeschalteten Bereiche.
  *   npx tsx scripts/weg1-test.ts
@@ -10,7 +10,7 @@
 import assert from "node:assert/strict";
 import { ANGEBOT, addMonths, extendUntil, toolState, formatPrice, isLegacyToolKind } from "../src/lib/angebot";
 import { stripeKeyMode, stripeKeyAllowed, appEnv, allowedKeyMode } from "../src/lib/stripe-mode";
-import { crmConfig } from "../src/lib/crm-core";
+import { crmConfig, crmKontoGeloescht, kontoGeloeschtPayload } from "../src/lib/crm-core";
 import { readFileSync } from "node:fs";
 import { DEMO_JOBS, DEMO_TOOL_EMAILS, demoJobRow } from "../src/lib/demo-jobs";
 import {
@@ -207,6 +207,40 @@ async function main() {
       process.env.EUBIA_CRM_SYNC = "off";
       assert.equal(crmConfig(), null, "ohne Freigabe");
     } finally {
+      for (const k of ["EUBIA_CRM_URL", "EUBIA_CRM_TOKEN", "EUBIA_CRM_SYNC", "DEMO_MODE"]) { if (k in keep) process.env[k] = keep[k]; else delete process.env[k]; }
+    }
+  });
+  await test("CRM: konto_geloescht sendet genau woyouId, email, datum (+event), nur in Produktion, nie Demo, Fehler ohne Personendaten", async () => {
+    const keep = { ...process.env };
+    const realFetch = globalThis.fetch;
+    const realError = console.error;
+    const bodies: Record<string, unknown>[] = [];
+    const logs: string[] = [];
+    let status = 200;
+    globalThis.fetch = (async (_u: unknown, init?: { body?: string }) => { bodies.push(JSON.parse(init!.body!)); return new Response("{}", { status }); }) as typeof fetch;
+    console.error = (...a: unknown[]) => { logs.push(a.join(" ")); };
+    try {
+      assert.deepEqual(Object.keys(kontoGeloeschtPayload("c1", "a@b.de")).sort(), ["datum", "email", "woyouId"]);
+      Object.assign(process.env, { EUBIA_CRM_URL: "https://crm.example.com", EUBIA_CRM_TOKEN: "t", EUBIA_CRM_SYNC: "on", DEMO_MODE: "true" });
+      assert.equal(await crmKontoGeloescht("c1", "kunde@web.de"), false, "Staging");
+      process.env.DEMO_MODE = "false";
+      assert.equal(await crmKontoGeloescht("c1", "demo@woyou.test"), false, "Demo-Adresse");
+      assert.equal(bodies.length, 0);
+      assert.equal(await crmKontoGeloescht("c1", "kunde@web.de"), true);
+      assert.deepEqual(Object.keys(bodies[0]).sort(), ["datum", "email", "event", "woyouId"]);
+      assert.equal(bodies[0].event, "konto_geloescht"); assert.equal(bodies[0].woyouId, "c1"); assert.equal(bodies[0].email, "kunde@web.de");
+      assert.ok(!Number.isNaN(Date.parse(String(bodies[0].datum))));
+      status = 500;
+      assert.equal(await crmKontoGeloescht("c2", "kunde@web.de"), false, "Fehler wirft nicht");
+      globalThis.fetch = (async () => { throw new Error("weg"); }) as typeof fetch;
+      assert.equal(await crmKontoGeloescht("c3", "kunde@web.de"), false, "Netzfehler wirft nicht");
+      assert.ok(logs.some((l) => l.includes("c2")) && logs.some((l) => l.includes("c3")), "woyouId im Log");
+      assert.ok(logs.every((l) => !l.includes("kunde@web.de")), "keine E-Mail im Log");
+      // Die Löschung meldet VOR dem Verfremden der E-Mail
+      const route = readFileSync(new URL("../src/app/api/account/delete/route.ts", import.meta.url), "utf8");
+      assert.ok(route.indexOf("crmKontoGeloescht(") > 0 && route.indexOf("crmKontoGeloescht(") < route.indexOf("prisma.user.update("), "CRM-Meldung vor dem Löschen");
+    } finally {
+      globalThis.fetch = realFetch; console.error = realError;
       for (const k of ["EUBIA_CRM_URL", "EUBIA_CRM_TOKEN", "EUBIA_CRM_SYNC", "DEMO_MODE"]) { if (k in keep) process.env[k] = keep[k]; else delete process.env[k]; }
     }
   });
