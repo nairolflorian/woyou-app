@@ -15,7 +15,7 @@ import { readFileSync } from "node:fs";
 import { DEMO_JOBS, DEMO_TOOL_EMAILS, demoJobRow } from "../src/lib/demo-jobs";
 import {
   germanRequired, parseLevel, germanFit, matchesHours, matchesGerman, dedupe, rank, profileTerms, profileRegion,
-  nextTrackerState, mailtoHref, mailtoLink, coverMail, isEmail, isHttpUrl, type Treffer,
+  nextTrackerState, mailtoHref, mailtoLink, coverMail, isEmail, isHttpUrl, fahrerHinweise, fahrerSuchbegriffe, matchesGq, hatHinweise, type Treffer,
 } from "../src/lib/stellensuche-core";
 import { buildEml, encodeWord, safeFilename } from "../src/lib/eml";
 import { weg1Gesperrt, WEG1 } from "../src/lib/weg1";
@@ -96,6 +96,89 @@ async function main() {
     assert.deepEqual(t, ["Pflegefachkraft", "Altenpfleger/in", "Pflegehelfer", "Krankenpfleger"]);
     assert.equal(profileRegion("Deutschland, egal", "Köln, Bonn"), "Köln");
     assert.equal(profileRegion(null, "", "50667 Köln"), "50667 Köln");
+  });
+  await test("Fahrer: „Grundqualifikation wird gestellt“ nur, wenn die Anzeige es sagt", () => {
+    const yes = [
+      "Berufskraftfahrer CE (m/w/d). Die Grundqualifikation wird gestellt.",
+      "Keine Grundqualifikation? Kein Problem, wir übernehmen die Kosten für Code 95.",
+      "Code 95 erforderlich, die Kosten dafür übernehmen wir.",
+      "Kostenübernahme für Modul 95 und Führerschein C/CE",
+      "Die Berufskraftfahrerqualifikation nach BKrFQG ermöglichen wir dir im Unternehmen.",
+      "Driver CPC provided by the company.",
+      "We pay for your Code 95 training.",
+    ];
+    for (const x of yes) { const h = fahrerHinweise(x); assert.equal(h.gqGestellt, true, x); assert.equal(h.code95, false, x); }
+    const no = [
+      "Code 95 erforderlich, Arbeitskleidung wird gestellt.",
+      "Sie übernehmen Touren im Nahverkehr, Code 95 erforderlich",
+      "Die Kosten für die Grundqualifikation werden nicht übernommen.",
+      "Wir bieten Unterkunft und Code 95 ist erforderlich",
+      "Grundqualifikation wird vorausgesetzt. Wir übernehmen die Fahrtkosten.",
+      "Wir zahlen übertariflich. Berufskraftfahrer mit Erfahrung gesucht.",
+    ];
+    for (const x of no) assert.equal(fahrerHinweise(x).gqGestellt, false, x);
+  });
+  await test("Fahrer: „Code 95 verlangt“ bei Grundqualifikation, Schlüsselzahl 95 oder Fahrerkarte", () => {
+    assert.equal(fahrerHinweise("Sie haben den Führerschein Klasse CE und die Schlüsselzahl 95.").code95, true);
+    assert.equal(fahrerHinweise("Fahrerkarte vorhanden").code95, true);
+    assert.equal(fahrerHinweise("Grundqualifikation nach BKrFQG wird vorausgesetzt.").code95, true);
+    assert.equal(fahrerHinweise("Code 95 erforderlich, Arbeitskleidung wird gestellt.").code95, true);
+    assert.equal(fahrerHinweise("Code 95 wünschenswert").code95, false);
+    assert.equal(fahrerHinweise("Code 95 nicht erforderlich").code95, false);
+    assert.equal(fahrerHinweise("Berufskraftfahrer im Nahverkehr gesucht").code95, false);
+    assert.equal(fahrerHinweise("Die Grundqualifikation wird gestellt.").code95, false, "gestellt statt verlangt");
+  });
+  await test("Fahrer: Führerscheinklassen nur mit Zusammenhang (Führerschein, Klasse, FS, Fahrer)", () => {
+    const k = (x: string) => fahrerHinweise(x).klassen;
+    assert.deepEqual(k("Führerschein Klasse C/CE erforderlich"), ["C", "CE"]);
+    assert.deepEqual(k("CE-Führerschein und Erfahrung im Fernverkehr"), ["CE"]);
+    assert.deepEqual(k("Lkw-Fahrer CE (m/w/d) im Fernverkehr"), ["CE"]);
+    assert.deepEqual(k("Berufskraftfahrer (m/w/d) C1/C1E"), ["C1", "C1E"]);
+    assert.deepEqual(k("Busfahrer (m/w/d), Fahrerlaubnis D/DE"), ["D", "DE"]);
+    assert.deepEqual(k("FS C, CE oder C1E"), ["C1E", "C", "CE"]);
+    assert.deepEqual(k("Category C+E licence required"), ["CE"]);
+    assert.deepEqual(k("Führerschein der alten Klasse 2"), ["CE"]);
+    assert.deepEqual(k("Kenntnisse in C und C++ sowie Kl. B"), []);
+    assert.deepEqual(k("Lagerhelfer für das C-Teile-Management"), []);
+    assert.deepEqual(k("Hotel der Kategorie A, Abrechnung in D-Mark"), []);
+    assert.deepEqual(k("Führerschein Klasse B"), []);
+  });
+  await test("Fahrer: ADR, Stapler und Westbalkanregelung", () => {
+    assert.equal(fahrerHinweise("ADR-Schein Basiskurs").adr, true);
+    assert.equal(fahrerHinweise("Transport von Gefahrgut").adr, true);
+    assert.equal(fahrerHinweise("Bitte Adresse angeben").adr, false);
+    assert.equal(fahrerHinweise("Staplerschein von Vorteil").stapler, true);
+    assert.equal(fahrerHinweise("Erfahrung mit Gabelstapler").stapler, true);
+    assert.equal(fahrerHinweise("Forklift licence").stapler, true);
+    assert.equal(fahrerHinweise("Lagerhelfer für Kommissionierung").stapler, false);
+    assert.equal(fahrerHinweise("Wir stellen auch über die Westbalkanregelung ein.").westbalkan, true);
+    assert.equal(fahrerHinweise("Bewerbungen aus Serbien und Bosnien sind willkommen").westbalkan, true);
+    assert.equal(fahrerHinweise("Touren nach Serbien und Ungarn").westbalkan, false);
+    const leer = fahrerHinweise("Pflegefachkraft (m/w/d) in Köln, gute Deutschkenntnisse");
+    assert.equal(hatHinweise(leer), false);
+    assert.equal(hatHinweise(fahrerHinweise("Staplerfahrer gesucht")), true);
+  });
+  await test("Filter „Nur Stellen mit Grundqualifikation vom Arbeitgeber“", () => {
+    const gq = { hinweise: fahrerHinweise("Grundqualifikation wird gestellt.") }, ohne = { hinweise: fahrerHinweise("Code 95 erforderlich") };
+    assert.equal(matchesGq(gq, true), true);
+    assert.equal(matchesGq(ohne, true), false);
+    assert.equal(matchesGq({}, true), false, "ohne Hinweise (z. B. selbst eingetragen) raus, wenn der Filter an ist");
+    assert.equal(matchesGq(ohne, false), true);
+  });
+  await test("Suchvorschläge für Fahrer und Logistik: deutsche Begriffe der Jobbörse", () => {
+    assert.deepEqual(fahrerSuchbegriffe("truck driver"), ["Berufskraftfahrer", "Lkw-Fahrer CE", "Kraftfahrer"]);
+    assert.deepEqual(fahrerSuchbegriffe("vozač kamiona"), ["Berufskraftfahrer", "Lkw-Fahrer CE", "Kraftfahrer"]);
+    assert.deepEqual(fahrerSuchbegriffe("vozač autobusa"), ["Busfahrer", "Berufskraftfahrer Personenverkehr"]);
+    assert.deepEqual(fahrerSuchbegriffe("Forklift operator"), ["Staplerfahrer", "Lagerhelfer"]);
+    assert.deepEqual(fahrerSuchbegriffe("warehouse worker"), ["Lagerhelfer", "Lagermitarbeiter", "Kommissionierer"]);
+    assert.deepEqual(fahrerSuchbegriffe("Disponent:in Nahverkehr"), ["Disponent"]);
+    assert.equal(fahrerSuchbegriffe("Fachkraft für Lagerlogistik"), null);
+    assert.equal(fahrerSuchbegriffe("Taxifahrer"), null);
+    assert.equal(fahrerSuchbegriffe("Pflegefachkraft"), null);
+    const t = profileTerms({ desiredJob: "Fahrer:in (LKW / PKW)", experience: ["Lkw-Fahrer"] });
+    assert.deepEqual(t.slice(0, 3), ["Berufskraftfahrer", "Lkw-Fahrer CE", "Kraftfahrer"]);
+    assert.ok(!t.includes("Fahrer:in (LKW / PKW)"), "Sammelbegriff mit Klammern nicht als Suchbegriff");
+    assert.ok(t.includes("Lkw-Fahrer"), "eigene Angabe bleibt als Vorschlag");
   });
   await test("Tracker: Stand setzt Daten, ohne vorhandene zu überschreiben", () => {
     const now = new Date("2026-10-22T10:00:00Z"), earlier = new Date("2026-10-01T10:00:00Z");

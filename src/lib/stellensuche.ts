@@ -12,11 +12,11 @@ import { searchFeeds } from "@/lib/jobs-feeds";
 import { parseProfile, type ProfileData } from "@/lib/application";
 import { withProfile } from "@/lib/mappe";
 import {
-  germanRequired, germanFit, parseLevel, matchesHours, matchesGerman, dedupe, rank, trefferKey, isEmail, isHttpUrl,
+  germanRequired, germanFit, parseLevel, matchesHours, matchesGerman, matchesGq, fahrerHinweise, dedupe, rank, trefferKey, isEmail, isHttpUrl,
   type Treffer, type Hours, type Level, type Source,
 } from "@/lib/stellensuche-core";
 
-export type SuchFilter = { was: string; wo?: string; umkreis?: number; arbeitszeit: Hours; deutsch: Level | null; nurPassend: boolean; seite: number };
+export type SuchFilter = { was: string; wo?: string; umkreis?: number; arbeitszeit: Hours; deutsch: Level | null; nurPassend: boolean; nurGq?: boolean; seite: number };
 
 const PAGE = 25;
 const DETAILS = 25; // so viele BA-Anzeigen je Seite werden für den Deutsch-Hinweis vollständig geladen
@@ -53,7 +53,8 @@ export async function sucheStellen(f: SuchFilter): Promise<{ treffer: Treffer[];
       list.push({
         key: trefferKey("BA", j.ref), source: "BA", ref: j.ref, title: j.title, company: j.company, city: j.city, url: j.url || jobUrl(j.ref),
         applyUrl: isHttpUrl(j.externalUrl) ? j.externalUrl : null, email: d?.emails[0] ?? null, distanceKm: j.distanceKm, publishedAt: j.publishedAt,
-        fulltime: j.fulltime, parttime: j.parttime, germanRequired: req, fit: germanFit(req, f.deutsch), description: d?.description?.slice(0, 20000) ?? null,
+        fulltime: j.fulltime, parttime: j.parttime, germanRequired: req, fit: germanFit(req, f.deutsch),
+        hinweise: fahrerHinweise(`${j.title}\n${d?.description ?? ""}`), description: d?.description?.slice(0, 20000) ?? null,
       });
     });
     quellen.push({ name: "BA", ok: true });
@@ -75,13 +76,13 @@ export async function sucheStellen(f: SuchFilter): Promise<{ treffer: Treffer[];
       list.push({
         key: trefferKey(j.source, j.ref), source: j.source as Source, ref: j.ref, title: j.title, company: j.company, city: j.city, url: j.url,
         applyUrl: isHttpUrl(j.externalUrl) ? j.externalUrl : null, email, publishedAt: j.publishedAt, fulltime: j.fulltime, parttime: j.parttime,
-        germanRequired: req, fit: germanFit(req, f.deutsch), description: j.description.slice(0, 20000),
+        germanRequired: req, fit: germanFit(req, f.deutsch), hinweise: fahrerHinweise(`${j.title}\n${j.description}`), description: j.description.slice(0, 20000),
       });
       total++;
     }
   }
 
-  const filtered = rank(dedupe(list).filter((t) => matchesHours(t, f.arbeitszeit) && matchesGerman(t, f.nurPassend)), f.was);
+  const filtered = rank(dedupe(list).filter((t) => matchesHours(t, f.arbeitszeit) && matchesGerman(t, f.nurPassend) && matchesGq(t, !!f.nurGq)), f.was);
   filtered.forEach(remember);
   return {
     treffer: filtered.map(({ description: _d, ...t }) => t),

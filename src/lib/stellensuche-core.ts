@@ -18,6 +18,8 @@ export type Treffer = {
   url: string; applyUrl: string | null; email: string | null;
   distanceKm?: number; publishedAt?: string; fulltime: boolean; parttime: boolean;
   germanRequired: Level | null; fit: GermanFit;
+  /** Hinweise für Fahrer- und Logistikstellen aus dem Anzeigentext (fehlt bei älteren bzw. selbst eingetragenen Stellen) */
+  hinweise?: FahrerHinweise;
 };
 
 export const trefferKey = (source: string, ref: string) => `${source}:${ref}`;
@@ -94,8 +96,27 @@ export function profileTerms(input: { targetJob?: string | null; bookingJobs?: s
   const split = (s?: string | null) => (s || "").split(/[,;\n]| \/ | oder | und /).map((x) => x.trim()).filter((x) => x.length > 2);
   const all = [input.targetJob ?? "", ...split(input.bookingJobs), input.desiredJob ?? "", ...(input.alternatives ?? []), ...(input.experience ?? [])].map((x) => (x || "").trim()).filter((x) => x.length > 2);
   const out: string[] = [], seen = new Set<string>();
-  for (const t of all) { const k = norm(t); if (k && !seen.has(k)) { seen.add(k); out.push(t.slice(0, 80)); } }
+  // Fahrer- und Logistikberufe: zuerst die deutschen Suchbegriffe der Jobbörse, danach die eigene Angabe
+  const expanded = all.flatMap((t) => { const f = fahrerSuchbegriffe(t); return f ? [...f, ...(/[()/]/.test(t) ? [] : [t])] : [t]; });
+  for (const t of expanded) { const k = norm(t); if (k && !seen.has(k)) { seen.add(k); out.push(t.slice(0, 80)); } }
   return out.slice(0, 6);
+}
+
+/**
+ * Bessere deutsche Suchbegriffe für Fahrer- und Logistikberufe (Pilot Westbalkan): aus „truck driver“, „vozač kamiona“,
+ * „Fahrer:in (LKW / PKW)“ usw. werden Begriffe, unter denen die Jobbörse wirklich Stellen führt. Andere Berufe: null.
+ * Schon genaue deutsche Berufe (Fachkraft, Meister, Fachlagerist) bleiben unverändert.
+ */
+export function fahrerSuchbegriffe(term: string): string[] | null {
+  const t = term.toLowerCase();
+  if (/fachkraft|meister|fachlagerist|bestand/.test(t)) return null;
+  if (/disponent|dispatch|dispečer|dispecer|disponib|planificateur|transport ?planner|fuhrpark|fleet/.test(t)) return ["Disponent"];
+  if (/stapler|forklift|viljuškar|viljuskar|cariste|chariot|फ़ोर्कलिफ्ट|फोर्कलिफ्ट|ఫోర్క్‌లిఫ్ట్|رافعة شوكية/.test(t)) return ["Staplerfahrer", "Lagerhelfer"];
+  if (/\bbus|omnibus|autobus|coach driver|अबस|बस ड्राइवर|బస్|حافلة|باص/.test(t)) return ["Busfahrer", "Berufskraftfahrer Personenverkehr"];
+  if (/taxi|kurier|courier|zusteller|ausliefer|pkw-?fahrer$|uber/.test(t)) return null;
+  if (/lkw|lastkraftwagen|kraftfahrer|truck|lorry|hgv|camion|poids lourd|kamion|\b(c|ce|c\/ce)-?fahrer|fahrer|driver|chauffeur|vozač|vozac|ट्रक|ड्राइवर|ట్రక్|డ్రైవర్|سائق|شاحنة/.test(t)) return ["Berufskraftfahrer", "Lkw-Fahrer CE", "Kraftfahrer"];
+  if (/lager|warehouse|magasin|magacin|skladi|kommissionier|picker|entrep[oô]t|logisti|गोदाम|గోదాం|مستودع/.test(t)) return ["Lagerhelfer", "Lagermitarbeiter", "Kommissionierer"];
+  return null;
 }
 
 /** Ort aus „Wunschregion“ (erste Angabe, ohne „Deutschland“, „egal“ usw.) */
@@ -106,6 +127,93 @@ export function profileRegion(...candidates: (string | null | undefined)[]): str
   }
   return "";
 }
+
+// ---------- Hinweise für Fahrer- und Logistikstellen ----------
+// Regeln, keine KI. Die Hinweise beschreiben nur, was in der Anzeige steht, und bewerten nichts.
+
+export type FahrerHinweise = {
+  /** Anzeige sagt: Grundqualifikation (Code 95, BKrFQG, Modul 95) wird gestellt, bezahlt oder bei der Firma erworben */
+  gqGestellt: boolean;
+  /** Anzeige verlangt Code 95, Grundqualifikation, Schlüsselzahl 95 oder Fahrerkarte (nur wenn nicht gestellt) */
+  code95: boolean;
+  /** genannte Führerscheinklassen (C1, C1E, C, CE, D1, D1E, D, DE) */
+  klassen: string[];
+  adr: boolean;
+  stapler: boolean;
+  /** Westbalkanregelung genannt oder Bewerbungen aus den Westbalkan-Ländern ausdrücklich willkommen */
+  westbalkan: boolean;
+};
+
+export const KEINE_HINWEISE: FahrerHinweise = { gqGestellt: false, code95: false, klassen: [], adr: false, stapler: false, westbalkan: false };
+export const hatHinweise = (h?: FahrerHinweise | null) => !!h && (h.gqGestellt || h.code95 || h.klassen.length > 0 || h.adr || h.stapler || h.westbalkan);
+
+// Begriffe der Grundqualifikation (nicht „Berufskraftfahrer“ allein, das ist ein Berufsname)
+const GQ = String.raw`(?:beschleunigte\s+)?grundqualifikation\w*|berufskraftfahrer-?qualifikation\w*|qualifikation\s+(?:zum|als)\s+berufskraftfahrer\w*|bkrfqg|code\s*95|modul(?:e|en)?\s*95|schlüsselzahl\s*95|eu-?fahrerqualifizierungsnachweis|fahrerqualifizierungsnachweis|driver\s*cpc|\bcpc\b|certificate\s+of\s+professional\s+competence|initial\s+qualification`;
+// „wird gestellt“ und Ähnliches direkt nach dem Begriff („Grundqualifikation wird gestellt“, „Code 95 wird bezahlt“)
+const GIVEN_AFTER = String.raw`gestellt|übernommen|übernehmen\s+wir|übernimmt\s+(?:der|die|das|unser\w*)\s+\w+|finanziert|finanzieren\s+wir|bezahlt|bezahlen\s+wir|zahlen\s+wir|erstattet|erstatten\s+wir|ermöglicht|ermöglichen\s+wir|kostenlos|kostenfrei|gratis|auf\s+unsere\s+kosten|bei\s+uns\s+(?:machen|erwerben|absolvieren)|im\s+unternehmen\s+(?:machen|erwerben)|provided|paid|covered|funded|sponsored|free\s+of\s+charge|at\s+our\s+(?:cost|expense)`;
+// „… Kosten übernehmen wir“ nach dem Begriff („Code 95 erforderlich, die Kosten dafür übernehmen wir“)
+const GIVEN_COST = String.raw`\b(?:kosten|costs?)(?:\s+(?:dafür|hierfür|hierzu|davon|werden|wird|are|is|will\s+be))*\s+(?:wir\s+)?(?:übernehmen|übernommen|übernimmt|tragen|trägt|getragen|erstatten|erstattet|zahlen|bezahlt|covered|paid)`;
+// „Wir übernehmen die Kosten für …“ vor dem Begriff
+const GIVEN_BEFORE = String.raw`kostenübernahme|übernahme\s+der\s+kosten|wir\s+übernehmen|übernehmen\s+wir|übernimmt\s+(?:\S+\s+){0,3}?kosten|wir\s+finanzieren|finanzieren\s+wir|finanzierung|wir\s+bezahlen|bezahlen\s+wir|wir\s+zahlen|zahlen\s+wir|wir\s+erstatten|wir\s+ermöglichen|ermöglichen\s+wir|wir\s+bieten|bieten\s+wir|erhalten\s+(?:sie|du)\s+bei\s+uns|(?:we|company)\s+(?:will\s+)?(?:pay|cover|provide|fund|sponsor|offer)`;
+// direkt nach dem Begriff: dann ist er eine Anforderung, kein Angebot
+const REQUIRED_NEXT = /^\W{0,3}(?:\(\S*\)\s*)?(?:ist\s+|wird\s+|is\s+)?(?:erforderlich|vorausgesetzt|pflicht|zwingend|notwendig|nötig|required|mandatory|necessary|mitbringen|vorhanden)/i;
+const BETWEEN_BAD = /\b(?:und|sowie|and|erforderlich|vorausgesetzt|required|notwendig|nötig|vorhanden|pflicht)\b|[,:]/i;
+const NEGATED = /\b(?:nicht|not|keine?|no)\b\s*(?:\S+\s+){0,2}?(?:gestellt|übernommen|übernehmen|finanziert|bezahlt|erstattet|kostenübernahme|übernahme|finanzierung|provided|paid|covered|funded)|(?:übernehmen|zahlen|bezahlen|finanzieren|erstatten)\s+wir\s+nicht|auf\s+eigene\s+kosten|selbst\s*zahler|selbst\s+(?:zu\s+)?(?:zahlen|tragen)|must\s+be\s+provided|mitbringen|vorausgesetzt/i;
+const OPTIONAL = /wünschenswert|von\s+vorteil|vorteilhaft|optional|nice\s+to\s+have|gerne\s+gesehen|\bplus\b/i;
+
+const KLASSE = String.raw`C1E|C1|CE|C|D1E|D1|DE|D`;
+// Klasse nur als ganzes Wort, „C-Teile“ zählt nicht, „C-Führerschein“ schon
+const KL_TOKEN = String.raw`(?<![A-Za-z0-9ÄÖÜäöüß])(?:${KLASSE})(?![A-Za-z0-9ÄÖÜäöüß])(?!-(?![Ff]ührer|[Ff]ahr|[Kk]lass|[Ll]izenz|[Ss]chein))`;
+const KL_LIST = String.raw`${KL_TOKEN}(?:\s*(?:\/|,|\+|&|und|and|oder|or|bzw\.?)\s*${KL_TOKEN})*`;
+// Zusammenhang, ohne den ein einzelnes „C“ oder „D“ nicht als Führerscheinklasse zählt
+const KL_CONTEXT = String.raw`(?:[Ff]ührerschein\w*|FÜHRERSCHEIN\w*|[Ff]ahrerlaubnis\w*|\bFS\b|[Dd]riving\s+[Ll]icen[cs]e|\b[Ll]icen[cs]e|(?:[Bb]erufs)?[Kk]raftfahrer\w*|(?:LKW|Lkw|Bus)-?[Ff]ahrer\w*|[Ff]ahrer)(?:\s*\((?:m\/w\/d|w\/m\/d|m\/f\/d|d\/m\/w)\))?\s*(?:der\s+|the\s+)?(?:[Kk]lassen?|[Kk]l\.|[Cc]lass(?:es)?|[Cc]ategor(?:y|ies)|[Kk]ategorie|[Kk]at\.)?\s*:?\s*`;
+const KL_AFTER = new RegExp(`${KL_CONTEXT}(${KL_LIST})`, "g");
+const KL_ONLY = new RegExp(String.raw`(?:\b[Kk]lassen?|\b[Kk]l\.|\b[Cc]lass(?:es)?|\b[Cc]ategor(?:y|ies)|\b[Kk]ategorie)\s*:?\s*(${KL_LIST})`, "g");
+const KL_BEFORE = new RegExp(String.raw`(${KL_LIST})\s*-?\s*(?:[Ff]ührerschein|[Ff]ahrerlaubnis|[Ll]icen[cs]e|[Ff]ahrer\b|-[Ff]ahrer)`, "g");
+const KL_OLD = /(?:führerschein|fahrerlaubnis)\w*\s*(?:der\s+)?(?:alten\s+|alte\s+)?klasse\s*2\b/i;
+const KL_ORDER = ["C1", "C1E", "C", "CE", "D1", "D1E", "D", "DE"];
+
+// Satzteile: Punkt (außer bei Abkürzungen wie „Kl.“ oder „z. B.“), Ausrufe- und Fragezeichen, Zeilen, Aufzählungszeichen, Semikolon
+const segments = (text: string) => text.replace(/[ \t ]+/g, " ").split(/(?<!\b(?:[Kk]l|[Zz]|[Bb]|ca|bzw|ggf|inkl|evtl|Nr|u|d|h|Kat|Std))\.(?=\s|$)|[!?\n\r•·;▪]+/);
+
+/** Hinweise für Fahrer- und Logistikstellen aus Titel und Anzeigentext */
+export function fahrerHinweise(text: string): FahrerHinweise {
+  const segs = segments(text || "");
+  const gqTerm = new RegExp(GQ, "i");
+  const after = new RegExp(String.raw`(?:${GQ})([^]{0,50}?)\b(?:${GIVEN_AFTER})`, "i");
+  const cost = new RegExp(String.raw`(?:${GQ})[^]{0,60}?${GIVEN_COST}`, "i");
+  const before = new RegExp(String.raw`\b(?:${GIVEN_BEFORE})\b[^]{0,70}?(?:${GQ})`, "i");
+  const given = (s: string) => {
+    const a = s.match(after);
+    if (a && !BETWEEN_BAD.test(a[1]) && !NEGATED.test(a[0])) return true;
+    const c = s.match(cost);
+    if (c && !NEGATED.test(c[0])) return true;
+    const b = s.match(before);
+    return !!b && !NEGATED.test(b[0]) && !REQUIRED_NEXT.test(s.slice((b.index ?? 0) + b[0].length));
+  };
+  let gqGestellt = false, code95 = false;
+  for (const s of segs) {
+    if (given(s)) gqGestellt = true;
+    else if ((gqTerm.test(s) || /fahrerkarte|driver\s*card|tachograph\s*card/i.test(s)) && !OPTIONAL.test(s) && !/\b(?:nicht|not)\s+(?:erforderlich|notwendig|nötig|required|necessary)/i.test(s)) code95 = true;
+  }
+  const found = new Set<string>();
+  const t = (text || "").replace(/\s+/g, " ").replace(/\b(C1|C|D1|D)\s*\+\s*E\b/g, "$1E");
+  for (const re of [KL_AFTER, KL_ONLY, KL_BEFORE]) for (const m of t.matchAll(re)) for (const k of m[1].match(new RegExp(KL_TOKEN, "g")) ?? []) found.add(k);
+  if (KL_OLD.test(t)) found.add("CE");
+  const westbalkan = /west-?balkan|westlichen\s+balkan|western\s+balkans?|zapadn\w*\s+balkan/i.test(t)
+    || segs.some((s) => /serbien|bosnien|kosovo|albanien|mazedonien|montenegro|serbia|bosnia|albania|macedonia/i.test(s) && /willkommen|welcome|erwünscht|gerne|ausdrücklich|encouraged/i.test(s));
+  return {
+    gqGestellt,
+    code95: code95 && !gqGestellt,
+    klassen: KL_ORDER.filter((k) => found.has(k)),
+    adr: /(?<![A-Za-z])ADR(?![A-Za-z])|gefahrgut\w*|dangerous\s+goods|hazardous\s+(?:goods|materials)|hazmat/i.test(t) && !/\bADR\b\s*(?:nicht|not)/i.test(t),
+    stapler: /stapler(?:schein|führerschein|fahrausweis|nachweis|lizenz|fahrer\w*|erfahrung)|gabelstapler\w*|flurförderzeug\w*|forklift|fork-lift|fork\s+lift/i.test(t),
+    westbalkan,
+  };
+}
+
+/** „Nur Stellen mit Grundqualifikation vom Arbeitgeber“ */
+export const matchesGq = (t: { hinweise?: FahrerHinweise }, onlyGq: boolean) => !onlyGq || !!t.hinweise?.gqGestellt;
 
 // ---------- Tracker ----------
 export const TRACKER_STATUS = ["SAVED", "APPLIED", "REPLY", "INTERVIEW", "REJECTED", "OFFER"] as const;

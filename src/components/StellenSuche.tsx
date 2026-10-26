@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { fillIn, dateLocaleOf, wLang, type werkzeugText } from "@/lib/werkzeug-text";
-import { LEVELS, SOURCE_NAME, type Treffer, type Hours, type GermanFit } from "@/lib/stellensuche-core";
+import { LEVELS, SOURCE_NAME, hatHinweise, type Treffer, type Hours, type GermanFit } from "@/lib/stellensuche-core";
 import { portalSearchLinks } from "@/lib/portals";
 
 type T = ReturnType<typeof werkzeugText>;
@@ -21,6 +21,7 @@ export function StellenSuche({ t, locale, defaults, suggestions, savedKeys, trac
   const [hours, setHours] = useState<Hours>("alle");
   const [deutsch, setDeutsch] = useState(defaults.deutsch);
   const [onlyFitting, setOnlyFitting] = useState(false);
+  const [onlyGq, setOnlyGq] = useState(false);
   const [treffer, setTreffer] = useState<Treffer[]>([]);
   const [total, setTotal] = useState<number | null>(null);
   const [page, setPage] = useState(1);
@@ -37,14 +38,14 @@ export function StellenSuche({ t, locale, defaults, suggestions, savedKeys, trac
     const q = overrideWas ?? was;
     if (q.trim().length < 2) return;
     setBusy(true); setErr(null);
-    const params = new URLSearchParams({ was: q, wo, umkreis: String(umkreis), arbeitszeit: hours, deutsch, nurPassend: onlyFitting ? "1" : "0", seite: String(p) });
+    const params = new URLSearchParams({ was: q, wo, umkreis: String(umkreis), arbeitszeit: hours, deutsch, nurPassend: onlyFitting ? "1" : "0", nurGq: onlyGq ? "1" : "0", seite: String(p) });
     const r = await fetch(`/api/stellensuche?${params}`).catch(() => null);
     const j = r ? await r.json().catch(() => ({})) : {};
     setBusy(false);
     if (!r || !r.ok) { setErr(j.error ?? t.searchError); return; }
     setTreffer((xs) => (p === 1 ? j.treffer : [...xs, ...j.treffer.filter((n: Treffer) => !xs.some((x) => x.key === n.key))]));
     setTotal(j.total); setPage(p); setMore(!!j.mehr);
-  }, [was, wo, umkreis, hours, deutsch, onlyFitting, t.searchError]);
+  }, [was, wo, umkreis, hours, deutsch, onlyFitting, onlyGq, t.searchError]);
 
   // Beim Öffnen direkt mit dem Profil-Vorschlag suchen
   useEffect(() => {
@@ -89,6 +90,7 @@ export function StellenSuche({ t, locale, defaults, suggestions, savedKeys, trac
           <label className="flex items-start gap-2 text-sm"><input type="checkbox" className="mt-1" checked={onlyFitting} onChange={(e) => setOnlyFitting(e.target.checked)} disabled={!deutsch} /><span>{t.onlyFitting}</span></label>
           <button className="btn-primary" disabled={busy}>{busy ? t.searching : t.search}</button>
         </div>
+        <label className="flex items-start gap-2 text-sm"><input type="checkbox" className="mt-1" checked={onlyGq} onChange={(e) => setOnlyGq(e.target.checked)} /><span>{t.onlyGq}</span></label>
         {suggestions.length > 0 && (
           <div className="flex flex-wrap items-center gap-2 text-sm">
             <span className="text-[color:var(--color-ink-soft)]">{t.fromProfile}</span>
@@ -118,6 +120,12 @@ export function StellenSuche({ t, locale, defaults, suggestions, savedKeys, trac
                 {x.parttime && <span className="rounded-full bg-slate-100 px-2 py-0.5">{t.parttime}</span>}
                 {x.publishedAt && <span className="rounded-full bg-slate-100 px-2 py-0.5">{fillIn(t.published, { date: new Date(x.publishedAt).toLocaleDateString(dl) })}</span>}
                 <span className="rounded-full bg-slate-100 px-2 py-0.5">{x.email ? t.withEmail : t.viaEmployerSite}</span>
+                {x.hinweise?.gqGestellt && <span className="rounded-full bg-[color:var(--color-brand-soft)] px-2 py-0.5 text-[color:var(--color-brand-deep)]">{t.hintGqProvided}</span>}
+                {x.hinweise?.code95 && <span className="rounded-full bg-slate-100 px-2 py-0.5">{t.hintCode95}</span>}
+                {!!x.hinweise?.klassen.length && <span className="rounded-full bg-slate-100 px-2 py-0.5">{fillIn(t.hintLicence, { cls: x.hinweise.klassen.join(", ") })}</span>}
+                {x.hinweise?.adr && <span className="rounded-full bg-slate-100 px-2 py-0.5">{t.hintAdr}</span>}
+                {x.hinweise?.stapler && <span className="rounded-full bg-slate-100 px-2 py-0.5">{t.hintForklift}</span>}
+                {x.hinweise?.westbalkan && <span className="rounded-full bg-slate-100 px-2 py-0.5">{t.hintWestbalkan}</span>}
                 <span className="rounded-full bg-slate-50 px-2 py-0.5 text-[color:var(--color-ink-soft)]">{fillIn(t.source, { src: SOURCE_NAME[x.source] ?? x.source })}</span>
               </div>
             </div>
@@ -128,6 +136,7 @@ export function StellenSuche({ t, locale, defaults, suggestions, savedKeys, trac
           </li>
         ))}
       </ul>
+      {treffer.some((x) => hatHinweise(x.hinweise)) && <p className="text-xs text-[color:var(--color-ink-soft)]">{t.hintsNote}</p>}
       {more && !busy && <button className="btn-outline" onClick={() => search(page + 1)}>{t.more}</button>}
 
       {was.trim().length > 1 && (

@@ -7,7 +7,7 @@ import { LEVELS, type Hours, type Level } from "@/lib/stellensuche-core";
 export const maxDuration = 60;
 
 // Stellensuche der Kundin bzw. des Kunden (Weg 1: das Werkzeug, keine Auswahl durch WoYou)
-//   GET /api/stellensuche?was=…&wo=…&umkreis=25&arbeitszeit=alle|vollzeit|teilzeit&deutsch=B1&nurPassend=1&seite=1
+//   GET /api/stellensuche?was=…&wo=…&umkreis=25&arbeitszeit=alle|vollzeit|teilzeit&deutsch=B1&nurPassend=1&nurGq=1&seite=1
 export async function GET(req: Request) {
   const s = await toolSession();
   if (!s) return NextResponse.json({ error: "Bitte melde dich an." }, { status: 401 });
@@ -23,6 +23,6 @@ export async function GET(req: Request) {
   const d = (q.get("deutsch") || "").toUpperCase();
   const deutsch = (LEVELS as readonly string[]).includes(d) ? (d as Level) : null;
   const seite = Math.min(20, Math.max(1, Number(q.get("seite")) || 1));
-  const r = await sucheStellen({ was, wo: (q.get("wo") || "").trim().slice(0, 80) || undefined, umkreis, arbeitszeit, deutsch, nurPassend: q.get("nurPassend") === "1", seite });
+  const r = await sucheStellen({ was, wo: (q.get("wo") || "").trim().slice(0, 80) || undefined, umkreis, arbeitszeit, deutsch, nurPassend: q.get("nurPassend") === "1", nurGq: q.get("nurGq") === "1", seite });
   return NextResponse.json(r);
 }
