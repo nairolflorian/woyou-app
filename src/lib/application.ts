@@ -1,6 +1,8 @@
 // Bewerbungsmappe: Datenstruktur, Vorbelegung aus dem WoYou-Profil, Vollständigkeit.
 import { z } from "zod";
 import { DESIGN_TEMPLATES, DESIGN_COLORS, DEFAULT_DESIGN } from "@/lib/design";
+import { LICENSE_CLASSES, EMPTY_QUAL } from "@/lib/qualifikation";
+export { qualLines, zielgruppen, EMPTY_QUAL, LICENSE_CLASSES, type Qualifications, type Zielgruppe } from "@/lib/qualifikation";
 
 const str = (max: number) => z.string().trim().max(max).default("");
 
@@ -13,6 +15,22 @@ export const Station = z.object({
   details: str(800), // Aufgaben, Schwerpunkte (eine pro Zeile)
 });
 export type Station = z.infer<typeof Station>;
+
+// Führerschein und Qualifikationen (Pilot Westbalkan: Lkw/Bus und Logistik), alles freiwillig.
+// Liegt im JSON der Mappe (ApplicationProfile.data), deshalb keine Migration nötig. Typ und Lebenslauf-Zeilen: src/lib/qualifikation.ts
+const yesNo = z.enum(["", "yes", "no"]).catch("");
+export const QualificationsSchema = z.object({
+  licenses: z.array(z.string()).max(10).default([]).catch([]).transform((a) => LICENSE_CLASSES.filter((c) => a.includes(c))),
+  licenseSince: z.string().trim().max(4).default("").catch(""), // Jahr, z. B. "2016"
+  driverCard: yesNo.default(""), // Fahrerkarte
+  code95: yesNo.default(""), // Grundqualifikation / Schlüsselzahl 95
+  code95Until: z.string().trim().max(7).default("").catch(""), // "03/2029"
+  adr: yesNo.default(""),
+  adrClasses: z.string().trim().max(60).default("").catch(""),
+  forklift: yesNo.default(""), // Staplerschein
+  countries: z.string().trim().max(300).default("").catch(""), // internationale Erfahrung
+  systems: z.string().trim().max(300).default("").catch(""), // Lager-/Logistiksysteme, z. B. SAP, Scanner
+});
 
 export const ProfileData = z.object({
   firstName: str(60),
@@ -35,6 +53,7 @@ export const ProfileData = z.object({
   motivation: str(1200), // warum Deutschland, warum dieser Beruf – Grundlage für Anschreiben
   strengths: str(600),
   showPhoto: z.boolean().default(true),
+  qualifications: QualificationsSchema.default(EMPTY_QUAL).catch(EMPTY_QUAL),
   // Aussehen von Lebenslauf und Anschreiben; unbekannte Farben fallen auf Standard zurück
   design: z.object({
     template: z.enum(DESIGN_TEMPLATES).catch(DEFAULT_DESIGN.template),

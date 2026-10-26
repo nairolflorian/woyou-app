@@ -589,6 +589,120 @@ async function main() {
     assert.ok(TE.test(fs.readFileSync("src/i18n/te.ts", "utf8")), "Telugu fehlt in src/i18n/te.ts");
   });
 
+  // ---------- Pilot Westbalkan: Selbstcheck für Fahrer und Logistik, Mappe mit Führerschein und Qualifikationen ----------
+  await test("Westbalkan-Selbstcheck: Länder erkennen, andere Länder unverändert", async () => {
+    const { evaluate, balkanLand, EMPTY_BALKAN } = await import("../src/lib/selfcheck");
+    for (const x of ["Serbien", "Srbija", "serbia ", "Србија", "Bosna i Hercegovina", "Bosnien", "Nordmazedonien", "North Macedonia", "Kosovo", "Crna Gora", "Montenegro", "Albanien", "صربيا", "सर्बिया", "సెర్బియా"]) assert.ok(balkanLand(x), x);
+    for (const x of ["Marokko", "Indien", "", "Deutschland", "Tunesien"]) assert.equal(balkanLand(x), null, x);
+    assert.equal(balkanLand("Srbija"), "RS"); assert.equal(balkanLand("Makedonija"), "MK");
+    const pflege = { job: "Pflegefachkraft", degree: "vocational", german: "B1", recognition: "pending", country: "Marokko" } as const;
+    const lkw = { group: "ce", since: "2015", driverCard: "yes", code95: "yes", ready: "yes" } as const;
+    // Nicht-Westbalkan: gleiches Ergebnis wie vorher, auch wenn Westbalkan-Angaben mitkommen
+    for (const l of ["de", "en", "sr"] as const) assert.deepEqual(evaluate({ ...pflege, balkan: lkw }, l), evaluate(pflege, l));
+    assert.equal(evaluate(pflege, "de").level, "yellow");
+    // Westbalkan ohne Berufsgruppe: allgemeiner Check
+    assert.deepEqual(evaluate({ ...pflege, country: "Serbien", balkan: EMPTY_BALKAN }, "de"), evaluate(pflege, "de"));
+  });
+  await test("Westbalkan-Selbstcheck: Regeln für Fahrer, Lager, Disposition und Zeitfenster", async () => {
+    const { evaluate, BALKAN_TEXT } = await import("../src/lib/selfcheck");
+    const de = BALKAN_TEXT.de, now = new Date(2026, 9, 26);
+    const base = { job: "", degree: "vocational", german: "A2", recognition: "unknown", country: "Serbien" } as const;
+    const fahrer = { group: "ce", since: "2015", driverCard: "yes", code95: "yes", ready: "yes" } as const;
+    const ev = (p: object, b: object, l: "de" | "en" | "fr" = "de", kalender?: "weich" | "hart") => evaluate({ ...base, ...p, balkan: { ...fahrer, ...b } } as Parameters<typeof evaluate>[0], l, { now, kalender });
+    const ok = ev({}, {});
+    assert.equal(ok.level, "green");
+    assert.ok(ok.reasons.includes(de.serbienFs), "Serbien: Umschreiben ohne Prüfung");
+    // immer: Kontingent, Arbeitgeber beantragt, Vorrangprüfung, selbst bewerben
+    for (const r of [ok, ev({ german: "none" }, {}), ev({}, { group: "dispo" }), ev({}, { code95: "no" })]) {
+      const all = r.reasons.join(" ");
+      assert.match(all, /Kontingent von 50\.000/); assert.match(all, /Vorrangprüfung/); assert.match(all, /Antrag stellt der Arbeitgeber/); assert.match(all, /Bewerben musst du dich selbst/);
+    }
+    // Fahrer A1 ohne Code 95: Gelb mit vorsichtigem Text
+    const a1 = ev({ german: "A1" }, { code95: "no" });
+    assert.equal(a1.level, "yellow");
+    assert.ok(a1.reasons.includes(de.a1Fahrer));
+    assert.ok(a1.reasons.includes("Ohne Code 95 brauchst du in Deutschland die Grundqualifikation. Manche Arbeitgeber bieten sie an. Ob und wie das in deinem Fall geht, klären der Arbeitgeber und die Behörden."));
+    assert.equal(ev({}, { code95: "unknown" }).level, "yellow");
+    assert.equal(ev({}, { driverCard: "no" }).level, "yellow");
+    assert.equal(ev({}, { since: "2026" }).level, "yellow", "wenig Fahrpraxis");
+    assert.equal(ev({}, { since: "" }).level, "green");
+    // Deutsch: A0 abraten, Disposition unter B1 abraten, Lager mit A1 abraten
+    assert.equal(ev({ german: "none" }, {}).level, "red");
+    assert.equal(ev({ german: "none" }, {}).reasons[0], de.a0);
+    assert.equal(ev({ german: "A2" }, { group: "dispo" }).level, "red");
+    assert.equal(ev({ german: "A2" }, { group: "dispo" }).reasons[0], de.dispoB1);
+    assert.notEqual(ev({ german: "B1" }, { group: "dispo" }).level, "red");
+    assert.equal(ev({ german: "A1" }, { group: "lager" }).level, "red");
+    assert.equal(ev({ german: "A2" }, { group: "stapler" }).level, "green");
+    assert.equal(ev({ german: "A2" }, { group: "bus" }).level, "yellow", "Bus: mehr Deutsch");
+    // Zeitfenster: weich = Gelb mit Folgejahr, hart = Rot mit „warte“
+    const spaet = ev({}, { ready: "no" });
+    assert.equal(spaet.level, "yellow");
+    assert.match(spaet.reasons.join(" "), /bis 15\. Dezember/); assert.match(spaet.reasons.join(" "), /Folgejahres/);
+    assert.match(ev({}, { ready: "no" }, "en").reasons.join(" "), /following year/);
+    assert.match(ev({}, { ready: "no" }, "fr").reasons.join(" "), /année suivante/);
+    const hart = ev({}, { ready: "no" }, "de", "hart");
+    assert.equal(hart.level, "red");
+    assert.equal(hart.reasons[0], "Mappe bis 15. Dezember, Arbeitgeber beantragt ab 2. Januar. Wenn du das nicht schaffst, warte.");
+    // andere Berufsgruppe: Hinweis auf den Pilot, allgemeine Regeln, nie Grün
+    const andere = evaluate({ ...base, job: "Koch", german: "B1", balkan: { ...fahrer, group: "andere" } }, "de");
+    assert.equal(andere.level, "yellow"); assert.equal(andere.reasons[0], de.andere);
+    assert.equal(evaluate({ ...base, job: "Koch", german: "A1", balkan: { ...fahrer, group: "andere" } }, "de").level, "red");
+  });
+  await test("Westbalkan-Selbstcheck: Texte in allen 7 Sprachen, ohne Versprechen und lange Striche", async () => {
+    const fs = await import("node:fs");
+    const { BALKAN_TEXT, evaluate, saisonDatum, UNTERLAGEN_BIS, KALENDER_SATZ } = await import("../src/lib/selfcheck");
+    const { SELFCHECK_TEXT } = await import("../src/components/SelfCheck");
+    assert.equal(KALENDER_SATZ, "weich", "Standard bis zur Entscheidung: weich");
+    for (const l of ["en", "fr"] as const) assert.deepEqual(shape(BALKAN_TEXT[l]), shape(BALKAN_TEXT.de), `BALKAN_TEXT ${l}`);
+    checkLang("Westbalkan-Selbstcheck", BALKAN_TEXT.de, BALKAN_TEXT.ar, BALKAN_TEXT.hi);
+    checkSrTe("Westbalkan-Selbstcheck", BALKAN_TEXT.de, BALKAN_TEXT.en, BALKAN_TEXT.sr, BALKAN_TEXT.te);
+    const wb = (l: keyof typeof SELFCHECK_TEXT) => SELFCHECK_TEXT[l].wb;
+    for (const l of ["en", "fr"] as const) assert.deepEqual(shape(wb(l)), shape(wb("de")), `SelfCheck wb ${l}`);
+    checkLang("Selbstcheck-Fragen Westbalkan", wb("de"), wb("ar"), wb("hi"));
+    checkSrTe("Selbstcheck-Fragen Westbalkan", wb("de"), wb("en"), wb("sr"), wb("te"));
+    for (const [l, o] of Object.entries(BALKAN_TEXT)) for (const [p, v] of leaves(o)) {
+      assert.ok(!/[–—]/.test(v), `${l} ${p}: langer Gedankenstrich`);
+      assert.ok(!/wir garantieren|garantiert dir|we guarantee|nous garantissons|wir finden|we find|nous trouvons|vermitteln dich|Visum besorgen|Erfolgsquote|success rate|taux de réussite/i.test(v), `${l} ${p}: Versprechen`);
+    }
+    assert.equal(saisonDatum(UNTERLAGEN_BIS, "sr"), "15.12.");
+    for (const l of ["de", "en", "fr", "ar", "hi", "sr", "te"] as const) {
+      const r = evaluate({ job: "", degree: "vocational", german: "B1", recognition: "unknown", country: "Srbija", balkan: { group: "ce", since: "", driverCard: "yes", code95: "no", ready: "no" } }, l);
+      assert.ok(r.reasons.every((x) => !/\{\w+\}/.test(x)), `${l}: Platzhalter übrig`);
+      if (l === "sr") assert.ok(r.reasons.every((x) => !CYR.test(x)), "sr: Kyrillisch");
+    }
+    const src = fs.readFileSync("src/lib/selfcheck.ts", "utf8");
+    assert.match(src, /\/\/ ANWALT PRÜFEN: Einreise ohne Code 95/);
+  });
+  await test("Mappe: Führerschein und Qualifikationen im JSON, Lebenslauf-Zeilen, Checkliste je Zielgruppe", async () => {
+    const { parseProfile, ProfileData, qualLines, zielgruppen } = await import("../src/lib/application");
+    const { cvParas } = await import("../src/lib/cv-docx");
+    const { QUAL_TEXTS } = await import("../src/lib/mappe-i18n");
+    // alte Mappen ohne Angaben bleiben gültig, Unbekanntes fällt weg
+    const alt = parseProfile(JSON.stringify({ firstName: "Milan" }));
+    assert.deepEqual(alt.qualifications.licenses, []); assert.equal(alt.qualifications.code95, "");
+    const d = ProfileData.parse({ firstName: "Milan", lastName: "Petrović", targetJob: "Berufskraftfahrer", qualifications: { licenses: ["CE", "B", "X", "C"], licenseSince: "2016", driverCard: "yes", code95: "yes", code95Until: "03/2029", adr: "yes", forklift: "yes", countries: "Serbien, Ungarn, Österreich", systems: "" } });
+    assert.deepEqual(d.qualifications.licenses, ["B", "C", "CE"]);
+    assert.equal(ProfileData.parse({ qualifications: { driverCard: "vielleicht" } }).qualifications.driverCard, "");
+    const z = qualLines(d.qualifications, "de");
+    assert.equal(z[0].text, "Führerscheinklassen: B, C, CE (seit 2016) · Fahrerkarte · Grundqualifikation (Code 95) bis 03/2029 · ADR · Staplerschein");
+    assert.deepEqual(z.slice(1), [{ label: "Einsatzländer", text: "Serbien, Ungarn, Österreich" }]);
+    assert.equal(qualLines(d.qualifications, "en")[0].text, "Licence categories: B, C, CE (since 2016) · Driver card (tachograph) · Driver CPC (Code 95) valid until 03/2029 · ADR · Forklift licence");
+    assert.deepEqual(qualLines({ ...d.qualifications, licenses: [], driverCard: "no", code95: "no", adr: "no", forklift: "no", countries: "" }, "de"), [], "nur Positives");
+    const word = cvParas(d, "de").map((p) => p.text);
+    assert.ok(word.includes("FÜHRERSCHEIN UND QUALIFIKATIONEN"));
+    assert.ok(word.some((x) => x.startsWith("Nachweise: Führerscheinklassen: B, C, CE")));
+    assert.ok(cvParas(d, "en").some((p) => p.text === "DRIVING LICENCES AND QUALIFICATIONS"));
+    assert.deepEqual(zielgruppen(d), ["fahrer", "logistik"]);
+    assert.deepEqual(zielgruppen({ targetJob: "Disponent", qualifications: alt.qualifications }), ["dispo"]);
+    assert.deepEqual(zielgruppen({ targetJob: "Koch", qualifications: alt.qualifications }), []);
+    for (const l of ["en", "fr"] as const) assert.deepEqual(shape(QUAL_TEXTS[l]), shape(QUAL_TEXTS.de), `QUAL_TEXTS ${l}`);
+    checkLang("Mappe Qualifikationen", QUAL_TEXTS.de, QUAL_TEXTS.ar, QUAL_TEXTS.hi);
+    checkSrTe("Mappe Qualifikationen", QUAL_TEXTS.de, QUAL_TEXTS.en, QUAL_TEXTS.sr, QUAL_TEXTS.te);
+    for (const [l, o] of Object.entries(QUAL_TEXTS)) for (const [p, v] of leaves(o)) assert.ok(!/[–—]/.test(v), `${l} ${p}`);
+    assert.deepEqual(QUAL_TEXTS.de.docs.fahrer.slice(0, 3), ["Führerschein (Vorder- und Rückseite)", "Fahrerkarte", "Nachweis Code 95 (Grundqualifikation)"]);
+  });
+
   await test("Bilder: Fotos lokal und groß genug, nichts von Unsplash im Browser, Muster in hoher Auflösung", async () => {
     const fs = await import("node:fs");
     const { FOTOS, fotoSrc } = await import("../src/lib/fotos");

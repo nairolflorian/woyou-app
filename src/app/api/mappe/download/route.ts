@@ -4,10 +4,12 @@ import { cvPdf, letterPdf, type DocLang } from "@/lib/pdf";
 import { gapLetter } from "@/lib/letters";
 import { docx, type DocPara } from "@/lib/docx";
 import { parseProfile } from "@/lib/application";
+import { cvParas } from "@/lib/cv-docx";
 import { isEmail } from "@/lib/stellensuche-core";
 
 // Unterlagen zum Herunterladen und freien Weiterverwenden (Kund:in für die eigene Mappe, Team mit bookingId):
 //   ?doc=cv            Lebenslauf als PDF (eigener hochgeladener Lebenslauf, wenn so eingestellt)
+//   ?doc=cv-docx       Lebenslauf als Word-Datei (zum Weiterbearbeiten)
 //   ?doc=letter-docx   Anschreiben-Muster mit Lücken als Word-Datei
 //   ?doc=letter-pdf    dasselbe Muster als PDF
 //   &lang=en           englische Fassung (falls gepflegt)
@@ -30,6 +32,9 @@ export async function GET(req: Request) {
     const own = m.profile.useOwnCv ? await readOwnCv(m.booking.candidate, m.profile.ownCvFile) : null;
     const pdf = own ?? (await cvPdf(d, await readPhoto(m.booking.candidateId, m.profile.photoFile), lang));
     return send(pdf, `${en ? "CV" : "Lebenslauf"}_${name}.pdf`, "application/pdf");
+  }
+  if (doc === "cv-docx") {
+    return send(docx(cvParas(d, lang), `${en ? "CV" : "Lebenslauf"} ${d.firstName} ${d.lastName}`.trim()), `${en ? "CV" : "Lebenslauf"}_${name}.docx`, "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
   }
   const g = gapLetter(d, lang);
   if (doc === "letter-pdf") {
