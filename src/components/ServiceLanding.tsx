@@ -25,6 +25,9 @@ const SIZES = {
   design: "(min-width: 1152px) 264px, (min-width: 640px) 25vw, 50vw",
 };
 
+// Offizielle Quellen zum Block „Sicher und seriös“ (Reihenfolge wie c.official)
+const OFFICIAL = ["https://www.arbeitsagentur.de/jobsuche/", "https://www.make-it-in-germany.com/", "https://digital.diplo.de/visa"];
+
 const FACT_ICONS = [
   <path key="a" d="M4 21V9l8-6 8 6v12h-5v-6H9v6z" />,
   <path key="b" d="M4 6h16v4H4zm0 8h16v4H4zm3-6h.01M7 16h.01" />,
@@ -136,6 +139,36 @@ export async function ServiceLanding() {
                     <div><div className="font-semibold">{r.t}</div><div className="text-sm text-[color:var(--color-ink-soft)]">{r.d}</div></div>
                   </div>
                 ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Sicher und seriös (Konzept v4 „Scam-Radar“): woran man WoYou erkennt, Warnzeichen, offizielle Quellen. Keine Bewertungen oder Erfolgsgeschichten. */}
+        <section id="sicher" className="bg-[color:var(--color-surface)] scroll-mt-16">
+          <div className="mx-auto max-w-6xl px-6 py-14">
+            <h2 className="text-2xl md:text-3xl font-bold">{c.safeTitle}</h2>
+            <p className="mt-2 text-[color:var(--color-ink-soft)]">{c.safeLead}</p>
+            <div className="mt-8 grid gap-6 md:grid-cols-2">
+              <div className="card">
+                <ul className="space-y-3">
+                  {c.safe.map((x) => <li key={x} className="flex gap-3 text-[15px] leading-relaxed"><Check />{x}</li>)}
+                </ul>
+                <p className="mt-5 text-sm"><a className="font-semibold text-[color:var(--color-brand-deep)]" href={`tel:${COMPANY.phoneTel}`} dir="ltr">{COMPANY.phone}</a> · {st.hours}</p>
+              </div>
+              <div className="flex flex-col gap-6">
+                <div className="rounded-2xl border-2 border-[#b58a1b] bg-[#fbf3e1] p-6">
+                  <h3 className="text-lg font-bold text-[#8a6511]">{c.warnTitle}</h3>
+                  <ul className="mt-3 space-y-2">
+                    {c.warn.map((x) => <li key={x} className="flex gap-3 text-[15px] leading-relaxed"><Cross />{x}</li>)}
+                  </ul>
+                </div>
+                <div className="card">
+                  <h3 className="font-bold">{c.officialTitle}</h3>
+                  <ul className="mt-2 space-y-1 text-sm">
+                    {OFFICIAL.map((href, i) => <li key={href}><a className="font-semibold text-[color:var(--color-brand-deep)] underline" href={href} target="_blank" rel="noopener noreferrer">{c.official[i]} ↗</a></li>)}
+                  </ul>
+                </div>
               </div>
             </div>
           </div>
