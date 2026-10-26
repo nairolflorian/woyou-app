@@ -2,8 +2,16 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
+import { LOCALE_META, LOCALES, type Locale } from "@/lib/i18n-meta";
 
 type Item = { href: string; label: string };
+
+// Sprache wählen wie im LangSwitcher: Cookie setzen und neu laden
+function waehleSprache(l: Locale) {
+  document.cookie = `woyou_locale=${l}; path=/; max-age=${60 * 60 * 24 * 365}`;
+  window.location.reload();
+}
 
 export function MobileMenu({
   items,
@@ -13,6 +21,8 @@ export function MobileMenu({
   logoutLabel,
   dashboardLabel,
   dashboardHref,
+  locale,
+  languageLabel,
 }: {
   items: Item[];
   isLoggedIn: boolean;
@@ -21,8 +31,13 @@ export function MobileMenu({
   logoutLabel: string;
   dashboardLabel: string;
   dashboardHref: string;
+  locale: Locale;
+  languageLabel: string;
 }) {
   const [open, setOpen] = useState(false);
+  // Das Menü hängt direkt an <body>: Im Kopfbereich (backdrop-blur) würde „fixed“ nur die Kopfzeile füllen
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   useEffect(() => {
     if (open) document.body.style.overflow = "hidden";
@@ -46,7 +61,7 @@ export function MobileMenu({
         </svg>
       </button>
 
-      {open && (
+      {open && mounted && createPortal(
         <div
           className="fixed inset-0 z-50 bg-black/50 md:hidden"
           onClick={() => setOpen(false)}
@@ -71,6 +86,24 @@ export function MobileMenu({
                   <path strokeLinecap="round" d="M6 6l12 12M6 18L18 6" />
                 </svg>
               </button>
+            </div>
+
+            <div className="px-4 pt-4">
+              <div className="px-3 text-xs font-semibold uppercase tracking-wide text-[color:var(--color-ink-soft)]">{languageLabel}</div>
+              <div className="mt-2 grid grid-cols-2 gap-1">
+                {LOCALES.map((l) => (
+                  <button
+                    key={l}
+                    type="button"
+                    onClick={() => waehleSprache(l)}
+                    aria-current={l === locale ? "true" : undefined}
+                    className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-start ${l === locale ? "bg-[color:var(--color-brand-soft)] font-semibold text-[color:var(--color-brand)]" : "text-[color:var(--color-ink)] hover:bg-[color:var(--color-brand-soft)]"}`}
+                  >
+                    <span className="text-base">{LOCALE_META[l].flag}</span>
+                    <span>{LOCALE_META[l].label}</span>
+                  </button>
+                ))}
+              </div>
             </div>
 
             <nav className="flex-1 overflow-y-auto p-4 flex flex-col gap-1">
@@ -122,7 +155,8 @@ export function MobileMenu({
               )}
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );

@@ -10,6 +10,9 @@ import { werkzeugText } from "@/lib/werkzeug-text";
 import { ROLE } from "@/lib/enums";
 import { DEMO_MODE_ENABLED } from "@/lib/demo-accounts";
 
+// Überschrift der Sprachauswahl im Handymenü, in der jeweiligen Sprache
+const LANG_LABEL: Record<string, string> = { de: "Sprache", en: "Language", fr: "Langue", ar: "اللغة", hi: "भाषा", sr: "Jezik", te: "భాష", es: "Idioma", ru: "Язык", uk: "Мова" };
+
 export async function SiteHeader() {
   const { t, locale } = await getT();
   const session = await getSession();
@@ -62,9 +65,8 @@ export async function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-1.5">
-          <div className="hidden md:block">
-            <LangSwitcher current={locale} />
-          </div>
+          {/* Sprachauswahl auch auf dem Handy direkt in der Kopfzeile (nur Flagge), zusätzlich im Handymenü */}
+          <LangSwitcher current={locale} />
           {session.userId && <NotificationsBell />}
           {session.userId ? (
             <>
@@ -98,6 +100,8 @@ export async function SiteHeader() {
             logoutLabel={t("nav.logout")}
             dashboardLabel={t("nav.dashboard")}
             dashboardHref={dashboardHref}
+            locale={locale}
+            languageLabel={LANG_LABEL[locale] ?? LANG_LABEL.en}
           />
         </div>
       </div>
