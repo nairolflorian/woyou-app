@@ -14,6 +14,10 @@ import { accountText } from "@/lib/account-text";
 import { rechtUi } from "@/lib/recht/ui-text";
 import { ANGEBOT, MAPPE_FERTIG_WERKTAGE } from "@/lib/angebot";
 import { fillIn } from "@/lib/werkzeug-text";
+import { COMPANY } from "@/lib/company";
+import { buchungsSicht, selbstcheckMitNext } from "@/lib/selbstcheck-vorbuchung";
+import { selbstcheckVorBuchungAn, selfcheckMode, gemerkterCheck } from "@/lib/selbstcheck-vorbuchung-server";
+import { vorBuchungText, fillVorBuchung } from "@/lib/selbstcheck-vorbuchung-text";
 
 export default async function BookServicePage(props: { searchParams: Promise<{ abgebrochen?: string }> }) {
   const sp = await props.searchParams;
@@ -38,6 +42,14 @@ export default async function BookServicePage(props: { searchParams: Promise<{ a
     orderBy: { createdAt: "desc" },
   });
 
+  // Schalter „Selbstcheck vor der Buchung“ (SELBSTCHECK_VOR_BUCHUNG=on). Aus: sicht.art ist immer "formular", alles wie bisher.
+  const sicht = buchungsSicht({ an: selbstcheckVorBuchungAn(), mode: selfcheckMode(), check: await gemerkterCheck(candidate.selbstcheck) });
+  const vb = vorBuchungText(locale);
+  const checkHref = selbstcheckMitNext();
+  const check = sicht.art === "zumSelbstcheck" ? null : sicht.check;
+  const checkDatum = check ? new Date(`${check.datum}T12:00:00Z`).toLocaleDateString(locale === "sr" ? "sr-Latn" : locale, { day: "2-digit", month: "2-digit", year: "numeric" }) : "";
+  const ohneFormular = !open && (sicht.art === "zumSelbstcheck" || sicht.art === "gesperrt");
+
   return (
     <>
       <SiteHeader />
@@ -52,6 +64,30 @@ export default async function BookServicePage(props: { searchParams: Promise<{ a
             <div className="text-end"><div className="text-3xl font-bold text-[color:var(--color-brand)]">{formatPrice(svc.priceCents, locale)}</div><div className="text-xs text-[color:var(--color-ink-soft)]">{ru.vat}</div></div>
           </div>
           <p className="mt-3 text-sm text-[color:var(--color-ink-soft)]">{c.lead}</p>
+
+          {check && !open && (
+            <p className="mt-3 text-sm">
+              {fillVorBuchung(vb.result, { ergebnis: vb.levels[check.level], datum: checkDatum })}{" "}
+              <Link href={checkHref} className="underline text-[color:var(--color-brand)]">{vb.redo}</Link>
+            </p>
+          )}
+          {!open && (sicht.art === "formularMitBestaetigung" || sicht.art === "gesperrt") && (
+            <div role="alert" className="mt-4 rounded-2xl border-2 border-rose-300 bg-rose-50 p-5 text-rose-900">
+              <h2 className="text-lg font-bold">{vb.redTitle}</h2>
+              <p className="mt-2 text-sm">{vb.redBody}</p>
+              {sicht.art === "gesperrt" && <p className="mt-2 text-sm">{fillVorBuchung(vb.blockedBody, { email: COMPANY.email })}</p>}
+              {sicht.art === "gesperrt" && <Link href={checkHref} className="btn-outline mt-4 inline-flex">{vb.redo}</Link>}
+            </div>
+          )}
+          {!open && sicht.art === "zumSelbstcheck" && (
+            <div className="card mt-6">
+              <h2 className="text-lg font-semibold">{vb.needTitle}</h2>
+              <p className="mt-2 text-sm text-[color:var(--color-ink-soft)]">{vb.needBody}</p>
+              <Link href={checkHref} className="btn-primary mt-4 inline-flex">{vb.needCta}</Link>
+            </div>
+          )}
+
+          {!ohneFormular && (<>
 
           {/* ANWALT PRÜFEN (26.10.2026): Lieferzeit, Vertragsschluss, Korrektur vor dem Klick, Speicherung, Vertragssprache, Widerrufsbelehrung vorab */}
           <div className="card mt-4 text-sm">
@@ -77,8 +113,10 @@ export default async function BookServicePage(props: { searchParams: Promise<{ a
             <BookingForm
               copy={{ phone: c.phone, jobs: c.jobs, regions: c.regions, notes: c.notes, terms: c.terms, waiver: c.waiver, submit: submitLabel, failed: c.failed }}
               defaults={{ phone: candidate.whatsappNumber || "", jobs: candidate.desiredJobTitle || "", regions: "" }}
+              confirmAgainstAdvice={sicht.art === "formularMitBestaetigung" ? vb.redConfirm : undefined}
             />
           )}
+          </>)}
         </div>
       </main>
       <SiteFooter />

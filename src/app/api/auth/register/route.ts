@@ -7,6 +7,7 @@ import { ROLE, CANDIDATE_STATUS } from "@/lib/enums";
 import { rateLimit, clientIp } from "@/lib/rate-limit";
 import { crmMelden } from "@/lib/crm-sync";
 import { PW_MIN_KUNDE } from "@/lib/passwort";
+import { selbstcheckUebernehmen } from "@/lib/selbstcheck-vorbuchung-server";
 
 const schema = z.object({
   email: z.string().email().optional().or(z.literal("")),
@@ -68,6 +69,8 @@ export async function POST(req: Request) {
       data: { userId: user.id, status: CANDIDATE_STATUS.REGISTERED },
     });
     crmMelden("registriert", candidate.id);
+    // Schalter „Selbstcheck vor der Buchung“: Ergebnis aus dem Cookie (vor der Registrierung gemacht) übernehmen
+    await selbstcheckUebernehmen(user.id);
   }
 
   const session = await getSession();

@@ -5,6 +5,7 @@ import { getSession } from "@/lib/session";
 import { ROLE, type Role } from "@/lib/enums";
 import { rateLimit, clientIp } from "@/lib/rate-limit";
 import { WEG1 } from "@/lib/weg1";
+import { selbstcheckUebernehmen } from "@/lib/selbstcheck-vorbuchung-server";
 
 const schema = z.object({
   login: z.string().min(1),
@@ -42,6 +43,8 @@ export async function POST(req: Request) {
   session.email = user.email ?? undefined;
   session.locale = user.locale;
   await session.save();
+  // Schalter „Selbstcheck vor der Buchung“: Ergebnis aus dem Cookie (vor der Anmeldung gemacht) übernehmen
+  if (user.role === ROLE.CANDIDATE) await selbstcheckUebernehmen(user.id);
 
   let next = "/profil";
   if (user.role === ROLE.ADMIN || user.role === ROLE.SUPER_ADMIN) next = "/admin";

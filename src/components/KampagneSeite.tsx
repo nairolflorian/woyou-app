@@ -10,6 +10,8 @@ import { landingCopy } from "@/lib/landing-copy";
 import { rechtUi } from "@/lib/recht/ui-text";
 import { BOTSCHAFT_STANDARD, LAENDER, QUELLE_BA, landSlug, selbstcheckHref } from "@/lib/laender";
 import { fillKampagne, kampagneLang, kampagneText } from "@/lib/kampagne-text";
+import { selbstcheckMitNext } from "@/lib/selbstcheck-vorbuchung";
+import { selbstcheckVorBuchungAn } from "@/lib/selbstcheck-vorbuchung-server";
 
 // Kampagne „Spremi se za januar“ unter /januar und /spremi-se-za-januar (gleiche Seite, kanonisch /januar).
 // Sprache: Middleware stellt beim ersten Besuch mit ?land=RS oder utm_source=fb_rs Serbisch ein, sonst die aktuelle Sprache.
@@ -40,6 +42,8 @@ export async function KampagneSeite({ searchParams }: { searchParams: Promise<{ 
   const price = formatPrice(ANGEBOT.startpaket.priceCents, locale);
   const bookHref = session.userId && session.role === ROLE.CANDIDATE ? "/bewerbungsservice/buchen" : `/registrierung?next=${encodeURIComponent("/bewerbungsservice/buchen")}`;
   const checkHref = selbstcheckHref(slug);
+  // Schalter „Selbstcheck vor der Buchung“: „Jetzt starten“ führt zuerst zum Selbstcheck
+  const startHref = selbstcheckVorBuchungAn() ? selbstcheckMitNext(checkHref) : bookHref;
   const ctaStart = `${c.ctaStart} ${rechtUi(locale).vat}`;
 
   return (
@@ -54,7 +58,7 @@ export async function KampagneSeite({ searchParams }: { searchParams: Promise<{ 
             <p className="mt-5 text-lg leading-relaxed text-[color:var(--color-ink-soft)]">{f(k.lead)}</p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link href={checkHref} className="btn-primary px-7">{k.ctaCheck}</Link>
-              <Link href={bookHref} className="btn-outline px-7">{ctaStart}</Link>
+              <Link href={startHref} className="btn-outline px-7">{ctaStart}</Link>
             </div>
           </div>
         </section>
@@ -127,7 +131,7 @@ export async function KampagneSeite({ searchParams }: { searchParams: Promise<{ 
             <p className="mt-3 text-lg text-[color:var(--color-ink-soft)]">{k.ctaLead}</p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Link href={checkHref} className="btn-primary px-7">{k.ctaCheck}</Link>
-              <Link href={bookHref} className="btn-outline px-7">{ctaStart}</Link>
+              <Link href={startHref} className="btn-outline px-7">{ctaStart}</Link>
             </div>
           </div>
         </section>

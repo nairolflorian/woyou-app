@@ -121,6 +121,9 @@ model Candidate {
   subscriptionUntil   DateTime? // ALT (vor Weg 1): Abo „unbegrenzt bewerben“ galt bis hier
   // Weg 1: Bewerbungswerkzeug (Stellensuche, Anschreiben je Stelle, Tracker) ist bis hier freigeschaltet
   toolAccessUntil     DateTime?
+  // Schalter „Selbstcheck vor der Buchung“: letztes Ergebnis als JSON {level, datum, land?, gruppe?}, kein Freitext.
+  // Nicht mit der anonymen Statistik (SelfCheckResult) verknüpft.
+  selbstcheck         String?
   savedJobs           SavedJob[]
 }
 

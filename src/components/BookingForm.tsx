@@ -4,7 +4,8 @@ import { useState } from "react";
 
 type Copy = { phone: string; jobs: string; regions: string; notes: string; terms: string; waiver: string; submit: string; failed: string };
 
-export function BookingForm({ copy, defaults }: { copy: Copy; defaults: { phone: string; jobs: string; regions: string } }) {
+// confirmAgainstAdvice: nur mit Schalter „Selbstcheck vor der Buchung“ bei Rot (SELFCHECK_MODE "warn"), Pflicht-Häkchen
+export function BookingForm({ copy, defaults, confirmAgainstAdvice }: { copy: Copy; defaults: { phone: string; jobs: string; regions: string }; confirmAgainstAdvice?: string }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -24,6 +25,7 @@ export function BookingForm({ copy, defaults }: { copy: Copy; defaults: { phone:
         notes: f.get("notes"),
         acceptTerms: f.get("terms") === "on",
         acceptWaiver: f.get("waiver") === "on",
+        ...(confirmAgainstAdvice ? { trotzdemBuchen: f.get("trotzdem") === "on" } : {}),
       }),
     });
     const data = await res.json().catch(() => ({}));
@@ -43,6 +45,7 @@ export function BookingForm({ copy, defaults }: { copy: Copy; defaults: { phone:
       <div><label className="label" htmlFor="notes">{copy.notes}</label><textarea id="notes" name="notes" className="input min-h-24" maxLength={1000} /></div>
       <label className="flex gap-3 text-sm"><input type="checkbox" name="terms" required className="mt-1" /><span>{copy.terms} <a href="/agb" target="_blank" className="underline">AGB</a> · <a href="/datenschutz" target="_blank" className="underline">Datenschutz</a> · <a href="/widerruf" target="_blank" className="underline">Widerrufsbelehrung</a></span></label>
       <label className="flex gap-3 text-sm"><input type="checkbox" name="waiver" required className="mt-1" /><span>{copy.waiver}</span></label>
+      {confirmAgainstAdvice && <label className="flex gap-3 text-sm font-semibold text-rose-900"><input type="checkbox" name="trotzdem" required className="mt-1" /><span>{confirmAgainstAdvice}</span></label>}
       {error && <p className="text-sm bg-rose-50 border border-rose-200 text-rose-700 rounded p-2">{error}</p>}
       <button className="btn-primary w-full justify-center" disabled={loading}>{loading ? "…" : copy.submit}</button>
     </form>

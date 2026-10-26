@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { evaluate, balkanLand, isDriverGroup, saisonDatum, BALKAN_GROUPS, EMPTY_BALKAN, UNTERLAGEN_BIS, WESTBALKAN, type Answer, type Balkan, type CheckLang, type Verdict } from "@/lib/selfcheck";
 import { COMPANY } from "@/lib/company";
 
@@ -29,9 +29,21 @@ function meldeErgebnis(a: Answer, wb: boolean, v: Verdict, locale: string) {
   } catch { /* Statistik ist optional */ }
 }
 
+// Schalter „Selbstcheck vor der Buchung“: Ergebnis fürs Konto bzw. Cookie merken (nur Ampel, Datum, beim Westbalkan Land und Gruppe).
+// Getrennt von der anonymen Statistik oben. Fehler dürfen den Selbstcheck nie stören.
+function merkeErgebnis(a: Answer, wb: boolean, v: Verdict): Promise<unknown> {
+  try {
+    const land = wb ? balkanLand(a.country) : null;
+    const body = { level: v.level, land: land ?? undefined, gruppe: land ? a.balkan?.group || undefined : undefined };
+    return fetch("/api/selbstcheck/merken", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body), keepalive: true }).catch(() => {});
+  } catch { return Promise.resolve(); }
+}
+
 const TONE = { green: "border-emerald-300 bg-emerald-50 text-emerald-900", yellow: "border-amber-300 bg-amber-50 text-amber-900", red: "border-rose-300 bg-rose-50 text-rose-900" };
 
-export function SelfCheck({ locale, bookHref, block, price, initialCountry = "", initialGroup = "" }: { locale: string; bookHref: string; block: boolean; price: string; initialCountry?: string; initialGroup?: Balkan["group"] }) {
+// merken / nextLabel nur mit Schalter „Selbstcheck vor der Buchung“; ohne beide Props wie bisher
+export function SelfCheck({ locale, bookHref, block, price, initialCountry = "", initialGroup = "", merken = false, nextLabel }: { locale: string; bookHref: string; block: boolean; price: string; initialCountry?: string; initialGroup?: Balkan["group"]; merken?: boolean; nextLabel?: string }) {
+  const gemerkt = useRef<Promise<unknown> | null>(null);
   const t = SELFCHECK_TEXT[(locale in SELFCHECK_TEXT ? locale : "en") as keyof typeof SELFCHECK_TEXT];
   const lang: CheckLang = (LANGS as string[]).includes(locale) ? (locale as CheckLang) : "en";
   const [a, setA] = useState<Answer>({ job: "", degree: "vocational", german: "B1", recognition: "unknown", country: initialCountry, balkan: { ...EMPTY_BALKAN, group: initialGroup } });
@@ -54,6 +66,7 @@ export function SelfCheck({ locale, bookHref, block, price, initialCountry = "",
         const verdict = evaluate(wb ? a : { ...a, balkan: undefined }, lang);
         setV(verdict);
         meldeErgebnis(a, wb, verdict, locale);
+        if (merken) gemerkt.current = merkeErgebnis(a, wb, verdict);
       }}>
         <div>
           <label className="label">{t.country}</label>
@@ -81,7 +94,13 @@ export function SelfCheck({ locale, bookHref, block, price, initialCountry = "",
           <div className={`rounded-2xl border-2 p-6 ${TONE[v.level]}`}>
             <div className="text-lg font-bold">{v.level === "green" ? "✓ " : v.level === "red" ? "✕ " : "! "}{t[v.level]}</div>
             <ul className="mt-3 space-y-2 text-sm">{v.reasons.map((r) => <li key={r}>{r}</li>)}</ul>
-            {(v.level !== "red" || !block) && <a href={bookHref} className={v.level === "red" ? "btn-outline mt-5 inline-flex" : "btn-primary mt-5 inline-flex"}>{t.book.replace("{price}", price)}</a>}
+            {(v.level !== "red" || !block) && <a href={bookHref} className={v.level === "red" ? "btn-outline mt-5 inline-flex" : "btn-primary mt-5 inline-flex"} onClick={merken ? (e) => {
+              // erst weiter, wenn das Ergebnis gemerkt ist (höchstens 3 Sekunden warten)
+              const p = gemerkt.current;
+              if (!p) return;
+              e.preventDefault();
+              void Promise.race([p, new Promise((r) => setTimeout(r, 3000))]).then(() => { window.location.href = bookHref; });
+            } : undefined}>{nextLabel ?? t.book.replace("{price}", price)}</a>}
             <p className="mt-4 text-xs opacity-80">{t.contact.replace("{email}", COMPANY.email)}</p>
           </div>
         )}

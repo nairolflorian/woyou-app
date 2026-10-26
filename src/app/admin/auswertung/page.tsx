@@ -8,6 +8,7 @@ import { SOURCE_NAME, type Source } from "@/lib/stellensuche-core";
 import { pilotReport } from "@/lib/report";
 import { PILOT_ZIELE, zielStatus, LAND_LABEL, GRUPPE_LABEL, type Ziel, type ZielStatus, type LandCode } from "@/lib/pilot-core";
 import type { BalkanGroup } from "@/lib/selfcheck";
+import { selbstcheckVorBuchungAn, selfcheckMode } from "@/lib/selbstcheck-vorbuchung-server";
 
 export const dynamic = "force-dynamic";
 
@@ -83,6 +84,11 @@ export default async function Auswertung() {
       <div>
         <h1 className="text-2xl font-bold">Auswertung</h1>
         <p className="text-sm text-[color:var(--color-ink-soft)]">Unterlagen und Bewerbungswerkzeug auf einen Blick: Umsatz, Kundenweg und anonyme Summen aus der Stellensuche.</p>
+        {/* Nur Anzeige: geschaltet über SELBSTCHECK_VOR_BUCHUNG (on) und SELFCHECK_MODE (warn/block) in der Server-Umgebung */}
+        <p className="mt-2 text-sm">
+          Selbstcheck vor der Buchung: <strong>{selbstcheckVorBuchungAn() ? "an" : "aus"}</strong>
+          {selbstcheckVorBuchungAn() && <span className="text-[color:var(--color-ink-soft)]"> (bei Rot: {selfcheckMode() === "block" ? "keine Buchung möglich" : "Hinweis mit Bestätigung"})</span>}
+        </p>
       </div>
 
       <section className="card space-y-4">

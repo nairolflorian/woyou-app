@@ -12,6 +12,8 @@ import { mappeText } from "@/lib/mappe-i18n";
 import { DESIGN_TEMPLATES } from "@/lib/design";
 import { SchemaOrg } from "@/components/SchemaOrg";
 import { rechtUi } from "@/lib/recht/ui-text";
+import { selbstcheckMitNext } from "@/lib/selbstcheck-vorbuchung";
+import { selbstcheckVorBuchungAn } from "@/lib/selbstcheck-vorbuchung-server";
 
 // Startseite = Angebot (Weg 1: Unterlagen plus Werkzeug), aufgebaut nach dem Konzept „Ehrlichkeit als Verkaufsargument“:
 // Hero mit Grenze, Preis neben „Bitte beachte“, Das machen wir | nicht, realistische Erwartung, Muster, Selbstcheck, Ablauf, FAQ.
@@ -45,6 +47,8 @@ export async function ServiceLanding({ intro, checkHref = "/selbstcheck" }: { in
   const price = formatPrice(ANGEBOT.startpaket.priceCents, locale);
   const isCandidate = session.userId && session.role === ROLE.CANDIDATE;
   const bookHref = isCandidate ? "/bewerbungsservice/buchen" : `/registrierung?next=${encodeURIComponent("/bewerbungsservice/buchen")}`;
+  // Schalter „Selbstcheck vor der Buchung“: „Jetzt starten“ führt zuerst zum Selbstcheck (aus: wie bisher zur Buchung)
+  const startHref = selbstcheckVorBuchungAn() ? selbstcheckMitNext(checkHref) : bookHref;
   const loginHref = isCandidate ? "/bewerbungsservice/buchen" : `/anmelden?next=${encodeURIComponent("/bewerbungsservice/buchen")}`;
 
   return (
@@ -61,7 +65,7 @@ export async function ServiceLanding({ intro, checkHref = "/selbstcheck" }: { in
               <h1 className="mt-4 text-3xl md:text-[2.7rem] font-bold leading-tight text-[color:var(--color-ink)]">{c.h1}</h1>
               <p className="mt-5 text-lg text-[color:var(--color-ink-soft)] leading-relaxed">{c.sub}</p>
               <div className="mt-8 flex flex-wrap gap-3">
-                <Link href={bookHref} className="btn-primary px-7">{c.ctaStart}</Link>
+                <Link href={startHref} className="btn-primary px-7">{c.ctaStart}</Link>
                 <Link href={checkHref} className="btn-outline px-7">{c.ctaCheck}</Link>
               </div>
               <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-1 text-sm font-semibold text-emerald-800">
@@ -249,7 +253,7 @@ export async function ServiceLanding({ intro, checkHref = "/selbstcheck" }: { in
               ))}
             </div>
             <div className="mt-10 flex flex-wrap gap-3">
-              <Link href={bookHref} className="btn-primary">{c.ctaStart}</Link>
+              <Link href={startHref} className="btn-primary">{c.ctaStart}</Link>
               <Link href={checkHref} className="btn-outline">{c.ctaCheck}</Link>
             </div>
           </div>

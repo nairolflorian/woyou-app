@@ -2,9 +2,10 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { COMPANY } from "@/lib/company";
 import { terminlandUrl } from "@/lib/termin";
+import { selbstcheckVorBuchungAn } from "@/lib/selbstcheck-vorbuchung-server";
 
 export const metadata = { title: "Datenschutz" };
-// zur Laufzeit rendern, damit der Terminland-Absatz dem gesetzten TERMINLAND_URL folgt
+// zur Laufzeit rendern, damit der Terminland-Absatz dem gesetzten TERMINLAND_URL folgt (ebenso SELBSTCHECK_VOR_BUCHUNG)
 export const dynamic = "force-dynamic";
 
 // ANWALT PRÜFEN (Weg 1, 22.10.2026): Abschnitte 2 (Bewerbungswerkzeug), 3 (Zweck) und 4 (Empfänger,
@@ -45,8 +46,10 @@ export default function Datenschutz() {
                 {/* ANWALT PRÜFEN (26.10.2026): Selbstcheck-Statistik ohne Personenbezug (Tabelle SelfCheckResult: Ländercode bzw. „andere“, Berufsgruppe,
                     Deutschniveau, Ampel, Seitensprache, utm_source; Zeit auf die Stunde gerundet; keine IP, kein Freitext). Rechtsgrundlage in Abschnitt 3 ergänzen? */}
                 <li><strong>Selbstcheck:</strong> Das Ergebnis deines Selbstchecks speichern wir ohne Bezug zu deiner Person (Land bzw. Ländergruppe, Berufsgruppe, Deutschniveau, Ergebnis, Sprache der Seite und gegebenenfalls die Quelle des Werbelinks, über den du gekommen bist) für unsere Statistik; deinen Beruf und dein Land als eingetippten Text speichern wir nicht.</li>
+                {/* ANWALT PRÜFEN (Schalter SELBSTCHECK_VOR_BUCHUNG, nur sichtbar wenn an): Ergebnis im Konto bzw. Cookie woyou_selbstcheck (7 Tage), nötig für die Bestellung */}
+                {selbstcheckVorBuchungAn() && <li><strong>Selbstcheck vor der Buchung:</strong> Damit du buchen kannst, merken wir uns dein letztes Selbstcheck-Ergebnis (Ampel und Datum, bei den Westbalkan-Staaten auch Land und Berufsgruppe) in deinem Konto. Machst du den Selbstcheck vor der Registrierung, steht das Ergebnis bis zu 7 Tage in einem Cookie und wird bei der Registrierung oder Anmeldung in dein Konto übernommen. Deine eingetippten Angaben speichern wir dabei nicht.</li>}
                 <li><strong>Zahlung:</strong> wird direkt bei Stripe abgewickelt. Wir speichern keine Kartendaten.</li>
-                <li><strong>Technik:</strong> Login-Cookie und Sprach-Cookie. Kein Tracking, keine Werbe-Cookies.</li>
+                <li><strong>Technik:</strong> Login-Cookie und Sprach-Cookie{selbstcheckVorBuchungAn() ? ", dazu das Selbstcheck-Cookie (siehe oben)" : ""}. Kein Tracking, keine Werbe-Cookies.</li>
               </ul>
             </section>
 

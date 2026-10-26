@@ -927,6 +927,7 @@ async function main() {
   });
 
   await verbraucherrechtTests();
+  await selbstcheckVorBuchungTests();
 
   if (process.argv.includes("--live")) {
     await test("Live: Jobbörse liefert Treffer mit Arbeitszeit-Filter", async () => {
@@ -1086,6 +1087,94 @@ async function verbraucherrechtTests() {
     const schema = fs.readFileSync("prisma/schema.prisma", "utf8");
     assert.match(schema, /model Widerruf \{/); assert.match(schema, /model Kuendigung \{/);
     for (const f of ["src/lib/recht/vertrag.ts", "src/lib/recht/ui-text.ts", "src/lib/recht/agb-text.ts", "src/lib/recht/widerruf-text.ts", "src/app/widerruf/page.tsx", "src/app/vertrag-widerrufen/page.tsx", "src/app/vertrag-kuendigen/page.tsx", "src/components/WiderrufForm.tsx", "src/components/KuendigungForm.tsx", "src/components/RechtBestaetigung.tsx", "src/components/WiderrufAdmin.tsx", "src/app/admin/widerrufe/page.tsx", "docs/Buchungsbestaetigung_Text.md"])
+      assert.ok(!/[–—]/.test(fs.readFileSync(f, "utf8")), `${f}: langer Strich`);
+  });
+}
+
+// ---------- Schalter „Selbstcheck vor der Buchung“ (standardmäßig aus) ----------
+async function selbstcheckVorBuchungTests() {
+  const fs = await import("node:fs");
+  const S = await import("../src/lib/selbstcheck-vorbuchung");
+  const { VORBUCHUNG_TEXT } = await import("../src/lib/selbstcheck-vorbuchung-text");
+  const now = new Date("2026-11-20T10:00:00Z");
+  const am = (tageZurueck: number) => new Date(now.getTime() - tageZurueck * 86_400_000).toISOString().slice(0, 10);
+  const gruen = { level: "green" as const, datum: am(2) }, gelb = { level: "yellow" as const, datum: am(5) }, rot = { level: "red" as const, datum: am(1) };
+
+  await test("Selbstcheck vor der Buchung: aus = Bestellformular immer wie bisher", () => {
+    for (const v of [undefined, "", "off", "aus", "true", "1", "yes", "onn", "an"]) assert.equal(S.schalterAn(v), false, String(v));
+    assert.ok(S.schalterAn("on") && S.schalterAn(" ON "));
+    for (const check of [null, gruen, gelb, rot, { level: "red" as const, datum: am(90) }])
+      for (const mode of ["warn", "block"] as const) assert.deepEqual(S.buchungsSicht({ an: false, mode, check, now }), { art: "formular", check: null });
+    assert.equal(S.selfcheckModeAus(undefined), "warn"); assert.equal(S.selfcheckModeAus(""), "warn"); assert.equal(S.selfcheckModeAus("block"), "block"); assert.equal(S.selfcheckModeAus("blok"), "warn");
+  });
+  await test("Selbstcheck vor der Buchung: ohne Check der letzten 30 Tage zum Selbstcheck", () => {
+    assert.deepEqual(S.buchungsSicht({ an: true, mode: "warn", check: null, now }), { art: "zumSelbstcheck" });
+    assert.deepEqual(S.buchungsSicht({ an: true, mode: "warn", check: { level: "green", datum: am(31) }, now }), { art: "zumSelbstcheck" });
+    assert.equal(S.buchungsSicht({ an: true, mode: "warn", check: { level: "green", datum: am(30) }, now }).art, "formular");
+    assert.deepEqual(S.buchungsSicht({ an: true, mode: "block", check: { level: "green", datum: am(-3) }, now }), { art: "zumSelbstcheck" }, "Datum in der Zukunft gilt nicht");
+  });
+  await test("Selbstcheck vor der Buchung: Grün und Gelb zeigen das Formular mit Ergebnis", () => {
+    for (const mode of ["warn", "block"] as const) {
+      assert.deepEqual(S.buchungsSicht({ an: true, mode, check: gruen, now }), { art: "formular", check: gruen });
+      assert.deepEqual(S.buchungsSicht({ an: true, mode, check: gelb, now }), { art: "formular", check: gelb });
+    }
+  });
+  await test("Selbstcheck vor der Buchung: Rot mit warn = Formular mit Pflicht-Bestätigung, Rot mit block = kein Formular", () => {
+    assert.deepEqual(S.buchungsSicht({ an: true, mode: "warn", check: rot, now }), { art: "formularMitBestaetigung", check: rot });
+    assert.deepEqual(S.buchungsSicht({ an: true, mode: "block", check: rot, now }), { art: "gesperrt", check: rot });
+    const api = fs.readFileSync("src/app/api/bookings/route.ts", "utf8");
+    assert.match(api, /buchungsSicht\(/, "Schnittstelle prüft ebenfalls");
+    assert.match(api, /"formularMitBestaetigung" && d\.trotzdemBuchen !== true/);
+    assert.match(fs.readFileSync("src/components/BookingForm.tsx", "utf8"), /name="trotzdem" required/);
+    assert.equal(VORBUCHUNG_TEXT.de.redConfirm, "Ich habe gelesen, dass WoYou mir abrät, und möchte trotzdem buchen");
+  });
+  await test("Selbstcheck vor der Buchung: gemerkt wird nur Ampel, Datum, Westbalkan-Land und Gruppe", () => {
+    const e = S.gemerktAusEingabe({ level: "yellow", land: "RS", gruppe: "ce", job: "Fahrer", country: "Serbien", userId: "x" }, now);
+    assert.deepEqual(e, { level: "yellow", datum: "2026-11-20", land: "RS", gruppe: "ce" });
+    assert.deepEqual(S.gemerktAusEingabe({ level: "green", land: "DE", gruppe: "ce" }, now), { level: "green", datum: "2026-11-20" }, "Gruppe nur mit Westbalkan-Land");
+    assert.deepEqual(S.gemerktAusEingabe({ level: "red", datum: "2020-01-01" }, now), { level: "red", datum: "2026-11-20" }, "Datum setzt der Server");
+    assert.equal(S.gemerktAusEingabe({ level: "blau" }, now), null);
+    assert.equal(S.gemerktAusEingabe("red", now), null);
+    assert.equal(S.parseGemerkt("{kaputt"), null); assert.equal(S.parseGemerkt(null), null);
+    assert.deepEqual(S.parseGemerkt(S.gemerktJson(e!)), e);
+    assert.equal(S.neuester(gruen, rot), rot); assert.equal(S.neuester(null, gelb), gelb); assert.equal(S.neuester(gelb, null), gelb);
+    // anonyme Statistik bleibt anonym und getrennt
+    const ergebnis = fs.readFileSync("src/app/api/selbstcheck/ergebnis/route.ts", "utf8"), merken = fs.readFileSync("src/app/api/selbstcheck/merken/route.ts", "utf8");
+    assert.ok(!/getSession|candidate|userId/.test(ergebnis), "Statistik ohne Konto");
+    assert.ok(!/selfCheckResult/.test(merken), "Merken schreibt nicht in die Statistik");
+    assert.match(fs.readFileSync("prisma/schema.prisma", "utf8"), /model SelfCheckResult \{(?![^}]*(userId|candidate))[^}]*\}/, "SelfCheckResult ohne Nutzerbezug");
+    assert.match(merken, /if \(!selbstcheckVorBuchungAn\(\)\) return leer\(204\)/, "aus: nichts merken");
+  });
+  await test("Selbstcheck vor der Buchung: Weiterleitung nur zur Bestellseite, Links mit next", () => {
+    assert.equal(S.erlaubtesNext("/bewerbungsservice/buchen"), "/bewerbungsservice/buchen");
+    for (const v of [undefined, "", "https://evil.example", "//evil.example", "/profil"]) assert.equal(S.erlaubtesNext(v), null, String(v));
+    assert.equal(S.selbstcheckMitNext(), "/selbstcheck?next=%2Fbewerbungsservice%2Fbuchen");
+    assert.equal(S.selbstcheckMitNext("/selbstcheck?land=RS"), "/selbstcheck?land=RS&next=%2Fbewerbungsservice%2Fbuchen");
+  });
+  await test("Selbstcheck vor der Buchung: Texte in allen 7 Sprachen mit gleichen Schlüsseln und Platzhaltern", () => {
+    const keys = (o: object, p = ""): string[] => Object.entries(o).flatMap(([k, v]) => (v && typeof v === "object" ? keys(v, `${p}${k}.`) : [`${p}${k}`])).sort();
+    const val = (o: Record<string, unknown>, k: string) => k.split(".").reduce<unknown>((x, kk) => (x as Record<string, unknown>)[kk], o) as string;
+    assert.deepEqual(Object.keys(VORBUCHUNG_TEXT).sort(), ["ar", "de", "en", "fr", "hi", "sr", "te"]);
+    const de = keys(VORBUCHUNG_TEXT.de);
+    for (const [lang, t] of Object.entries(VORBUCHUNG_TEXT)) {
+      assert.deepEqual(keys(t), de, lang);
+      for (const k of de) {
+        const s = val(t as unknown as Record<string, unknown>, k), d = val(VORBUCHUNG_TEXT.de as unknown as Record<string, unknown>, k);
+        assert.ok(s.trim().length > 0, `${lang}.${k} leer`);
+        assert.deepEqual((s.match(/\{\w+\}/g) ?? []).sort(), (d.match(/\{\w+\}/g) ?? []).sort(), `${lang}.${k} Platzhalter`);
+        assert.ok(!/[–—]/.test(s), `${lang}.${k}: langer Strich`);
+      }
+    }
+    assert.ok(!/\b(tu|ton|ta|tes)\b/i.test(JSON.stringify(VORBUCHUNG_TEXT.fr)), "fr in der Sie-Form");
+    assert.ok(!/[\u0400-\u04FF]/.test(JSON.stringify(VORBUCHUNG_TEXT.sr)), "sr in lateinischer Schrift");
+    assert.ok(!/\b(KI|AI|künstliche Intelligenz)\b/.test(JSON.stringify(VORBUCHUNG_TEXT)), "kein KI-Wording");
+  });
+  await test("Selbstcheck vor der Buchung: Schalter in .env.example, Staging-Compose und Auswertung, keine langen Striche", () => {
+    assert.match(fs.readFileSync(".env.example", "utf8"), /^SELBSTCHECK_VOR_BUCHUNG=$/m);
+    assert.ok(fs.readFileSync("docker-compose.yml", "utf8").includes("SELBSTCHECK_VOR_BUCHUNG: ${SELBSTCHECK_VOR_BUCHUNG:-}"));
+    assert.match(fs.readFileSync("src/app/admin/auswertung/page.tsx", "utf8"), /Selbstcheck vor der Buchung: <strong>\{selbstcheckVorBuchungAn\(\) \? "an" : "aus"\}/);
+    for (const f of ["src/components/ServiceLanding.tsx", "src/components/KampagneSeite.tsx"]) assert.match(fs.readFileSync(f, "utf8"), /selbstcheckVorBuchungAn\(\) \? selbstcheckMitNext\(checkHref\) : bookHref/, f);
+    for (const f of ["src/lib/selbstcheck-vorbuchung.ts", "src/lib/selbstcheck-vorbuchung-server.ts", "src/lib/selbstcheck-vorbuchung-text.ts", "src/app/api/selbstcheck/merken/route.ts", "src/app/bewerbungsservice/buchen/page.tsx", "src/components/BookingForm.tsx", "src/components/SelfCheck.tsx", "src/app/selbstcheck/page.tsx"])
       assert.ok(!/[–—]/.test(fs.readFileSync(f, "utf8")), `${f}: langer Strich`);
   });
 }

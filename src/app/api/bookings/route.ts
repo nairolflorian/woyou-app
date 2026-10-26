@@ -7,6 +7,9 @@ import { rateLimit, clientIp } from "@/lib/rate-limit";
 import { SERVICES, SERVICE_KEYS, BOOKING_STATUS } from "@/lib/services";
 import { startCheckout, bookingMails, ensureTask } from "@/lib/bookings";
 import { crmMelden } from "@/lib/crm-sync";
+import { audit } from "@/lib/audit";
+import { buchungsSicht } from "@/lib/selbstcheck-vorbuchung";
+import { selbstcheckVorBuchungAn, selfcheckMode, gemerkterCheck } from "@/lib/selbstcheck-vorbuchung-server";
 
 const Body = z.object({
   // Weg 1: nur noch das Startpaket (Unterlagen plus Werkzeug); keine Vollmacht zum Versand mehr
@@ -17,6 +20,8 @@ const Body = z.object({
   notes: z.string().trim().max(1000).optional().nullable(),
   acceptTerms: z.literal(true),
   acceptWaiver: z.literal(true),
+  // Schalter „Selbstcheck vor der Buchung“, nur bei Rot mit SELFCHECK_MODE "warn": „trotzdem buchen“ angehakt
+  trotzdemBuchen: z.boolean().optional(),
 });
 
 export async function POST(req: Request) {
@@ -31,6 +36,12 @@ export async function POST(req: Request) {
 
   const candidate = await prisma.candidate.findUnique({ where: { userId: session.userId } });
   if (!candidate) return NextResponse.json({ error: "Bitte lege zuerst dein Profil an." }, { status: 404 });
+
+  // Schalter „Selbstcheck vor der Buchung“ (aus: ergibt immer "formular", also wie bisher)
+  const sicht = buchungsSicht({ an: selbstcheckVorBuchungAn(), mode: selfcheckMode(), check: await gemerkterCheck(candidate.selbstcheck) });
+  if (sicht.art === "zumSelbstcheck") return NextResponse.json({ error: "Bitte mach vor der Buchung zuerst den Selbstcheck." }, { status: 409 });
+  if (sicht.art === "gesperrt") return NextResponse.json({ error: "Nach deinem Selbstcheck raten wir dir ab. Eine Buchung ist im Moment nicht möglich." }, { status: 403 });
+  if (sicht.art === "formularMitBestaetigung" && d.trotzdemBuchen !== true) return NextResponse.json({ error: "Bitte bestätige, dass du den Hinweis gelesen hast und trotzdem buchen möchtest." }, { status: 400 });
 
   const existing = await prisma.serviceBooking.findFirst({
     where: { candidateId: candidate.id, packageKey: { in: SERVICE_KEYS }, status: { in: [BOOKING_STATUS.REQUESTED, BOOKING_STATUS.PAID, BOOKING_STATUS.IN_PROGRESS] } },
@@ -58,6 +69,7 @@ export async function POST(req: Request) {
     },
   });
   crmMelden("gebucht", candidate.id, { paket: booking.packageKey });
+  if (sicht.art === "formularMitBestaetigung") await audit(req, "BOOKING_AGAINST_ADVICE", { candidateId: candidate.id }, { bookingId: booking.id, selbstcheck: sicht.check.level, am: sicht.check.datum });
 
   const url = await startCheckout(booking.id, new URL(req.url).origin);
   if (url) return NextResponse.json({ ok: true, url });

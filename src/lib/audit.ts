@@ -23,7 +23,8 @@ export type AuditAction =
   | "ACCOUNT_SELF_DELETE"
   | "CRON_REMATCH_RUN"
   | "CRON_REMINDERS_RUN"
-  | "BOOKING_UPDATE";
+  | "BOOKING_UPDATE"
+  | "BOOKING_AGAINST_ADVICE"; // Selbstcheck Rot, Kund:in hat „trotzdem buchen“ bestätigt
 
 type Refs = {
   candidateId?: string | null;
@@ -80,6 +81,7 @@ export const AUDIT_ACTION_LABEL: Record<AuditAction, string> = {
   TASK_CREATE: "Aufgabe angelegt",
   TASK_STATUS_CHANGE: "Aufgaben-Status geändert",
   BOOKING_UPDATE: "Buchung bearbeitet",
+  BOOKING_AGAINST_ADVICE: "Gebucht trotz Abraten (Selbstcheck Rot)",
   TEAM_MEMBER_CREATE: "Admin-Account angelegt",
   ACCOUNT_SELF_DELETE: "Account-Selbstlöschung",
   CRON_REMATCH_RUN: "Cron: Re-Matching",
