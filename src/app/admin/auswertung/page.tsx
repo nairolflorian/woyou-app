@@ -9,6 +9,7 @@ import { pilotReport } from "@/lib/report";
 import { PILOT_ZIELE, zielStatus, LAND_LABEL, GRUPPE_LABEL, type Ziel, type ZielStatus, type LandCode } from "@/lib/pilot-core";
 import type { BalkanGroup } from "@/lib/selfcheck";
 import { selbstcheckVorBuchungAn, selfcheckMode } from "@/lib/selbstcheck-vorbuchung-server";
+import { trackingStatus } from "@/lib/tracking";
 
 export const dynamic = "force-dynamic";
 
@@ -88,6 +89,10 @@ export default async function Auswertung() {
         <p className="mt-2 text-sm">
           Selbstcheck vor der Buchung: <strong>{selbstcheckVorBuchungAn() ? "an" : "aus"}</strong>
           {selbstcheckVorBuchungAn() && <span className="text-[color:var(--color-ink-soft)]"> (bei Rot: {selfcheckMode() === "block" ? "keine Buchung möglich" : "Hinweis mit Bestätigung"})</span>}
+        </p>
+        {/* Nur Anzeige: META_PIXEL_ID und GOOGLE_TAG_ID in der Server-Umgebung; Skripte laden erst nach Einwilligung im Banner */}
+        <p className="mt-1 text-sm">
+          Meta Pixel: <strong>{trackingStatus().meta}</strong> · Google-Tag: <strong>{trackingStatus().google}</strong>
         </p>
       </div>
 

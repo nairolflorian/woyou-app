@@ -12,6 +12,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { weg1Gesperrt } from "@/lib/weg1";
 import { startSprache } from "@/lib/laender";
+import { buildCsp, trackingIdsAus } from "@/lib/tracking-core";
 
 const isDev = process.env.NODE_ENV !== "production";
 
@@ -28,22 +29,8 @@ export function middleware(req: NextRequest) {
   // Generate one nonce per request.
   const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
 
-  const scriptSrc = isDev
-    ? `script-src 'self' 'nonce-${nonce}' 'unsafe-inline' 'unsafe-eval'`
-    : `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'`;
-
-  const csp = [
-    "default-src 'self'",
-    scriptSrc,
-    // Style-src stays loose: Next.js + Tailwind 4 inline some critical CSS.
-    "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' data:", // Fotos liegen lokal (public/bilder), nichts Externes
-    "font-src 'self' data:",
-    "connect-src 'self'",
-    "frame-ancestors 'none'",
-    "base-uri 'self'",
-    "form-action 'self'",
-  ].join("; ");
+  // Ohne META_PIXEL_ID/GOOGLE_TAG_ID exakt die bisherige CSP (src/lib/tracking-core.ts, Test in scripts/weg1-test.ts)
+  const csp = buildCsp(nonce, isDev, trackingIdsAus(process.env));
 
   const requestHeaders = new Headers(req.headers);
   requestHeaders.set("x-nonce", nonce);

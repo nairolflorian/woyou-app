@@ -58,6 +58,9 @@ services:
       # Selbstcheck vor der Buchung (aus, solange nicht "on"); bei Rot: SELFCHECK_MODE warn (Standard, auch leer) | block
       SELBSTCHECK_VOR_BUCHUNG: ${SELBSTCHECK_VOR_BUCHUNG:-}
       SELFCHECK_MODE: ${SELFCHECK_MODE:-}
+      # Tracking nur mit Einwilligung; leer = kein Banner mit Auswahl, keine externen Skripte
+      META_PIXEL_ID: ${META_PIXEL_ID:-}
+      GOOGLE_TAG_ID: ${GOOGLE_TAG_ID:-}
       STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
       SMTP_HOST: ${SMTP_HOST:-}
       SMTP_PORT: ${SMTP_PORT:-587}

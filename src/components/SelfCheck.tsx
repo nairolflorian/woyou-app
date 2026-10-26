@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { evaluate, balkanLand, isDriverGroup, saisonDatum, BALKAN_GROUPS, EMPTY_BALKAN, UNTERLAGEN_BIS, WESTBALKAN, type Answer, type Balkan, type CheckLang, type Verdict } from "@/lib/selfcheck";
 import { COMPANY } from "@/lib/company";
+import { trackEreignis } from "@/lib/tracking-client";
 
 export const SELFCHECK_TEXT = {
   de: { title: "Passt WoYou zu dir?", lead: "Ein paar kurze Fragen, kostenlos. Danach sagen wir dir offen, ob sich eine Buchung für dich lohnt.", job: "Dein Beruf", jobPh: "z. B. Elektriker, Köchin, Buchhalter", degree: "Dein Abschluss", degrees: { none: "kein Abschluss", school: "Schulabschluss", vocational: "Berufsausbildung", university: "Studium" }, german: "Dein Deutschniveau", levels: { none: "keine Kenntnisse", A1: "A1", A2: "A2", B1: "B1", B2: "B2", C1: "C1 oder besser" }, rec: "Ist dein Abschluss in Deutschland anerkannt?", recs: { yes: "ja", pending: "beantragt", no: "nein", unknown: "weiß ich nicht" }, country: "Dein Land", countryPh: "z. B. Marokko", go: "Ergebnis anzeigen", green: "Buchung sinnvoll", yellow: "Möglich, aber mit Einschränkungen", red: "Wir raten dir ab. Bitte nicht bezahlen.", book: "Jetzt starten · {price}", contact: "Fragen? Schreib uns: {email}", wb: { note: "Für die Westbalkan-Staaten haben wir ein paar Fragen mehr.", group: "Was möchtest du in Deutschland arbeiten?", groups: { ce: "Lkw-Fahrer (Klasse CE)", c: "Lkw-Fahrer (Klasse C)", bus: "Busfahrer", lager: "Lager / Kommissionierung", stapler: "Staplerfahrer", dispo: "Disposition", andere: "etwas anderes" }, choose: "Bitte wählen", since: "Seit wann hast du diese Führerscheinklasse? (Jahr, freiwillig)", sincePh: "z. B. 2016", card: "Hast du eine Fahrerkarte?", code95: "Hast du Code 95 (Grundqualifikation)?", yes: "ja", no: "nein", unknown: "weiß ich nicht", ready: "Kannst du deine Unterlagen bis {bis} fertig haben?" } },
@@ -66,6 +67,8 @@ export function SelfCheck({ locale, bookHref, block, price, initialCountry = "",
         const verdict = evaluate(wb ? a : { ...a, balkan: undefined }, lang);
         setV(verdict);
         meldeErgebnis(a, wb, verdict, locale);
+        // Meta/Google nur mit Einwilligung und gesetzten IDs: Ampel und Länderkürzel (Westbalkan), sonst nichts
+        trackEreignis({ typ: "selbstcheck", level: verdict.level, land: (wb && balkanLand(a.country)) || "other" });
         if (merken) gemerkt.current = merkeErgebnis(a, wb, verdict);
       }}>
         <div>

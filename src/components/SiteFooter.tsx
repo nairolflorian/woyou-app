@@ -1,6 +1,9 @@
 import { getT } from "@/lib/i18n";
 import { COMPANY, siteText } from "@/lib/company";
 import { rechtUi } from "@/lib/recht/ui-text";
+import { trackingAktiv } from "@/lib/tracking";
+import { consentText } from "@/lib/consent-text";
+import { CookieEinstellungenLink } from "@/components/TrackingConsent";
 
 export async function SiteFooter() {
   const { t, locale } = await getT();
@@ -39,6 +42,8 @@ export async function SiteFooter() {
             <li><a href="/datenschutz" className="hover:text-white">{t("footer.privacy")}</a></li>
             <li><a href="/widerruf" className="hover:text-white">{ru.footerWiderrufsbelehrung}</a></li>
             <li><a href="/impressum" className="hover:text-white">{t("footer.legal")}</a></li>
+            {/* nur mit Tracking-IDs: Banner erneut öffnen, Einwilligung ändern oder widerrufen */}
+            {trackingAktiv() && <li><CookieEinstellungenLink label={consentText(locale).footer} /></li>}
           </ul>
         </div>
       </div>

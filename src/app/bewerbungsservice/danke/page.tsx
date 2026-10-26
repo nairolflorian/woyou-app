@@ -9,6 +9,8 @@ import { getStripe } from "@/lib/stripe";
 import { serviceCopy } from "@/lib/services";
 import { markBookingPaid } from "@/lib/bookings";
 import { paymentTestMode } from "@/lib/werkzeug";
+import { KaufEreignis } from "@/components/KaufEreignis";
+import { trackingAktiv } from "@/lib/tracking";
 
 export const dynamic = "force-dynamic";
 
@@ -22,6 +24,7 @@ export default async function BookingThanksPage(props: { searchParams: Promise<{
   if (!candidate) redirect("/profil");
 
   let paid = false;
+  let paidBookingId: string | null = null; // für das Kauf-Ereignis (nur mit Tracking-IDs und Einwilligung)
   // Rückkehr von Stripe: Zahlung serverseitig prüfen (zusätzlich zum Webhook)
   if (sp.session_id) {
     const booking = await prisma.serviceBooking.findUnique({ where: { stripeSessionId: sp.session_id } });
@@ -32,17 +35,19 @@ export default async function BookingThanksPage(props: { searchParams: Promise<{
         const cs = await stripe.checkout.sessions.retrieve(sp.session_id).catch(() => null);
         if (cs?.payment_status === "paid" && cs.metadata?.bookingId === booking.id) { await markBookingPaid(booking.id, cs.id); paid = true; }
       }
+      if (paid) paidBookingId = booking.id;
     }
   }
   // Lokaler Testmodus ohne Stripe (PAYMENT_TEST_MODE=on, nur next dev): Zahlung gilt als erfolgt
   if (sp.test && paymentTestMode()) {
     const booking = await prisma.serviceBooking.findUnique({ where: { id: sp.test } });
-    if (booking && booking.candidateId === candidate.id) { await markBookingPaid(booking.id); paid = true; }
+    if (booking && booking.candidateId === candidate.id) { await markBookingPaid(booking.id); paid = true; paidBookingId = booking.id; }
   }
 
   return (
     <>
       <SiteHeader />
+      {paidBookingId && trackingAktiv() && <KaufEreignis buchungId={paidBookingId} />}
       <main id="main" className="flex-1 bg-[color:var(--color-surface)]">
         <div className="mx-auto max-w-xl px-6 py-20 text-center">
           <div className="text-6xl" aria-hidden>{paid ? "🎉" : "📨"}</div>

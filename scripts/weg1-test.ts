@@ -928,6 +928,7 @@ async function main() {
 
   await verbraucherrechtTests();
   await selbstcheckVorBuchungTests();
+  await trackingTests();
 
   if (process.argv.includes("--live")) {
     await test("Live: Jobbörse liefert Treffer mit Arbeitszeit-Filter", async () => {
@@ -1176,5 +1177,161 @@ async function selbstcheckVorBuchungTests() {
     for (const f of ["src/components/ServiceLanding.tsx", "src/components/KampagneSeite.tsx"]) assert.match(fs.readFileSync(f, "utf8"), /selbstcheckVorBuchungAn\(\) \? selbstcheckMitNext\(checkHref\) : bookHref/, f);
     for (const f of ["src/lib/selbstcheck-vorbuchung.ts", "src/lib/selbstcheck-vorbuchung-server.ts", "src/lib/selbstcheck-vorbuchung-text.ts", "src/app/api/selbstcheck/merken/route.ts", "src/app/bewerbungsservice/buchen/page.tsx", "src/components/BookingForm.tsx", "src/components/SelfCheck.tsx", "src/app/selbstcheck/page.tsx"])
       assert.ok(!/[–—]/.test(fs.readFileSync(f, "utf8")), `${f}: langer Strich`);
+  });
+}
+
+async function trackingTests() {
+  const fs = await import("node:fs");
+  const T = await import("../src/lib/tracking-core");
+  const { CONSENT_TEXT } = await import("../src/lib/consent-text");
+  const leer = { meta: null, google: null };
+
+  await test("Tracking: IDs werden geprüft, ungültig gilt als leer", () => {
+    assert.equal(T.parseMetaPixelId("123456789012345"), "123456789012345");
+    assert.equal(T.parseMetaPixelId(" 1234567890123456 "), "1234567890123456");
+    for (const v of [undefined, null, "", "abc", "12345", "1234567890abc", "123456789012345;", "<script>", "123 456 789 012"]) assert.equal(T.parseMetaPixelId(v), null, String(v));
+    assert.equal(T.parseGoogleTagId("G-TEST123"), "G-TEST123");
+    assert.equal(T.parseGoogleTagId("aw-123456789"), "AW-123456789");
+    for (const v of [undefined, "", "UA-1234-1", "GTM-ABCD12", "G-", "G-AB", "G-TEST 123", "G-TEST123'", "https://evil.example"]) assert.equal(T.parseGoogleTagId(v), null, String(v));
+    assert.deepEqual(T.trackingIdsAus({}), leer);
+    assert.deepEqual(T.trackingIdsAus({ META_PIXEL_ID: "x", GOOGLE_TAG_ID: "y" }), leer);
+    assert.deepEqual(T.trackingIdsAus({ META_PIXEL_ID: "123456789012345", GOOGLE_TAG_ID: "G-TEST123" }), { meta: "123456789012345", google: "G-TEST123" });
+    assert.equal(T.trackingAn(leer), false);
+    assert.equal(T.trackingAn({ meta: null, google: "G-TEST123" }), true);
+  });
+
+  await test("Tracking: ohne IDs ist die CSP genau wie bisher", () => {
+    const vorher = (nonce: string, dev: boolean) => [
+      "default-src 'self'",
+      dev ? `script-src 'self' 'nonce-${nonce}' 'unsafe-inline' 'unsafe-eval'` : `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'`,
+      "style-src 'self' 'unsafe-inline'", "img-src 'self' data:", "font-src 'self' data:", "connect-src 'self'",
+      "frame-ancestors 'none'", "base-uri 'self'", "form-action 'self'",
+    ].join("; ");
+    for (const dev of [true, false]) {
+      assert.equal(T.buildCsp("abc", dev), vorher("abc", dev));
+      assert.equal(T.buildCsp("abc", dev, leer), vorher("abc", dev));
+      assert.equal(T.buildCsp("abc", dev, T.trackingIdsAus({ META_PIXEL_ID: "kaputt", GOOGLE_TAG_ID: "" })), vorher("abc", dev));
+    }
+    const mw = fs.readFileSync("src/middleware.ts", "utf8");
+    assert.match(mw, /buildCsp\(nonce, isDev, trackingIdsAus\(process\.env\)\)/);
+    assert.ok(!/googletagmanager|facebook/.test(mw), "keine Fremd-Hosts direkt in der Middleware");
+  });
+
+  await test("Tracking: mit IDs erweitert die CSP nur um Google bzw. Meta, ohne unsafe-inline in Produktion", () => {
+    const beide = T.buildCsp("n1", false, { meta: "123456789012345", google: "G-TEST123" });
+    const d = Object.fromEntries(beide.split("; ").map((x) => [x.split(" ")[0], x]));
+    assert.match(d["script-src"], /'nonce-n1' 'strict-dynamic' https:\/\/www\.googletagmanager\.com https:\/\/connect\.facebook\.net$/);
+    assert.ok(!d["script-src"].includes("unsafe-inline") && !d["script-src"].includes("unsafe-eval"));
+    for (const h of ["https://*.google-analytics.com", "https://*.googletagmanager.com", "https://www.facebook.com"]) {
+      assert.ok(d["img-src"].includes(h), `img-src ${h}`); assert.ok(d["connect-src"].includes(h), `connect-src ${h}`);
+    }
+    assert.ok(d["connect-src"].includes("https://connect.facebook.net"));
+    assert.equal(d["frame-src"], undefined, "Frame nur für Google Ads");
+    assert.equal(d["default-src"], "default-src 'self'"); assert.equal(d["frame-ancestors"], "frame-ancestors 'none'");
+    const nurMeta = T.buildCsp("n1", false, { meta: "123456789012345", google: null });
+    assert.ok(!/google/.test(nurMeta) && /connect\.facebook\.net/.test(nurMeta));
+    const nurGoogle = T.buildCsp("n1", false, { meta: null, google: "G-TEST123" });
+    assert.ok(!/facebook/.test(nurGoogle) && /googletagmanager/.test(nurGoogle));
+    assert.match(T.buildCsp("n1", false, { meta: null, google: "AW-123456789" }), /frame-src https:\/\/td\.doubleclick\.net/);
+  });
+
+  await test("Tracking: Einwilligungs-Cookie lesen und schreiben", () => {
+    assert.equal(T.parseConsent("v1:all"), "all"); assert.equal(T.parseConsent("v1:none"), "none");
+    for (const v of [undefined, null, "", "all", "v0:all", "v2:all", "v1:alle", "v1:all;x", "true"]) assert.equal(T.parseConsent(v), null, String(v));
+    assert.equal(T.consentAusCookieHeader("woyou_locale=de; woyou_consent=v1:all; x=1"), "all");
+    assert.equal(T.consentAusCookieHeader("woyou_consent=v1%3Anone"), "none");
+    assert.equal(T.consentAusCookieHeader("xwoyou_consent=v1:all"), null);
+    assert.equal(T.consentAusCookieHeader(""), null); assert.equal(T.consentAusCookieHeader(undefined), null);
+    const c = T.consentCookie("all", true);
+    assert.match(c, /^woyou_consent=v1:all; Path=\/; Max-Age=(\d+); SameSite=Lax; Secure$/);
+    const tage = Number(c.match(/Max-Age=(\d+)/)![1]) / 86400;
+    assert.ok(tage >= 180 && tage <= 186, "6 Monate");
+    assert.ok(!T.consentCookie("none", false).includes("Secure"));
+    for (const n of ["_ga", "_ga_ABC123", "_gid", "_gcl_au", "_fbp", "_fbc"]) assert.ok(T.FREMD_COOKIE.test(n), n);
+    for (const n of ["woyou_consent", "woyou_locale", "woyou_session", "ga"]) assert.ok(!T.FREMD_COOKIE.test(n), n);
+  });
+
+  await test("Tracking: Ereignisse nur mit festen Werten, Kauf mit Buchungs-ID als event_id", async () => {
+    const { ANGEBOT } = await import("../src/lib/angebot");
+    assert.equal(T.KAUF_WERT_EUR * 100, ANGEBOT.startpaket.priceCents);
+    assert.deepEqual(T.sauberesEreignis({ typ: "selbstcheck", level: "green", land: "RS", job: "Fahrer", email: "a@b.de" }), { typ: "selbstcheck", level: "green", land: "RS" });
+    assert.deepEqual(T.sauberesEreignis({ typ: "selbstcheck", level: "red", land: "Serbien" }), { typ: "selbstcheck", level: "red", land: "other" });
+    assert.equal(T.sauberesEreignis({ typ: "selbstcheck", level: "blau" }), null);
+    assert.deepEqual(T.sauberesEreignis({ typ: "registrierung", email: "a@b.de", phone: "+49" }), { typ: "registrierung" });
+    assert.equal(T.sauberesEreignis({ typ: "kauf", buchungId: "a@b.de" }), null);
+    assert.equal(T.sauberesEreignis({ typ: "name", name: "Max" }), null);
+    const kauf = T.ereignisAufrufe({ typ: "kauf", buchungId: "cmabc123xyz" });
+    assert.deepEqual(kauf.meta, [{ art: "track", name: "Purchase", daten: { value: 199, currency: "EUR", content_name: "startpaket" }, eventID: "cmabc123xyz" }]);
+    assert.deepEqual(kauf.google, [{ name: "purchase", daten: { transaction_id: "cmabc123xyz", value: 199, currency: "EUR" } }]);
+    assert.deepEqual(T.ereignisAufrufe({ typ: "registrierung" }).google.map((g) => g.name), ["sign_up"]);
+    assert.deepEqual(T.ereignisAufrufe({ typ: "registrierung" }).meta.map((m) => m.name), ["CompleteRegistration"]);
+    assert.deepEqual(T.ereignisAufrufe({ typ: "selbstcheck", level: "yellow", land: "BA" }).meta.map((m) => m.name), ["SelfCheckDone", "Lead"]);
+    assert.deepEqual(T.ereignisAufrufe({ typ: "selbstcheck", level: "red", land: "other" }).google.map((g) => g.name), ["selfcheck_done"], "bei Rot kein Lead");
+    const alle = JSON.stringify([T.ereignisAufrufe({ typ: "selbstcheck", level: "green", land: "RS" }), T.ereignisAufrufe({ typ: "registrierung" }), kauf]);
+    assert.ok(!/email|phone|name"?:"(?!startpaket|selbstcheck)|first|last/i.test(alle.replace(/"name":"[A-Za-z_]+"/g, "")), "keine persönlichen Felder");
+    assert.equal(T.sichereUrl("https://woyou.de/bewerbungsservice/danke?session_id=cs_test_123&utm_source=facebook&email=a@b.de"), "https://woyou.de/bewerbungsservice/danke?utm_source=facebook");
+    assert.equal(T.sichereUrl("https://woyou.de/rs"), "https://woyou.de/rs");
+    for (const p of ["/admin", "/admin/auswertung", "/abmelden", "/registrierung/telegram", "/druck/x"]) assert.equal(T.trackingErlaubt(p), false, p);
+    for (const p of ["/", "/rs", "/selbstcheck", "/registrierung", "/bewerbungsservice/danke", "/profil", "/administration-hilfe"]) assert.equal(T.trackingErlaubt(p), true, p);
+  });
+
+  await test("Tracking: Banner-Texte in 7 Sprachen mit gleichen Schlüsseln, ohne lange Striche, fr Sie-Form, sr lateinisch", () => {
+    assert.deepEqual(Object.keys(CONSENT_TEXT).sort(), ["ar", "de", "en", "fr", "hi", "sr", "te"]);
+    const de = Object.keys(CONSENT_TEXT.de).sort();
+    for (const [lang, t] of Object.entries(CONSENT_TEXT)) {
+      assert.deepEqual(Object.keys(t).sort(), de, lang);
+      for (const [k, v] of Object.entries(t)) { assert.ok(v.trim().length > 0, `${lang}.${k} leer`); assert.ok(!/[–—]/.test(v), `${lang}.${k}: langer Strich`); }
+      assert.ok(t.body.includes(t.footer), `${lang}: Text nennt den Link in der Fußzeile`);
+      assert.ok(/Meta/.test(t.marketing) && /Google/.test(t.marketing), `${lang}: Anbieter im Schalter`);
+    }
+    assert.equal(CONSENT_TEXT.de.accept, "Alle akzeptieren"); assert.equal(CONSENT_TEXT.de.reject, "Nur notwendige");
+    assert.equal(CONSENT_TEXT.de.settings, "Einstellungen"); assert.equal(CONSENT_TEXT.de.marketing, "Statistik und Werbung (Meta, Google)");
+    assert.equal(CONSENT_TEXT.de.footer, "Cookie-Einstellungen");
+    assert.ok(!/\b(Sie|Ihre?n?)\b/.test(JSON.stringify(CONSENT_TEXT.de)), "de in der du-Form");
+    assert.ok(!/\b(tu|ton|ta|tes|te)\b/i.test(JSON.stringify(CONSENT_TEXT.fr)), "fr in der Sie-Form");
+    assert.ok(!/[\u0400-\u04FF]/.test(JSON.stringify(CONSENT_TEXT.sr)), "sr in lateinischer Schrift");
+    assert.ok(!/\b(KI|AI|künstliche Intelligenz)\b/.test(JSON.stringify(CONSENT_TEXT)), "kein KI-Wording");
+  });
+
+  await test("Tracking: Banner gleichwertig, nichts vorausgewählt, Skripte erst nach Einwilligung, ohne IDs der alte Hinweis", () => {
+    const banner = fs.readFileSync("src/components/TrackingConsent.tsx", "utf8");
+    const knopf = (k: string) => banner.match(new RegExp(`<button type="button" className="([^"]+)" onClick=\\{\\(\\) => entscheiden\\("${k}"\\)\\}`))?.[1];
+    assert.ok(knopf("all") && knopf("all") === knopf("none"), "Akzeptieren und Ablehnen gleich gestaltet");
+    assert.match(banner, /useState\(false\);\n\s*const geladen/, "Schalter Marketing startet aus");
+    assert.match(banner, /if \(wahl !== "all" \|\| !trackingErlaubt\(pathname\)\) return;/);
+    assert.ok(!/dangerouslySetInnerHTML|onclick=|javascript:/.test(banner));
+    const client = fs.readFileSync("src/lib/tracking-client.ts", "utf8");
+    const laden = client.slice(client.indexOf("export function skripteLaden"));
+    assert.ok(laden.indexOf('"consent", "default"') < laden.indexOf('"consent", "update"') && laden.indexOf('"consent", "update"') < laden.indexOf('"config"'), "Consent Mode v2: default, update, dann config");
+    for (const k of ["ad_storage", "ad_user_data", "ad_personalization", "analytics_storage"]) assert.match(laden, new RegExp(`${k}: "denied"`));
+    assert.match(client, /if \(!e \|\| !window\.__woyouTracking \|\| aktuelleWahl\(\) !== "all"\) return;/, "ohne Einwilligung keine Ereignisse");
+    assert.ok(client.includes("https://connect.facebook.net/en_US/fbevents.js") && client.includes("https://www.googletagmanager.com/gtag/js?id="));
+    const layout = fs.readFileSync("src/app/layout.tsx", "utf8");
+    assert.match(layout, /\{trackingAn\(ids\) \? <TrackingConsent ids=\{ids\} [^\n]*\/> : <CookieBanner \/>\}/);
+    assert.match(fs.readFileSync("src/components/SiteFooter.tsx", "utf8"), /\{trackingAktiv\(\) && <li><CookieEinstellungenLink/);
+    assert.match(fs.readFileSync("src/app/bewerbungsservice/danke/page.tsx", "utf8"), /\{paidBookingId && trackingAktiv\(\) && <KaufEreignis buchungId=\{paidBookingId\} \/>\}/);
+    // bisheriger Hinweis bleibt unverändert
+    assert.match(fs.readFileSync("src/i18n/de.ts", "utf8"), /WoYou nutzt nur technisch notwendige Cookies/);
+  });
+
+  await test("Tracking: Datenschutz-Abschnitt nur mit IDs, Admin-Anzeige, .env.example und Staging-Compose, keine langen Striche", () => {
+    const ds = fs.readFileSync("src/app/datenschutz/page.tsx", "utf8");
+    const sichtbar = ds.replace(/\{\/\*[\s\S]*?\*\/\}|\/\/.*$/gm, "");
+    const abschnitt = sichtbar.slice(sichtbar.indexOf("{tracking && (\n"), sichtbar.indexOf("{nr(6)}. Speicherdauer"));
+    for (const w of ["Statistik und Werbung (nur mit Einwilligung)", "Meta Platforms Ireland Ltd.", "Google Ireland Limited", "Art. 6 Abs. 1 lit. a DSGVO", "§ 25 Abs. 1 TDDDG", "EU-US Data Privacy Framework", "„Cookie-Einstellungen“", "Speicherdauer", "Retargeting"])
+      assert.ok(abschnitt.includes(w), `fehlt im Abschnitt Statistik und Werbung: ${w}`);
+    assert.match(ds, /\{\/\* ANWALT PRÜFEN \(26\.10\.2026\): Abschnitt Statistik und Werbung/);
+    assert.match(ds, /const tracking = !!\(ids\.meta \|\| ids\.google\);/);
+    assert.match(sichtbar, /tracking \? "Cookies von Meta und Google setzen wir nur mit deiner Einwilligung \(siehe Abschnitt 6\)\." : "Kein Tracking, keine Werbe-Cookies\."/);
+    const admin = fs.readFileSync("src/app/admin/auswertung/page.tsx", "utf8");
+    assert.match(admin, /Meta Pixel: <strong>\{trackingStatus\(\)\.meta\}<\/strong> · Google-Tag: <strong>\{trackingStatus\(\)\.google\}<\/strong>/);
+    const env = fs.readFileSync(".env.example", "utf8");
+    assert.match(env, /^META_PIXEL_ID=$/m); assert.match(env, /^GOOGLE_TAG_ID=$/m);
+    const compose = fs.readFileSync("docker-compose.yml", "utf8");
+    assert.ok(compose.includes("META_PIXEL_ID: ${META_PIXEL_ID:-}") && compose.includes("GOOGLE_TAG_ID: ${GOOGLE_TAG_ID:-}"));
+    assert.match(fs.readFileSync("MARKETING.md", "utf8"), /Conversions API[\s\S]*System User Token[\s\S]*event_id/);
+    for (const f of ["src/lib/tracking-core.ts", "src/lib/tracking.ts", "src/lib/tracking-client.ts", "src/lib/consent-text.ts", "src/components/TrackingConsent.tsx", "src/components/KaufEreignis.tsx", "src/app/datenschutz/page.tsx", "MARKETING.md"])
+      assert.ok(!/[–—]/.test(fs.readFileSync(f, "utf8")), `${f}: langer Strich`);
+    assert.ok(!/[–—]/.test(env.slice(env.indexOf("# Tracking nur mit Einwilligung"))), ".env.example (Tracking): langer Strich");
   });
 }

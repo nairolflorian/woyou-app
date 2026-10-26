@@ -3,6 +3,8 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { COMPANY } from "@/lib/company";
 import { terminlandUrl } from "@/lib/termin";
 import { selbstcheckVorBuchungAn } from "@/lib/selbstcheck-vorbuchung-server";
+import { trackingIds } from "@/lib/tracking";
+import { CONSENT_COOKIE } from "@/lib/tracking-core";
 
 export const metadata = { title: "Datenschutz" };
 // zur Laufzeit rendern, damit der Terminland-Absatz dem gesetzten TERMINLAND_URL folgt (ebenso SELBSTCHECK_VOR_BUCHUNG)
@@ -12,6 +14,10 @@ export const dynamic = "force-dynamic";
 // Stellensuche, E-Mail-Programm) wurden für das neue Angebot angepasst: kein Versand durch WoYou, keine
 // Weitergabe an Arbeitgeber, eigener Tracker der Kund:innen.
 export default function Datenschutz() {
+  // Abschnitt „Statistik und Werbung“ nur mit gültiger META_PIXEL_ID oder GOOGLE_TAG_ID; danach verschieben sich die Nummern um eins
+  const ids = trackingIds();
+  const tracking = !!(ids.meta || ids.google);
+  const nr = (n: number) => (tracking ? n + 1 : n);
   return (
     <>
       <SiteHeader />
@@ -49,7 +55,7 @@ export default function Datenschutz() {
                 {/* ANWALT PRÜFEN (Schalter SELBSTCHECK_VOR_BUCHUNG, nur sichtbar wenn an): Ergebnis im Konto bzw. Cookie woyou_selbstcheck (7 Tage), nötig für die Bestellung */}
                 {selbstcheckVorBuchungAn() && <li><strong>Selbstcheck vor der Buchung:</strong> Damit du buchen kannst, merken wir uns dein letztes Selbstcheck-Ergebnis (Ampel und Datum, bei den Westbalkan-Staaten auch Land und Berufsgruppe) in deinem Konto. Machst du den Selbstcheck vor der Registrierung, steht das Ergebnis bis zu 7 Tage in einem Cookie und wird bei der Registrierung oder Anmeldung in dein Konto übernommen. Deine eingetippten Angaben speichern wir dabei nicht.</li>}
                 <li><strong>Zahlung:</strong> wird direkt bei Stripe abgewickelt. Wir speichern keine Kartendaten.</li>
-                <li><strong>Technik:</strong> Login-Cookie und Sprach-Cookie{selbstcheckVorBuchungAn() ? ", dazu das Selbstcheck-Cookie (siehe oben)" : ""}. Kein Tracking, keine Werbe-Cookies.</li>
+                <li><strong>Technik:</strong> Login-Cookie und Sprach-Cookie{selbstcheckVorBuchungAn() ? ", dazu das Selbstcheck-Cookie (siehe oben)" : ""}{tracking ? `, dazu das Cookie ${CONSENT_COOKIE} mit deiner Cookie-Wahl` : ""}. {tracking ? "Cookies von Meta und Google setzen wir nur mit deiner Einwilligung (siehe Abschnitt 6)." : "Kein Tracking, keine Werbe-Cookies."}</li>
               </ul>
             </section>
 
@@ -78,6 +84,7 @@ export default function Datenschutz() {
                 {/* ANWALT PRÜFEN (26.10.2026): Unterlagen-Check im Call über Terminland, erscheint erst mit gesetztem TERMINLAND_URL.
                     Auftragsverarbeitung über Terminland-AGB Teil B (Art. 28 DSGVO); Vertragspartner ist das Konto von EuBiA/KarriereKind. */}
                 {terminlandUrl() && <li><strong>Terminland GmbH</strong>, Kreuzberger Ring 44a, 65205 Wiesbaden (Terminbuchung für den Unterlagen-Check im Gespräch, nur wenn du einen Termin buchst; du gibst dort selbst Name, Kontakt und Wunschtermin ein).</li>}
+                {tracking && <li><strong>{[ids.meta && "Meta", ids.google && "Google"].filter(Boolean).join(" und ")}</strong> (Messung und Werbung), nur mit deiner Einwilligung, siehe Abschnitt 6.</li>}
                 <li><strong>Unser E-Mail-Anbieter</strong> für Benachrichtigungen an dich (z. B. Buchungsbestätigung).</li>
                 {/* ANWALT PRÜFEN (23.10.2026): KI-Textdienst ist in Produktion nicht aktiv (kein Schlüssel gesetzt), es besteht
                     derzeit kein Vertrag mit einem KI-Anbieter. Vor einer Aktivierung Anbieter, AV-Vertrag und diesen Absatz ergänzen. */}
@@ -137,8 +144,67 @@ export default function Datenschutz() {
               </p>
             </section>
 
+            {/* ANWALT PRÜFEN (26.10.2026): Abschnitt Statistik und Werbung, nur sichtbar mit META_PIXEL_ID bzw. GOOGLE_TAG_ID.
+                Skripte laden erst nach Einwilligung (Banner, Cookie woyou_consent 6 Monate), Google Consent Mode v2.
+                Gemeinsame Verantwortung mit Meta (Art. 26 DSGVO, Controller Addendum) prüfen; Aufbewahrung in Google Analytics
+                beim Einrichten auf 2 Monate stellen (MARKETING.md). Ereignisse: Selbstcheck (Ampel, Länderkürzel), Registrierung, Kauf (199 EUR, Buchungs-ID). */}
+            {tracking && (
+              <section>
+                <h2 className="font-semibold text-base">6. Statistik und Werbung (nur mit Einwilligung)</h2>
+                <p>
+                  Wenn du im Cookie-Banner „Alle akzeptieren“ wählst oder in den Einstellungen „Statistik und Werbung (Meta,
+                  Google)“ einschaltest, binden wir die folgenden Dienste ein. Ohne deine Einwilligung laden wir sie nicht, und es
+                  gehen keine Daten an diese Anbieter.
+                </p>
+                <ul className="list-disc ml-5 space-y-1 mt-2">
+                  {ids.meta && <li><strong>Meta Pixel</strong> der Meta Platforms Ireland Ltd., Merrion Road, Dublin 4, D04 X2K5, Irland.</li>}
+                  {ids.google && <li><strong>Google-Tag</strong> (Google Analytics und Google Ads) der Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irland.</li>}
+                </ul>
+                <p className="mt-2">
+                  <strong>Zweck:</strong> Wir messen, wie viele Menschen über unsere Anzeigen zu WoYou kommen und ob sie danach den
+                  Selbstcheck machen, sich registrieren oder das Startpaket buchen. So sehen wir, welche Anzeigen funktionieren.
+                  Außerdem können wir Menschen, die unsere Seite besucht haben, später wieder Anzeigen zeigen
+                  {ids.meta && ids.google ? " (bei Facebook, Instagram und Google)" : ids.meta ? " (bei Facebook und Instagram)" : " (bei Google)"}, das
+                  sogenannte Retargeting.
+                </p>
+                <p className="mt-2">
+                  <strong>Welche Daten:</strong> Die Dienste speichern Cookies auf deinem Gerät oder lesen sie aus und erhalten
+                  technische Angaben wie IP-Adresse, Browser und Gerät, die aufgerufene Seite, Uhrzeit und die Anzeige, über die du
+                  gekommen bist. Zu einzelnen Schritten melden wir zusätzlich ein Ereignis: Selbstcheck abgeschlossen (nur das
+                  Ergebnis als Ampel und bei den Westbalkan-Staaten das Länderkürzel), Registrierung abgeschlossen und Startpaket
+                  bezahlt (Betrag und unsere interne Buchungsnummer). Deinen Namen, deine E-Mail-Adresse, deine Telefonnummer und
+                  Texte, die du eingibst, geben wir nicht weiter. Meta und Google können die Angaben mit einem Konto verbinden, das du
+                  dort hast.
+                </p>
+                <p className="mt-2">
+                  <strong>Rechtsgrundlage:</strong> deine Einwilligung (Art. 6 Abs. 1 lit. a DSGVO). Für das Speichern und Auslesen
+                  von Informationen auf deinem Gerät gilt § 25 Abs. 1 TDDDG.
+                </p>
+                <p className="mt-2">
+                  <strong>Übermittlung in die USA:</strong> Meta und Google können Daten auch in die USA übertragen. Beide
+                  Unternehmen sind nach dem EU-US Data Privacy Framework zertifiziert. Dafür gibt es einen Angemessenheitsbeschluss
+                  der EU-Kommission (Art. 45 DSGVO).
+                </p>
+                <p className="mt-2">
+                  <strong>Widerruf:</strong> Du kannst deine Einwilligung jederzeit für die Zukunft widerrufen, unten auf jeder Seite
+                  unter „Cookie-Einstellungen“. Danach laden wir die Dienste nicht mehr und löschen die Cookies von Meta und Google,
+                  die auf unserer Seite gesetzt wurden.
+                </p>
+                <p className="mt-2">
+                  <strong>Speicherdauer:</strong> Deine Wahl speichern wir 6 Monate im Cookie {CONSENT_COOKIE}, danach fragen wir
+                  dich neu.
+                  {ids.google && " Die Cookies von Google (zum Beispiel _ga und _gcl_au) bleiben bis zu 2 Jahre bzw. 90 Tage auf deinem Gerät."}
+                  {ids.meta && " Das Cookie von Meta (_fbp) bleibt 90 Tage."}
+                  {" "}Du kannst sie vorher jederzeit in deinem Browser löschen.
+                  {ids.google && " In Google Analytics werden die Ereignisdaten nach 2 Monaten gelöscht."}
+                  {" "}Wie lange Meta und Google die Daten darüber hinaus für eigene Zwecke speichern, legen die Anbieter in ihren
+                  eigenen Datenschutzhinweisen fest.
+                </p>
+              </section>
+            )}
+
             <section>
-              <h2 className="font-semibold text-base">6. Speicherdauer</h2>
+              <h2 className="font-semibold text-base">{nr(6)}. Speicherdauer</h2>
               <p>
                 Solange dein Konto besteht. Nach der Löschung deines Kontos entfernen wir deine Daten innerhalb
                 von 30 Tagen, soweit keine gesetzlichen Aufbewahrungspflichten bestehen.
@@ -153,7 +219,7 @@ export default function Datenschutz() {
             </section>
 
             <section>
-              <h2 className="font-semibold text-base">7. Deine Rechte</h2>
+              <h2 className="font-semibold text-base">{nr(7)}. Deine Rechte</h2>
               <p>
                 Du hast das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung,
                 Datenübertragbarkeit und Widerspruch. Einwilligungen kannst du jederzeit widerrufen. Deine Daten
@@ -164,7 +230,7 @@ export default function Datenschutz() {
             </section>
 
             <section>
-              <h2 className="font-semibold text-base">8. Kontakt</h2>
+              <h2 className="font-semibold text-base">{nr(8)}. Kontakt</h2>
               <p>Fragen zum Datenschutz: {COMPANY.email} oder direkt an unsere Datenschutzbeauftragte: {COMPANY.dpo.email}</p>
             </section>
           </div>

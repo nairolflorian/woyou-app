@@ -6,6 +6,11 @@ import { StagingBanner } from "@/components/StagingBanner";
 import { CookieBanner } from "@/components/CookieBanner";
 import { TranslationProvider } from "@/components/TranslationProvider";
 import { UtmCapture } from "@/components/UtmCapture";
+import { TrackingConsent } from "@/components/TrackingConsent";
+import { trackingIds } from "@/lib/tracking";
+import { trackingAn } from "@/lib/tracking-core";
+import { consentText } from "@/lib/consent-text";
+import { headers } from "next/headers";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
 
@@ -51,6 +56,9 @@ export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const { dict, locale, isRTL } = await getDictForClient();
+  // Tracking nur mit gültiger META_PIXEL_ID oder GOOGLE_TAG_ID; sonst der bisherige Hinweis und keine externen Skripte
+  const ids = trackingIds();
+  const nonce = trackingAn(ids) ? (await headers()).get("x-nonce") ?? undefined : undefined;
   return (
     <html
       lang={locale}
@@ -68,7 +76,7 @@ export default async function RootLayout({
           </a>
           <StagingBanner />
           {children}
-          <CookieBanner />
+          {trackingAn(ids) ? <TrackingConsent ids={ids} nonce={nonce} text={consentText(locale)} /> : <CookieBanner />}
           <DemoModeBar />
         </TranslationProvider>
       </body>

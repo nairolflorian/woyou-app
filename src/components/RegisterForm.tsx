@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useT } from "@/components/TranslationProvider";
 import { formText } from "@/lib/form-text";
 import { PW_MIN_KUNDE } from "@/lib/passwort";
+import { trackEreignis } from "@/lib/tracking-client";
 
 type Method = "email" | "phone";
 
@@ -47,6 +48,7 @@ export function RegisterForm() {
       );
       return;
     }
+    trackEreignis({ typ: "registrierung" }, { nachSeitenwechsel: true }); // nur mit Einwilligung, ohne Kontodaten
     const want = new URLSearchParams(window.location.search).get("next");
     window.location.href = want && want.startsWith("/") && !want.startsWith("//") ? want : data.next ?? "/profil";
   }
