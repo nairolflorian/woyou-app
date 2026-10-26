@@ -78,5 +78,13 @@ const hi: Record<string, string> = {
   "nf.title": "404: पेज नहीं मिला",
   "nf.body": "यह पेज अब मौजूद नहीं है या पता गलत लिखा गया है।",
   "nf.home": "मुखपृष्ठ",
+  "a11y.skip": "सामग्री पर जाएँ",
+  "edit.err_no_password": "इस खाते के लिए कोई पासवर्ड नहीं है। कृपया Telegram से लॉग इन करें।",
+  "doc.kind_avatar": "प्रोफ़ाइल फ़ोटो",
+  "avatar.upload": "प्रोफ़ाइल फ़ोटो अपलोड करें",
+  "avatar.replace": "फ़ोटो बदलें",
+  "avatar.uploading": "अपलोड हो रहा है …",
+  "avatar.hint": "JPG या PNG, अधिकतम 5 MB।",
+  "nf.demo": "टेस्ट पेज",
 };
 export default hi;

@@ -79,5 +79,13 @@ const sr: Record<string, string> = {
   "nf.title": "404: stranica nije pronađena",
   "nf.body": "Ova stranica (više) ne postoji ili je adresa pogrešno upisana.",
   "nf.home": "Na početnu stranu",
+  "a11y.skip": "Pređi na sadržaj",
+  "edit.err_no_password": "Za ovaj nalog nije postavljena lozinka. Prijavi se preko Telegrama.",
+  "doc.kind_avatar": "Profilna slika",
+  "avatar.upload": "Otpremi profilnu sliku",
+  "avatar.replace": "Zameni sliku",
+  "avatar.uploading": "Otpremanje …",
+  "avatar.hint": "JPG ili PNG, najviše 5 MB.",
+  "nf.demo": "Test stranica",
 };
 export default sr;

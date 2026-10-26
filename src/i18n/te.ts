@@ -79,5 +79,13 @@ const te: Record<string, string> = {
   "nf.title": "404: పేజీ కనబడలేదు",
   "nf.body": "ఈ పేజీ ఇప్పుడు లేదు లేదా చిరునామా తప్పుగా టైప్ చేశారు.",
   "nf.home": "హోమ్ పేజీకి",
+  "a11y.skip": "విషయానికి వెళ్ళండి",
+  "edit.err_no_password": "ఈ ఖాతాకు పాస్‌వర్డ్ లేదు. దయచేసి Telegram ద్వారా లాగిన్ అవ్వండి.",
+  "doc.kind_avatar": "ప్రొఫైల్ ఫోటో",
+  "avatar.upload": "ప్రొఫైల్ ఫోటో అప్‌లోడ్ చేయండి",
+  "avatar.replace": "ఫోటో మార్చండి",
+  "avatar.uploading": "అప్‌లోడ్ అవుతోంది …",
+  "avatar.hint": "JPG లేదా PNG, గరిష్టంగా 5 MB.",
+  "nf.demo": "టెస్ట్ పేజీ",
 };
 export default te;
