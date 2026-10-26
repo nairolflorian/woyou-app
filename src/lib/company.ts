@@ -14,8 +14,8 @@ export const COMPANY = {
   register: "HRB 99139",
   email: "service@karrierekind.de", // Kundenkontakt: Fußzeile, Kontakt, Login, Selbstcheck, AGB, Datenschutz, Antwortadresse der Mails
   legalEmail: "info@karrierekind.de", // Impressum (wie im Impressum von karrierekind.de)
-  phone: "0800 40 40 055", // Anzeige wie auf www.eubia.de (kostenlose Hotline der EuBiA)
-  phoneTel: "+498004040055", // für tel:-Links
+  phone: "+49 211 913 829 10", // Zentrale der EuBiA in Düsseldorf wie auf www.eubia.de (auch aus dem Ausland erreichbar)
+  phoneTel: "+4921191382910", // für tel:-Links
   seat: "Düsseldorf",
   // Externe Datenschutzbeauftragte (wie bei KarriereKind)
   dpo: { name: "DPP Data Protection GmbH", person: "Rudolf Fiedler", street: "Zum Gottschalkhof 2", zipCity: "60594 Frankfurt am Main", email: "info@dataprotectionpartner.de" },

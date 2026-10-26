@@ -285,8 +285,8 @@ async function main() {
     const { COMPANY } = await import("../src/lib/company");
     assert.equal(COMPANY.email, "service@karrierekind.de");
     assert.equal(COMPANY.legalEmail, "info@karrierekind.de");
-    assert.equal(COMPANY.phone, "0800 40 40 055", "Telefon: Hotline der EuBiA wie auf www.eubia.de");
-    assert.equal(COMPANY.phoneTel, "+498004040055");
+    assert.equal(COMPANY.phone, "+49 211 913 829 10", "Telefon: Zentrale der EuBiA wie auf www.eubia.de");
+    assert.equal(COMPANY.phoneTel, "+4921191382910");
     assert.ok(!("vatId" in COMPANY) && !("ustId" in COMPANY), "USt-ID gibt es bei KarriereKind nicht");
     const walk = (d: string): string[] => fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? walk(`${d}/${e.name}`) : /\.(tsx?|json)$/.test(e.name) ? [`${d}/${e.name}`] : []));
     const treffer = [...walk("src"), ...(fs.existsSync("messages") ? walk("messages") : [])].filter((f) => /info@woyou\.de|160 ?626 ?6208|1511 ?2213968|15112213968/.test(fs.readFileSync(f, "utf8")));
