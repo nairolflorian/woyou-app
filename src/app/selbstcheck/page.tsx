@@ -7,6 +7,7 @@ import { getSession } from "@/lib/session";
 import { ROLE } from "@/lib/enums";
 import { landingCopy } from "@/lib/landing-copy";
 import { ANGEBOT, formatPrice } from "@/lib/angebot";
+import { rechtUi } from "@/lib/recht/ui-text";
 import { selbstcheckVorbelegung } from "@/lib/laender";
 import { kampagneLang } from "@/lib/kampagne-text";
 import { erlaubtesNext } from "@/lib/selbstcheck-vorbuchung";
@@ -36,7 +37,7 @@ export default async function SelbstcheckPage({ searchParams }: { searchParams: 
         <div className="mx-auto max-w-5xl px-6 py-14">
           <h1 className="text-3xl font-bold">{c.checkTitle}</h1>
           <p className="mt-2 mb-8 text-[color:var(--color-ink-soft)]">{c.checkLead}</p>
-          <SelfCheck locale={locale} bookHref={bookHref} block={process.env.SELFCHECK_MODE === "block"} price={formatPrice(ANGEBOT.startpaket.priceCents, locale)} initialCountry={vor.country} initialGroup={vor.group} merken={vorBuchung} nextLabel={nextLabel} />
+          <SelfCheck locale={locale} bookHref={bookHref} block={process.env.SELFCHECK_MODE === "block"} price={`${formatPrice(ANGEBOT.startpaket.priceCents, locale)} ${rechtUi(locale).vat}`} initialCountry={vor.country} initialGroup={vor.group} merken={vorBuchung} nextLabel={nextLabel} />
         </div>
       </main>
       <SiteFooter />

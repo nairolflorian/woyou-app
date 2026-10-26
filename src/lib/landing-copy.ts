@@ -4,6 +4,7 @@
 // Deutsch, Englisch, Französisch, Arabisch, Hindi, Serbisch (lateinisch), Telugu; andere Sprachen sehen Englisch.
 // Preise kommen aus src/lib/angebot.ts.
 import { ANGEBOT, formatPrice } from "@/lib/angebot";
+import { rechtUi } from "@/lib/recht/ui-text";
 import { arMonths, srMonths } from "@/lib/werkzeug-text";
 import { FOTOS, fotoSrc } from "@/lib/fotos";
 
@@ -28,11 +29,12 @@ type Landing = {
 function build(lang: Lang): Landing {
   const f = (c: number) => formatPrice(c, lang);
   const price = f(ANGEBOT.startpaket.priceCents), months = ANGEBOT.startpaket.toolMonths;
+  const vat = rechtUi(lang).vat;
   if (lang === "en") return {
     badge: "APPLYING IN GERMANY",
     h1: "Your application documents to German standards. And a tool to apply yourself.",
     sub: "We create your application documents to German standards and give you a tool to find suitable jobs and apply yourself. You decide where you apply, and every reply comes straight to you. Whether an employer invites you is their decision, not ours.",
-    ctaStart: `Start now · ${price}`, ctaCheck: "Self-check first",
+    ctaStart: `Start now · ${price} ${vat}`, ctaCheck: "Self-check first",
     trust: ["No placement", "No guarantee", "You apply yourself"],
     trustNote: "We cannot guarantee a job. But we tell you upfront where you stand.",
     priceTitle: `Starter package · documents and ${months} months of the tool`, priceNote: `one-time · includes ${months} months of access to the application tool · you keep your documents`,
@@ -101,7 +103,7 @@ function build(lang: Lang): Landing {
     badge: "التقديم للعمل في ألمانيا",
     h1: "مستندات التقديم بالمعايير الألمانية. وأداة تتقدّم بها بنفسك.",
     sub: "نُعدّ مستندات التقديم الخاصة بك بالمعايير الألمانية، ونعطيك أداة تجد بها وظائف مناسبة وتتقدّم إليها بنفسك. أنت من يقرر أين تتقدّم، وتصلك كل الردود مباشرة. أما دعوتك إلى مقابلة فقرار صاحب العمل، وليس قرارنا.",
-    ctaStart: `ابدأ الآن · ${price}`, ctaCheck: "الاختبار الذاتي أولًا",
+    ctaStart: `ابدأ الآن · ${price} ${vat}`, ctaCheck: "الاختبار الذاتي أولًا",
     trust: ["لا وساطة في التوظيف", "لا ضمان", "تتقدّم بنفسك"],
     trustNote: "لا نضمن لك وظيفة. لكننا نقول لك من البداية أين تقف.",
     priceTitle: `باقة البداية · المستندات و${arMonths(months)} من الأداة`, priceNote: `دفعة واحدة · تشمل ${arMonths(months)} من الوصول إلى أداة التقديم · مستنداتك تبقى لك`,
@@ -170,7 +172,7 @@ function build(lang: Lang): Landing {
     badge: "जर्मनी में आवेदन",
     h1: "जर्मन मानक के अनुसार आपके आवेदन दस्तावेज़। और एक टूल, जिससे आप ख़ुद आवेदन करते हैं।",
     sub: "हम जर्मन मानक के अनुसार आपके आवेदन दस्तावेज़ बनाते हैं और आपको एक टूल देते हैं, जिससे आप उपयुक्त नौकरियाँ ढूँढते हैं और ख़ुद आवेदन करते हैं। कहाँ आवेदन करना है, यह आप तय करते हैं, और सभी जवाब सीधे आपको मिलते हैं। आपको इंटरव्यू के लिए बुलाना है या नहीं, यह नियोक्ता तय करता है, हम नहीं।",
-    ctaStart: `अभी शुरू करें · ${price}`, ctaCheck: "पहले सेल्फ़-चेक करें",
+    ctaStart: `अभी शुरू करें · ${price} ${vat}`, ctaCheck: "पहले सेल्फ़-चेक करें",
     trust: ["नौकरी दिलाने का काम नहीं", "कोई गारंटी नहीं", "आवेदन आप ख़ुद करते हैं"],
     trustNote: "हम नौकरी की गारंटी नहीं देते। लेकिन पहले ही बता देते हैं कि आप कहाँ खड़े हैं।",
     priceTitle: `स्टार्टर पैकेज · दस्तावेज़ और ${months} महीने का टूल`, priceNote: `एक बार का भुगतान · ${months} महीने आवेदन टूल का इस्तेमाल शामिल · आपके दस्तावेज़ आपके पास रहते हैं`,
@@ -239,7 +241,7 @@ function build(lang: Lang): Landing {
     badge: "PRIJAVA ZA POSAO U NEMAČKOJ",
     h1: "Tvoja dokumenta za prijavu prema nemačkom standardu. I alat kojim se lično prijavljuješ.",
     sub: "Pravimo tvoja dokumenta za prijavu prema nemačkom standardu i dajemo ti alat kojim pronalaziš odgovarajuće poslove i lično se prijavljuješ. Ti odlučuješ gde se prijavljuješ i sve odgovore dobijaš direktno. Da li će te poslodavac pozvati, odlučuje on. Ne mi.",
-    ctaStart: `Počni sada · ${price}`, ctaCheck: "Prvo samoprovera",
+    ctaStart: `Počni sada · ${price} ${vat}`, ctaCheck: "Prvo samoprovera",
     trust: ["Bez posredovanja", "Bez garancije", "Prijavljuješ se lično"],
     trustNote: "Garanciju za posao kod nas nema. Zato ti unapred kažemo na čemu si.",
     priceTitle: `Startni paket · dokumenta i ${srMonths(months)} alata`, priceNote: `jednokratno · uključeno ${srMonths(months)} pristupa alatu za prijave · tvoja dokumenta ostaju tebi`,
@@ -308,7 +310,7 @@ function build(lang: Lang): Landing {
     badge: "జర్మనీలో దరఖాస్తు",
     h1: "జర్మన్ ప్రమాణాల ప్రకారం మీ దరఖాస్తు పత్రాలు. మరియు మీరే దరఖాస్తు చేసుకునేందుకు ఒక టూల్.",
     sub: "మేము జర్మన్ ప్రమాణాల ప్రకారం మీ దరఖాస్తు పత్రాలు తయారు చేసి, మీకు సరిపోయే ఉద్యోగాలు వెతికి మీరే దరఖాస్తు చేసుకునేందుకు ఒక టూల్ ఇస్తాము. ఎక్కడ దరఖాస్తు చేయాలో మీరే నిర్ణయిస్తారు, అన్ని జవాబులు నేరుగా మీకే వస్తాయి. మిమ్మల్ని ఇంటర్వ్యూకు పిలవాలా వద్దా అనేది యజమాని నిర్ణయం, మాది కాదు.",
-    ctaStart: `ఇప్పుడే మొదలుపెట్టండి · ${price}`, ctaCheck: "ముందు సెల్ఫ్-చెక్",
+    ctaStart: `ఇప్పుడే మొదలుపెట్టండి · ${price} ${vat}`, ctaCheck: "ముందు సెల్ఫ్-చెక్",
     trust: ["ఉద్యోగ నియామకం కాదు", "హామీ లేదు", "దరఖాస్తు మీరే చేస్తారు"],
     trustNote: "మేము ఉద్యోగానికి హామీ ఇవ్వము. కానీ మీరు ఎక్కడ ఉన్నారో ముందే చెబుతాము.",
     priceTitle: `స్టార్టర్ ప్యాకేజీ · పత్రాలు మరియు ${months} నెలల టూల్`, priceNote: `ఒక్కసారి చెల్లింపు · ${months} నెలల దరఖాస్తు టూల్ యాక్సెస్ కలిపి · మీ పత్రాలు మీ దగ్గరే ఉంటాయి`,
@@ -376,7 +378,7 @@ function build(lang: Lang): Landing {
     badge: "CANDIDATER EN ALLEMAGNE",
     h1: "Votre dossier de candidature aux normes allemandes. Et un outil pour postuler vous-même.",
     sub: "Nous créons votre dossier de candidature aux normes allemandes et vous donnons un outil pour trouver des offres adaptées et postuler vous-même. Vous décidez où vous postulez et vous recevez toutes les réponses directement. C'est l'employeur qui décide de vous inviter, pas nous.",
-    ctaStart: `Commencer · ${price}`, ctaCheck: "D'abord l'auto-test",
+    ctaStart: `Commencer · ${price} ${vat}`, ctaCheck: "D'abord l'auto-test",
     trust: ["Pas de placement", "Pas de garantie", "Vous postulez vous-même"],
     trustNote: "Nous ne garantissons pas d'emploi. Mais nous vous disons dès le départ où vous en êtes.",
     priceTitle: `Pack de départ · dossier et ${months} mois d'outil`, priceNote: `paiement unique · ${months} mois d'accès à l'outil de candidature inclus · vous gardez vos documents`,
@@ -444,7 +446,7 @@ function build(lang: Lang): Landing {
     badge: "BEWERBEN IN DEUTSCHLAND",
     h1: "Deine Bewerbungsunterlagen nach deutschem Standard. Und ein Werkzeug, mit dem du dich selbst bewirbst.",
     sub: "Wir erstellen deine Bewerbungsunterlagen nach deutschem Standard und geben dir ein Werkzeug, mit dem du passende Stellen findest und dich selbst bewirbst. Du entscheidest, wo du dich bewirbst, und bekommst alle Antworten direkt. Ob dich ein Arbeitgeber einlädt, entscheidet er. Nicht wir.",
-    ctaStart: `Jetzt starten · ${price}`, ctaCheck: "Erst Selbstcheck",
+    ctaStart: `Jetzt starten · ${price} ${vat}`, ctaCheck: "Erst Selbstcheck",
     trust: ["Keine Vermittlung", "Keine Garantie", "Du bewirbst dich selbst"],
     trustNote: "Eine Jobgarantie gibt es bei uns nicht. Dafür sagen wir dir vorher, woran du bist.",
     priceTitle: `Startpaket · Unterlagen und ${months} Monate Werkzeug`, priceNote: `einmalig · inklusive ${months} Monate Zugang zum Bewerbungswerkzeug · deine Unterlagen behältst du`,

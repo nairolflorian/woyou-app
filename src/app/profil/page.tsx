@@ -124,7 +124,7 @@ export default async function CandidateDashboardPage() {
                 <h2 className="font-semibold">{a.noBookingTitle}</h2>
                 <p className="mt-1 text-sm text-[color:var(--color-ink-soft)]">{sc.lead}</p>
               </div>
-              <Link href="/bewerbungsservice/buchen" className="btn-primary">{sc.cta} · {formatPrice(ANGEBOT.startpaket.priceCents, locale)}</Link>
+              <Link href="/bewerbungsservice/buchen" className="btn-primary">{sc.cta} · {formatPrice(ANGEBOT.startpaket.priceCents, locale)} {rechtUi(locale).vat}</Link>
             </div>
           )}
 
