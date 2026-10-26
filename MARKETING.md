@@ -33,6 +33,8 @@ https://woyou.de/?utm_source=partner-name&utm_campaign=kurs-b1
 
 Kanäle immer klein und gleich schreiben (facebook, instagram, tiktok, whatsapp, google, partner-…), sonst zählt die Auswertung sie getrennt.
 
+Pilot Westbalkan (Länderseiten `/rs`, `/ba`, `/me`, Kampagne `/januar`): Links je Land und Kanal und wie sie in der Auswertung erscheinen, siehe `docs/KAMPAGNEN-LINKS.md`.
+
 ## 3. Anzeigentexte (Vorlagen)
 
 Die bisherigen Vorlagen („25 Bewerbungen in deinem Namen“) sind mit Weg 1 (23.10.2026) entfernt. Neue Anzeigentexte legt Florian fest.

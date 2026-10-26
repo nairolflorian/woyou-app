@@ -11,6 +11,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { weg1Gesperrt } from "@/lib/weg1";
+import { startSprache } from "@/lib/laender";
 
 const isDev = process.env.NODE_ENV !== "production";
 
@@ -48,7 +49,16 @@ export function middleware(req: NextRequest) {
   requestHeaders.set("x-nonce", nonce);
   requestHeaders.set("x-pathname", req.nextUrl.pathname);
 
+  // Länder- und Kampagnenseiten: Sprache des Landes beim ersten Besuch. Nur ohne Cookie, wer selbst umgestellt hat, behält seine Wahl.
+  // Der Cookie geht schon in diese Anfrage (Header) mit, damit Kopf, Seite und Fuß in derselben Sprache erscheinen.
+  const sprache = req.cookies.get("woyou_locale") ? null : startSprache(req.nextUrl.pathname, req.nextUrl.searchParams);
+  if (sprache) {
+    const alt = requestHeaders.get("cookie");
+    requestHeaders.set("cookie", `${alt ? `${alt}; ` : ""}woyou_locale=${sprache}`);
+  }
+
   const res = NextResponse.next({ request: { headers: requestHeaders } });
+  if (sprache) res.cookies.set("woyou_locale", sprache, { path: "/", maxAge: 60 * 60 * 24 * 365, sameSite: "lax" });
   res.headers.set("Content-Security-Policy", csp);
   res.headers.set("X-Frame-Options", "DENY");
   res.headers.set("X-Content-Type-Options", "nosniff");

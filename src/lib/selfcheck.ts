@@ -64,6 +64,8 @@ function evaluateGeneral(a: Answer, lang: CheckLang): Verdict {
 
 // Saison: bis wann die Unterlagen fertig sein sollten und ab wann Arbeitgeber beantragen. Je Saison hier anpassen.
 export const UNTERLAGEN_BIS = { day: 15, month: 12 };
+// Kampagne „Spremi se za januar“: bis wann man buchen sollte, damit die Unterlagen bis UNTERLAGEN_BIS fertig werden
+export const BUCHUNG_BIS = { day: 30, month: 11 };
 export const ANTRAG_AB = { day: 2, month: 1 };
 // Kalender-Satz bei „Unterlagen nicht rechtzeitig fertig“. Entscheidung der Geschäftsführung bis 28.10.2026:
 //   "weich" (Standard): ehrlicher Hinweis, dass der Antrag dann sehr wahrscheinlich im Folgejahr landet (Gelb)

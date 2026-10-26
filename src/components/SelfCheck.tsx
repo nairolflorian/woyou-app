@@ -31,10 +31,10 @@ function meldeErgebnis(a: Answer, wb: boolean, v: Verdict, locale: string) {
 
 const TONE = { green: "border-emerald-300 bg-emerald-50 text-emerald-900", yellow: "border-amber-300 bg-amber-50 text-amber-900", red: "border-rose-300 bg-rose-50 text-rose-900" };
 
-export function SelfCheck({ locale, bookHref, block, price }: { locale: string; bookHref: string; block: boolean; price: string }) {
+export function SelfCheck({ locale, bookHref, block, price, initialCountry = "", initialGroup = "" }: { locale: string; bookHref: string; block: boolean; price: string; initialCountry?: string; initialGroup?: Balkan["group"] }) {
   const t = SELFCHECK_TEXT[(locale in SELFCHECK_TEXT ? locale : "en") as keyof typeof SELFCHECK_TEXT];
   const lang: CheckLang = (LANGS as string[]).includes(locale) ? (locale as CheckLang) : "en";
-  const [a, setA] = useState<Answer>({ job: "", degree: "vocational", german: "B1", recognition: "unknown", country: "", balkan: EMPTY_BALKAN });
+  const [a, setA] = useState<Answer>({ job: "", degree: "vocational", german: "B1", recognition: "unknown", country: initialCountry, balkan: { ...EMPTY_BALKAN, group: initialGroup } });
   const [v, setV] = useState<Verdict | null>(null);
   const set = <K extends keyof Answer>(k: K, val: Answer[K]) => { setA((x) => ({ ...x, [k]: val })); setV(null); };
   const b = a.balkan ?? EMPTY_BALKAN;

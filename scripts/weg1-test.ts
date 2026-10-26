@@ -832,6 +832,100 @@ async function main() {
     assert.deepEqual(stornoQuote([]), { bezahlt: 0, storniert: 0, pct: null });
   });
 
+  // ---------- Länderseiten und Kampagne „Spremi se za januar“ ----------
+  const L = await import("../src/lib/laender");
+  const K = await import("../src/lib/kampagne-text");
+  const SC = await import("../src/lib/selfcheck");
+  await test("Länderseiten: nur bekannte Ländercodes, eigene Ordner, nicht gesperrt, Sprache beim ersten Besuch", async () => {
+    const fs = await import("node:fs");
+    assert.deepEqual([...L.LAND_SLUGS].sort(), ["al", "ba", "in", "me", "mk", "rs", "xk"]);
+    assert.equal(L.landSlug("RS"), "rs"); assert.equal(L.landSlug(" me "), "me");
+    for (const x of ["zz", "de", "", null, undefined, "rs1", "../rs"]) assert.equal(L.landSlug(x as string), null, String(x));
+    assert.equal(L.landAusPfad("/rs"), "rs"); assert.equal(L.landAusPfad("/in/"), "in");
+    for (const p of ["/zz", "/rsx", "/rs/x", "/agb", "/", "/selbstcheck"]) assert.equal(L.landAusPfad(p), null, p);
+    for (const sl of L.LAND_SLUGS) {
+      assert.ok(fs.existsSync(`src/app/${sl}/page.tsx`), `/${sl} fehlt`);
+      assert.equal(weg1Gesperrt(`/${sl}`), null);
+    }
+    for (const p of ["/januar", "/spremi-se-za-januar"]) { assert.ok(fs.existsSync(`src/app${p}/page.tsx`)); assert.equal(weg1Gesperrt(p), null); }
+    assert.ok(!fs.existsSync("src/app/[land]"), "kein dynamisches Segment auf oberster Ebene");
+    assert.deepEqual(L.LAND_SLUGS.filter((x) => L.LAENDER[x].pilot), ["rs", "ba", "me"]);
+    const q = (x: string) => new URLSearchParams(x);
+    assert.equal(L.startSprache("/rs", q("")), "sr"); assert.equal(L.startSprache("/ba", q("")), "sr"); assert.equal(L.startSprache("/me", q("")), "sr");
+    assert.equal(L.startSprache("/xk", q("")), "en"); assert.equal(L.startSprache("/al", q("")), "en"); assert.equal(L.startSprache("/mk", q("")), "en"); assert.equal(L.startSprache("/in", q("")), "en");
+    assert.equal(L.startSprache("/januar", q("land=BA")), "sr");
+    assert.equal(L.startSprache("/spremi-se-za-januar", q("utm_source=fb_me&utm_campaign=januar")), "sr");
+    assert.equal(L.startSprache("/januar", q("land=AL")), "en");
+    assert.equal(L.startSprache("/januar", q("")), null);
+    assert.equal(L.startSprache("/agb", q("land=RS")), null);
+    assert.match(fs.readFileSync("src/middleware.ts", "utf8"), /req\.cookies\.get\("woyou_locale"\) \? null : startSprache/, "Sprache nur ohne eigene Wahl setzen");
+    assert.ok(fs.readFileSync("src/app/sitemap.ts", "utf8").includes('"/januar"'));
+  });
+  await test("Länderseiten: Herkunft mit Länderkürzel für die Auswertung", () => {
+    const q = (x: string) => new URLSearchParams(x);
+    assert.equal(L.quelleAusLink("/rs", q("utm_source=fb_rs&utm_campaign=januar")), "fb_rs/januar");
+    assert.equal(L.quelleAusLink("/rs", q("")), "land_rs");
+    assert.equal(L.quelleAusLink("/ba", q("utm_campaign=januar")), "land_ba/januar");
+    assert.equal(L.quelleAusLink("/rs", q("utm_source=Facebook")), "facebook_rs");
+    assert.equal(L.quelleAusLink("/rs", q("utm_source=fb_ba")), "fb_rs");
+    assert.equal(L.quelleAusLink("/januar", q("land=ME&utm_source=fb_me&utm_campaign=januar")), "fb_me/januar");
+    assert.equal(L.quelleAusLink("/", q("utm_source=facebook&utm_campaign=x")), "facebook/x", "bisheriges Verhalten ohne Land");
+    assert.equal(L.quelleAusLink("/", q("")), null);
+    assert.equal(L.quelleAusLink("/selbstcheck", q("land=zz")), null);
+    assert.equal(L.landAusQuelle("fb_rs/januar"), "rs"); assert.equal(L.landAusQuelle("land_me"), "me");
+    assert.equal(L.landAusQuelle("facebook/x"), null); assert.equal(L.landAusQuelle(null), null);
+    assert.equal(L.kanalAusQuelle("fbgroup_ba/januar"), "fbgroup"); assert.equal(L.kanalAusQuelle(null), "direkt / unbekannt");
+    for (const src of ["fb_rs", "ig_ba", "google_me", "viber_rs", "fbgroup_ba", "land_rs"])
+      assert.equal(parseSelbstcheckErgebnis({ country: "RS", gruppe: "ce", level: "green", source: src })?.source, src, src);
+    assert.equal("fb_rs/januar".replace(/[^\w./ -]/g, ""), "fb_rs/januar", "übersteht die Bereinigung bei der Registrierung");
+  });
+  await test("Selbstcheck: Vorbelegung über ?land= und ?gruppe=", () => {
+    const langs = ["de", "en", "fr", "ar", "hi", "sr", "te"] as const;
+    for (const code of ["RS", "BA", "ME", "XK", "AL", "MK"] as const) for (const lang of langs) {
+      const v = L.selbstcheckVorbelegung({ land: code }, lang);
+      assert.equal(SC.balkanLand(v.country), code, `${code}/${lang}: ${v.country}`);
+      assert.equal(L.selbstcheckVorbelegung({ land: code.toLowerCase() }, lang).country, v.country);
+    }
+    assert.equal(L.selbstcheckVorbelegung({ land: "RS" }, "sr").country, "Srbija");
+    assert.equal(L.selbstcheckVorbelegung({ land: "BA" }, "de").country, "Bosnien und Herzegowina");
+    assert.equal(L.selbstcheckVorbelegung({ land: "IN" }, "en").country, "India");
+    assert.equal(SC.balkanLand(L.selbstcheckVorbelegung({ land: "IN" }, "de").country), null, "Indien ohne Westbalkan-Fragen");
+    assert.deepEqual(L.selbstcheckVorbelegung({ land: "ZZ", gruppe: "xyz" }, "de"), { country: "", group: "" });
+    assert.deepEqual(L.selbstcheckVorbelegung({}, "de"), { country: "", group: "" });
+    assert.equal(L.selbstcheckVorbelegung({ land: "RS", gruppe: "CE" }, "sr").group, "ce");
+    assert.equal(L.selbstcheckHref("rs"), "/selbstcheck?land=RS"); assert.equal(L.selbstcheckHref(null), "/selbstcheck");
+  });
+  await test("Kampagne: Texte in 7 Sprachen mit gleichen Schlüsseln, Serbisch lateinisch, keine langen Striche, keine verbotenen Versprechen", () => {
+    const T = K.KAMPAGNE_TEXT;
+    assert.deepEqual(Object.keys(T).sort(), ["ar", "de", "en", "fr", "hi", "sr", "te"]);
+    for (const l of Object.keys(T) as (keyof typeof T)[]) assert.deepEqual(shape(T[l]), shape(T.de), `${l}: andere Schlüssel als de`);
+    checkLang("kampagne", T.de, T.ar, T.hi);
+    checkSrTe("kampagne", T.de, T.en, T.sr, T.te);
+    for (const [l, o] of Object.entries(T)) for (const [p, v] of leaves(o)) {
+      assert.ok(!/[–—]/.test(v), `${l} ${p}: langer Gedankenstrich`);
+      assert.ok(!/countdown|rabatt|discount|nur noch wenige|only a few|garantiert|guaranteed|samo još/i.test(v), `${l} ${p}: verbotene Formulierung: ${v}`);
+      const filled = K.fillKampagne(v, l as keyof typeof T, { land: "X", ort: "Y" });
+      assert.ok(!/\{\w+\}/.test(filled), `${l} ${p}: Platzhalter übrig`);
+    }
+    assert.equal(T.sr.h1, "Spremi se za januar");
+    assert.ok(T.de.honest.some((x) => /Vorrangprüfung/.test(x)) && T.de.honest.some((x) => /entscheidet allein der Arbeitgeber/.test(x)));
+    assert.ok(T.de.why.some((x) => /50\.000/.test(x)) && T.de.why.some((x) => /Koalitionsvertrag ist geplant/.test(x)));
+    assert.equal(T.de.limit.startsWith("Das Kontingent ist begrenzt."), true);
+    assert.deepEqual(T.de.cal.map((c) => K.fillKampagne(c.when, "de")), ["bis 30. November", "bis 15. Dezember", "Dezember", "ab 2. Januar"]);
+    assert.deepEqual(T.sr.cal.map((c) => K.fillKampagne(c.when, "sr")), ["do 30.11.", "do 15.12.", "Decembar", "od 2.1."]);
+    assert.equal(K.kampagneLang("es"), "en"); assert.equal(K.kampagneLang("sr"), "sr");
+  });
+  await test("Kampagne: offizielle Quellen (BA, Botschaften) und neue Dateien ohne lange Striche", async () => {
+    const fs = await import("node:fs");
+    assert.equal(L.QUELLE_BA, "https://www.arbeitsagentur.de/vor-ort/zav/amz/westbalkan-regelung");
+    assert.equal(L.LAENDER.rs.botschaft, "https://belgrad.diplo.de");
+    for (const sl of L.LAND_SLUGS) assert.match(L.LAENDER[sl].botschaft, /^https:\/\/[a-z]+\.diplo\.de$/);
+    for (const f of ["src/lib/laender.ts", "src/lib/kampagne-text.ts", "src/components/LandSeite.tsx", "src/components/KampagneSeite.tsx", "src/components/SprachKnoepfe.tsx", "docs/KAMPAGNEN-LINKS.md"])
+      assert.ok(!/[–—]/.test(fs.readFileSync(f, "utf8")), `${f}: langer Strich`);
+    const seite = fs.readFileSync("src/components/KampagneSeite.tsx", "utf8");
+    assert.ok(seite.includes("QUELLE_BA") && seite.includes("botschaft.botschaft"), "Quellen auf der Kampagnenseite");
+  });
+
   await verbraucherrechtTests();
 
   if (process.argv.includes("--live")) {

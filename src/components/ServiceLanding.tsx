@@ -36,7 +36,8 @@ const FACT_ICONS = [
   <path key="d" d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm-7 9a7 7 0 0 1 14 0" />,
 ];
 
-export async function ServiceLanding() {
+// Länderseiten (/rs, /ba, ...) setzen oben einen eigenen Block ein und verlinken den Selbstcheck mit vorbelegtem Land.
+export async function ServiceLanding({ intro, checkHref = "/selbstcheck" }: { intro?: React.ReactNode; checkHref?: string } = {}) {
   const { locale } = await getT();
   const session = await getSession();
   const c = landingCopy(locale);
@@ -51,6 +52,7 @@ export async function ServiceLanding() {
       <SchemaOrg />
       <SiteHeader />
       <main id="main" className="flex-1">
+        {intro}
         {/* 1 · Hero: Versprechen und Grenze im selben Blick. Erstes Bild wird vorgeladen (LCP), die übrigen vier erst danach mit niedriger Priorität */}
         <section className="bg-white">
           <div className="mx-auto max-w-6xl px-6 py-12 md:py-16 grid gap-10 md:grid-cols-[1.15fr_1fr] items-center">
@@ -60,7 +62,7 @@ export async function ServiceLanding() {
               <p className="mt-5 text-lg text-[color:var(--color-ink-soft)] leading-relaxed">{c.sub}</p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link href={bookHref} className="btn-primary px-7">{c.ctaStart}</Link>
-                <Link href="/selbstcheck" className="btn-outline px-7">{c.ctaCheck}</Link>
+                <Link href={checkHref} className="btn-outline px-7">{c.ctaCheck}</Link>
               </div>
               <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-1 text-sm font-semibold text-emerald-800">
                 {c.trust.map((x) => <li key={x}>✓ {x}</li>)}
@@ -210,7 +212,7 @@ export async function ServiceLanding() {
             <div>
               <h2 className="text-2xl md:text-3xl font-bold">{c.checkTitle}</h2>
               <p className="mt-3 text-lg text-[color:var(--color-ink-soft)]">{c.checkLead}</p>
-              <Link href="/selbstcheck" className="btn-primary mt-6 inline-flex">{c.checkBtn}</Link>
+              <Link href={checkHref} className="btn-primary mt-6 inline-flex">{c.checkBtn}</Link>
             </div>
             <div className="relative aspect-[4/3] overflow-hidden rounded-2xl">
               <Image src={IMAGES.talk} alt="" fill quality={85} sizes={SIZES.side} className="object-cover" />
@@ -248,7 +250,7 @@ export async function ServiceLanding() {
             </div>
             <div className="mt-10 flex flex-wrap gap-3">
               <Link href={bookHref} className="btn-primary">{c.ctaStart}</Link>
-              <Link href="/selbstcheck" className="btn-outline">{c.ctaCheck}</Link>
+              <Link href={checkHref} className="btn-outline">{c.ctaCheck}</Link>
             </div>
           </div>
         </section>
