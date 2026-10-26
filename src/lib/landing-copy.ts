@@ -67,7 +67,7 @@ function build(lang: Lang): Landing {
       { n: "100 %", t: "your decision", d: "You choose the jobs and send every application yourself, from your own inbox or via the employer's website. Replies come straight to you." },
       { n: "+", t: "documents that belong to you", d: "Download your CV and cover letters at any time and use them anywhere, also after the tool has expired." },
     ],
-    checkTitle: "Is WoYou right for you?", checkLead: "Five short questions, free. Then we tell you openly whether booking makes sense for you.", checkBtn: "Go to self-check",
+    checkTitle: "Is WoYou right for you?", checkLead: "A few short questions, free. Then we tell you openly whether booking makes sense for you.", checkBtn: "Go to self-check",
     sampleTitle: "This is what your documents look like", sampleLead: "This is what the CV and cover letter we create with you look like. Simple and easy to read, the way HR departments like it.", sampleCv: "Sample CV", sampleLetter: "Sample cover letter", sampleNote: "Sample with a fictional person", sampleDesigns: "Four designs and six colours to choose from. You pick them in your application folder.",
     stepsTitle: "How it works",
     steps: [
@@ -136,7 +136,7 @@ function build(lang: Lang): Landing {
       { n: "100 %", t: "قرارك أنت", d: "تختار الوظائف وترسل كل طلب بنفسك، من بريدك أو عبر موقع صاحب العمل. وتصلك الردود مباشرة." },
       { n: "+", t: "مستندات ملك لك", d: "حمّل سيرتك الذاتية ورسائلك في أي وقت واستخدمها أينما شئت، حتى بعد انتهاء مدة الأداة." },
     ],
-    checkTitle: "هل تناسبك WoYou؟", checkLead: "خمسة أسئلة قصيرة، مجانًا. بعدها نقول لك بصراحة هل الحجز مفيد لك.", checkBtn: "إلى الاختبار الذاتي",
+    checkTitle: "هل تناسبك WoYou؟", checkLead: "بضعة أسئلة قصيرة، مجانًا. بعدها نقول لك بصراحة هل الحجز مفيد لك.", checkBtn: "إلى الاختبار الذاتي",
     sampleTitle: "هكذا تبدو مستنداتك", sampleLead: "هكذا تبدو السيرة الذاتية ورسالة التحفيز التي نُعدّها معك. بسيطة وسهلة القراءة، كما تفضّلها أقسام الموارد البشرية.", sampleCv: "نموذج سيرة ذاتية", sampleLetter: "نموذج رسالة تحفيز", sampleNote: "نموذج لشخص غير حقيقي", sampleDesigns: "أربعة تصاميم وستة ألوان للاختيار. تختارها في ملف التقديم.",
     stepsTitle: "كيف تسير الأمور",
     steps: [
@@ -205,7 +205,7 @@ function build(lang: Lang): Landing {
       { n: "100 %", t: "आपका फ़ैसला", d: "नौकरियाँ आप चुनते हैं और हर आवेदन ख़ुद भेजते हैं, अपने ईमेल से या नियोक्ता की वेबसाइट से। जवाब सीधे आपको मिलते हैं।" },
       { n: "+", t: "दस्तावेज़ जो आपके अपने हैं", d: "अपना बायोडाटा और कवर लेटर कभी भी डाउनलोड करें और कहीं भी इस्तेमाल करें, टूल की अवधि ख़त्म होने के बाद भी।" },
     ],
-    checkTitle: "क्या WoYou आपके लिए सही है?", checkLead: "पाँच छोटे सवाल, मुफ़्त। उसके बाद हम साफ़ बताते हैं कि आपके लिए बुकिंग फ़ायदेमंद है या नहीं।", checkBtn: "सेल्फ़-चेक पर जाएँ",
+    checkTitle: "क्या WoYou आपके लिए सही है?", checkLead: "कुछ छोटे सवाल, मुफ़्त। उसके बाद हम साफ़ बताते हैं कि आपके लिए बुकिंग फ़ायदेमंद है या नहीं।", checkBtn: "सेल्फ़-चेक पर जाएँ",
     sampleTitle: "आपके दस्तावेज़ ऐसे दिखते हैं", sampleLead: "हम आपके साथ जो बायोडाटा और कवर लेटर बनाते हैं, वे ऐसे दिखते हैं। सादे और पढ़ने में आसान, जैसे HR विभाग पसंद करते हैं।", sampleCv: "नमूना बायोडाटा", sampleLetter: "नमूना कवर लेटर", sampleNote: "काल्पनिक व्यक्ति के साथ नमूना", sampleDesigns: "चुनने के लिए चार डिज़ाइन और छह रंग। आप इन्हें अपनी आवेदन फ़ाइल में चुनते हैं।",
     stepsTitle: "यह कैसे होता है",
     steps: [
@@ -274,7 +274,7 @@ function build(lang: Lang): Landing {
       { n: "100 %", t: "tvoja odluka", d: "Ti biraš poslove i svaku prijavu šalješ lično, sa svog imejl naloga ili preko sajta poslodavca. Odgovori stižu direktno tebi." },
       { n: "+", t: "dokumenta koja pripadaju tebi", d: "Biografiju i propratna pisma možeš bilo kada da preuzmeš i koristiš svuda, i kada alat istekne." },
     ],
-    checkTitle: "Da li je WoYou za tebe?", checkLead: "Pet kratkih pitanja, besplatno. Posle toga ti otvoreno kažemo da li ti se porudžbina isplati.", checkBtn: "Na samoproveru",
+    checkTitle: "Da li je WoYou za tebe?", checkLead: "Nekoliko kratkih pitanja, besplatno. Posle toga ti otvoreno kažemo da li ti se porudžbina isplati.", checkBtn: "Na samoproveru",
     sampleTitle: "Ovako izgledaju tvoja dokumenta", sampleLead: "Ovako izgledaju biografija i propratno pismo koje pravimo sa tobom. Jednostavno i pregledno, onako kako to vole kadrovske službe.", sampleCv: "Primer biografije", sampleLetter: "Primer propratnog pisma", sampleNote: "Primer sa izmišljenom osobom", sampleDesigns: "Četiri dizajna i šest boja po izboru. Biraš ih u svojoj fascikli za prijavu.",
     stepsTitle: "Kako ide",
     steps: [
@@ -343,7 +343,7 @@ function build(lang: Lang): Landing {
       { n: "100 %", t: "మీ నిర్ణయం", d: "ఉద్యోగాలను మీరే ఎంచుకుంటారు, ప్రతి దరఖాస్తును మీరే పంపుతారు, మీ ఈమెయిల్ నుండి లేదా యజమాని వెబ్‌సైట్ ద్వారా. జవాబులు నేరుగా మీకే వస్తాయి." },
       { n: "+", t: "మీకే చెందిన పత్రాలు", d: "మీ బయోడేటా మరియు కవర్ లెటర్లను ఎప్పుడైనా డౌన్‌లోడ్ చేసుకుని ఎక్కడైనా ఉపయోగించండి, టూల్ గడువు ముగిసిన తర్వాత కూడా." },
     ],
-    checkTitle: "WoYou మీకు సరిపోతుందా?", checkLead: "ఐదు చిన్న ప్రశ్నలు, ఉచితం. ఆ తర్వాత బుకింగ్ మీకు ఉపయోగపడుతుందో లేదో స్పష్టంగా చెబుతాము.", checkBtn: "సెల్ఫ్-చెక్‌కు వెళ్ళండి",
+    checkTitle: "WoYou మీకు సరిపోతుందా?", checkLead: "కొన్ని చిన్న ప్రశ్నలు, ఉచితం. ఆ తర్వాత బుకింగ్ మీకు ఉపయోగపడుతుందో లేదో స్పష్టంగా చెబుతాము.", checkBtn: "సెల్ఫ్-చెక్‌కు వెళ్ళండి",
     sampleTitle: "మీ పత్రాలు ఇలా కనిపిస్తాయి", sampleLead: "మేము మీతో కలిసి తయారు చేసే బయోడేటా మరియు కవర్ లెటర్ ఇలా ఉంటాయి. సాదాగా, చదవడానికి సులభంగా, HR విభాగాలు ఇష్టపడే విధంగా.", sampleCv: "నమూనా బయోడేటా", sampleLetter: "నమూనా కవర్ లెటర్", sampleNote: "కల్పిత వ్యక్తితో నమూనా", sampleDesigns: "ఎంచుకోవడానికి నాలుగు డిజైన్లు మరియు ఆరు రంగులు. వాటిని మీరు మీ దరఖాస్తు ఫైల్‌లో ఎంచుకుంటారు.",
     stepsTitle: "ఇది ఎలా జరుగుతుంది",
     steps: [
@@ -411,7 +411,7 @@ function build(lang: Lang): Landing {
       { n: "100 %", t: "votre décision", d: "Vous choisissez les offres et envoyez chaque candidature vous-même, depuis votre boîte e-mail ou sur le site de l'employeur. Les réponses vous arrivent directement." },
       { n: "+", t: "des documents qui vous appartiennent", d: "Téléchargez votre CV et vos lettres à tout moment et utilisez-les partout, même après la fin de l'outil." },
     ],
-    checkTitle: "WoYou vous convient-il ?", checkLead: "Cinq questions courtes, gratuit. Ensuite nous vous disons franchement si une réservation vaut la peine pour vous.", checkBtn: "Faire l'auto-test",
+    checkTitle: "WoYou vous convient-il ?", checkLead: "Quelques questions courtes, gratuit. Ensuite nous vous disons franchement si une réservation vaut la peine pour vous.", checkBtn: "Faire l'auto-test",
     sampleTitle: "Voici à quoi ressemblent vos documents", sampleLead: "Voici à quoi ressemblent le CV et la lettre que nous créons avec vous. Simples et lisibles, comme les services RH les aiment.", sampleCv: "CV modèle", sampleLetter: "Lettre modèle", sampleNote: "Modèle avec une personne fictive", sampleDesigns: "Quatre designs et six couleurs au choix. Vous les choisissez dans votre dossier.",
     stepsTitle: "Déroulement",
     steps: [
@@ -479,7 +479,7 @@ function build(lang: Lang): Landing {
       { n: "100 %", t: "deine Entscheidung", d: "Du wählst die Stellen aus und schickst jede Bewerbung selbst, aus deinem Postfach oder über die Seite des Arbeitgebers. Antworten kommen direkt zu dir." },
       { n: "+", t: "Unterlagen, die dir gehören", d: "Lebenslauf und Anschreiben kannst du jederzeit herunterladen und überall nutzen, auch wenn das Werkzeug abgelaufen ist." },
     ],
-    checkTitle: "Passt WoYou zu dir?", checkLead: "Fünf kurze Fragen, kostenlos. Danach sagen wir dir offen, ob sich eine Buchung für dich lohnt.", checkBtn: "Zum Selbstcheck",
+    checkTitle: "Passt WoYou zu dir?", checkLead: "Ein paar kurze Fragen, kostenlos. Danach sagen wir dir offen, ob sich eine Buchung für dich lohnt.", checkBtn: "Zum Selbstcheck",
     sampleTitle: "So sehen deine Unterlagen aus", sampleLead: "So sehen Lebenslauf und Anschreiben aus, die wir mit dir erstellen. Schlicht und gut lesbar, so wie Personalabteilungen es mögen.", sampleCv: "Muster-Lebenslauf", sampleLetter: "Muster-Anschreiben", sampleNote: "Muster mit erfundener Person", sampleDesigns: "Vier Designs und sechs Farben zur Wahl. Du suchst sie in deiner Bewerbungsmappe aus.",
     stepsTitle: "So läuft es ab",
     steps: [
