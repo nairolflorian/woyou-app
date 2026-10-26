@@ -5,6 +5,9 @@ import { isAdmin } from "@/lib/auth";
 import { ROLE } from "@/lib/enums";
 import { formatPrice } from "@/lib/services";
 import { SOURCE_NAME, type Source } from "@/lib/stellensuche-core";
+import { pilotReport } from "@/lib/report";
+import { PILOT_ZIELE, zielStatus, LAND_LABEL, GRUPPE_LABEL, type Ziel, type ZielStatus, type LandCode } from "@/lib/pilot-core";
+import type { BalkanGroup } from "@/lib/selfcheck";
 
 export const dynamic = "force-dynamic";
 
@@ -14,11 +17,21 @@ const PAID_PURCHASE = ["PAID", "ACTIVE", "CANCELLING", "ENDED"];
 const STATUS_LABEL: Record<string, string> = { SAVED: "gemerkt", APPLIED: "beworben", REPLY: "Antwort", INTERVIEW: "Gespräch", REJECTED: "Absage", OFFER: "Zusage" };
 const day = 86_400_000;
 
+// Pilot Westbalkan: Darstellung der Kennzahlen (Regeln in src/lib/pilot-core.ts)
+const STATUS_TON: Record<ZielStatus, string> = { "im Ziel": "bg-emerald-100 text-emerald-800", "unter Ziel": "bg-amber-100 text-amber-800", "über Ziel": "bg-sky-100 text-sky-800", "keine Daten": "bg-slate-200 text-slate-700" };
+const zahl = (x: number) => x.toLocaleString("de-DE");
+const prozent = (x: number | null) => (x === null ? "keine Daten" : `${x.toLocaleString("de-DE")} %`);
+const datum = (d: Date) => d.toLocaleDateString("de-DE", { timeZone: "Europe/Berlin", day: "2-digit", month: "2-digit", year: "numeric" });
+const zielText = (z: Ziel, einheit = "") => (z.min !== undefined && z.max !== undefined ? `${zahl(z.min)} bis ${zahl(z.max)}${einheit}` : z.min !== undefined ? `mindestens ${zahl(z.min)}${einheit}` : `unter ${zahl(z.max ?? 0)}${einheit}`);
+const landName = (k: string) => LAND_LABEL[k as LandCode] ?? k;
+const gruppeName = (k: string) => GRUPPE_LABEL[k as BalkanGroup] ?? "ohne Angabe";
+
 export default async function Auswertung() {
   if (!isAdmin((await getSession()).role)) redirect("/admin/buchungen");
   const now = new Date();
   const since30 = new Date(Date.now() - 30 * day);
 
+  const pilot = await pilotReport(now);
   const [registered, bookings, purchases, profiles, toolActive, bySource, byStatus, users] = await Promise.all([
     prisma.user.count({ where: { role: ROLE.CANDIDATE, deletedAt: null } }),
     prisma.serviceBooking.findMany({ where: { status: { not: "CANCELLED" } }, select: { amountCents: true, paidAt: true } }),
@@ -39,6 +52,23 @@ export default async function Auswertung() {
   const saved = bySource.reduce((s, x) => s + x._count._all, 0);
   const pct = (a: number, b: number) => (b ? `${Math.round((a / b) * 100)} %` : "keine Daten");
 
+  // Kennzahlen gegen die Ziele aus dem Konzept v4. Stückzahlen bewerten wir während des Pilots nach der Hochrechnung.
+  const p = pilot;
+  const kpis: { k: string; ist: string; ziel: string; status: ZielStatus; hinweis: string }[] = [
+    { k: "Selbstchecks", ist: zahl(p.selbstchecks.total), ziel: zielText(PILOT_ZIELE.selbstchecks), status: zielStatus(p.selbstchecksHochrechnung, PILOT_ZIELE.selbstchecks),
+      hinweis: p.laeuft && p.selbstchecksHochrechnung !== null ? `Hochrechnung bis ${datum(p.ende)}: ${zahl(p.selbstchecksHochrechnung)}` : "" },
+    { k: "Anteil „sinnvoll“", ist: prozent(p.selbstchecks.greenPct), ziel: zielText(PILOT_ZIELE.anteilSinnvoll, " %"), status: zielStatus(p.selbstchecks.greenPct, PILOT_ZIELE.anteilSinnvoll),
+      hinweis: `${zahl(p.selbstchecks.green)} grün, ${zahl(p.selbstchecks.yellow)} gelb, ${zahl(p.selbstchecks.red)} rot` },
+    { k: "Buchungen bezahlt", ist: zahl(p.buchungenBezahlt), ziel: zielText(PILOT_ZIELE.buchungen), status: zielStatus(p.buchungenHochrechnung, PILOT_ZIELE.buchungen),
+      hinweis: p.laeuft && p.buchungenHochrechnung !== null ? `ohne Stornos, Hochrechnung bis ${datum(p.ende)}: ${zahl(p.buchungenHochrechnung)}` : `ohne Stornos, bezahlt ab ${datum(p.bezahltAb)}` },
+    { k: "Stornoquote", ist: prozent(p.storno.pct), ziel: zielText(PILOT_ZIELE.stornoQuote, " %"), status: zielStatus(p.storno.pct, PILOT_ZIELE.stornoQuote),
+      hinweis: `${zahl(p.storno.storniert)} von ${zahl(p.storno.bezahlt)} bezahlten storniert. Der Grund wird noch nicht erfasst, daher alle Stornos.` },
+    { k: `Mappen fertig bis ${datum(p.stichtag).slice(0, 6)}`, ist: prozent(p.mappen.pct), ziel: zielText(PILOT_ZIELE.mappenBis, " %"), status: zielStatus(p.mappen.pct, PILOT_ZIELE.mappenBis),
+      hinweis: `${zahl(p.mappen.fertig)} von ${zahl(p.mappen.basis)} Kund:innen bis zum Stichtag freigegeben${now < p.stichtag ? ", Stichtag noch nicht erreicht" : ""}` },
+  ];
+  // Stornos mit Ziel „unter“: über dem Ziel ist schlecht
+  const ton = (k: string, st: ZielStatus) => (k === "Stornoquote" && st === "über Ziel" ? "bg-rose-100 text-rose-800" : STATUS_TON[st]);
+
   const funnel: [string, number][] = [
     ["Registriert", registered],
     ["Gebucht", bookings.length],
@@ -54,6 +84,61 @@ export default async function Auswertung() {
         <h1 className="text-2xl font-bold">Auswertung</h1>
         <p className="text-sm text-[color:var(--color-ink-soft)]">Unterlagen und Bewerbungswerkzeug auf einen Blick: Umsatz, Kundenweg und anonyme Summen aus der Stellensuche.</p>
       </div>
+
+      <section className="card space-y-4">
+        <div>
+          <h2 className="font-semibold">Pilot Westbalkan</h2>
+          <p className="text-sm text-[color:var(--color-ink-soft)]">
+            Soft Launch ab {datum(p.start)}, bezahlt ab {datum(p.bezahltAb)}, Auswertung bis {datum(p.ende)}. Ziele aus dem Konzept v4 für die Entscheidung Ende Januar.
+            {!p.laeuft && now < p.start && " Der Pilot hat noch nicht begonnen."}
+          </p>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+          {kpis.map((x) => (
+            <div key={x.k} className="rounded-xl border p-3">
+              <div className="flex items-start justify-between gap-2">
+                <div className="text-sm text-[color:var(--color-ink-soft)]">{x.k}</div>
+                <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold ${ton(x.k, x.status)}`}>{x.status}</span>
+              </div>
+              <div className="mt-1 text-2xl font-bold">{x.ist}</div>
+              <div className="text-xs">Ziel: {x.ziel}</div>
+              {x.hinweis && <div className="mt-1 text-xs text-[color:var(--color-ink-soft)]">{x.hinweis}</div>}
+            </div>
+          ))}
+        </div>
+        <div className="grid gap-6 overflow-x-auto md:grid-cols-3">
+          <table className="w-full text-sm">
+            <caption className="text-left font-semibold">Selbstchecks nach Land</caption>
+            <thead><tr className="text-left text-[color:var(--color-ink-soft)]"><th className="py-2">Land</th><th className="text-right">Anzahl</th><th className="text-right">sinnvoll</th></tr></thead>
+            <tbody>
+              {p.nachLand.map((x) => <tr key={x.key} className="border-t"><td className="py-2">{landName(x.key)}</td><td className="text-right">{zahl(x.total)}</td><td className="text-right">{prozent(x.greenPct)}</td></tr>)}
+              {!p.nachLand.length && <tr><td colSpan={3} className="py-3 text-[color:var(--color-ink-soft)]">Noch keine Selbstchecks im Pilotzeitraum.</td></tr>}
+            </tbody>
+          </table>
+          <table className="w-full text-sm">
+            <caption className="text-left font-semibold">Westbalkan nach Berufsgruppe</caption>
+            <thead><tr className="text-left text-[color:var(--color-ink-soft)]"><th className="py-2">Berufsgruppe</th><th className="text-right">Anzahl</th><th className="text-right">sinnvoll</th></tr></thead>
+            <tbody>
+              {p.nachGruppe.map((x) => <tr key={x.key} className="border-t"><td className="py-2">{gruppeName(x.key)}</td><td className="text-right">{zahl(x.total)}</td><td className="text-right">{prozent(x.greenPct)}</td></tr>)}
+              {!p.nachGruppe.length && <tr><td colSpan={3} className="py-3 text-[color:var(--color-ink-soft)]">Noch keine Selbstchecks aus dem Westbalkan.</td></tr>}
+            </tbody>
+          </table>
+          <table className="w-full text-sm">
+            <caption className="text-left font-semibold">Bezahlte Buchungen nach Land</caption>
+            <thead><tr className="text-left text-[color:var(--color-ink-soft)]"><th className="py-2">Land</th><th className="text-right">bezahlt</th><th className="text-right">storniert</th></tr></thead>
+            <tbody>
+              {p.bezahltNachLand.map((x) => <tr key={x.key} className="border-t"><td className="py-2">{landName(x.key)}</td><td className="text-right">{zahl(x.bezahlt)}</td><td className="text-right">{zahl(x.storniert)}</td></tr>)}
+              {!p.bezahltNachLand.length && <tr><td colSpan={3} className="py-3 text-[color:var(--color-ink-soft)]">Noch keine bezahlten Buchungen im Pilotzeitraum.</td></tr>}
+            </tbody>
+          </table>
+        </div>
+        <p className="text-xs text-[color:var(--color-ink-soft)]">
+          Selbstchecks werden ohne Personenbezug gezählt (Land, Berufsgruppe, Deutschniveau, Ergebnis). Anteil Westbalkan an allen Selbstchecks: {prozent(p.balkanAnteilPct)}.
+          Das Land bei Buchungen kommt aus Mappe und Profil (Staatsangehörigkeit, sonst Land der Adresse). Storno = bezahlt und danach storniert.
+          Mappen fertig = Buchungen vom Pilotstart bis zum Stichtag (im Soft Launch auch unbezahlt, danach nur bezahlt, ohne Stornos), deren Mappe bis zum Stichtag freigegeben wurde.
+          Monatszahlen mit CSV unter <a href="/admin/buchungen" className="underline">Buchungen</a>.
+        </p>
+      </section>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[

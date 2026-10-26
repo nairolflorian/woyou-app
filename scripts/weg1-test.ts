@@ -19,6 +19,9 @@ import {
 } from "../src/lib/stellensuche-core";
 import { buildEml, encodeWord, safeFilename } from "../src/lib/eml";
 import { weg1Gesperrt, WEG1 } from "../src/lib/weg1";
+import {
+  parseSelbstcheckErgebnis, landCode, ampelZahlen, nachSchluessel, zielStatus, hochrechnung, stornoQuote, mappenBis, unterlagenStichtag, PILOT, PILOT_ZIELE,
+} from "../src/lib/pilot-core";
 
 let n = 0;
 const test = (name: string, fn: () => void | Promise<void>) => Promise.resolve().then(fn).then(() => { n++; console.log(`ok  ${name}`); }, (e) => { console.error(`FEHLER  ${name}\n${e instanceof Error ? e.stack : e}`); process.exitCode = 1; });
@@ -745,6 +748,88 @@ async function main() {
     assert.ok(!/Server in Deutschland|Servern der Hetzner\s+Online GmbH in Deutschland/.test(t));
     assert.ok(!/Mistral/.test(t) && /Derzeit nicht im Einsatz/.test(t), "KI-Absatz");
     assert.ok(!/Server in Deutschland|Servers in Germany/.test(fs.readFileSync("src/lib/landing-copy.ts", "utf8")));
+  });
+
+  await test("Selbstcheck-Statistik: Eingabe nur aus Whitelists, kein Freitext", () => {
+    const ok = parseSelbstcheckErgebnis({ country: "RS", gruppe: "ce", german: "A2", level: "green", locale: "sr", source: "Facebook" });
+    assert.deepEqual(ok, { country: "RS", balkan: true, gruppe: "ce", german: "A2", level: "green", locale: "sr", source: "facebook" });
+    // unbekannte Felder (Beruf, Landtext, Nutzer) fallen weg
+    const x = parseSelbstcheckErgebnis({ country: "other", german: "B1", level: "yellow", job: "Elektriker", countryText: "Marokko", userId: "u1" });
+    assert.deepEqual(x, { country: "other", balkan: false, gruppe: null, german: "B1", level: "yellow", locale: null, source: null });
+    assert.equal(parseSelbstcheckErgebnis({ country: "Serbien", level: "green" }), null, "Landtext statt Code");
+    assert.equal(parseSelbstcheckErgebnis({ country: "DE", level: "green" }), null);
+    assert.equal(parseSelbstcheckErgebnis({ country: "RS", level: "green" }), null, "Westbalkan ohne Berufsgruppe");
+    assert.equal(parseSelbstcheckErgebnis({ country: "RS", gruppe: "pilot", level: "green" }), null);
+    assert.equal(parseSelbstcheckErgebnis({ country: "other", gruppe: "ce", level: "green" }), null, "Berufsgruppe nur im Westbalkan");
+    assert.equal(parseSelbstcheckErgebnis({ country: "RS", balkan: false, gruppe: "ce", level: "green" }), null, "balkan passt nicht zum Land");
+    assert.equal(parseSelbstcheckErgebnis({ country: "AL", gruppe: "lager", level: "blue" }), null);
+    assert.equal(parseSelbstcheckErgebnis({ country: "AL", gruppe: "lager", german: "C2", level: "red" }), null);
+    assert.equal(parseSelbstcheckErgebnis(null), null);
+    assert.equal(parseSelbstcheckErgebnis([]), null);
+    assert.equal(parseSelbstcheckErgebnis("RS"), null);
+    // Sprache nur aus der Liste, Quelle nur als kurze Kennung
+    const y = parseSelbstcheckErgebnis({ country: "XK", gruppe: "andere", level: "red", locale: "xx", source: "max.mustermann@example.com" })!;
+    assert.equal(y.locale, null); assert.equal(y.source, null);
+    assert.equal(parseSelbstcheckErgebnis({ country: "XK", gruppe: "andere", level: "red", source: "a".repeat(41) })!.source, null);
+    assert.equal(parseSelbstcheckErgebnis({ country: "XK", gruppe: "andere", level: "red", source: "partner-rs_2026.11" })!.source, "partner-rs_2026.11");
+  });
+  await test("Selbstcheck-Statistik: Route speichert nur das geprüfte Ergebnis, ohne IP", () => {
+    const r = readFileSync("src/app/api/selbstcheck/ergebnis/route.ts", "utf8");
+    assert.match(r, /parseSelbstcheckErgebnis\(body\)/);
+    assert.match(r, /selfCheckResult\.create\(\{ data: \{ \.\.\.e, createdAt: stunde \} \}\)/);
+    assert.match(r, /rateLimit\("selbstcheck-ergebnis"/);
+    assert.match(r, /status: 204|leer\(204\)/);
+    const schema = readFileSync("prisma/schema.prisma", "utf8").split("model SelfCheckResult")[1].split("}")[0];
+    assert.ok(!/ip|user|job|text/i.test(schema.replace(/\/\/.*$/gm, "")), "SelfCheckResult hat ein Feld mit Personenbezug");
+    const c = readFileSync("src/components/SelfCheck.tsx", "utf8");
+    assert.match(c, /\.catch\(\(\) => \{\}\)/, "Fehler beim Melden müssen still bleiben");
+    assert.ok(!/body = \{[^}]*\bjob\b/.test(c), "Beruf darf nicht gemeldet werden");
+  });
+  await test("Pilot: Ländercode aus Freitext (Profil), Ampel-Zahlen und Gruppen", () => {
+    assert.equal(landCode("serbisch", "Srbija"), "RS");
+    assert.equal(landCode(null, "Kosova"), "XK");
+    assert.equal(landCode("Marokko", ""), "other");
+    assert.equal(landCode(null, undefined), "other");
+    assert.deepEqual(["serbisch", "srpsko", "Albanian", "bosanski", "kosovarisch", "mazedonisch", "crnogorsko", "MK", "Deutsch"].map((x) => landCode(x)), ["RS", "RS", "AL", "BA", "XK", "MK", "ME", "MK", "other"]);
+    const rows = [{ level: "green", c: "RS" }, { level: "green", c: "RS" }, { level: "red", c: "RS" }, { level: "yellow", c: "AL" }, { level: "green", c: "other" }];
+    assert.deepEqual(ampelZahlen(rows), { total: 5, green: 3, yellow: 1, red: 1, greenPct: 60 });
+    assert.deepEqual(ampelZahlen([]), { total: 0, green: 0, yellow: 0, red: 0, greenPct: null });
+    const g = nachSchluessel(rows, (r) => r.c);
+    assert.deepEqual(g.map((x) => [x.key, x.total, x.greenPct]), [["RS", 3, 66.7], ["AL", 1, 0], ["other", 1, 100]]);
+  });
+  await test("Pilot: Zielstatus und Hochrechnung", () => {
+    assert.equal(zielStatus(null, PILOT_ZIELE.selbstchecks), "keine Daten");
+    assert.equal(zielStatus(1499, PILOT_ZIELE.selbstchecks), "unter Ziel");
+    assert.equal(zielStatus(4000, PILOT_ZIELE.selbstchecks), "im Ziel");
+    assert.equal(zielStatus(39.9, PILOT_ZIELE.anteilSinnvoll), "unter Ziel");
+    assert.equal(zielStatus(45, PILOT_ZIELE.anteilSinnvoll), "im Ziel");
+    assert.equal(zielStatus(51, PILOT_ZIELE.anteilSinnvoll), "über Ziel");
+    assert.equal(zielStatus(130, PILOT_ZIELE.buchungen), "über Ziel");
+    assert.equal(zielStatus(4.9, PILOT_ZIELE.stornoQuote), "im Ziel");
+    assert.equal(zielStatus(6, PILOT_ZIELE.stornoQuote), "über Ziel");
+    const start = new Date("2026-11-17T00:00:00+01:00"), ende = new Date("2026-11-27T00:00:00+01:00");
+    assert.equal(hochrechnung(10, new Date("2026-11-01"), start, ende), null);
+    assert.equal(hochrechnung(10, new Date("2026-11-22T00:00:00+01:00"), start, ende), 20);
+    assert.equal(hochrechnung(10, new Date("2026-12-01"), start, ende), 10);
+    assert.equal(PILOT.start.toISOString(), "2026-11-16T23:00:00.000Z");
+    assert.equal(unterlagenStichtag().toISOString(), "2026-12-15T22:59:59.999Z");
+  });
+  await test("Pilot: Stornoquote und Mappen fertig bis 15.12.", () => {
+    const d = (s: string) => new Date(`${s}T12:00:00+01:00`);
+    const b = (status: string, created: string, paid: string | null, approved: string | null) => ({ status, createdAt: d(created), paidAt: paid ? d(paid) : null, approvedAt: approved ? d(approved) : null });
+    const bs = [
+      b("DONE", "2026-11-18", null, "2026-12-10"),        // Soft Launch ohne Zahlung, fertig
+      b("IN_PROGRESS", "2026-11-20", null, null),          // Soft Launch, nicht fertig
+      b("DONE", "2026-12-02", "2026-12-02", "2026-12-15"), // bezahlt, am Stichtag fertig
+      b("DONE", "2026-12-03", "2026-12-03", "2026-12-16"), // bezahlt, zu spät
+      b("REQUESTED", "2026-12-04", null, null),            // ab 01.12. unbezahlt: zählt nicht
+      b("CANCELLED", "2026-12-05", "2026-12-05", null),    // storniert: zählt nicht
+      b("PAID", "2026-12-20", "2026-12-20", null),         // nach dem Stichtag gebucht: zählt nicht
+      b("CANCELLED", "2026-12-06", null, null),            // nie bezahlt: kein Storno
+    ];
+    assert.deepEqual(mappenBis(bs), { basis: 4, fertig: 2, pct: 50 });
+    assert.deepEqual(stornoQuote(bs), { bezahlt: 4, storniert: 1, pct: 25 });
+    assert.deepEqual(stornoQuote([]), { bezahlt: 0, storniert: 0, pct: null });
   });
 
   if (process.argv.includes("--live")) {

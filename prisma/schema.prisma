@@ -531,3 +531,20 @@ model SavedJob {
   @@unique([candidateId, source, sourceRef])
   @@index([candidateId, status])
 }
+
+// Selbstcheck-Statistik (Pilot Westbalkan, 26.10.2026): nur das Ergebnis, ohne Bezug zur Person.
+// Keine Nutzer-ID, keine IP, kein Freitext (Beruf und Land als Text bleiben im Browser).
+// createdAt wird auf die volle Stunde gerundet, damit sich Einträge nicht mit Server-Logs verknüpfen lassen.
+model SelfCheckResult {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  country   String   // RS | BA | ME | XK | MK | AL | other
+  balkan    Boolean
+  gruppe    String?  // ce | c | bus | lager | stapler | dispo | andere (nur Westbalkan)
+  german    String?  // none | A1 | A2 | B1 | B2 | C1
+  level     String   // green | yellow | red
+  locale    String?
+  source    String?  // utm_source aus dem Werbelink, falls vorhanden
+
+  @@index([createdAt])
+}

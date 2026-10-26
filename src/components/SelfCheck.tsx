@@ -17,6 +17,18 @@ export const SELFCHECK_TEXT = {
 // ar/hi/sr/te (inkl. wb = Westbalkan-Fragen): Übersetzung bitte von Muttersprachler:in prüfen lassen
 const LANGS: CheckLang[] = ["de", "en", "fr", "ar", "hi", "sr", "te"];
 
+// Statistik (Pilot Westbalkan): nur Ländercode, Berufsgruppe, Deutschniveau, Ampel, Sprache und utm_source.
+// Beruf und Land als Text verlassen den Browser nicht. Fehler hier dürfen den Selbstcheck nie stören.
+function meldeErgebnis(a: Answer, wb: boolean, v: Verdict, locale: string) {
+  try {
+    const land = balkanLand(a.country);
+    let source: string | undefined;
+    try { source = new URLSearchParams(window.location.search).get("utm_source") || sessionStorage.getItem("woyou_src")?.split("/")[0] || undefined; } catch { /* ohne sessionStorage */ }
+    const body = { country: wb && land ? land : "other", gruppe: wb && land ? (a.balkan?.group || null) : null, german: a.german, level: v.level, locale, source };
+    void fetch("/api/selbstcheck/ergebnis", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body), keepalive: true }).catch(() => {});
+  } catch { /* Statistik ist optional */ }
+}
+
 const TONE = { green: "border-emerald-300 bg-emerald-50 text-emerald-900", yellow: "border-amber-300 bg-amber-50 text-amber-900", red: "border-rose-300 bg-rose-50 text-rose-900" };
 
 export function SelfCheck({ locale, bookHref, block, price }: { locale: string; bookHref: string; block: boolean; price: string }) {
@@ -36,7 +48,13 @@ export function SelfCheck({ locale, bookHref, block, price }: { locale: string; 
   );
   return (
     <div className="grid gap-6 md:grid-cols-2">
-      <form className="card space-y-3" onSubmit={(e) => { e.preventDefault(); setV(evaluate(wb ? a : { ...a, balkan: undefined }, lang)); }}>
+      <form className="card space-y-3" onSubmit={(e) => {
+        e.preventDefault();
+        if (v) return; // unverändert seit dem letzten Ergebnis: nicht doppelt zählen
+        const verdict = evaluate(wb ? a : { ...a, balkan: undefined }, lang);
+        setV(verdict);
+        meldeErgebnis(a, wb, verdict, locale);
+      }}>
         <div>
           <label className="label">{t.country}</label>
           <input className="input" maxLength={60} placeholder={t.countryPh} list="selfcheck-laender" value={a.country} onChange={(e) => set("country", e.target.value)} />

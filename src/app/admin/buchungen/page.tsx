@@ -42,12 +42,12 @@ export default async function AdminBookingsPage() {
           <a href="/api/admin/bookings/export" className="btn-outline py-1">Kunden und Buchungen (CSV)</a>
         </div>
         <table className="mt-3 w-full text-sm">
-          <thead><tr className="text-left text-xs text-[color:var(--color-ink-soft)]"><th className="py-1">Monat</th><th>Registrierungen</th><th>Buchungen</th><th>bezahlt</th><th>Umsatz Startpaket</th><th>Mappen</th><th>Buchungsquote</th></tr></thead>
+          <thead><tr className="text-left text-xs text-[color:var(--color-ink-soft)]"><th className="py-1">Monat</th><th>Registrierungen</th><th>Buchungen</th><th>bezahlt</th><th>Umsatz Startpaket</th><th>Mappen</th><th>Buchungsquote</th><th>Selbstchecks</th><th>grün / gelb / rot</th><th>Anteil sinnvoll</th><th>Stornos</th><th>Mappen freigegeben</th></tr></thead>
           <tbody>{report.map((r) => (
-            <tr key={r.month} className="border-t"><td className="py-1 font-semibold">{r.month}</td><td>{r.registrations}</td><td>{r.bookings}</td><td>{r.bookingsPaid}</td><td>{formatPrice(r.serviceRevenueCents)}</td><td>{r.mappenSubmitted}</td><td>{r.conversionPct === null ? "–" : `${r.conversionPct.toLocaleString("de-DE")} %`}</td></tr>
+            <tr key={r.month} className="border-t"><td className="py-1 font-semibold">{r.month}</td><td>{r.registrations}</td><td>{r.bookings}</td><td>{r.bookingsPaid}</td><td>{formatPrice(r.serviceRevenueCents)}</td><td>{r.mappenSubmitted}</td><td>{r.conversionPct === null ? "-" : `${r.conversionPct.toLocaleString("de-DE")} %`}</td><td>{r.selfChecks}</td><td>{r.selfGreen} / {r.selfYellow} / {r.selfRed}</td><td>{r.selfGreenPct === null ? "-" : `${r.selfGreenPct.toLocaleString("de-DE")} %`}</td><td>{r.stornos}</td><td>{r.mappenApproved}</td></tr>
           ))}</tbody>
         </table>
-        <p className="mt-2 text-xs text-[color:var(--color-ink-soft)]">Buchungsquote = Buchungen des Startpakets je neue Registrierung im Monat. Demo-Zahlungen zählen nicht als Umsatz.</p>
+        <p className="mt-2 text-xs text-[color:var(--color-ink-soft)]">Buchungsquote = Buchungen des Startpakets je neue Registrierung im Monat. Demo-Zahlungen zählen nicht als Umsatz. Selbstchecks werden ohne Personenbezug gezählt; Anteil sinnvoll = grünes Ergebnis. Storno = bezahlt und danach storniert. Kennzahlen zum Pilot Westbalkan unter <a href="/admin/auswertung" className="underline">Auswertung</a>.</p>
       </div>
       </>)}
       {bookings.length === 0 && <div className="card text-sm text-[color:var(--color-ink-soft)]">Noch keine Buchungen.</div>}

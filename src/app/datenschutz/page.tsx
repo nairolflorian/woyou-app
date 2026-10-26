@@ -42,6 +42,9 @@ export default function Datenschutz() {
                 <li><strong>Bewerbungsmappe:</strong> Name, Adresse, Kontaktdaten, Geburtsdatum und Staatsangehörigkeit (freiwillig), Berufserfahrung, Ausbildung, Sprachen, Kenntnisse, Motivation, auf Wunsch ein Foto und ein eigener Lebenslauf.</li>
                 {/* ANWALT PRÜFEN (Weg 1): neue Datenkategorie Bewerbungswerkzeug statt „Bewerbungen“ */}
                 <li><strong>Bewerbungswerkzeug:</strong> deine Suchbegriffe (nur für die Suche, wir speichern sie nicht), die Stellen, die du dir merkst oder selbst einträgst, dein Stand und deine Notizen dazu und die Anschreiben, die du erstellst. Diese Liste pflegst nur du; unser Team sieht sie in WoYou nicht.</li>
+                {/* ANWALT PRÜFEN (26.10.2026): Selbstcheck-Statistik ohne Personenbezug (Tabelle SelfCheckResult: Ländercode bzw. „andere“, Berufsgruppe,
+                    Deutschniveau, Ampel, Seitensprache, utm_source; Zeit auf die Stunde gerundet; keine IP, kein Freitext). Rechtsgrundlage in Abschnitt 3 ergänzen? */}
+                <li><strong>Selbstcheck:</strong> Das Ergebnis deines Selbstchecks speichern wir ohne Bezug zu deiner Person (Land bzw. Ländergruppe, Berufsgruppe, Deutschniveau, Ergebnis, Sprache der Seite und gegebenenfalls die Quelle des Werbelinks, über den du gekommen bist) für unsere Statistik; deinen Beruf und dein Land als eingetippten Text speichern wir nicht.</li>
                 <li><strong>Zahlung:</strong> wird direkt bei Stripe abgewickelt. Wir speichern keine Kartendaten.</li>
                 <li><strong>Technik:</strong> Login-Cookie und Sprach-Cookie. Kein Tracking, keine Werbe-Cookies.</li>
               </ul>
