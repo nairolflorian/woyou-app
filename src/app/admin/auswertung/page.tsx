@@ -93,14 +93,14 @@ export default async function Auswertung() {
             {!p.laeuft && now < p.start && " Der Pilot hat noch nicht begonnen."}
           </p>
         </div>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
           {kpis.map((x) => (
             <div key={x.k} className="rounded-xl border p-3">
-              <div className="flex items-start justify-between gap-2">
-                <div className="text-sm text-[color:var(--color-ink-soft)]">{x.k}</div>
+              <div className="flex flex-wrap items-start justify-between gap-2">
+                <div className="min-w-0 text-sm text-[color:var(--color-ink-soft)]">{x.k}</div>
                 <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold ${ton(x.k, x.status)}`}>{x.status}</span>
               </div>
-              <div className="mt-1 text-2xl font-bold">{x.ist}</div>
+              <div className="mt-1 break-words text-2xl font-bold">{x.ist}</div>
               <div className="text-xs">Ziel: {x.ziel}</div>
               {x.hinweis && <div className="mt-1 text-xs text-[color:var(--color-ink-soft)]">{x.hinweis}</div>}
             </div>
