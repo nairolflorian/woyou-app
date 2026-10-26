@@ -1,8 +1,11 @@
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { COMPANY } from "@/lib/company";
+import { terminlandUrl } from "@/lib/termin";
 
 export const metadata = { title: "Datenschutz" };
+// zur Laufzeit rendern, damit der Terminland-Absatz dem gesetzten TERMINLAND_URL folgt
+export const dynamic = "force-dynamic";
 
 // ANWALT PRÜFEN (Weg 1, 22.10.2026): Abschnitte 2 (Bewerbungswerkzeug), 3 (Zweck) und 4 (Empfänger,
 // Stellensuche, E-Mail-Programm) wurden für das neue Angebot angepasst: kein Versand durch WoYou, keine
@@ -66,6 +69,9 @@ export default function Datenschutz() {
                 {/* ANWALT PRÜFEN (23.10.2026): Standort des WoYou-Servers wird noch geklärt, daher nur „in der EU“ */}
                 <li><strong>Hetzner Online GmbH</strong>, Industriestr. 25, 91710 Gunzenhausen (Hosting, Server in der EU).</li>
                 <li><strong>CRM der EuBiA-Gruppe</strong> für Kundenbetreuung und Abrechnung (siehe Abschnitt 5).</li>
+                {/* ANWALT PRÜFEN (26.10.2026): Unterlagen-Check im Call über Terminland, erscheint erst mit gesetztem TERMINLAND_URL.
+                    Auftragsverarbeitung über Terminland-AGB Teil B (Art. 28 DSGVO); Vertragspartner ist das Konto von EuBiA/KarriereKind. */}
+                {terminlandUrl() && <li><strong>Terminland GmbH</strong>, Kreuzberger Ring 44a, 65205 Wiesbaden (Terminbuchung für den Unterlagen-Check im Gespräch, nur wenn du einen Termin buchst; du gibst dort selbst Name, Kontakt und Wunschtermin ein).</li>}
                 <li><strong>Unser E-Mail-Anbieter</strong> für Benachrichtigungen an dich (z. B. Buchungsbestätigung).</li>
                 {/* ANWALT PRÜFEN (23.10.2026): KI-Textdienst ist in Produktion nicht aktiv (kein Schlüssel gesetzt), es besteht
                     derzeit kein Vertrag mit einem KI-Anbieter. Vor einer Aktivierung Anbieter, AV-Vertrag und diesen Absatz ergänzen. */}

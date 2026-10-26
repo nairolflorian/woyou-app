@@ -10,6 +10,8 @@ import { crmMelden } from "@/lib/crm-sync";
 import { euro } from "@/lib/crm-core";
 import { grantToolMonths, paymentTestMode } from "@/lib/werkzeug";
 import { bookingMail, wLang } from "@/lib/werkzeug-text";
+import { accountText, fill } from "@/lib/account-text";
+import { terminlandUrl, CALL_MINUTES } from "@/lib/termin";
 
 const baseUrl = () => process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 const SERVICE_NAME: Record<ServiceKey, string> = {
@@ -67,7 +69,11 @@ export async function bookingMails(bookingId: string, kind: "requested" | "paid"
 
   // an die Kundin / den Kunden
   const title = kind === "paid" ? t.paidSubject : t.requestedSubject;
-  const paras = [t.hello(b.candidate.firstName), ...(kind === "paid" ? t.paid(price, b.toolMonths || ANGEBOT.startpaket.toolMonths) : t.requested(price)), t.sign];
+  // nach der Zahlung: Hinweis auf den Unterlagen-Check im Call (nur wenn der Terminland-Link gesetzt ist)
+  const callUrl = kind === "paid" ? terminlandUrl() : null;
+  const at = accountText(b.candidate.user.locale || "de");
+  const call = callUrl ? [`${fill(at.callLead, { min: CALL_MINUTES })} ${at.callBtn}: ${callUrl}`] : [];
+  const paras = [t.hello(b.candidate.firstName), ...(kind === "paid" ? t.paid(price, b.toolMonths || ANGEBOT.startpaket.toolMonths) : t.requested(price)), ...call, t.sign];
   await sendMail({ to, subject: `WoYou: ${title}`, template: `booking_${kind}`, bookingId: b.id, text: paras.join("\n\n"), html: layout(title, paras, { label: t.button, href: `${baseUrl()}/profil` }, undefined, t.dir) });
 
   // ans Team

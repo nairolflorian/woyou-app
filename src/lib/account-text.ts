@@ -11,6 +11,8 @@ type T = {
   openSearch: string; openTracker: string; counts: string;
   booking: Record<"REQUESTED" | "PENDING_PAYMENT" | "PAID" | "IN_PROGRESS" | "DONE" | "CANCELLED", string>;
   docsLead: string; noBookingTitle: string;
+  /** Unterlagen-Check im Call nach der Zahlung (Terminland); {min} = Minuten */
+  callTitle: string; callLead: string; callNote: string; callBtn: string; callSoon: string;
 };
 
 const de: T = {
@@ -26,6 +28,8 @@ const de: T = {
   booking: { REQUESTED: "Angefragt", PENDING_PAYMENT: "Zahlung offen", PAID: "Bezahlt", IN_PROGRESS: "In Arbeit", DONE: "Abgeschlossen", CANCELLED: "Storniert" },
   docsLead: "Zeugnisse, Nachweise und Zertifikate. Lade sie hier hoch, dann hast du sie für deine Bewerbungen griffbereit.",
   noBookingTitle: "Bewerbungsunterlagen und Bewerbungswerkzeug",
+  callTitle: "Unterlagen-Check im Gespräch", callLead: "Im Startpaket ist ein {min}-Minuten-Gespräch mit unserem Team enthalten. Wir gehen gemeinsam deine Unterlagen durch und klären deine Fragen dazu. Such dir einfach einen Termin aus, der dir passt.",
+  callNote: "Es geht nur um deine Unterlagen. Wir vermitteln keine Stellen und sprechen nicht mit Firmen.", callBtn: "Termin aussuchen", callSoon: "Der Link zur Terminbuchung folgt in Kürze.",
 };
 
 const en: T = {
@@ -41,6 +45,8 @@ const en: T = {
   booking: { REQUESTED: "Requested", PENDING_PAYMENT: "Payment open", PAID: "Paid", IN_PROGRESS: "In progress", DONE: "Completed", CANCELLED: "Cancelled" },
   docsLead: "Certificates and proof of qualifications. Upload them here so you have them at hand for your applications.",
   noBookingTitle: "Application documents and application tool",
+  callTitle: "Document check in a call", callLead: "Your starter package includes a {min}-minute call with our team. We go through your documents together and answer your questions about them. Just pick a time that suits you.",
+  callNote: "It is only about your documents. We do not place you in jobs and we do not talk to companies.", callBtn: "Pick a time", callSoon: "The booking link will be available shortly.",
 };
 
 const fr: T = {
@@ -56,6 +62,8 @@ const fr: T = {
   booking: { REQUESTED: "Demandé", PENDING_PAYMENT: "Paiement en attente", PAID: "Payé", IN_PROGRESS: "En cours", DONE: "Terminé", CANCELLED: "Annulé" },
   docsLead: "Diplômes, attestations et certificats. Téléchargez-les ici pour les avoir sous la main pour vos candidatures.",
   noBookingTitle: "Dossier de candidature et outil de candidature",
+  callTitle: "Vérification des documents par téléphone", callLead: "Le pack de départ comprend un entretien de {min} minutes avec notre équipe. Nous passons vos documents en revue ensemble et répondons à vos questions. Choisissez simplement un créneau qui vous convient.",
+  callNote: "Il s'agit uniquement de vos documents. Nous ne faisons pas de placement et ne parlons pas aux entreprises.", callBtn: "Choisir un créneau", callSoon: "Le lien de réservation sera bientôt disponible.",
 };
 
 // Übersetzung bitte von Muttersprachler:in prüfen lassen (Arabisch, Hocharabisch für Marokko)
@@ -72,6 +80,8 @@ const ar: T = {
   booking: { REQUESTED: "مطلوب", PENDING_PAYMENT: "الدفع معلق", PAID: "مدفوع", IN_PROGRESS: "قيد التنفيذ", DONE: "مكتمل", CANCELLED: "ملغى" },
   docsLead: "الشهادات والإثباتات. ارفعها هنا لتكون في متناولك عند التقديم.",
   noBookingTitle: "مستندات التقديم وأداة التقديم",
+  callTitle: "مراجعة المستندات في مكالمة", callLead: "تشمل باقة البداية مكالمة مدتها {min} دقيقة مع فريقنا. نراجع مستنداتك معًا ونجيب عن أسئلتك حولها. اختر الموعد الذي يناسبك.",
+  callNote: "المكالمة تخص مستنداتك فقط. نحن لا نتوسط في الوظائف ولا نتواصل مع الشركات.", callBtn: "اختر موعدًا", callSoon: "سيتوفر رابط حجز الموعد قريبًا.",
 };
 
 // Übersetzung bitte von Muttersprachler:in prüfen lassen (Hindi)
@@ -88,6 +98,8 @@ const hi: T = {
   booking: { REQUESTED: "अनुरोध किया", PENDING_PAYMENT: "भुगतान बाकी", PAID: "भुगतान हो गया", IN_PROGRESS: "काम चल रहा है", DONE: "पूरा", CANCELLED: "रद्द" },
   docsLead: "प्रमाणपत्र और योग्यता के दस्तावेज़। इन्हें यहाँ अपलोड करें, ताकि आवेदन के लिए ये आपके पास तैयार रहें।",
   noBookingTitle: "आवेदन दस्तावेज़ और आवेदन टूल",
+  callTitle: "कॉल में दस्तावेज़ों की जाँच", callLead: "स्टार्टर पैकेज में हमारी टीम के साथ {min} मिनट की एक कॉल शामिल है। हम साथ मिलकर आपके दस्तावेज़ देखते हैं और उनसे जुड़े आपके सवालों के जवाब देते हैं। बस अपनी सुविधा का समय चुनें।",
+  callNote: "बात सिर्फ़ आपके दस्तावेज़ों की होती है। हम नौकरी नहीं दिलाते और कंपनियों से बात नहीं करते।", callBtn: "समय चुनें", callSoon: "समय बुक करने का लिंक जल्द ही उपलब्ध होगा।",
 };
 
 const ALL = { de, en, fr, ar, hi };

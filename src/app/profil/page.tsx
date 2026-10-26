@@ -17,6 +17,7 @@ import { versandText } from "@/lib/versand-text";
 import { toolAccess } from "@/lib/werkzeug";
 import { arMonths } from "@/lib/werkzeug-text";
 import { accountText, fill } from "@/lib/account-text";
+import { terminlandUrl, showCallBox, CALL_MINUTES } from "@/lib/termin";
 
 export const dynamic = "force-dynamic";
 
@@ -44,6 +45,9 @@ export default async function CandidateDashboardPage() {
   const untilStr = access.until?.toLocaleDateString(dl) ?? null;
   const months = locale === "ar" ? arMonths(booking?.toolMonths || ANGEBOT.startpaket.toolMonths) : String(booking?.toolMonths || ANGEBOT.startpaket.toolMonths);
   const mappeState = (booking?.profile?.status ?? "NONE") as keyof typeof a.mappe;
+  // Unterlagen-Check im Call: erst nach der Zahlung (Terminland-Link aus TERMINLAND_URL)
+  const paid = !!booking && ["PAID", "IN_PROGRESS", "DONE"].includes(booking.status);
+  const callUrl = terminlandUrl();
 
   return (
     <>
@@ -95,6 +99,18 @@ export default async function CandidateDashboardPage() {
                   </div>
                 )}
               </div>
+              {paid && showCallBox() && (
+                <div id="unterlagen-check" className="mt-8 card scroll-mt-20">
+                  <h2 className="text-xl font-bold">{a.callTitle}</h2>
+                  <p className="mt-1 text-sm text-[color:var(--color-ink-soft)]">{fill(a.callLead, { min: CALL_MINUTES })}</p>
+                  <p className="mt-2 text-xs text-[color:var(--color-ink-soft)]">{a.callNote}</p>
+                  <div className="mt-4">
+                    {callUrl ? (
+                      <a href={callUrl} target="_blank" rel="noopener noreferrer" className="btn-primary">{a.callBtn}</a>
+                    ) : <p className="text-sm rounded-lg bg-amber-50 border border-amber-200 p-3 text-amber-900">{a.callSoon}</p>}
+                  </div>
+                </div>
+              )}
               <div id="unterlagen" className="mt-8 scroll-mt-20"><MyDocuments locale={locale} /></div>
             </>
           ) : (
