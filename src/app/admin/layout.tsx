@@ -35,6 +35,7 @@ export default async function AdminLayout({
               <nav className="mt-4 flex flex-col gap-1 text-sm">
                 {!team && <Link href="/admin" className="btn-ghost justify-start">📊 Übersicht</Link>}
                 <Link href="/admin/buchungen" className="btn-ghost justify-start">🧾 Buchungen</Link>
+                {!team && <Link href="/admin/widerrufe" className="btn-ghost justify-start">↩ Widerrufe und Kündigungen</Link>}
                 {!team && <Link href="/admin/auswertung" className="btn-ghost justify-start">📈 Auswertung</Link>}
                 {!team && <Link href="/admin/kandidaten" className="btn-ghost justify-start">👥 Kund:innen</Link>}
                 <Link href="/admin/aufgaben" className="btn-ghost justify-start">✅ Aufgaben</Link>

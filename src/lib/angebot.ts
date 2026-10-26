@@ -12,6 +12,9 @@ export const ANGEBOT = {
   startpaket: { key: "startpaket", priceCents: 19900, toolMonths: 3 },
 } as const;
 
+/** Lieferzeit der Unterlagen: fertig innerhalb so vieler Werktage, nachdem die vollständige Mappe eingereicht ist (Bestellseite, Buchungsbestätigung) */
+export const MAPPE_FERTIG_WERKTAGE = 5;
+
 /**
  * ALT: frühere Werkzeug-Verlängerung (TOOL_MONTH) und Monatsabo (TOOL_SUBSCRIPTION). Wurden nie verkauft und
  * können nicht mehr angelegt werden. Nur noch, damit Admin, Auswertung und Stripe-Webhook alte Datensätze bzw.

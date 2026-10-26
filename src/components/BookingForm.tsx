@@ -41,7 +41,7 @@ export function BookingForm({ copy, defaults }: { copy: Copy; defaults: { phone:
       <div><label className="label" htmlFor="jobs">{copy.jobs}</label><input id="jobs" name="jobs" className="input" defaultValue={defaults.jobs} required maxLength={200} /></div>
       <div><label className="label" htmlFor="regions">{copy.regions}</label><input id="regions" name="regions" className="input" defaultValue={defaults.regions} maxLength={200} /></div>
       <div><label className="label" htmlFor="notes">{copy.notes}</label><textarea id="notes" name="notes" className="input min-h-24" maxLength={1000} /></div>
-      <label className="flex gap-3 text-sm"><input type="checkbox" name="terms" required className="mt-1" /><span>{copy.terms} <a href="/agb" target="_blank" className="underline">AGB</a> · <a href="/datenschutz" target="_blank" className="underline">Datenschutz</a></span></label>
+      <label className="flex gap-3 text-sm"><input type="checkbox" name="terms" required className="mt-1" /><span>{copy.terms} <a href="/agb" target="_blank" className="underline">AGB</a> · <a href="/datenschutz" target="_blank" className="underline">Datenschutz</a> · <a href="/widerruf" target="_blank" className="underline">Widerrufsbelehrung</a></span></label>
       <label className="flex gap-3 text-sm"><input type="checkbox" name="waiver" required className="mt-1" /><span>{copy.waiver}</span></label>
       {error && <p className="text-sm bg-rose-50 border border-rose-200 text-rose-700 rounded p-2">{error}</p>}
       <button className="btn-primary w-full justify-center" disabled={loading}>{loading ? "…" : copy.submit}</button>

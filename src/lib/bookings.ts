@@ -12,6 +12,8 @@ import { grantToolMonths, paymentTestMode } from "@/lib/werkzeug";
 import { bookingMail, wLang } from "@/lib/werkzeug-text";
 import { accountText, fill } from "@/lib/account-text";
 import { terminlandUrl, CALL_MINUTES } from "@/lib/termin";
+import { buchungsbestaetigungRecht, buchungsNummer } from "@/lib/recht/vertrag";
+import { rechtUi } from "@/lib/recht/ui-text";
 
 const baseUrl = () => process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 const SERVICE_NAME: Record<ServiceKey, string> = {
@@ -73,7 +75,14 @@ export async function bookingMails(bookingId: string, kind: "requested" | "paid"
   const callUrl = kind === "paid" ? terminlandUrl() : null;
   const at = accountText(b.candidate.user.locale || "de");
   const call = callUrl ? [`${fill(at.callLead, { min: CALL_MINUTES })} ${at.callBtn}: ${callUrl}`] : [];
-  const paras = [t.hello(b.candidate.firstName), ...(kind === "paid" ? t.paid(price, b.toolMonths || ANGEBOT.startpaket.toolMonths) : t.requested(price)), ...call, t.sign];
+  // Buchungsbestätigung mit Vertragsinhalt, AGB, Widerrufsbelehrung und Formular sowie der Bestätigung des Häkchens
+  // „sofort beginnen“ (Hinweise der Anwältin, 26.10.2026). Der rechtliche Teil ist immer Deutsch (Vertragssprache).
+  const recht = buchungsbestaetigungRecht({
+    id: b.id, name, email: to, amountCents: b.amountCents, toolMonths: b.toolMonths || ANGEBOT.startpaket.toolMonths,
+    createdAt: b.createdAt, paidAt: b.paidAt, waiverAcceptedAt: b.waiverAcceptedAt, toolBis: kind === "paid" ? b.candidate.toolAccessUntil : null,
+  }, kind).map((a) => `${a.titel}\n\n${a.text}`);
+  const intro = rechtUi(b.candidate.user.locale).mailLegalIntro;
+  const paras = [t.hello(b.candidate.firstName), ...(kind === "paid" ? t.paid(price, b.toolMonths || ANGEBOT.startpaket.toolMonths) : t.requested(price)), ...call, `${rechtUi(b.candidate.user.locale).bookingNo}: ${buchungsNummer(b.id)}`, t.sign, ...(intro ? [intro] : []), ...recht];
   await sendMail({ to, subject: `WoYou: ${title}`, template: `booking_${kind}`, bookingId: b.id, text: paras.join("\n\n"), html: layout(title, paras, { label: t.button, href: `${baseUrl()}/profil` }, undefined, t.dir) });
 
   // ans Team

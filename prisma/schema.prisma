@@ -548,3 +548,45 @@ model SelfCheckResult {
 
   @@index([createdAt])
 }
+
+// Verbraucherrecht (26.10.2026): Widerruf über „Vertrag widerrufen“ (auch per Brief/E-Mail vom Team erfasst)
+// und Kündigung über „Verträge hier kündigen“. Ohne Anmeldung möglich, deshalb nur lose mit der Buchung verknüpft.
+model Widerruf {
+  id             String    @id @default(cuid())
+  createdAt      DateTime  @default(now()) // Zeitpunkt des Eingangs
+  name           String
+  email          String    // E-Mail für die Bestätigung
+  bookingRef     String    // Buchungsnummer oder E-Mail der Buchung, wie eingegeben
+  bookingId      String?   // zugeordnete Buchung (ServiceBooking.id), wenn gefunden
+  message        String?
+  status         String    @default("OFFEN") // OFFEN | ERSTATTET | ERLEDIGT
+  refundCents    Int?
+  refundedAt     DateTime?
+  stripeRefundId String?
+  adminNote      String?
+  updatedAt      DateTime  @updatedAt
+
+  @@index([createdAt])
+  @@index([bookingId])
+}
+
+model Kuendigung {
+  id                String    @id @default(cuid())
+  createdAt         DateTime  @default(now()) // Zeitpunkt des Eingangs
+  art               String    // ordentlich | ausserordentlich
+  grund             String?
+  name              String
+  email             String    // E-Mail der Buchung
+  bookingRef        String?
+  bookingId         String?
+  vertrag           String
+  wirksam           String    // naechstmoeglich | datum
+  wirksamZu         DateTime? // gewünschtes Datum
+  bestaetigungEmail String
+  vertragsende      DateTime? // festes Ende des Werkzeugs bzw. gewünschtes Datum
+  status            String    @default("OFFEN") // OFFEN | ERLEDIGT
+  adminNote         String?
+  updatedAt         DateTime  @updatedAt
+
+  @@index([createdAt])
+}

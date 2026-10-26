@@ -359,7 +359,7 @@ async function main() {
     const { COMPANY } = await import("../src/lib/company");
     assert.equal(COMPANY.name, "KarriereKind GmbH"); assert.equal(COMPANY.zipCity, "40212 Düsseldorf");
     assert.equal(COMPANY.register, "HRB 99139"); assert.equal(COMPANY.court, "Amtsgericht Düsseldorf"); assert.equal(COMPANY.ceo, "Rachid Debdoubi");
-    for (const f of ["src/app/impressum/page.tsx", "src/app/datenschutz/page.tsx", "src/app/agb/page.tsx"]) {
+    for (const f of ["src/app/impressum/page.tsx", "src/app/datenschutz/page.tsx", "src/app/agb/page.tsx", "src/lib/recht/agb-text.ts", "src/lib/recht/widerruf-text.ts", "src/app/widerruf/page.tsx"]) {
       const t = readFileSync(new URL(`../${f}`, import.meta.url), "utf8");
       assert.ok(!/Platzhalter|Entwurf|lorem|TODO|XXX|\[[^\]]*eintragen/i.test(t.replace(/\{\/\*[\s\S]*?\*\/\}|\/\/.*$/gm, "")), `Platzhalter in ${f}`);
       for (const line of t.split("\n")) if (/ANWALT PRÜFEN/.test(line)) assert.match(line, /^\s*(\/\/|\{\/\*)/, `sichtbarer ANWALT-Hinweis in ${f}: ${line.trim()}`);
@@ -378,7 +378,7 @@ async function main() {
     const treffer = [...walk("src"), ...(fs.existsSync("messages") ? walk("messages") : [])].filter((f) => /info@woyou\.de|160 ?626 ?6208|1511 ?2213968|15112213968/.test(fs.readFileSync(f, "utf8")));
     assert.deepEqual(treffer, [], `alte Kontaktangaben in ${treffer.join(", ")}`);
     assert.match(fs.readFileSync("src/app/impressum/page.tsx", "utf8"), /COMPANY\.legalEmail/);
-    for (const f of ["src/components/LoginForm.tsx", "src/components/SiteFooter.tsx", "src/components/SelfCheck.tsx", "src/app/abmelden/page.tsx", "src/app/datenschutz/page.tsx", "src/app/agb/page.tsx"])
+    for (const f of ["src/components/LoginForm.tsx", "src/components/SiteFooter.tsx", "src/components/SelfCheck.tsx", "src/app/abmelden/page.tsx", "src/app/datenschutz/page.tsx", "src/lib/recht/agb-text.ts"])
       assert.match(fs.readFileSync(f, "utf8"), /COMPANY\.email/, f);
     assert.match(fs.readFileSync("src/lib/mail.ts", "utf8"), /replyTo: opts\.replyTo \|\| COMPANY\.email/, "Mails ohne Antwortadresse");
   });
@@ -394,7 +394,7 @@ async function main() {
     const core = fs.readFileSync("src/lib/crm-core.ts", "utf8");
     const felder = core.match(/export type CrmPayload = \{([\s\S]*?)\};/)![1].match(/^\s*(\w+)\??:/gm)!.map((x) => x.replace(/[\s?:]/g, ""));
     assert.deepEqual(felder, ["woyouId", "email", "vorname", "nachname", "telefon", "land", "zielberuf", "paket", "betrag", "datum"], "CRM-Felder geändert: Datenschutzerklärung anpassen");
-    assert.match(fs.readFileSync("src/app/agb/page.tsx", "utf8"), /CRM der EuBiA-Gruppe/);
+    assert.match(fs.readFileSync("src/lib/recht/agb-text.ts", "utf8"), /CRM der EuBiA-Gruppe/);
   });
   await test("Demo: Beispielstellen klar erfunden (Beispiel-Firmen, nur example.com), mit/ohne Mail, eine beworben", () => {
     assert.deepEqual([...DEMO_TOOL_EMAILS], ["fatima@example.com", "youssef@example.com"]);
@@ -415,7 +415,7 @@ async function main() {
   await test("Nur Startpaket: keine Verlängerung, kein Abo, keine Monatspreise in Kundentexten und Kaufwegen", async () => {
     const fs = await import("node:fs");
     const code = (f: string) => fs.readFileSync(f, "utf8").split("\n").filter((l) => !/^\s*(\/\/|\*|\/\*)/.test(l) && !/\{\/\*/.test(l)).join("\n");
-    for (const f of ["src/lib/landing-copy.ts", "src/lib/services.ts", "src/lib/account-text.ts", "src/lib/werkzeug-text.ts", "src/lib/marketing.ts", "src/app/agb/page.tsx", "src/app/profil/page.tsx", "src/components/ToolGate.tsx"]) {
+    for (const f of ["src/lib/landing-copy.ts", "src/lib/services.ts", "src/lib/account-text.ts", "src/lib/werkzeug-text.ts", "src/lib/marketing.ts", "src/app/agb/page.tsx", "src/lib/recht/agb-text.ts", "src/app/profil/page.tsx", "src/components/ToolGate.tsx"]) {
       const s = code(f);
       assert.ok(!/verlaengerung|ANGEBOT\.abo|#verlaengern|\/api\/werkzeug\/kaufen/.test(s), `${f}: Verweis auf Verlängerung/Abo`);
       assert.ok(!/je Monat|im Monat|per month|a month|par mois|شهريًا|لكل شهر|प्रति माह/.test(s), `${f}: Monatspreis`);
@@ -446,7 +446,7 @@ async function main() {
   });
   await test("Texte: keine langen Gedankenstriche und keine alten Versprechen in den neuen Kundentexten", async () => {
     const fs = await import("node:fs");
-    for (const f of ["src/lib/werkzeug-text.ts", "src/lib/account-text.ts", "src/lib/services.ts", "src/lib/landing-copy.ts", "src/lib/marketing.ts", "src/lib/mappe-i18n.ts", "src/lib/company.ts", "src/lib/selfcheck.ts", "src/components/SelfCheck.tsx", "src/components/MyDocuments.tsx", "src/lib/versand-text.ts", "src/components/VersandPanel.tsx", "src/components/VersandAdresse.tsx", "src/app/demo/page.tsx", "src/lib/auto-match.ts", "src/lib/demo-jobs.ts", "src/components/MeineAnschreiben.tsx", "src/components/ToolGate.tsx", "src/app/agb/page.tsx", "src/app/datenschutz/page.tsx"]) {
+    for (const f of ["src/lib/werkzeug-text.ts", "src/lib/account-text.ts", "src/lib/services.ts", "src/lib/landing-copy.ts", "src/lib/marketing.ts", "src/lib/mappe-i18n.ts", "src/lib/company.ts", "src/lib/selfcheck.ts", "src/components/SelfCheck.tsx", "src/components/MyDocuments.tsx", "src/lib/versand-text.ts", "src/components/VersandPanel.tsx", "src/components/VersandAdresse.tsx", "src/app/demo/page.tsx", "src/lib/auto-match.ts", "src/lib/demo-jobs.ts", "src/components/MeineAnschreiben.tsx", "src/components/ToolGate.tsx", "src/app/agb/page.tsx", "src/app/datenschutz/page.tsx", "src/lib/recht/agb-text.ts", "src/lib/recht/widerruf-text.ts", "src/lib/recht/vertrag.ts", "src/lib/recht/ui-text.ts"]) {
       const s = fs.readFileSync(f, "utf8").split("\n").filter((l) => !/^\s*\/\//.test(l)).join("\n");
       assert.ok(!/[–—]/.test(s), `${f}: langer Gedankenstrich`);
       assert.ok(!/25 Bewerbungen|bewerben dich|in deinem Namen|in your name|en votre nom/i.test(s), `${f}: altes Versprechen`);
@@ -832,6 +832,8 @@ async function main() {
     assert.deepEqual(stornoQuote([]), { bezahlt: 0, storniert: 0, pct: null });
   });
 
+  await verbraucherrechtTests();
+
   if (process.argv.includes("--live")) {
     await test("Live: Jobbörse liefert Treffer mit Arbeitszeit-Filter", async () => {
       const { searchJobs, jobDetails } = await import("../src/lib/jobs-ba");
@@ -856,3 +858,140 @@ async function main() {
   console.log(process.exitCode ? "\nEs gibt Fehler." : `\nAlle ${n} Tests bestanden.`);
 }
 void main();
+
+// ---------- Verbraucherrecht nach Hinweisen der Anwältin (26.10.2026) ----------
+async function verbraucherrechtTests() {
+  const fs = await import("node:fs");
+  const V = await import("../src/lib/recht/vertrag");
+  const { agbText, agbAbschnitte, AGB_S3_VERTRAGSSCHLUSS, AGB_S7_SATZ2 } = await import("../src/lib/recht/agb-text");
+  const { widerrufText, widerrufsbelehrung } = await import("../src/lib/recht/widerruf-text");
+  const { rechtUi, RECHT_UI_SPRACHEN } = await import("../src/lib/recht/ui-text");
+  const { MAPPE_FERTIG_WERKTAGE } = await import("../src/lib/angebot");
+  const ohneKommentare = (f: string) => fs.readFileSync(f, "utf8").replace(/\{\/\*[\s\S]*?\*\/\}/g, "").split("\n").filter((l) => !/^\s*\/\//.test(l)).join("\n");
+
+  await test("Verbraucherrecht: Knöpfe heißen genau wie vorgeschrieben", async () => {
+    assert.deepEqual({ ...V.KNOPF }, { buchen: "Zahlungspflichtig buchen", widerrufen: "Vertrag widerrufen", widerrufBestaetigen: "Widerruf bestätigen", kuendigen: "Verträge hier kündigen", jetztKuendigen: "jetzt kündigen" });
+    const { serviceCopy } = await import("../src/lib/services");
+    assert.equal(serviceCopy("de").submit, "Zahlungspflichtig buchen", "Buchungsknopf unverändert");
+    assert.equal(rechtUi("de").footerWiderrufen, "Vertrag widerrufen");
+    assert.equal(rechtUi("de").footerKuendigen, "Verträge hier kündigen");
+    const footer = fs.readFileSync("src/components/SiteFooter.tsx", "utf8");
+    for (const h of ["/vertrag-widerrufen", "/vertrag-kuendigen", "/widerruf\"", "/agb", "/datenschutz", "/impressum"]) assert.ok(footer.includes(h), `Fußzeile ohne ${h}`);
+    assert.match(fs.readFileSync("src/app/vertrag-widerrufen/page.tsx", "utf8"), /knopf=\{KNOPF\.widerrufBestaetigen\}/);
+    assert.match(fs.readFileSync("src/app/vertrag-kuendigen/page.tsx", "utf8"), /knopf=\{KNOPF\.jetztKuendigen\}/);
+    const profil = fs.readFileSync("src/app/profil/page.tsx", "utf8");
+    assert.ok(profil.includes("/vertrag-widerrufen") && profil.includes("/vertrag-kuendigen"), "Kundenbereich ohne Knöpfe");
+    assert.match(fs.readFileSync("src/components/BookingForm.tsx", "utf8"), /href="\/widerruf"/, "Bestellseite ohne Widerrufsbelehrung");
+  });
+  await test("Verbraucherrecht: alle Sprachen mit inkl. USt und Hinweisen, ohne lange Striche", () => {
+    assert.deepEqual(RECHT_UI_SPRACHEN, ["de", "en", "fr", "ar", "hi", "sr", "te"]);
+    const de = rechtUi("de");
+    assert.equal(de.vat, "inkl. USt");
+    assert.equal(rechtUi("en").vat, "incl. VAT");
+    for (const l of RECHT_UI_SPRACHEN) {
+      const t = rechtUi(l);
+      for (const [k, v] of Object.entries(t)) {
+        assert.ok(!/[–—]/.test(v), `${l}.${k}: langer Strich`);
+        if (l !== "de" && !["germanOnly", "mailLegalIntro"].includes(k) || l === "de" && !["germanOnly", "mailLegalIntro"].includes(k)) assert.ok(v.length > 0, `${l}.${k} leer`);
+      }
+      assert.ok(t.noteDelivery.includes("{n}") && t.noteDelivery.includes("{months}") && t.noteContract.includes("{btn}"), `${l}: Platzhalter`);
+      if (l !== "de") assert.ok(t.germanOnly && t.mailLegalIntro, `${l}: Hinweis Deutsch`);
+    }
+    assert.equal(MAPPE_FERTIG_WERKTAGE, 5);
+    assert.match(de.noteDelivery, /innerhalb von \{n\} Werktagen, nachdem du die vollständige Mappe eingereicht hast/);
+    assert.match(fs.readFileSync("src/components/ServiceLanding.tsx", "utf8"), /rechtUi\(locale\)\.vat/);
+    assert.match(fs.readFileSync("src/app/bewerbungsservice/buchen/page.tsx", "utf8"), /\{ru\.vat\}/);
+  });
+  await test("Verbraucherrecht: AGB §§ 3 und 7 wörtlich, § 9 unverändert, Nummerierung 1 bis 9", () => {
+    assert.equal(AGB_S3_VERTRAGSSCHLUSS, "Mit dem Klick auf „Zahlungspflichtig buchen“ buchst du verbindlich. Der Vertrag kommt mit unserer Buchungsbestätigung per E-Mail zustande. Vor dem Klick kannst du deine Angaben auf der Bestellseite prüfen und ändern. Den Vertragstext speichern wir und schicken ihn dir mit AGB und Widerrufsbelehrung in der Buchungsbestätigung. Der Vertrag wird auf Deutsch geschlossen.");
+    assert.equal(AGB_S7_SATZ2, "Bei leichter Fahrlässigkeit haften wir nur bei Verletzung wesentlicher Vertragspflichten, also von Pflichten, deren Erfüllung die ordnungsgemäße Durchführung des Vertrags überhaupt erst ermöglicht und auf deren Einhaltung du regelmäßig vertrauen darfst, und begrenzt auf den vorhersehbaren, typischen Schaden. Die Haftung nach dem Produkthaftungsgesetz und deine gesetzlichen Gewährleistungsrechte bleiben unberührt.");
+    const a = agbAbschnitte();
+    assert.deepEqual(a.map((x) => x.titel.match(/^§ (\d)/)?.[1]), ["1", "2", "3", "4", "5", "6", "7", "8", "9"]);
+    assert.ok(a[2].text.startsWith(AGB_S3_VERTRAGSSCHLUSS), "§ 3 beginnt mit dem Vertragsschluss");
+    assert.ok(a[6].text.endsWith(AGB_S7_SATZ2) && a[6].text.startsWith("Wir haften unbeschränkt bei Vorsatz"), "§ 7");
+    assert.equal(a[8].text, "Es gilt deutsches Recht. Zwingende Verbraucherschutzvorschriften deines Wohnsitzstaates bleiben unberührt.");
+    assert.ok(!/Verbraucherschlichtungsstelle/.test(agbText()), "§ 9 ohne Schlichtungssatz (weniger als 10 Beschäftigte)");
+  });
+  await test("Verbraucherrecht: Widerrufsbelehrung nach Muster mit Anbieter, Online-Widerruf und Formular", () => {
+    const t = widerrufText();
+    for (const w of ["binnen vierzehn Tagen ohne Angabe von Gründen", "ab dem Tag des Vertragsabschlusses", "KarriereKind GmbH, Berliner Allee 51, 40212 Düsseldorf", "info@karrierekind.de", "+49 211 913 829 10", "https://woyou.de/vertrag-widerrufen", "Haben Sie verlangt, dass die Dienstleistungen während der Widerrufsfrist beginnen sollen", "Muster-Widerrufsformular", "die Erbringung der folgenden Dienstleistung", "Unzutreffendes streichen"])
+      assert.ok(t.includes(w), `fehlt: ${w}`);
+    assert.ok(!/[–—]/.test(t));
+    assert.equal(widerrufsbelehrung().length, 2);
+    assert.match(fs.readFileSync("src/app/widerruf/page.tsx", "utf8"), /ANWALT PRÜFEN \(26\.10\.2026\)/);
+  });
+  await test("Verbraucherrecht: Buchungsbestätigung mit Vertragsinhalt, AGB, Belehrung, Formular und Sofortbeginn", () => {
+    const b = { id: "clxyzabc12345678", name: "Fatima Benali", email: "fatima@example.com", amountCents: 19900, toolMonths: 3, createdAt: new Date(2026, 9, 26, 10, 0), paidAt: new Date(2026, 9, 26, 10, 5), waiverAcceptedAt: new Date(2026, 9, 26, 10, 0), toolBis: new Date(2027, 0, 26) };
+    const r = V.buchungsbestaetigungRecht(b, "paid");
+    const all = r.map((x) => x.text).join("\n");
+    for (const w of ["WY-12345678", "199 € inkl. USt", "3 Monate Zugang zum Bewerbungswerkzeug", "innerhalb von 5 Werktagen", "26.01.2027", "Vertragssprache: Deutsch", "ausdrücklich verlangt, dass wir vor Ablauf der Widerrufsfrist", "anteilig bezahlst", AGB_S3_VERTRAGSSCHLUSS, "Muster-Widerrufsformular", "Folgen des Widerrufs"])
+      assert.ok(all.replace(/\u00a0/g, " ").includes(w), `fehlt: ${w}`);
+    assert.ok(!/[–—]/.test(all));
+    assert.ok(V.buchungsbestaetigungRecht({ ...b, paidAt: null }, "requested")[0].text.includes("Link zur Zahlung"));
+    assert.match(fs.readFileSync("src/lib/bookings.ts", "utf8"), /buchungsbestaetigungRecht\(/);
+    assert.ok(fs.existsSync("docs/Buchungsbestaetigung_Text.md"), "Text zur Prüfung fehlt");
+  });
+  await test("Verbraucherrecht: Formular Widerruf prüft Eingaben", () => {
+    const ok = V.pruefeWiderruf({ name: " Fatima Benali ", bookingRef: "WY-1A2B3C4D", email: "Fatima@Example.com", message: "" });
+    assert.ok(ok.ok && ok.daten.email === "fatima@example.com" && ok.daten.name === "Fatima Benali" && ok.daten.message === null);
+    const bad = V.pruefeWiderruf({ name: "F", bookingRef: "", email: "kein", message: "x".repeat(2001) });
+    assert.ok(!bad.ok && Object.keys(bad.fehler).sort().join() === "bookingRef,email,message,name");
+    assert.ok(!V.pruefeWiderruf(null).ok);
+    assert.equal(V.buchungsNummer("clxyzabc12345678"), "WY-12345678");
+    assert.equal(V.buchungsNummerSuche("wy-12345678"), "12345678");
+    assert.equal(V.buchungsNummerSuche("name@example.com"), null);
+  });
+  await test("Verbraucherrecht: Formular Kündigung prüft Art, Grund, Datum und Vertrag", () => {
+    const heute = new Date(2026, 9, 26, 12);
+    const base = { art: "ordentlich", name: "Youssef A", email: "y@example.com", vertrag: V.VERTRAG_KUENDBAR, wirksam: "naechstmoeglich", bestaetigungEmail: "y@example.com" };
+    const ok = V.pruefeKuendigung(base, heute);
+    assert.ok(ok.ok && ok.daten.wirksamZu === null && ok.daten.grund === null);
+    const ao = V.pruefeKuendigung({ ...base, art: "ausserordentlich" }, heute);
+    assert.ok(!ao.ok && "grund" in ao.fehler, "außerordentlich braucht Grund");
+    assert.ok(V.pruefeKuendigung({ ...base, art: "ausserordentlich", grund: "Werkzeug funktioniert nicht" }, heute).ok);
+    const alt = V.pruefeKuendigung({ ...base, wirksam: "datum", wirksamZu: "2026-10-25" }, heute);
+    assert.ok(!alt.ok && "wirksamZu" in alt.fehler, "Datum in der Vergangenheit");
+    const kaputt = V.pruefeKuendigung({ ...base, wirksam: "datum", wirksamZu: "2026-02-31" }, heute);
+    assert.ok(!kaputt.ok && "wirksamZu" in kaputt.fehler, "ungültiges Datum");
+    const dat = V.pruefeKuendigung({ ...base, wirksam: "datum", wirksamZu: "2026-11-30" }, heute);
+    assert.ok(dat.ok && dat.daten.wirksamZu!.getDate() === 30);
+    assert.ok(!V.pruefeKuendigung({ ...base, vertrag: "Abo" }, heute).ok);
+    assert.ok(!V.pruefeKuendigung({ ...base, art: "sofort" }, heute).ok);
+    const ende = V.kuendigungsEnde({ art: "ordentlich", wirksamZu: null, festesEnde: new Date(2027, 0, 26), eingang: heute });
+    assert.equal(ende.datum!.getMonth(), 0); assert.match(ende.text, /feste Laufzeit/);
+    assert.equal(V.kuendigungsEnde({ art: "ordentlich", wirksamZu: null, festesEnde: null, eingang: heute }).datum, null);
+    const k = V.kuendigungBestaetigung({ ...(ok as { daten: import("../src/lib/recht/vertrag").KuendigungEingabe }).daten, eingang: heute, ende });
+    assert.ok(k.zeilen.some((z) => /Eingang: 26\.10\.2026, 12:00 Uhr/.test(z)) || k.zeilen.some((z) => /Eingang: 26\.10\.2026/.test(z)), "Eingang mit Datum und Uhrzeit");
+    assert.ok(k.zeilen.some((z) => z.startsWith("Vertragsende: 26.01.2027")));
+  });
+  await test("Verbraucherrecht: Vorschlag für die anteilige Erstattung", () => {
+    const start = new Date(2026, 9, 1);
+    const base = { amountCents: 19900, bezahlt: true, mappeStatus: null as string | null, werkzeugGenutzt: false, toolStart: start, toolMonths: 3, widerrufAm: new Date(2026, 9, 5) };
+    assert.equal(V.erstattungsVorschlag({ ...base, bezahlt: false }).erstattungCents, 0);
+    const voll = V.erstattungsVorschlag(base);
+    assert.equal(voll.erstattungCents, 19900); assert.equal(voll.anteilCents, 0); assert.match(voll.regel, /volle Erstattung/);
+    assert.equal(V.erstattungsVorschlag({ ...base, mappeStatus: "SUBMITTED" }).erstattungCents, 19900);
+    const mappe = V.erstattungsVorschlag({ ...base, mappeStatus: "APPROVED" });
+    assert.equal(mappe.anteilCents, Math.round(19900 * V.ANTEIL_UNTERLAGEN));
+    const beides = V.erstattungsVorschlag({ ...base, mappeStatus: "APPROVED", werkzeugGenutzt: true });
+    assert.ok(beides.anteilCents > mappe.anteilCents && beides.erstattungCents > 0 && beides.erstattungCents + beides.anteilCents === 19900);
+    const spaet = V.erstattungsVorschlag({ ...base, mappeStatus: "APPROVED", werkzeugGenutzt: true, widerrufAm: new Date(2027, 5, 1) });
+    assert.equal(spaet.erstattungCents, 0, "nie mehr als der Preis");
+    assert.equal(V.erstattungBis(new Date(2026, 9, 26)).getDate(), 9);
+    assert.ok(V.imWiderrufszeitraum(new Date(2026, 9, 1), new Date(2026, 9, 15, 20)) && !V.imWiderrufszeitraum(new Date(2026, 9, 1), new Date(2026, 9, 16, 1)));
+  });
+  await test("Verbraucherrecht: neue Seiten und Schnittstellen ohne Anmeldung, nicht gesperrt", () => {
+    for (const p of ["/widerruf", "/vertrag-widerrufen", "/vertrag-kuendigen", "/api/recht/widerruf", "/api/recht/kuendigung"]) assert.equal(weg1Gesperrt(p), null, p);
+    for (const f of ["src/app/widerruf/page.tsx", "src/app/vertrag-widerrufen/page.tsx", "src/app/vertrag-kuendigen/page.tsx", "src/app/api/recht/widerruf/route.ts", "src/app/api/recht/kuendigung/route.ts"]) {
+      const s = ohneKommentare(f);
+      assert.ok(!/redirect\(|getSession\(|requireAdmin|requireStaff/.test(s), `${f}: verlangt Anmeldung`);
+    }
+    for (const f of ["src/app/api/recht/widerruf/route.ts", "src/app/api/recht/kuendigung/route.ts"]) assert.match(fs.readFileSync(f, "utf8"), /rateLimit\(/, `${f}: ohne Begrenzung`);
+    for (const f of ["src/app/api/admin/widerrufe/[id]/route.ts", "src/app/api/admin/kuendigungen/[id]/route.ts"]) assert.match(fs.readFileSync(f, "utf8"), /requireAdmin\(\)/);
+    assert.match(fs.readFileSync("src/lib/recht/server.ts", "utf8"), /getStripe\(\)/, "Erstattung nur über getStripe (Staging Test, Produktion Live)");
+    const schema = fs.readFileSync("prisma/schema.prisma", "utf8");
+    assert.match(schema, /model Widerruf \{/); assert.match(schema, /model Kuendigung \{/);
+    for (const f of ["src/lib/recht/vertrag.ts", "src/lib/recht/ui-text.ts", "src/lib/recht/agb-text.ts", "src/lib/recht/widerruf-text.ts", "src/app/widerruf/page.tsx", "src/app/vertrag-widerrufen/page.tsx", "src/app/vertrag-kuendigen/page.tsx", "src/components/WiderrufForm.tsx", "src/components/KuendigungForm.tsx", "src/components/RechtBestaetigung.tsx", "src/components/WiderrufAdmin.tsx", "src/app/admin/widerrufe/page.tsx", "docs/Buchungsbestaetigung_Text.md"])
+      assert.ok(!/[–—]/.test(fs.readFileSync(f, "utf8")), `${f}: langer Strich`);
+  });
+}

@@ -11,6 +11,7 @@ import { landingCopy, IMAGES } from "@/lib/landing-copy";
 import { mappeText } from "@/lib/mappe-i18n";
 import { DESIGN_TEMPLATES } from "@/lib/design";
 import { SchemaOrg } from "@/components/SchemaOrg";
+import { rechtUi } from "@/lib/recht/ui-text";
 
 // Startseite = Angebot (Weg 1: Unterlagen plus Werkzeug), aufgebaut nach dem Konzept „Ehrlichkeit als Verkaufsargument“:
 // Hero mit Grenze, Preis neben „Bitte beachte“, Das machen wir | nicht, realistische Erwartung, Muster, Selbstcheck, Ablauf, FAQ.
@@ -93,6 +94,7 @@ export async function ServiceLanding() {
             <div className="card flex flex-col">
               <div className="text-sm font-semibold text-[color:var(--color-ink-soft)]">{c.priceTitle}</div>
               <div className="mt-3 text-6xl font-bold text-[color:var(--color-brand-deep)]">{price}</div>
+              <div className="mt-1 text-sm font-semibold text-[color:var(--color-ink-soft)]">{rechtUi(locale).vat}</div>
               <div className="mt-2 text-sm text-[color:var(--color-ink-soft)]">{c.priceNote}</div>
               <div className="mt-auto pt-8 space-y-3">
                 <Link href={loginHref} className="btn-primary w-full justify-center">{c.ctaLogin}</Link>

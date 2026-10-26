@@ -18,6 +18,8 @@ import { toolAccess } from "@/lib/werkzeug";
 import { arMonths, srMonths } from "@/lib/werkzeug-text";
 import { accountText, fill } from "@/lib/account-text";
 import { terminlandUrl, showCallBox, CALL_MINUTES } from "@/lib/termin";
+import { rechtUi } from "@/lib/recht/ui-text";
+import { buchungsNummer, imWiderrufszeitraum, vertragsschluss, widerrufsfristEnde } from "@/lib/recht/vertrag";
 
 export const dynamic = "force-dynamic";
 
@@ -48,6 +50,9 @@ export default async function CandidateDashboardPage() {
   // Unterlagen-Check im Call: erst nach der Zahlung (Terminland-Link aus TERMINLAND_URL)
   const paid = !!booking && ["PAID", "IN_PROGRESS", "DONE"].includes(booking.status);
   const callUrl = terminlandUrl();
+  const ru = rechtUi(locale);
+  const schluss = booking ? vertragsschluss(booking) : null;
+  const widerrufOffen = !!schluss && imWiderrufszeitraum(schluss);
 
   return (
     <>
@@ -129,6 +134,19 @@ export default async function CandidateDashboardPage() {
               <div className="mt-2"><VersandAdresse locale={locale} initial={candidate.applicationEmail} loginEmail={candidate.user.email} /></div>
             </div>
           )}
+
+          {/* Verbraucherrecht (26.10.2026): Widerruf (während der Frist hervorgehoben) und Kündigung, beides ohne Anmeldung erreichbar */}
+          <div id="vertrag" className="mt-8 card scroll-mt-20">
+            <h2 className="text-xl font-bold">{ru.profileTitle}</h2>
+            {booking && <p className="mt-1 text-sm">{ru.bookingNo}: <strong dir="ltr">{buchungsNummer(booking.id)}</strong></p>}
+            <p className="mt-1 text-sm text-[color:var(--color-ink-soft)]">{ru.profileLead}</p>
+            {widerrufOffen && schluss && <p className="mt-2 text-sm">{fill(ru.profileWiderrufHint, { date: widerrufsfristEnde(schluss).toLocaleDateString(dl) })}</p>}
+            <div className="mt-4 flex flex-wrap gap-3">
+              <Link href="/vertrag-widerrufen" className={widerrufOffen ? "btn-primary" : "btn-outline"}>{ru.footerWiderrufen}</Link>
+              <Link href="/vertrag-kuendigen" className="btn-outline">{ru.footerKuendigen}</Link>
+              <Link href="/widerruf" className="btn-ghost">{ru.footerWiderrufsbelehrung}</Link>
+            </div>
+          </div>
 
           <div id="dokumente" className="mt-8 card scroll-mt-20">
             <h2 className="text-xl font-bold">{t("dash.documents_h")}</h2>
