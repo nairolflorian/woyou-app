@@ -8,7 +8,7 @@ import "server-only";
 // Die Farbe (siehe DESIGN_COLORS) färbt Name, Überschriften bzw. Leiste und Band. Anschreiben passt sich an.
 import { Document, Page, Text, View, Image, StyleSheet, renderToBuffer } from "@react-pdf/renderer";
 import type { ReactNode } from "react";
-import type { ProfileData, Station } from "@/lib/application";
+import { qualLines, type ProfileData, type Station } from "@/lib/application";
 import { DESIGN_COLORS, type DesignTemplate } from "@/lib/design";
 
 const INK = "#1f1f1f", SOFT = "#5c5c5c", LINE = "#cfcfcf";
@@ -67,8 +67,8 @@ function styles(t: Theme) {
 
 export type DocLang = "de" | "en";
 const L = {
-  de: { summary: "Kurzprofil", experience: "Berufserfahrung", education: "Ausbildung", skills: "Kenntnisse", languages: "Sprachen", professional: "Fachlich", driving: "Führerschein", available: "Verfügbar", now: "sofort", from: "ab", birth: "Geburtsdatum", nationality: "Staatsangehörigkeit", cv: "Lebenslauf", page: "Seite", of: "von", enclosure: "Anlage: Lebenslauf", dateLocale: "de-DE", contactH: "Kontakt", personalH: "Persönlich", to: " bis " },
-  en: { summary: "Profile", experience: "Work experience", education: "Education", skills: "Skills", languages: "Languages", professional: "Professional", driving: "Driving licence", available: "Available", now: "immediately", from: "from", birth: "Date of birth", nationality: "Nationality", cv: "CV", page: "Page", of: "of", enclosure: "Enclosure: CV", dateLocale: "en-GB", contactH: "Contact", personalH: "Personal", to: " to " },
+  de: { summary: "Kurzprofil", experience: "Berufserfahrung", education: "Ausbildung", skills: "Kenntnisse", languages: "Sprachen", professional: "Fachlich", driving: "Führerschein", available: "Verfügbar", now: "sofort", from: "ab", birth: "Geburtsdatum", nationality: "Staatsangehörigkeit", cv: "Lebenslauf", page: "Seite", of: "von", enclosure: "Anlage: Lebenslauf", dateLocale: "de-DE", contactH: "Kontakt", personalH: "Persönlich", to: " bis ", qual: "Führerschein und Qualifikationen" },
+  en: { summary: "Profile", experience: "Work experience", education: "Education", skills: "Skills", languages: "Languages", professional: "Professional", driving: "Driving licence", available: "Available", now: "immediately", from: "from", birth: "Date of birth", nationality: "Nationality", cv: "CV", page: "Page", of: "of", enclosure: "Enclosure: CV", dateLocale: "en-GB", contactH: "Contact", personalH: "Personal", to: " to ", qual: "Driving licences and qualifications" },
 };
 
 const lines = (t: string) => t.split("\n").map((x) => x.trim()).filter(Boolean);
@@ -106,20 +106,24 @@ export function CvDocument({ d, photo, lang = "de", bare = false }: { d: Profile
   const skills = lines(d.skills);
   const available = d.availableFrom ? (/sofort|immediately|now/i.test(d.availableFrom) ? l.now : `${l.from} ${d.availableFrom}`) : "";
   const showPhoto = !!(photo && d.showPhoto);
+  const qual = qualLines(d.qualifications, lang);
+  // alte Freitext-Angabe nur, wenn keine Klassen gewählt sind (sonst doppelt)
+  const driving = d.qualifications?.licenses.length ? "" : d.drivingLicense;
 
   const Main = () => (
     <>
       {d.summary && (<><Text style={s.h2}>{l.summary}</Text><Text>{d.summary}</Text></>)}
       {d.experience.some((x) => x.title) && (<><Text style={s.h2}>{l.experience}</Text><StationList s={s} items={d.experience} sep={l.to} /></>)}
       {d.education.some((x) => x.title) && (<><Text style={s.h2}>{l.education}</Text><StationList s={s} items={d.education} sep={l.to} /></>)}
+      {qual.length > 0 && (<><Text style={s.h2}>{l.qual}</Text>{qual.map((x) => <View key={x.label} style={s.row} wrap={false}><Text style={s.date}>{x.label}</Text><Text style={s.body}>{x.text}</Text></View>)}</>)}
     </>
   );
   const Skills = () => (
     <>
-      {(langs.length > 0 || skills.length > 0 || d.drivingLicense) && <Text style={s.h2}>{l.skills}</Text>}
+      {(langs.length > 0 || skills.length > 0 || driving) && <Text style={s.h2}>{l.skills}</Text>}
       {langs.length > 0 && <View style={s.row}><Text style={s.date}>{l.languages}</Text><Text style={s.body}>{langText.join(", ")}</Text></View>}
       {skills.length > 0 && <View style={s.row}><Text style={s.date}>{l.professional}</Text><Text style={s.body}>{skills.join(", ")}</Text></View>}
-      {d.drivingLicense && <View style={s.row}><Text style={s.date}>{l.driving}</Text><Text style={s.body}>{d.drivingLicense}</Text></View>}
+      {driving && <View style={s.row}><Text style={s.date}>{l.driving}</Text><Text style={s.body}>{driving}</Text></View>}
       {available && <View style={s.row}><Text style={s.date}>{l.available}</Text><Text style={s.body}>{available}</Text></View>}
     </>
   );
@@ -137,7 +141,7 @@ export function CvDocument({ d, photo, lang = "de", bare = false }: { d: Profile
               {personal.length > 0 && (<><Text style={s.sideH}>{l.personalH}</Text>{personal.map((x) => <Text key={x} style={s.sideText}>{x}</Text>)}</>)}
               {langs.length > 0 && (<><Text style={s.sideH}>{l.languages}</Text>{langText.map((x) => <Text key={x} style={s.sideText}>{x}</Text>)}</>)}
               {skills.length > 0 && (<><Text style={s.sideH}>{l.professional}</Text>{skills.map((x) => <Text key={x} style={s.sideText}>{x}</Text>)}</>)}
-              {d.drivingLicense && (<><Text style={s.sideH}>{l.driving}</Text><Text style={s.sideText}>{d.drivingLicense}</Text></>)}
+              {driving && (<><Text style={s.sideH}>{l.driving}</Text><Text style={s.sideText}>{driving}</Text></>)}
               {available && (<><Text style={s.sideH}>{l.available}</Text><Text style={s.sideText}>{available}</Text></>)}
           </View>
           <Text style={[s.name, { color: t.accent }]}>{name}</Text>

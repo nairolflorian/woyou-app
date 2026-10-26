@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import type { ProfileData, Station } from "@/lib/application";
-import { mappeText, localizeMissing, type MappeText } from "@/lib/mappe-i18n";
+import { mappeText, localizeMissing, qualText, type MappeText } from "@/lib/mappe-i18n";
+import { LICENSE_CLASSES, EMPTY_QUAL, zielgruppen, type Qualifications } from "@/lib/qualifikation";
 import { DESIGN_TEMPLATES, DESIGN_COLORS, DEFAULT_DESIGN, type DesignTemplate } from "@/lib/design";
 
 const EMPTY: Station = { from: "", to: "", title: "", place: "", city: "", details: "" };
@@ -38,6 +39,7 @@ function Sketch({ t, c }: { t: DesignTemplate; c: string }) {
 
 export function MappeEditor(p: Props) {
   const tx: MappeText = mappeText(p.bookingId ? "de" : p.locale ?? "de");
+  const qt = qualText(p.bookingId ? "de" : p.locale ?? "de");
   const [d, setD] = useState<ProfileData>(p.initial);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
@@ -51,6 +53,9 @@ export function MappeEditor(p: Props) {
   const locked = !p.bookingId && status === "APPROVED";
 
   const set = <K extends keyof ProfileData>(k: K, val: ProfileData[K]) => setD((x) => ({ ...x, [k]: val }));
+  const ql: Qualifications = d.qualifications ?? EMPTY_QUAL;
+  const setQ = <K extends keyof Qualifications>(k: K, val: Qualifications[K]) => setD((x) => ({ ...x, qualifications: { ...(x.qualifications ?? EMPTY_QUAL), [k]: val } }));
+  const gruppen = zielgruppen(d);
   const setStation = (k: "experience" | "education", i: number, f: keyof Station, val: string) =>
     setD((x) => ({ ...x, [k]: x[k].map((s, j) => (j === i ? { ...s, [f]: val } : s)) }));
   const move = (k: "experience" | "education", i: number, dir: -1 | 1) =>
@@ -100,6 +105,14 @@ export function MappeEditor(p: Props) {
     <div className={opts.wide ? "md:col-span-2" : ""}>
       <label className="label">{label}</label>
       <input className="input" value={String(d[k] ?? "")} placeholder={opts.ph} maxLength={opts.max ?? 120} disabled={locked} onChange={(e) => set(k, e.target.value as never)} />
+    </div>
+  );
+  const yesNo = (k: "driverCard" | "code95" | "adr" | "forklift", label: string) => (
+    <div>
+      <label className="label">{label}</label>
+      <select className="input" value={ql[k]} disabled={locked} onChange={(e) => setQ(k, e.target.value as Qualifications[typeof k])}>
+        <option value="">{qt.none}</option><option value="yes">{qt.yes}</option><option value="no">{qt.no}</option>
+      </select>
     </div>
   );
   const area = (k: keyof ProfileData, label: string, hint: string, max: number) => (
@@ -248,6 +261,46 @@ export function MappeEditor(p: Props) {
         {area("skills", tx.skills, tx.skillsHint, 800)}
         {input("drivingLicense", tx.driving, { ph: tx.drivingPh, max: 40 })}
         {input("availableFrom", tx.available, { ph: tx.availablePh, max: 40 })}
+      </section>
+
+      <section className="card grid gap-4 md:grid-cols-2">
+        <div className="md:col-span-2">
+          <h2 className="font-semibold">{qt.title}</h2>
+          <p className="mt-1 text-sm text-[color:var(--color-ink-soft)]">{qt.lead}</p>
+        </div>
+        <fieldset className="md:col-span-2">
+          <legend className="label">{qt.licenses}</legend>
+          <div className="flex flex-wrap gap-4">
+            {LICENSE_CLASSES.map((c) => (
+              <label key={c} className="flex items-center gap-2 text-sm">
+                <input type="checkbox" checked={ql.licenses.includes(c)} disabled={locked}
+                  onChange={(e) => setQ("licenses", LICENSE_CLASSES.filter((x) => (x === c ? e.target.checked : ql.licenses.includes(x))))} />
+                {c}
+              </label>
+            ))}
+          </div>
+        </fieldset>
+        <div><label className="label">{qt.since}</label><input className="input" inputMode="numeric" maxLength={4} placeholder={qt.sincePh} value={ql.licenseSince} disabled={locked} onChange={(e) => setQ("licenseSince", e.target.value.replace(/\D/g, ""))} /></div>
+        {yesNo("driverCard", qt.driverCard)}
+        {yesNo("code95", qt.code95)}
+        {ql.code95 === "yes" ? <div><label className="label">{qt.code95Until}</label><input className="input" maxLength={7} placeholder={qt.code95UntilPh} value={ql.code95Until} disabled={locked} onChange={(e) => setQ("code95Until", e.target.value)} /></div> : <div className="hidden md:block" />}
+        {yesNo("adr", qt.adr)}
+        {ql.adr === "yes" ? <div><label className="label">{qt.adrClasses}</label><input className="input" maxLength={60} placeholder={qt.adrClassesPh} value={ql.adrClasses} disabled={locked} onChange={(e) => setQ("adrClasses", e.target.value)} /></div> : <div className="hidden md:block" />}
+        {yesNo("forklift", qt.forklift)}
+        <div className="md:col-span-2"><label className="label">{qt.countries}</label><input className="input" maxLength={300} placeholder={qt.countriesPh} value={ql.countries} disabled={locked} onChange={(e) => setQ("countries", e.target.value)} /></div>
+        <div className="md:col-span-2"><label className="label">{qt.systems}</label><input className="input" maxLength={300} placeholder={qt.systemsPh} value={ql.systems} disabled={locked} onChange={(e) => setQ("systems", e.target.value)} /></div>
+        {gruppen.length > 0 && !en && (
+          <div className="md:col-span-2 rounded-xl border border-[color:var(--color-border)] bg-[color:var(--color-brand-soft)] p-4 text-sm">
+            <h3 className="font-semibold">{qt.checkTitle}</h3>
+            {gruppen.map((g) => (
+              <div key={g} className="mt-2">
+                <div className="font-medium">{qt.groups[g]}</div>
+                <ul className="mt-1 list-disc ps-5 space-y-0.5">{qt.docs[g].map((x) => <li key={x}>{x}</li>)}</ul>
+              </div>
+            ))}
+            <p className="mt-3 text-xs text-[color:var(--color-ink-soft)]">{qt.checkLead} {!p.bookingId && <a className="underline" href="/profil#dokumente">{qt.checkLink}</a>}</p>
+          </div>
+        )}
       </section>
 
       {missing.length > 0 && <div className="card bg-amber-50 border-amber-200 text-sm text-amber-900">{tx.missing} {localizeMissing(tx, missing).join(", ")}.</div>}
