@@ -204,6 +204,7 @@ PAYMENT_TEST_MODE=on npm run dev          # http://localhost:3000/demo, z. B. al
 - Karriereseiten-Feeds im Admin (Stellenquellen): bleibt das als reine Datenquelle, oder ist das aus Sicht
   der Anwälte schon ein „Firmen-Pool“?
 - Arabisch und Hindi: Übersetzungen der neuen Texte liegen vor (Hocharabisch für Marokko, Hindi für Indien), müssen aber von Muttersprachler:innen geprüft werden.
+- Serbisch (nur lateinische Schrift, Datum/Preis über sr-Latn-RS) und Telugu (te-IN, lateinische Ziffern) seit 26.10.2026 im gleichen Umfang wie Hindi; ebenfalls von Muttersprachler:innen prüfen lassen.
 - CRM: neue Ereignisse `werkzeug_aktiv` muss das EuBiA-CRM noch annehmen (`apps/crm/eingang.js`).
 - Anwälte: Dürfen Summen aus dem Tracker (Quelle, Stand) anonym in der Admin-Auswertung stehen?
 - CRM-Ereignis „nachkauf“ fällt weg (keine Verlängerung mehr).

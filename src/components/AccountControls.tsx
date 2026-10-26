@@ -8,6 +8,8 @@ const CONFIRM_WORDS: Record<string, string> = {
   en: "DELETE",
   fr: "SUPPRIMER",
   ar: "حذف",
+  sr: "OBRIŠI",
+  te: "DELETE", // Telugu: lateinisches Wort, leichter zu tippen
   es: "ELIMINAR",
   ru: "УДАЛИТЬ",
   uk: "ВИДАЛИТИ",

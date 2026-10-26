@@ -1,7 +1,7 @@
 // Pakete, die Bewerber:innen buchen können. Preise und Laufzeiten stehen zentral in src/lib/angebot.ts.
 // Weg 1 (22.10.2026): verkauft werden Bewerbungsunterlagen plus Bewerbungswerkzeug, keine Bewerbungen.
 import { ANGEBOT, formatPrice } from "@/lib/angebot";
-import { arMonths } from "@/lib/werkzeug-text";
+import { arMonths, srMonths } from "@/lib/werkzeug-text";
 
 export { formatPrice };
 
@@ -41,7 +41,7 @@ export const BOOKING_STATUS_LABEL: Record<BookingStatus, { de: string; color: st
   CANCELLED: { de: "Storniert", color: "bg-slate-200 text-slate-700" },
 };
 
-// ---------- Texte zu Paket, Buchung und Danke-Seite (DE/EN/FR/AR/HI; andere Sprachen auf Englisch) ----------
+// ---------- Texte zu Paket, Buchung und Danke-Seite (DE/EN/FR/AR/HI/SR/TE; andere Sprachen auf Englisch) ----------
 // Textregeln: ehrlich, kein Jobversprechen, keine langen Gedankenstriche, du-Form.
 type Copy = {
   badge: string; title: string; lead: string; priceNote: string; cta: string; ctaLogin: string;
@@ -50,7 +50,7 @@ type Copy = {
   thanksTitle: string; thanksPaid: string; thanksRequested: string; thanksMappe: string; toMappe: string; toProfile: string; failed: string; alreadyBooked: string;
 };
 
-function build(lang: "de" | "en" | "fr" | "ar" | "hi"): Copy {
+function build(lang: "de" | "en" | "fr" | "ar" | "hi" | "sr" | "te"): Copy {
   const f = (c: number) => formatPrice(c, lang);
   const start = f(ANGEBOT.startpaket.priceCents), months = ANGEBOT.startpaket.toolMonths;
   if (lang === "en") return {
@@ -106,6 +106,42 @@ function build(lang: "de" | "en" | "fr" | "ar" | "hi"): Copy {
     thanksMappe: "सबसे पहले अपनी आवेदन फ़ाइल से शुरू करें: अपना बायोडाटा अपलोड करें या अपनी जानकारी भरें। हम सब कुछ जाँचते हैं और दस्तावेज़ तैयार होने पर आपको बताते हैं।",
     toMappe: "मेरी आवेदन फ़ाइल पर जाएँ", toProfile: "मेरे खाते पर जाएँ", failed: "बुकिंग नहीं हो पाई। कृपया फिर से कोशिश करें।", alreadyBooked: "आप स्टार्टर पैकेज पहले ही बुक कर चुके हैं।",
   };
+  // Übersetzung bitte von Muttersprachler:in prüfen lassen (Serbisch, lateinische Schrift)
+  if (lang === "sr") return {
+    badge: "DOKUMENTA ZA PRIJAVU I ALAT",
+    title: "Tvoja dokumenta za prijavu prema nemačkom standardu. I alat kojim se lično prijavljuješ.",
+    lead: "Pravimo tvoja dokumenta za prijavu prema nemačkom standardu i dajemo ti alat kojim pronalaziš odgovarajuće poslove i lično se prijavljuješ. Ti odlučuješ gde se prijavljuješ i sve odgovore dobijaš direktno.",
+    priceNote: `jednokratno · uključeno ${srMonths(months)} pristupa alatu za prijave · bez pretplate · tvoja dokumenta ostaju tebi`,
+    cta: "Naruči sada", ctaLogin: "Uloguj se i naruči",
+    bookTitle: "Naruči Startni paket", bookLead: "Kratko proveri svoje podatke. Tvoja željena zanimanja i region koristimo kao predlog za tvoju pretragu poslova.",
+    phone: "Telefon / WhatsApp za pitanja o tvojim dokumentima", jobs: "Željena zanimanja", regions: "Željeni region u Nemačkoj (nije obavezno)", notes: "Šta još treba da znamo? (nije obavezno)",
+    terms: "Prihvatam opšte uslove poslovanja (AGB) i pročitao/la sam politiku privatnosti.",
+    waiver: "Želim da WoYou odmah počne i da odmah otključa alat. Znam da u slučaju odustanka plaćam srazmerno ono što je do tada pruženo i da moje pravo na odustanak prestaje čim je usluga u potpunosti pružena.",
+    submit: "Naruči uz obavezu plaćanja", submitNoPay: "Pošalji obavezujući zahtev", summary: `Startni paket · dokumenta i ${srMonths(months)} alata`,
+    thanksTitle: "Hvala na porudžbini!",
+    thanksPaid: "Tvoja uplata je stigla. Tvoj alat za prijave je otključan.",
+    thanksRequested: "Tvoj zahtev je stigao kod nas. Javićemo ti se u naredna 2 radna dana i poslati ti link za plaćanje.",
+    thanksMappe: "Najbolje počni sa svojom fasciklom za prijavu: postavi biografiju ili popuni podatke. Sve proveravamo i javljamo ti kada su tvoja dokumenta spremna.",
+    toMappe: "Na fasciklu za prijavu", toProfile: "Na moj deo", failed: "Porudžbina nije uspela. Pokušaj ponovo.", alreadyBooked: "Startni paket je već naručen.",
+  };
+  // Übersetzung bitte von Muttersprachler:in prüfen lassen (Telugu)
+  if (lang === "te") return {
+    badge: "దరఖాస్తు పత్రాలు మరియు టూల్",
+    title: "జర్మన్ ప్రమాణాల ప్రకారం మీ దరఖాస్తు పత్రాలు. మరియు మీరే దరఖాస్తు చేసుకునేందుకు ఒక టూల్.",
+    lead: "మేము జర్మన్ ప్రమాణాల ప్రకారం మీ దరఖాస్తు పత్రాలు తయారు చేసి, మీకు సరిపోయే ఉద్యోగాలు వెతికి మీరే దరఖాస్తు చేసుకునేందుకు ఒక టూల్ ఇస్తాము. ఎక్కడ దరఖాస్తు చేయాలో మీరే నిర్ణయిస్తారు, అన్ని జవాబులు నేరుగా మీకే వస్తాయి.",
+    priceNote: `ఒక్కసారి చెల్లింపు · ${months} నెలల దరఖాస్తు టూల్ యాక్సెస్ కలిపి · సబ్‌స్క్రిప్షన్ లేదు · మీ పత్రాలు మీ దగ్గరే ఉంటాయి`,
+    cta: "ఇప్పుడే బుక్ చేయండి", ctaLogin: "లాగిన్ అయి బుక్ చేయండి",
+    bookTitle: "స్టార్టర్ ప్యాకేజీ బుక్ చేయండి", bookLead: "దయచేసి మీ వివరాలు ఒకసారి తనిఖీ చేయండి. మీరు కోరుకునే వృత్తులు మరియు ప్రాంతాన్ని మీ ఉద్యోగ శోధనకు సూచనగా ఉపయోగిస్తాము.",
+    phone: "మీ పత్రాల గురించి ప్రశ్నల కోసం ఫోన్ / WhatsApp", jobs: "కోరుకునే వృత్తులు", regions: "జర్మనీలో కోరుకునే ప్రాంతం (ఐచ్ఛికం)", notes: "మేము ఇంకా ఏమైనా తెలుసుకోవాలా? (ఐచ్ఛికం)",
+    terms: "నేను నిబంధనలు మరియు షరతులను (AGB) అంగీకరిస్తున్నాను, గోప్యతా విధానాన్ని చదివాను.",
+    waiver: "WoYou వెంటనే మొదలుపెట్టి, టూల్‌ను ఇప్పుడే యాక్టివ్ చేయాలని నేను కోరుకుంటున్నాను. ఒప్పందం నుండి వెనక్కి తగ్గితే అప్పటి వరకు అందించిన సేవలకు దామాషా ప్రకారం చెల్లించాలని, సేవ పూర్తిగా అందించిన తర్వాత వెనక్కి తగ్గే నా హక్కు ముగుస్తుందని నాకు తెలుసు.",
+    submit: "చెల్లింపుతో బుక్ చేయండి", submitNoPay: "కట్టుబడి ఉండే అభ్యర్థన పంపండి", summary: `స్టార్టర్ ప్యాకేజీ · పత్రాలు మరియు ${months} నెలల టూల్`,
+    thanksTitle: "బుకింగ్‌కు ధన్యవాదాలు!",
+    thanksPaid: "మీ చెల్లింపు మాకు అందింది. మీ దరఖాస్తు టూల్ యాక్టివ్ అయింది.",
+    thanksRequested: "మీ అభ్యర్థన మాకు అందింది. తదుపరి 2 పని దినాల్లో మేము మిమ్మల్ని సంప్రదించి చెల్లింపు లింక్ పంపుతాము.",
+    thanksMappe: "ముందుగా మీ దరఖాస్తు ఫైల్‌తో మొదలుపెట్టండి: మీ బయోడేటా అప్‌లోడ్ చేయండి లేదా మీ వివరాలు నింపండి. మేము అన్నీ తనిఖీ చేసి, పత్రాలు సిద్ధమైనప్పుడు మీకు తెలియజేస్తాము.",
+    toMappe: "నా దరఖాస్తు ఫైల్‌కు వెళ్ళండి", toProfile: "నా ఖాతాకు వెళ్ళండి", failed: "బుకింగ్ కాలేదు. దయచేసి మళ్ళీ ప్రయత్నించండి.", alreadyBooked: "మీరు స్టార్టర్ ప్యాకేజీని ఇప్పటికే బుక్ చేశారు.",
+  };
   if (lang === "fr") return {
     badge: "DOSSIER DE CANDIDATURE ET OUTIL",
     title: "Votre dossier de candidature aux normes allemandes. Et un outil pour postuler vous-même.",
@@ -143,5 +179,5 @@ function build(lang: "de" | "en" | "fr" | "ar" | "hi"): Copy {
 }
 
 export function serviceCopy(locale: string): Copy {
-  return build(locale === "de" || locale === "fr" || locale === "ar" || locale === "hi" ? locale : "en");
+  return build(locale === "de" || locale === "fr" || locale === "ar" || locale === "hi" || locale === "sr" || locale === "te" ? locale : "en");
 }

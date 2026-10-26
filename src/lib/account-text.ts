@@ -1,6 +1,6 @@
 // Texte im Kundenbereich („Mein Bereich“), je Sprache. Seit 23.10.2026 ohne Verlängerung und Abo.
 // Weg 1: kein Guthaben je Bewerbung mehr, sondern Unterlagen plus Bewerbungswerkzeug mit Laufzeit.
-// Deutsch, Englisch, Französisch, Arabisch, Hindi; andere Sprachen bekommen Englisch.
+// Deutsch, Englisch, Französisch, Arabisch, Hindi, Serbisch (lateinisch), Telugu; andere Sprachen bekommen Englisch.
 // Platzhalter in {geschweiften Klammern} mit fill() ersetzen.
 type T = {
   payAborted: string;
@@ -102,6 +102,42 @@ const hi: T = {
   callNote: "बात सिर्फ़ आपके दस्तावेज़ों की होती है। हम नौकरी नहीं दिलाते और कंपनियों से बात नहीं करते।", callBtn: "समय चुनें", callSoon: "समय बुक करने का लिंक जल्द ही उपलब्ध होगा।",
 };
 
-const ALL = { de, en, fr, ar, hi };
+// Übersetzung bitte von Muttersprachler:in prüfen lassen (Serbisch, lateinische Schrift; {months} kommt als „3 meseca“, siehe srMonths)
+const sr: T = {
+  payAborted: "Plaćanje je prekinuto. Možeš bilo kada da pokušaš ponovo.",
+  packageTitle: "Tvoj Startni paket", legacyPackage: "Tvoj paket (naručen pre promene)", myMappe: "Moja fascikla za prijavu", mappeState: "Dokumenta",
+  mappe: { NONE: "još nije započeta", DRAFT: "popunjavaš je", SUBMITTED: "poslata, proveravamo je", APPROVED: "gotova, za preuzimanje" },
+  toolTitle: "Tvoj alat za prijave", toolLead: "Traži poslove, napravi propratno pismo za svaki posao i prati svoje prijave. Prijavu šalješ ti i sve odgovore dobijaš direktno.",
+  toolActive: "otključan do {date}", toolExpired: "istekao {date}", toolInactive: "još nije otključan",
+  toolInactiveLead: "Alat se otključava čim stigne tvoja uplata.",
+  toolIncluded: "Startni paket uključuje {months} korišćenja alata. Posle toga pristup sam prestaje. Nema produženja i nema pretplate, pa ne moraš ništa da otkazuješ. Tvoja dokumenta ostaju tebi.",
+  toolExpiredLead: "Tvoja {months} sa alatom su prošla. Pretraga poslova i „Moje prijave“ su sada zaključani. Tvoja dokumenta pripadaju tebi: biografiju, šablon propratnog pisma i propratna pisma za tvoje poslove možeš i dalje da preuzmeš.", myLetters: "Preuzmi moja propratna pisma",
+  openSearch: "Otvori pretragu poslova", openTracker: "Moje prijave", counts: "{saved} sačuvano · {applied} prijava poslato",
+  booking: { REQUESTED: "Zatraženo", PENDING_PAYMENT: "Čeka se uplata", PAID: "Plaćeno", IN_PROGRESS: "U radu", DONE: "Završeno", CANCELLED: "Otkazano" },
+  docsLead: "Svedočanstva, potvrde i sertifikati. Postavi ih ovde, pa ćeš ih imati pri ruci za svoje prijave.",
+  noBookingTitle: "Dokumenta za prijavu i alat za prijave",
+  callTitle: "Provera dokumenata u razgovoru", callLead: "Startni paket uključuje razgovor od {min} minuta sa našim timom. Zajedno prolazimo kroz tvoja dokumenta i odgovaramo na tvoja pitanja o njima. Samo izaberi termin koji ti odgovara.",
+  callNote: "Razgovaramo samo o tvojim dokumentima. Ne posredujemo u zapošljavanju i ne razgovaramo sa firmama.", callBtn: "Izaberi termin", callSoon: "Link za zakazivanje termina stiže uskoro.",
+};
+
+// Übersetzung bitte von Muttersprachler:in prüfen lassen (Telugu)
+const te: T = {
+  payAborted: "చెల్లింపు రద్దయింది. మీరు ఎప్పుడైనా మళ్ళీ ప్రయత్నించవచ్చు.",
+  packageTitle: "మీ స్టార్టర్ ప్యాకేజీ", legacyPackage: "మీ ప్యాకేజీ (మార్పుకు ముందు బుక్ చేసింది)", myMappe: "నా దరఖాస్తు ఫైల్", mappeState: "పత్రాలు",
+  mappe: { NONE: "ఇంకా మొదలుపెట్టలేదు", DRAFT: "మీరు నింపుతున్నారు", SUBMITTED: "పంపారు, మేము తనిఖీ చేస్తున్నాము", APPROVED: "సిద్ధం, డౌన్‌లోడ్ కోసం" },
+  toolTitle: "మీ దరఖాస్తు టూల్", toolLead: "ఉద్యోగాలు వెతకండి, ప్రతి ఉద్యోగానికి కవర్ లెటర్ తయారు చేయండి, మీ దరఖాస్తులను గమనిస్తూ ఉండండి. దరఖాస్తు మీరే చేస్తారు, అన్ని జవాబులు నేరుగా మీకే వస్తాయి.",
+  toolActive: "{date} వరకు యాక్టివ్", toolExpired: "{date} న గడువు ముగిసింది", toolInactive: "ఇంకా యాక్టివ్ కాలేదు",
+  toolInactiveLead: "మీ చెల్లింపు అందగానే టూల్ యాక్టివ్ అవుతుంది.",
+  toolIncluded: "స్టార్టర్ ప్యాకేజీలో {months} నెలల టూల్ ఉంది. ఆ తర్వాత యాక్సెస్ దానంతట అదే ముగుస్తుంది. పొడిగింపు లేదు, సబ్‌స్క్రిప్షన్ లేదు, కాబట్టి మీరు ఏమీ రద్దు చేయనక్కర్లేదు. మీ పత్రాలు మీ దగ్గరే ఉంటాయి.",
+  toolExpiredLead: "టూల్‌తో మీ {months} నెలలు పూర్తయ్యాయి. ఉద్యోగ శోధన మరియు “నా దరఖాస్తులు” ఇప్పుడు లాక్ అయ్యాయి. మీ పత్రాలు మీవే: మీ బయోడేటా, కవర్ లెటర్ నమూనా మరియు మీ ఉద్యోగాల కవర్ లెటర్లను మీరు ఇంకా డౌన్‌లోడ్ చేసుకోవచ్చు.", myLetters: "నా కవర్ లెటర్లు డౌన్‌లోడ్ చేయండి",
+  openSearch: "ఉద్యోగ శోధన తెరవండి", openTracker: "నా దరఖాస్తులు", counts: "{saved} సేవ్ చేశారు · {applied} దరఖాస్తు చేశారు",
+  booking: { REQUESTED: "అభ్యర్థించారు", PENDING_PAYMENT: "చెల్లింపు పెండింగ్", PAID: "చెల్లించారు", IN_PROGRESS: "పని జరుగుతోంది", DONE: "పూర్తయింది", CANCELLED: "రద్దయింది" },
+  docsLead: "సర్టిఫికెట్లు మరియు అర్హత పత్రాలు. వాటిని ఇక్కడ అప్‌లోడ్ చేయండి, అప్పుడు మీ దరఖాస్తుల కోసం అవి మీ దగ్గర సిద్ధంగా ఉంటాయి.",
+  noBookingTitle: "దరఖాస్తు పత్రాలు మరియు దరఖాస్తు టూల్",
+  callTitle: "కాల్‌లో పత్రాల తనిఖీ", callLead: "స్టార్టర్ ప్యాకేజీలో మా టీమ్‌తో {min} నిమిషాల కాల్ ఉంది. మనం కలిసి మీ పత్రాలను చూస్తాము, వాటి గురించి మీ ప్రశ్నలకు జవాబులు ఇస్తాము. మీకు అనుకూలమైన సమయాన్ని ఎంచుకోండి.",
+  callNote: "మాట్లాడేది మీ పత్రాల గురించి మాత్రమే. మేము ఉద్యోగాలు ఇప్పించము, కంపెనీలతో మాట్లాడము.", callBtn: "సమయం ఎంచుకోండి", callSoon: "సమయం బుక్ చేసే లింక్ త్వరలో అందుబాటులోకి వస్తుంది.",
+};
+
+const ALL = { de, en, fr, ar, hi, sr, te };
 export const accountText = (locale: string): T => ALL[(locale in ALL ? locale : "en") as keyof typeof ALL];
 export const fill = (s: string, v: Record<string, string | number>) => s.replace(/\{(\w+)\}/g, (_, k) => String(v[k] ?? ""));

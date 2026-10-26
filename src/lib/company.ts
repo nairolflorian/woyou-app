@@ -21,7 +21,7 @@ export const COMPANY = {
   dpo: { name: "DPP Data Protection GmbH", person: "Rudolf Fiedler", street: "Zum Gottschalkhof 2", zipCity: "60594 Frankfurt am Main", email: "info@dataprotectionpartner.de" },
 };
 
-type L = "de" | "en" | "fr" | "ar" | "hi";
+type L = "de" | "en" | "fr" | "ar" | "hi" | "sr" | "te";
 export const SITE_TEXT: Record<L, {
   navOffer: string; navSteps: string; navFaq: string; navContact: string; navCheck: string;
   aboutTitle: string; about: string[]; contactTitle: string; contactLead: string; hours: string;
@@ -81,6 +81,29 @@ export const SITE_TEXT: Record<L, {
     contactTitle: "संपर्क", contactLead: "दस्तावेज़ों या टूल के बारे में कोई सवाल? हमें लिखें या फ़ोन करें।",
     hours: "सोमवार से शुक्रवार, सुबह 9 से शाम 6 बजे (जर्मन समय)",
     footerService: "ऑफ़र", footerLegal: "कानूनी जानकारी", book: "अभी बुक करें",
+  },
+  // sr/te: Übersetzung bitte von Muttersprachler:in prüfen lassen (sr in lateinischer Schrift)
+  sr: {
+    navOffer: "Ponuda", navCheck: "Samoprovera", navSteps: "Kako ide", navFaq: "Česta pitanja", navContact: "Kontakt",
+    aboutTitle: "O WoYou",
+    about: [
+      "WoYou postoji od 2018. godine. Pomažemo ljudima iz inostranstva da se u Nemačkoj ispravno prijave za posao.",
+      "Naš tim govori mnogo jezika i iz sopstvenog iskustva poznaje prepreke pri prijavi za posao u Nemačkoj. Zato pripremamo tvoja dokumenta prema nemačkom standardu i dajemo ti alat kojim ti pronalaziš odgovarajuće poslove. Prijavu šalješ ti. I otvoreno ti kažemo šta ne možemo.",
+    ],
+    contactTitle: "Kontakt", contactLead: "Imaš pitanje o dokumentima ili alatu? Piši nam ili nas pozovi.",
+    hours: "Pon. do pet., od 9 do 18 časova (nemačko vreme)",
+    footerService: "Ponuda", footerLegal: "Pravne informacije", book: "Naruči sada",
+  },
+  te: {
+    navOffer: "ఆఫర్", navCheck: "సెల్ఫ్-చెక్", navSteps: "ప్రక్రియ", navFaq: "తరచుగా అడిగే ప్రశ్నలు", navContact: "సంప్రదించండి",
+    aboutTitle: "WoYou గురించి",
+    about: [
+      "WoYou 2018 నుండి ఉంది. విదేశాల నుండి వచ్చే వారు జర్మనీలో సరైన పద్ధతిలో దరఖాస్తు చేయడానికి మేము సహాయం చేస్తాము.",
+      "మా టీమ్ చాలా భాషలు మాట్లాడుతుంది, జర్మనీలో దరఖాస్తు చేయడంలో ఉండే ఇబ్బందులు స్వంత అనుభవంతో తెలుసు. అందుకే మేము మీ పత్రాలను జర్మన్ ప్రమాణాల ప్రకారం సిద్ధం చేసి, సరైన ఉద్యోగాలను మీరే వెతుక్కునేందుకు ఒక టూల్ ఇస్తాము. దరఖాస్తులు మీరే పంపుతారు. మేము ఏమి చేయలేమో కూడా స్పష్టంగా చెబుతాము.",
+    ],
+    contactTitle: "సంప్రదించండి", contactLead: "పత్రాలు లేదా టూల్ గురించి ఏదైనా ప్రశ్న ఉందా? మాకు రాయండి లేదా ఫోన్ చేయండి.",
+    hours: "సోమవారం నుండి శుక్రవారం, ఉదయం 9 నుండి సాయంత్రం 6 వరకు (జర్మన్ సమయం)",
+    footerService: "ఆఫర్", footerLegal: "చట్టపరమైన సమాచారం", book: "ఇప్పుడే బుక్ చేయండి",
   },
 };
 export const siteText = (locale: string) => SITE_TEXT[(locale in SITE_TEXT ? locale : locale === "de" ? "de" : "en") as L];

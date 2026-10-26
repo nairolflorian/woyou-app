@@ -1,13 +1,13 @@
 // Startseite nach dem Konzept „Ehrlichkeit als Verkaufsargument“ (Entwurf v2, 18.10.2026), umgestellt auf Weg 1
 // (22.10.2026): verkauft werden Unterlagen plus Bewerbungswerkzeug, keine Bewerbungen, kein Jobversprechen.
 // Versprechen und Grenze im selben Blick, „Bitte beachte“ direkt beim Preis, realistische Erwartung, Selbstcheck.
-// Deutsch, Englisch, Französisch, Arabisch, Hindi; andere Sprachen sehen Englisch.
+// Deutsch, Englisch, Französisch, Arabisch, Hindi, Serbisch (lateinisch), Telugu; andere Sprachen sehen Englisch.
 // Preise kommen aus src/lib/angebot.ts.
 import { ANGEBOT, formatPrice } from "@/lib/angebot";
-import { arMonths } from "@/lib/werkzeug-text";
+import { arMonths, srMonths } from "@/lib/werkzeug-text";
 import { FOTOS, fotoSrc } from "@/lib/fotos";
 
-export type Lang = "de" | "en" | "fr" | "ar" | "hi";
+export type Lang = "de" | "en" | "fr" | "ar" | "hi" | "sr" | "te";
 
 type Landing = {
   badge: string; h1: string; sub: string; ctaStart: string; ctaCheck: string; trust: string[]; trustNote: string;
@@ -220,6 +220,136 @@ function build(lang: Lang): Landing {
     facts: ["KarriereKind GmbH, डसेलडॉर्फ़", "EU में सर्वर", "Stripe से भुगतान", "व्यक्तिगत संपर्क"],
     jobs: ["देखभाल", "होटल और रेस्तराँ", "कारीगरी", "ऑफ़िस", "तकनीक"],
   };
+  // Übersetzung bitte von Muttersprachler:in prüfen lassen (Serbisch, lateinische Schrift)
+  if (lang === "sr") return {
+    badge: "PRIJAVA ZA POSAO U NEMAČKOJ",
+    h1: "Tvoja dokumenta za prijavu prema nemačkom standardu. I alat kojim se lično prijavljuješ.",
+    sub: "Pravimo tvoja dokumenta za prijavu prema nemačkom standardu i dajemo ti alat kojim pronalaziš odgovarajuće poslove i lično se prijavljuješ. Ti odlučuješ gde se prijavljuješ i sve odgovore dobijaš direktno. Da li će te poslodavac pozvati, odlučuje on. Ne mi.",
+    ctaStart: `Počni sada · ${price}`, ctaCheck: "Prvo samoprovera",
+    trust: ["Bez posredovanja", "Bez garancije", "Prijavljuješ se lično"],
+    trustNote: "Garanciju za posao kod nas nema. Zato ti unapred kažemo na čemu si.",
+    priceTitle: `Startni paket · dokumenta i ${srMonths(months)} alata`, priceNote: `jednokratno · uključeno ${srMonths(months)} pristupa alatu za prijave · tvoja dokumenta ostaju tebi`,
+    ctaLogin: "Uloguj se i naruči", register: "Još nemaš nalog? Registruj se besplatno",
+    careTitle: "Ipak obrati pažnju",
+    care: [
+      "Za posao u Nemačkoj potrebne su priznate kvalifikacije i znanje jezika. Time se mi ne bavimo.",
+      "Mi se brinemo da tvoja dokumenta izgledaju dobro i da budu potpuna, i dajemo ti alat za pretragu. Gde se prijavljuješ, odlučuješ ti. Da li će te neko zaposliti, odlučuje poslodavac.",
+      "Radi orijentacije: od 20 ljudi koji se prijavljuju iz inostranstva, u proseku oko 2 dobiju posao. To treba da znaš pre nego što naručiš.",
+    ],
+    careStrong: "Ako ti je to previše neizvesno: nemoj da naručiš. To je u redu.",
+    doTitle: "Šta dobijaš kod nas, a šta ne", doYes: "Ovo radimo", doNo: "Ovo ne radimo",
+    yes: [
+      "Proveravamo tvoja dokumenta i usklađujemo ih sa nemačkim standardom",
+      "Tvoja biografija na nemačkom u četiri dizajna, uz šablon propratnog pisma u formatu Word i PDF",
+      "Pretraga poslova preko berze poslova Savezne agencije za zapošljavanje i drugih javnih berzi poslova, unapred popunjena tvojim profilom",
+      "Za svaki posao koji izabereš, odgovarajuće propratno pismo za preuzimanje",
+      "Tvoj sopstveni pregled: gde je prijava poslata i šta je stiglo nazad",
+      "Iskreno ti kažemo kada tvoj profil trenutno ima male šanse",
+    ],
+    no: [
+      "Ne posredujemo u zapošljavanju i nismo agencija za posredovanje",
+      "Ne šaljemo prijave i ne kontaktiramo firme",
+      "Ne biramo poslove umesto tebe. To odlučuješ ti",
+      "Ne garantujemo posao, razgovor ni odgovor",
+      "Ne pribavljamo vizu niti priznavanje kvalifikacija",
+    ],
+    realTitle: "Šta realno dobijaš",
+    real: [
+      { n: "1", t: "biografija kakvu nemačke firme očekuju", d: "Na nemačkom, uredno oblikovana i proverena od nas. Uz to šablon propratnog pisma." },
+      { n: String(months), t: `${srMonths(months).split(" ")[1]} alata za prijave`, d: "Pretraga poslova, propratno pismo za svaki posao i tvoj pregled. Posle toga pristup sam prestaje, bez pretplate i bez otkazivanja." },
+      { n: "100 %", t: "tvoja odluka", d: "Ti biraš poslove i svaku prijavu šalješ lično, sa svog imejl naloga ili preko sajta poslodavca. Odgovori stižu direktno tebi." },
+      { n: "+", t: "dokumenta koja pripadaju tebi", d: "Biografiju i propratna pisma možeš bilo kada da preuzmeš i koristiš svuda, i kada alat istekne." },
+    ],
+    checkTitle: "Da li je WoYou za tebe?", checkLead: "Pet kratkih pitanja, besplatno. Posle toga ti otvoreno kažemo da li ti se porudžbina isplati.", checkBtn: "Na samoproveru",
+    sampleTitle: "Ovako izgledaju tvoja dokumenta", sampleLead: "Ovako izgledaju biografija i propratno pismo koje pravimo sa tobom. Jednostavno i pregledno, onako kako to vole kadrovske službe.", sampleCv: "Primer biografije", sampleLetter: "Primer propratnog pisma", sampleNote: "Primer sa izmišljenom osobom", sampleDesigns: "Četiri dizajna i šest boja po izboru. Biraš ih u svojoj fascikli za prijavu.",
+    stepsTitle: "Kako ide",
+    steps: [
+      { t: "Samoprovera", d: "besplatno, traje jedan minut" },
+      { t: "Naruči", d: `${price}, onlajn` },
+      { t: "Fascikla", d: "ti popunjavaš, mi proveravamo" },
+      { t: "Pronađi poslove", d: "traži i sačuvaj u alatu" },
+      { t: "Prijavi se lično", d: "odgovori stižu direktno tebi" },
+    ],
+    faqTitle: "Česta pitanja",
+    faq: [
+      { q: "Kolike su moje šanse za posao?", a: "U proseku oko 2 od 20 ljudi koji se prijavljuju iz inostranstva dobiju posao. Tvoja dokumenta pravimo što boljim. Ono što poslodavac traži ne možemo da promenimo." },
+      { q: "Zašto ne dajete garanciju?", a: "Zato što to niko ne može iskreno da obeća. Ko ti obećava posao, obećava nešto što nije u njegovim rukama. Prodajemo ti samo ono što zaista isporučujemo: dokumenta i alat." },
+      { q: "Da li me vi prijavljujete kod firmi?", a: "Ne. Ti odlučuješ gde se prijavljuješ i prijavu šalješ sa svog imejl naloga ili preko sajta poslodavca. Nemamo kontakt sa poslodavcima i ne čitamo odgovore." },
+      { q: "Odakle dolaze poslovi?", a: "Sa berze poslova nemačke Savezne agencije za zapošljavanje i drugih javnih berzi poslova. Pretraga je unapred popunjena tvojim profilom. Filtriraš po zanimanju, mestu, udaljenosti i radnom vremenu i vidiš koji nivo nemačkog se traži." },
+      { q: "Da li dobijam novac nazad ako ne uspe?", a: "Ne. Plaćaš svoja dokumenta i vreme sa alatom, a ne posao. Tvoje zakonsko pravo na odustanak ostaje netaknuto." },
+      { q: "Da li ima još nekih troškova?", a: `Ne. Startni paket košta jednokratno ${price} i uključuje ${srMonths(months)} pristupa alatu za prijave. Posle toga pristup sam prestaje. Nema produženja i nema pretplate, pa ne moraš ništa da otkazuješ. Tvoja dokumenta ostaju tebi i možeš i dalje da ih preuzimaš. Skrivenih troškova nema.` },
+      { q: `Šta se dešava posle ${srMonths(months)}?`, a: "Pretraga poslova i tvoj pregled „Moje prijave“ se zaključavaju. Svoju biografiju, šablon propratnog pisma i propratna pisma za svoje poslove možeš i dalje da preuzmeš kao PDF." },
+      { q: "Mogu li svoja dokumenta da koristim samostalno?", a: "Da. Biografiju i propratna pisma možeš bilo kada da preuzmeš i koristiš za bilo koju prijavu, i kada alat istekne." },
+      { q: "Kako plaćam?", a: "Sigurno onlajn, karticom, preko našeg pružaoca usluga plaćanja Stripe." },
+    ],
+    facts: ["KarriereKind GmbH, Diseldorf", "Serveri u EU", "Plaćanje preko Stripe", "Lična kontakt osoba"],
+    jobs: ["Nega", "Ugostiteljstvo", "Zanatstvo", "Kancelarija", "Tehnika"],
+  };
+  // Übersetzung bitte von Muttersprachler:in prüfen lassen (Telugu)
+  if (lang === "te") return {
+    badge: "జర్మనీలో దరఖాస్తు",
+    h1: "జర్మన్ ప్రమాణాల ప్రకారం మీ దరఖాస్తు పత్రాలు. మరియు మీరే దరఖాస్తు చేసుకునేందుకు ఒక టూల్.",
+    sub: "మేము జర్మన్ ప్రమాణాల ప్రకారం మీ దరఖాస్తు పత్రాలు తయారు చేసి, మీకు సరిపోయే ఉద్యోగాలు వెతికి మీరే దరఖాస్తు చేసుకునేందుకు ఒక టూల్ ఇస్తాము. ఎక్కడ దరఖాస్తు చేయాలో మీరే నిర్ణయిస్తారు, అన్ని జవాబులు నేరుగా మీకే వస్తాయి. మిమ్మల్ని ఇంటర్వ్యూకు పిలవాలా వద్దా అనేది యజమాని నిర్ణయం, మాది కాదు.",
+    ctaStart: `ఇప్పుడే మొదలుపెట్టండి · ${price}`, ctaCheck: "ముందు సెల్ఫ్-చెక్",
+    trust: ["ఉద్యోగ నియామకం కాదు", "హామీ లేదు", "దరఖాస్తు మీరే చేస్తారు"],
+    trustNote: "మేము ఉద్యోగానికి హామీ ఇవ్వము. కానీ మీరు ఎక్కడ ఉన్నారో ముందే చెబుతాము.",
+    priceTitle: `స్టార్టర్ ప్యాకేజీ · పత్రాలు మరియు ${months} నెలల టూల్`, priceNote: `ఒక్కసారి చెల్లింపు · ${months} నెలల దరఖాస్తు టూల్ యాక్సెస్ కలిపి · మీ పత్రాలు మీ దగ్గరే ఉంటాయి`,
+    ctaLogin: "లాగిన్ అయి బుక్ చేయండి", register: "ఇంకా ఖాతా లేదా? ఉచితంగా రిజిస్టర్ అవ్వండి",
+    careTitle: "అయినా గమనించండి",
+    care: [
+      "జర్మనీలో పని చేయడానికి గుర్తింపు పొందిన అర్హతలు మరియు భాషా పరిజ్ఞానం అవసరం. వాటి ఏర్పాటు మేము చేయము.",
+      "మీ పత్రాలు బాగా కనిపించేలా, పూర్తిగా ఉండేలా మేము చూసుకుంటాము, వెతకడానికి మీకు ఒక టూల్ ఇస్తాము. ఎక్కడ దరఖాస్తు చేయాలో మీరే నిర్ణయిస్తారు. మీకు ఉద్యోగం ఇవ్వాలా వద్దా అనేది యజమాని నిర్ణయిస్తారు.",
+      "ఒక అంచనా కోసం: విదేశాల నుండి దరఖాస్తు చేసే 20 మందిలో సగటున సుమారు 2 మందికి ఉద్యోగం వస్తుంది. బుక్ చేసే ముందు ఇది తెలుసుకోవడం మంచిది.",
+    ],
+    careStrong: "ఇది మీకు చాలా అనిశ్చితంగా అనిపిస్తే: బుక్ చేయకండి. అది పూర్తిగా సరే.",
+    doTitle: "మా దగ్గర మీకు ఏమి లభిస్తుంది, ఏమి లభించదు", doYes: "మేము చేసేవి", doNo: "మేము చేయనివి",
+    yes: [
+      "మీ పత్రాలను తనిఖీ చేసి, జర్మన్ ప్రమాణాలకు తగ్గట్టుగా తయారు చేస్తాము",
+      "జర్మన్‌లో మీ బయోడేటా నాలుగు డిజైన్లలో, దానితో పాటు Word మరియు PDF లో కవర్ లెటర్ నమూనా",
+      "ఫెడరల్ ఉపాధి సంస్థ జాబ్ బోర్డు మరియు ఇతర ప్రభుత్వ జాబ్ బోర్డులలో ఉద్యోగ శోధన, మీ ప్రొఫైల్‌తో ముందే నింపి",
+      "మీరు ఎంచుకునే ప్రతి ఉద్యోగానికి సరిపోయే కవర్ లెటర్, డౌన్‌లోడ్‌కు సిద్ధంగా",
+      "మీ స్వంత జాబితా: మీరు ఎక్కడ దరఖాస్తు చేశారు, ఏ జవాబు వచ్చింది",
+      "ప్రస్తుతం మీ ప్రొఫైల్‌కు అవకాశాలు తక్కువగా ఉంటే, నిజాయితీగా చెబుతాము",
+    ],
+    no: [
+      "మేము ఉద్యోగాలు ఇప్పించము, మేము ప్లేస్‌మెంట్ ఏజెన్సీ కాదు",
+      "మేము దరఖాస్తులు పంపము, కంపెనీలను సంప్రదించము",
+      "మీ కోసం మేము ఉద్యోగాలు ఎంచుకోము. అది మీరే నిర్ణయిస్తారు",
+      "ఉద్యోగం, ఇంటర్వ్యూ లేదా జవాబుకు మేము హామీ ఇవ్వము",
+      "వీసా లేదా అర్హతల గుర్తింపు ఏర్పాటు మేము చేయము",
+    ],
+    realTitle: "వాస్తవంగా మీకు ఏమి లభిస్తుంది",
+    real: [
+      { n: "1", t: "జర్మన్ కంపెనీలు ఆశించే విధంగా బయోడేటా", d: "జర్మన్‌లో, శుభ్రమైన డిజైన్‌తో, మా తనిఖీతో. దానితో పాటు కవర్ లెటర్ నమూనా." },
+      { n: String(months), t: "నెలల దరఖాస్తు టూల్", d: "ఉద్యోగ శోధన, ప్రతి ఉద్యోగానికి కవర్ లెటర్ మరియు మీ జాబితా. ఆ తర్వాత యాక్సెస్ దానంతట అదే ముగుస్తుంది, సబ్‌స్క్రిప్షన్ లేదు, రద్దు చేయాల్సిన పని లేదు." },
+      { n: "100 %", t: "మీ నిర్ణయం", d: "ఉద్యోగాలను మీరే ఎంచుకుంటారు, ప్రతి దరఖాస్తును మీరే పంపుతారు, మీ ఈమెయిల్ నుండి లేదా యజమాని వెబ్‌సైట్ ద్వారా. జవాబులు నేరుగా మీకే వస్తాయి." },
+      { n: "+", t: "మీకే చెందిన పత్రాలు", d: "మీ బయోడేటా మరియు కవర్ లెటర్లను ఎప్పుడైనా డౌన్‌లోడ్ చేసుకుని ఎక్కడైనా ఉపయోగించండి, టూల్ గడువు ముగిసిన తర్వాత కూడా." },
+    ],
+    checkTitle: "WoYou మీకు సరిపోతుందా?", checkLead: "ఐదు చిన్న ప్రశ్నలు, ఉచితం. ఆ తర్వాత బుకింగ్ మీకు ఉపయోగపడుతుందో లేదో స్పష్టంగా చెబుతాము.", checkBtn: "సెల్ఫ్-చెక్‌కు వెళ్ళండి",
+    sampleTitle: "మీ పత్రాలు ఇలా కనిపిస్తాయి", sampleLead: "మేము మీతో కలిసి తయారు చేసే బయోడేటా మరియు కవర్ లెటర్ ఇలా ఉంటాయి. సాదాగా, చదవడానికి సులభంగా, HR విభాగాలు ఇష్టపడే విధంగా.", sampleCv: "నమూనా బయోడేటా", sampleLetter: "నమూనా కవర్ లెటర్", sampleNote: "కల్పిత వ్యక్తితో నమూనా", sampleDesigns: "ఎంచుకోవడానికి నాలుగు డిజైన్లు మరియు ఆరు రంగులు. వాటిని మీరు మీ దరఖాస్తు ఫైల్‌లో ఎంచుకుంటారు.",
+    stepsTitle: "ఇది ఎలా జరుగుతుంది",
+    steps: [
+      { t: "సెల్ఫ్-చెక్", d: "ఉచితం, ఒక నిమిషం పడుతుంది" },
+      { t: "బుక్ చేయండి", d: `${price}, ఆన్‌లైన్‌లో` },
+      { t: "ఫైల్", d: "మీరు నింపుతారు, మేము తనిఖీ చేస్తాము" },
+      { t: "ఉద్యోగాలు వెతకండి", d: "టూల్‌లో వెతికి సేవ్ చేయండి" },
+      { t: "మీరే దరఖాస్తు చేయండి", d: "జవాబులు నేరుగా మీకే వస్తాయి" },
+    ],
+    faqTitle: "తరచుగా అడిగే ప్రశ్నలు",
+    faq: [
+      { q: "నాకు ఉద్యోగం వచ్చే అవకాశం ఎంత?", a: "సగటున, విదేశాల నుండి దరఖాస్తు చేసే 20 మందిలో సుమారు 2 మందికి ఉద్యోగం వస్తుంది. మీ పత్రాలను వీలైనంత బాగా తయారు చేస్తాము. యజమాని ఏమి అడుగుతారో దాన్ని మేము మార్చలేము." },
+      { q: "మీరు హామీ ఎందుకు ఇవ్వరు?", a: "ఎందుకంటే నిజాయితీగా ఎవరూ ఇవ్వలేరు. మీకు ఉద్యోగం వాగ్దానం చేసేవారు, తమ చేతుల్లో లేనిదాన్ని వాగ్దానం చేస్తున్నారు. మేము నిజంగా ఇచ్చేదాన్ని మాత్రమే అమ్ముతాము: పత్రాలు మరియు ఒక టూల్." },
+      { q: "మీరు నా తరఫున కంపెనీలకు దరఖాస్తు చేస్తారా?", a: "లేదు. ఎక్కడ దరఖాస్తు చేయాలో మీరే నిర్ణయిస్తారు, దరఖాస్తును మీ స్వంత ఈమెయిల్ నుండి లేదా యజమాని వెబ్‌సైట్ ద్వారా పంపుతారు. మాకు యజమానులతో ఎలాంటి సంబంధం లేదు, మేము ఏ జవాబులూ చదవము." },
+      { q: "ఉద్యోగాలు ఎక్కడి నుండి వస్తాయి?", a: "జర్మనీ ఫెడరల్ ఉపాధి సంస్థ జాబ్ బోర్డు మరియు ఇతర ప్రభుత్వ జాబ్ బోర్డుల నుండి. శోధనలో మీ ప్రొఫైల్ ముందే నింపి ఉంటుంది. వృత్తి, ప్రదేశం, పరిధి మరియు పని సమయం ప్రకారం ఫిల్టర్ చేసి, ఏ జర్మన్ స్థాయి కావాలో చూడవచ్చు." },
+      { q: "ఫలితం రాకపోతే నా డబ్బు తిరిగి వస్తుందా?", a: "లేదు. మీరు మీ పత్రాలకు మరియు టూల్ సమయానికి చెల్లిస్తారు, ఉద్యోగానికి కాదు. ఒప్పందం నుండి వెనక్కి తగ్గే మీ చట్టపరమైన హక్కుపై దీని ప్రభావం ఉండదు." },
+      { q: "ఇంకేమైనా ఖర్చులు ఉన్నాయా?", a: `లేవు. స్టార్టర్ ప్యాకేజీ ధర ఒక్కసారి ${price}, ఇందులో ${months} నెలల దరఖాస్తు టూల్ యాక్సెస్ ఉంది. ఆ తర్వాత యాక్సెస్ దానంతట అదే ముగుస్తుంది. పొడిగింపు లేదు, సబ్‌స్క్రిప్షన్ లేదు, కాబట్టి మీరు ఏమీ రద్దు చేయనక్కర్లేదు. మీ పత్రాలు మీ దగ్గరే ఉంటాయి, వాటిని ఇంకా డౌన్‌లోడ్ చేసుకోవచ్చు. దాచిన ఫీజులు లేవు.` },
+      { q: `${months} నెలల తర్వాత ఏమవుతుంది?`, a: "ఉద్యోగ శోధన మరియు మీ జాబితా “నా దరఖాస్తులు” లాక్ అవుతాయి. మీ బయోడేటా, కవర్ లెటర్ నమూనా మరియు మీ ఉద్యోగాల కోసం తయారు చేసిన కవర్ లెటర్లను PDF గా ఇంకా డౌన్‌లోడ్ చేసుకోవచ్చు." },
+      { q: "నా పత్రాలను నేనే ఉపయోగించుకోవచ్చా?", a: "అవును. మీ బయోడేటా మరియు కవర్ లెటర్లను ఎప్పుడైనా డౌన్‌లోడ్ చేసుకుని ఏ దరఖాస్తుకైనా ఉపయోగించవచ్చు, టూల్ గడువు ముగిసిన తర్వాత కూడా." },
+      { q: "నేను ఎలా చెల్లించాలి?", a: "మా చెల్లింపు సేవా సంస్థ Stripe ద్వారా కార్డుతో, సురక్షితంగా ఆన్‌లైన్‌లో." },
+    ],
+    facts: ["KarriereKind GmbH, డ్యూసెల్‌డార్ఫ్", "EU లో సర్వర్లు", "Stripe ద్వారా చెల్లింపు", "వ్యక్తిగత సంప్రదింపు"],
+    jobs: ["సంరక్షణ", "హోటళ్ళు మరియు రెస్టారెంట్లు", "చేతివృత్తులు", "ఆఫీసు", "టెక్నాలజీ"],
+  };
   if (lang === "fr") return {
     badge: "CANDIDATER EN ALLEMAGNE",
     h1: "Votre dossier de candidature aux normes allemandes. Et un outil pour postuler vous-même.",
@@ -350,7 +480,7 @@ function build(lang: Lang): Landing {
   };
 }
 
-export const LANDING: Record<Lang, Landing> = { de: build("de"), en: build("en"), fr: build("fr"), ar: build("ar"), hi: build("hi") };
+export const LANDING: Record<Lang, Landing> = { de: build("de"), en: build("en"), fr: build("fr"), ar: build("ar"), hi: build("hi"), sr: build("sr"), te: build("te") };
 export const landingCopy = (locale: string) => LANDING[(locale in LANDING ? locale : "en") as Lang];
 
 // Bildwelt (siehe BILDWELT.md): echte Menschen bei der Arbeit, fünf Berufe im Wechsel, freie Unsplash-Lizenz.

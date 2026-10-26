@@ -15,7 +15,7 @@ import { MyDocuments } from "@/components/MyDocuments";
 import { VersandAdresse } from "@/components/VersandAdresse";
 import { versandText } from "@/lib/versand-text";
 import { toolAccess } from "@/lib/werkzeug";
-import { arMonths } from "@/lib/werkzeug-text";
+import { arMonths, srMonths } from "@/lib/werkzeug-text";
 import { accountText, fill } from "@/lib/account-text";
 import { terminlandUrl, showCallBox, CALL_MINUTES } from "@/lib/termin";
 
@@ -31,7 +31,7 @@ export default async function CandidateDashboardPage() {
   const { t, locale } = await getT();
   const sc = serviceCopy(locale);
   const a = accountText(locale);
-  const dl = locale === "de" ? "de-DE" : locale === "fr" ? "fr-FR" : locale === "ar" ? "ar-MA" : locale === "hi" ? "hi-IN" : "en-GB";
+  const dl = locale === "de" ? "de-DE" : locale === "fr" ? "fr-FR" : locale === "ar" ? "ar-MA" : locale === "hi" ? "hi-IN" : locale === "sr" ? "sr-Latn-RS" : locale === "te" ? "te-IN" : "en-GB";
   const booking = await prisma.serviceBooking.findFirst({
     where: { candidateId: candidate.id, status: { not: "CANCELLED" } },
     orderBy: { createdAt: "desc" },
@@ -43,7 +43,7 @@ export default async function CandidateDashboardPage() {
     prisma.savedJob.count({ where: { candidateId: candidate.id, status: { not: "SAVED" } } }),
   ]);
   const untilStr = access.until?.toLocaleDateString(dl) ?? null;
-  const months = locale === "ar" ? arMonths(booking?.toolMonths || ANGEBOT.startpaket.toolMonths) : String(booking?.toolMonths || ANGEBOT.startpaket.toolMonths);
+  const months = locale === "ar" ? arMonths(booking?.toolMonths || ANGEBOT.startpaket.toolMonths) : locale === "sr" ? srMonths(booking?.toolMonths || ANGEBOT.startpaket.toolMonths) : String(booking?.toolMonths || ANGEBOT.startpaket.toolMonths);
   const mappeState = (booking?.profile?.status ?? "NONE") as keyof typeof a.mappe;
   // Unterlagen-Check im Call: erst nach der Zahlung (Terminland-Link aus TERMINLAND_URL)
   const paid = !!booking && ["PAID", "IN_PROGRESS", "DONE"].includes(booking.status);

@@ -1,5 +1,5 @@
 // Texte für den Selbstversand (Bewerbung prüfen, selbst senden, eintragen) und die Bewerbungs-Adresse im Profil.
-// Deutsch, Englisch, Französisch, Arabisch (rechts nach links), Hindi; alle anderen Sprachen bekommen Englisch.
+// Deutsch, Englisch, Französisch, Arabisch (rechts nach links), Hindi, Serbisch (lateinisch), Telugu; alle anderen Sprachen bekommen Englisch.
 // Textregeln: du-Form, menschlich, keine langen Gedankenstriche, kein Jobversprechen.
 // Klar sagen: Die Person schickt selbst aus dem eigenen Postfach, WoYou verschickt nichts.
 // Keine Server-Importe: wird in Client-Komponenten verwendet.
@@ -189,6 +189,74 @@ const hi: VersandUI = {
   profilePh: "खाली छोड़ें = {email}", profileSave: "सहेजें", profileSaved: "सहेज लिया।", profileNow: "अभी: {email}",
 };
 
-const ALL = { de, en, fr, ar, hi } as const;
+// Übersetzung bitte von Muttersprachler:in prüfen lassen (Serbisch, lateinische Schrift)
+const sr: VersandUI = {
+  open: "Proveri i pošalji prijavu", stepCheck: "1. Proveri", stepSend: "2. Pošalji", stepDone: "3. Upiši", next: "Dalje", back: "Nazad",
+  letterHead: "Propratno pismo", letterHint: "Pročitaj propratno pismo na miru i promeni ono što ne odgovara. Izmene se čuvaju čim napustiš polje.",
+  letterView: "Pogledaj propratno pismo", needLetter: "Za ovaj posao još nema propratnog pisma. Sastavljamo ga iz tvoje fascikle za prijavu.",
+  cvHead: "Biografija", cvHint: "Biografiju menjaš u fascikli za prijavu. Izmena onda važi za sve prijave.", cvView: "Pogledaj biografiju", cvEdit: "Promeni u fascikli za prijavu",
+  mailHead: "Imejl", to: "Za (imejl adresa iz oglasa)", toPh: "npr. bewerbung@firma.de", toFromAd: "Preuzeto iz oglasa. Molimo te da je kratko proveriš.",
+  toMissing: "U oglasu nismo našli imejl adresu. Pogledaj oglas i upiši adresu ovde. Neke firme primaju prijave samo preko svog portala za prijave, tada tamo postavljaš PDF.",
+  portal: "Na oglas ili portal za prijave",
+  subject: "Naslov", body: "Tekst imejla", reset: "Vrati predlog", save: "Sačuvaj", saved: "Sačuvano.",
+  from: "Pišeš sa svoje adrese: {email}", fromNone: "U delu „Moj deo“ upiši svoju imejl adresu za prijave.", fromChange: "Promeni adresu",
+  sendLead: "Prijavu šalješ ti, sa svog imejl naloga. Odgovori stižu direktno tebi. WoYou ništa ne šalje i ništa ne čita.",
+  openMail: "Otvori u mom programu za imejl", openMailHint: "Primalac, naslov i tekst su već upisani. Posle toga priloži PDF.",
+  noRecipient: "Bez primaoca otvara se prazno polje za adresu. Adresu možeš da upišeš i tamo.",
+  truncated: "Tekst je predugačak za ovaj način i skraćen je. Bolje ga kopiraj dugmetom ispod.",
+  pdfHead: "Preuzmi dokumenta kao PDF", bundle: "Propratno pismo i biografija (jedan PDF)", letterPdf: "samo propratno pismo", cvPdf: "samo biografija",
+  twoFiles: "Koristiš svoju biografiju. Preuzmi oba fajla i priloži oba.",
+  eml: "Preuzmi gotov imejl sa prilozima (.eml)", emlHint: "Za Outlook, Apple Mail ili Thunderbird na računaru. Prilozi su već dodati.",
+  copyHead: "Za veb-poštu i telefon", copyTo: "Kopiraj adresu", copySubject: "Kopiraj naslov", copyBody: "Kopiraj tekst", copied: "Kopirano.",
+  howTo: "Ovako ide na tvom uređaju",
+  howToList: [
+    { title: "Računar sa programom Outlook, Apple Mail ili Thunderbird", text: "Preuzmi .eml fajl i otvori ga dvostrukim klikom. Outlook ga otvara kao nacrt. U programu Apple Mail u meniju «Message» izaberi «Send Again», u programu Thunderbird «Edit as New Message». Proveri sve i klikni na Send." },
+    { title: "Gmail (aplikacija ili pregledač)", text: "Prvo preuzmi PDF. Zatim dodirni „Otvori u mom programu za imejl“ ili kopiraj adresu, naslov i tekst u novi imejl. Preko spajalice izaberi „Priloži fajl“, PDF se nalazi u fascikli Downloads." },
+    { title: "Aplikacija Mail na iPhone uređaju", text: "Prvo preuzmi PDF, on se onda nalazi u aplikaciji Files pod Downloads. Dodirni „Otvori u mom programu za imejl“, zatim dodirni tekst i ikonicu iznad tastature. Sa „Priloži fajl“ izaberi PDF." },
+    { title: "Aplikacija Outlook na telefonu", text: "Prvo preuzmi PDF. Dodirni „Otvori u mom programu za imejl“ i izaberi Outlook. Preko spajalice priloži PDF iz fascikle Downloads." },
+  ],
+  doneHead: "Poslato?", doneLead: "Kada imejl ode, upiši to ovde. Tako imaš pregled.", sentOn: "Poslato dana",
+  followUp: "Podseti me da se ponovo javim dana", sentBtn: "Prijava je poslata", sentOk: "Upisano: prijava poslata {date}.",
+  followUpOn: "Ponovo se javi {date}", followUpDue: "Vreme je da se ponovo javiš (od {date})", followUpClear: "Ukloni podsetnik",
+  profileHead: "Imejl adresa za prijave",
+  profileLead: "Ova adresa stoji u tvom propratnom pismu, u biografiji i u nacrtu imejla. Firme odgovaraju na nju. Za to nam ne treba lozinka i ne šaljemo prijave.",
+  profilePh: "ostavi prazno = {email}", profileSave: "Sačuvaj", profileSaved: "Sačuvano.", profileNow: "Trenutno: {email}",
+};
+
+// Übersetzung bitte von Muttersprachler:in prüfen lassen (Telugu)
+const te: VersandUI = {
+  open: "దరఖాస్తు తనిఖీ చేసి పంపండి", stepCheck: "1. తనిఖీ", stepSend: "2. పంపండి", stepDone: "3. నమోదు", next: "తరువాత", back: "వెనుకకు",
+  letterHead: "కవర్ లెటర్", letterHint: "కవర్ లెటర్‌ను నెమ్మదిగా చదివి, సరిపోని వాటిని మార్చండి. మీరు ఫీల్డ్ వదిలిన వెంటనే మీ మార్పులు సేవ్ అవుతాయి.",
+  letterView: "కవర్ లెటర్ చూడండి", needLetter: "ఈ ఉద్యోగానికి ఇంకా కవర్ లెటర్ లేదు. మేము దాన్ని మీ దరఖాస్తు ఫైల్ నుండి తయారు చేస్తాము.",
+  cvHead: "బయోడేటా", cvHint: "మీ బయోడేటాను మీరు దరఖాస్తు ఫైల్‌లో మారుస్తారు. ఆ మార్పు అన్ని దరఖాస్తులకూ వర్తిస్తుంది.", cvView: "బయోడేటా చూడండి", cvEdit: "దరఖాస్తు ఫైల్‌లో మార్చండి",
+  mailHead: "ఈమెయిల్", to: "స్వీకర్త (ప్రకటనలోని ఈమెయిల్ చిరునామా)", toPh: "ఉదా. bewerbung@firma.de", toFromAd: "ప్రకటన నుండి తీసుకున్నాము. దయచేసి ఒకసారి తనిఖీ చేయండి.",
+  toMissing: "ప్రకటనలో మాకు ఈమెయిల్ చిరునామా దొరకలేదు. ప్రకటనను చూసి చిరునామాను ఇక్కడ రాయండి. కొన్ని కంపెనీలు తమ స్వంత దరఖాస్తు పోర్టల్ ద్వారా మాత్రమే దరఖాస్తులు తీసుకుంటాయి, అప్పుడు మీరు PDF ను అక్కడ అప్‌లోడ్ చేయండి.",
+  portal: "ప్రకటన లేదా దరఖాస్తు పోర్టల్‌కు వెళ్ళండి",
+  subject: "సబ్జెక్ట్", body: "ఈమెయిల్ పాఠం", reset: "సూచనను మళ్ళీ తీసుకురండి", save: "సేవ్ చేయండి", saved: "సేవ్ అయింది.",
+  from: "మీరు మీ స్వంత చిరునామా నుండి రాస్తున్నారు: {email}", fromNone: "«నా ఖాతా» లో దరఖాస్తుల కోసం మీ ఈమెయిల్ చిరునామా రాయండి.", fromChange: "చిరునామా మార్చండి",
+  sendLead: "దరఖాస్తును మీరే మీ స్వంత ఈమెయిల్ నుండి పంపుతారు. జవాబులు నేరుగా మీకే వస్తాయి. WoYou ఏమీ పంపదు, ఏమీ చదవదు.",
+  openMail: "నా ఈమెయిల్ ప్రోగ్రామ్‌లో తెరవండి", openMailHint: "స్వీకర్త, సబ్జెక్ట్ మరియు పాఠం ముందే నింపి ఉన్నాయి. ఆ తర్వాత PDF జత చేయండి.",
+  noRecipient: "స్వీకర్త లేకపోతే చిరునామా వరుస ఖాళీగా తెరుచుకుంటుంది. చిరునామాను మీరు అక్కడ కూడా రాయవచ్చు.",
+  truncated: "ఈ పద్ధతికి పాఠం చాలా పొడవుగా ఉంది, అందుకే చిన్నది చేశాము. కింద ఉన్న బటన్‌తో దాన్ని కాపీ చేయడం మంచిది.",
+  pdfHead: "పత్రాలను PDF గా డౌన్‌లోడ్ చేయండి", bundle: "కవర్ లెటర్ మరియు బయోడేటా (ఒకే PDF)", letterPdf: "కవర్ లెటర్ మాత్రమే", cvPdf: "బయోడేటా మాత్రమే",
+  twoFiles: "మీరు మీ స్వంత బయోడేటాను ఉపయోగిస్తున్నారు. దయచేసి రెండు ఫైళ్ళనూ డౌన్‌లోడ్ చేసి, రెండింటినీ జత చేయండి.",
+  eml: "జోడింపులతో సిద్ధమైన ఈమెయిల్ డౌన్‌లోడ్ చేయండి (.eml)", emlHint: "కంప్యూటర్‌లో Outlook, Apple Mail లేదా Thunderbird కోసం. జోడింపులు ముందే ఉన్నాయి.",
+  copyHead: "వెబ్‌మెయిల్ మరియు ఫోన్ కోసం", copyTo: "చిరునామా కాపీ చేయండి", copySubject: "సబ్జెక్ట్ కాపీ చేయండి", copyBody: "పాఠం కాపీ చేయండి", copied: "కాపీ అయింది.",
+  howTo: "మీ పరికరంలో ఇలా చేయండి",
+  howToList: [
+    { title: "Outlook, Apple Mail లేదా Thunderbird ఉన్న కంప్యూటర్", text: ".eml ఫైల్‌ను డౌన్‌లోడ్ చేసి, డబుల్ క్లిక్‌తో తెరవండి. Outlook దాన్ని డ్రాఫ్ట్‌గా తెరుస్తుంది. Apple Mail లో «Message» మెనూ నుండి «Send Again» ఎంచుకోండి, Thunderbird లో «Edit as New Message». అన్నీ తనిఖీ చేసి Send నొక్కండి." },
+    { title: "Gmail (యాప్ లేదా బ్రౌజర్)", text: "ముందుగా PDF డౌన్‌లోడ్ చేయండి. తర్వాత «నా ఈమెయిల్ ప్రోగ్రామ్‌లో తెరవండి» నొక్కండి లేదా చిరునామా, సబ్జెక్ట్ మరియు పాఠాన్ని కొత్త ఈమెయిల్‌లోకి కాపీ చేయండి. పేపర్ క్లిప్ ద్వారా «ఫైల్ జత చేయండి» ఎంచుకోండి, PDF Downloads ఫోల్డర్‌లో ఉంటుంది." },
+    { title: "iPhone లో Mail యాప్", text: "ముందుగా PDF డౌన్‌లోడ్ చేయండి, అది Files యాప్‌లో Downloads లో ఉంటుంది. «నా ఈమెయిల్ ప్రోగ్రామ్‌లో తెరవండి» నొక్కండి, తర్వాత పాఠంలో మరియు కీబోర్డ్ పైన ఉన్న గుర్తుపై నొక్కండి. «ఫైల్ జత చేయండి» తో PDF ఎంచుకోండి." },
+    { title: "ఫోన్‌లో Outlook యాప్", text: "ముందుగా PDF డౌన్‌లోడ్ చేయండి. «నా ఈమెయిల్ ప్రోగ్రామ్‌లో తెరవండి» నొక్కి Outlook ఎంచుకోండి. పేపర్ క్లిప్ ద్వారా Downloads నుండి PDF జత చేయండి." },
+  ],
+  doneHead: "పంపారా?", doneLead: "ఈమెయిల్ వెళ్ళిన తర్వాత ఇక్కడ నమోదు చేయండి. అలా మీకు అన్నీ గుర్తుంటాయి.", sentOn: "పంపిన తేదీ",
+  followUp: "మళ్ళీ సంప్రదించమని గుర్తు చేయండి, తేదీ", sentBtn: "నేను పంపాను", sentOk: "నమోదైంది: {date} న దరఖాస్తు చేశారు.",
+  followUpOn: "{date} న మళ్ళీ సంప్రదించండి", followUpDue: "మళ్ళీ సంప్రదించే సమయం ({date} నుండి)", followUpClear: "రిమైండర్ తీసివేయండి",
+  profileHead: "దరఖాస్తుల కోసం ఈమెయిల్ చిరునామా",
+  profileLead: "ఈ చిరునామా మీ కవర్ లెటర్, బయోడేటా మరియు ఈమెయిల్ డ్రాఫ్ట్‌లో కనిపిస్తుంది. కంపెనీలు దీనికే జవాబు ఇస్తాయి. దీని కోసం మాకు పాస్‌వర్డ్ అవసరం లేదు, మేము ఏ దరఖాస్తులూ పంపము.",
+  profilePh: "ఖాళీగా వదిలేయండి = {email}", profileSave: "సేవ్ చేయండి", profileSaved: "సేవ్ అయింది.", profileNow: "ప్రస్తుతం: {email}",
+};
+
+const ALL = { de, en, fr, ar, hi, sr, te } as const;
 export const versandText = (locale?: string | null): VersandUI => ALL[wLang(locale)];
 export const VERSAND_TEXTS = ALL;

@@ -1,4 +1,4 @@
-// Texte der Bewerbungsmappe (Oberfläche) in DE/FR/EN/AR. Die Unterlagen selbst bleiben deutsch.
+// Texte der Bewerbungsmappe (Oberfläche) in DE/FR/EN/AR/HI/SR/TE (SR = Serbisch lateinisch). Die Unterlagen selbst bleiben deutsch.
 const de = {
   back: "Mein Profil", title: "Meine Bewerbungsmappe",
   intro: "Aus deinen Angaben erstellen wir deinen Lebenslauf nach deutschem Standard und eine Anschreiben-Vorlage. Im Bewerbungswerkzeug entsteht daraus für jede Stelle, die du auswählst, ein passendes Anschreiben. Fülle alles in Ruhe aus und speichere zwischendurch.",
@@ -171,10 +171,82 @@ const hi: MappeText = {
   missingMap: { "Name": "नाम", "Telefon oder E-Mail": "फ़ोन या ईमेल", "Wohnort": "निवास स्थान", "Wunschberuf": "इच्छित पेशा", "mindestens eine Berufserfahrung": "कम से कम एक कार्य अनुभव", "mindestens eine Ausbildung bzw. Schule": "कम से कम एक शिक्षा प्रविष्टि", "Sprachkenntnisse": "भाषाएँ", "Motivation (ein paar Sätze)": "प्रेरणा (कुछ वाक्य)" },
 };
 
+// Übersetzung bitte von Muttersprachler:in prüfen lassen (Serbisch, lateinische Schrift)
+const sr: MappeText = {
+  back: "Moj profil", title: "Moja fascikla za prijavu",
+  intro: "Iz tvojih podataka pravimo tvoju biografiju prema nemačkom standardu i šablon propratnog pisma. U alatu za prijave od toga nastaje odgovarajuće propratno pismo za svaki posao koji izabereš. Popuni sve na miru i povremeno sačuvaj.",
+  langHint: "Tvoja biografija i pisma biće na nemačkom, jer idu nemačkim poslodavcima. Ako možeš, piši na nemačkom. Ako ne, piši na engleskom: mi proveravamo i prevodimo.",
+  stMappe: "Fascikla", of: "od",
+  status: { DRAFT: "U izradi", SUBMITTED: "Poslato, u proveri", APPROVED: "Odobreno" },
+  myApps: "Tvoje prijave", answered: "Stigao odgovor",
+  saved: "Sačuvano.", saveFail: "Čuvanje nije uspelo.", error: "Greška", uploadFail: "Postavljanje nije uspelo.",
+  submittedMsg: "Hvala! Tvoja fascikla je stigla kod nas. Proveravamo je i javljamo ti kada su tvoja dokumenta spremna.",
+  photoSaved: "Fotografija sačuvana.", cvSaved: "Biografija sačuvana. Koristi se za tvoja dokumenta za preuzimanje.",
+  locked: "Tvoja fascikla je odobrena. Za izmene nam kratko piši.",
+  preview: "Pregled", previewHint: "Ovako izgledaju tvoja dokumenta. Prvo sačuvaj, pa ponovo otvori.",
+  pdfCv: "Biografija (PDF)", pdfLetter: "Šablon propratnog pisma (PDF)", ownCvLink: "Moja biografija",
+  ownTitle: "Već imaš biografiju?", ownHint: "Postavi je kao PDF. Onda umesto napravljene biografije možeš da preuzmeš svoju. Podatke ispod nam ipak trebaju za propratna pisma.",
+  ownUpload: "Postavi PDF", ownUse: "Koristi moju biografiju",
+  personal: "Lični podaci", firstName: "Ime", lastName: "Prezime", street: "Ulica, broj", zipCity: "Poštanski broj, mesto", country: "Zemlja",
+  phone: "Telefon / WhatsApp", email: "Imejl", birthDate: "Datum rođenja (nije obavezno)", birthDatePh: "DD.MM.GGGG", nationality: "Državljanstvo (nije obavezno)",
+  targetJob: "Željeno zanimanje (naslov u biografiji)", targetJobPh: "npr. Pflegefachkraft (medicinska sestra / tehničar)",
+  photo: "Fotografija za prijavu (nije obavezno)", photoUpload: "Postavi fotografiju", photoReplace: "Zameni fotografiju", remove: "Ukloni", showPhoto: "Prikaži fotografiju u biografiji",
+  photoHint: "U Nemačkoj je fotografija uobičajena, ali nije obavezna. Najbolje svetao portret na neutralnoj pozadini.",
+  designTitle: "Dizajn i boja", designLead: "Ovako izgledaju biografija i propratno pismo. Svi dizajni su pogodni za nemačke poslodavce, propratno pismo se prilagođava.", designs: { klassisch: "Klasičan", modern: "Moderan", kompakt: "Kompaktan", elegant: "Elegantan" }, designHints: { klassisch: "miran, proveren", modern: "bočna traka u boji", kompakt: "traka u boji gore, puno prostora", elegant: "serifni font, centrirano" }, color: "Boja", colors: ["Antracit", "Teget", "Jelovo zelena", "Bordo", "Patlidžan", "Ćilibar"], saveToPreview: "Posle čuvanja pregled iznad prikazuje novi dizajn.",
+  about: "O tebi", summary: "Kratak profil", summaryHint: "2 do 4 rečenice: zanimanje, iskustvo, najvažnija jaka strana. Stoji na vrhu biografije.",
+  motivation: "Zašto Nemačka, zašto ovo zanimanje?", motivationHint: "Svojim rečima. Iz toga nastaju tvoja propratna pisma, zato piši iskreno i konkretno.",
+  strengths: "Šta posebno dobro radiš? (nije obavezno)", strengthsHint: "Na primer iskustvo sa određenim uređajima, grupama pacijenata ili postupcima.",
+  experience: "Radno iskustvo", position: "Pozicija", employer: "Poslodavac", tasks: "Zadaci",
+  education: "Obrazovanje i škola", degree: "Diploma ili stručno obrazovanje", school: "Škola / fakultet", focus: "Glavne oblasti (nije obavezno)",
+  addEntry: "+ Unos", newestFirst: "Najnoviji unos prvi.", noEntries: "Još nema unosa.", from: "od", to: "do", toPh: "danas", cityCountry: "Mesto, zemlja", onePerLine: "Jedan podatak po redu.",
+  langSkills: "Jezici i znanja", langPh: "Jezik", levelPh: "Nivo, npr. B2 ili maternji", addLang: "+ Jezik",
+  skills: "Stručna znanja", skillsHint: "Jedno znanje po redu, npr. nega rana, dozvola za viljuškar, MS Office.",
+  driving: "Vozačka dozvola", drivingPh: "npr. kategorija B", available: "Dostupnost od", availablePh: "odmah ili MM/GGGG",
+  missing: "Još nedostaje:", save: "Sačuvaj", submit: "Pošalji fasciklu", submittedNote: "Poslato. Izmene možeš i dalje da čuvaš.",
+  missingMap: { "Name": "Ime", "Telefon oder E-Mail": "Telefon ili imejl", "Wohnort": "Mesto stanovanja", "Wunschberuf": "Željeno zanimanje", "mindestens eine Berufserfahrung": "bar jedno radno iskustvo", "mindestens eine Ausbildung bzw. Schule": "bar jedno obrazovanje ili škola", "Sprachkenntnisse": "Jezici", "Motivation (ein paar Sätze)": "Motivacija (nekoliko rečenica)" },
+};
+
+// Übersetzung bitte von Muttersprachler:in prüfen lassen (Telugu)
+const te: MappeText = {
+  back: "నా ప్రొఫైల్", title: "నా దరఖాస్తు ఫైల్",
+  intro: "మీ వివరాల నుండి మేము జర్మన్ ప్రమాణాల ప్రకారం మీ బయోడేటా మరియు కవర్ లెటర్ నమూనా తయారు చేస్తాము. దరఖాస్తు టూల్‌లో దీని నుండి మీరు ఎంచుకునే ప్రతి ఉద్యోగానికి సరిపోయే కవర్ లెటర్ తయారవుతుంది. నెమ్మదిగా అన్నీ నింపండి, మధ్య మధ్యలో సేవ్ చేస్తూ ఉండండి.",
+  langHint: "మీ బయోడేటా మరియు లెటర్లు జర్మన్‌లో ఉంటాయి, ఎందుకంటే అవి జర్మన్ యజమానులకు వెళ్తాయి. వీలైతే జర్మన్‌లో రాయండి. లేకపోతే ఇంగ్లీష్‌లో రాయండి: మేము తనిఖీ చేసి అనువదిస్తాము.",
+  stMappe: "ఫైల్", of: "లో",
+  status: { DRAFT: "నింపుతున్నారు", SUBMITTED: "పంపారు, తనిఖీ జరుగుతోంది", APPROVED: "ఆమోదించబడింది" },
+  myApps: "మీ దరఖాస్తులు", answered: "జవాబు వచ్చింది",
+  saved: "సేవ్ అయింది.", saveFail: "సేవ్ కాలేదు.", error: "లోపం", uploadFail: "అప్‌లోడ్ కాలేదు.",
+  submittedMsg: "ధన్యవాదాలు! మీ ఫైల్ మాకు అందింది. మేము దాన్ని తనిఖీ చేసి, పత్రాలు సిద్ధమైనప్పుడు మీకు తెలియజేస్తాము.",
+  photoSaved: "ఫోటో సేవ్ అయింది.", cvSaved: "బయోడేటా సేవ్ అయింది. డౌన్‌లోడ్ చేసుకునే మీ పత్రాల కోసం దీన్ని ఉపయోగిస్తాము.",
+  locked: "మీ ఫైల్ ఆమోదించబడింది. మార్పులు కావాలంటే మాకు రాయండి.",
+  preview: "ప్రివ్యూ", previewHint: "మీ పత్రాలు ఇలా కనిపిస్తాయి. ముందు సేవ్ చేసి, తర్వాత మళ్ళీ తెరవండి.",
+  pdfCv: "బయోడేటా (PDF)", pdfLetter: "కవర్ లెటర్ నమూనా (PDF)", ownCvLink: "నా స్వంత బయోడేటా",
+  ownTitle: "మీ దగ్గర ఇప్పటికే బయోడేటా ఉందా?", ownHint: "దాన్ని PDF గా అప్‌లోడ్ చేయండి. అప్పుడు తయారు చేసిన బయోడేటాకు బదులుగా మీ స్వంత బయోడేటాను డౌన్‌లోడ్ చేసుకోవచ్చు. కవర్ లెటర్ల కోసం కింది వివరాలు మాకు అయినా అవసరం.",
+  ownUpload: "PDF అప్‌లోడ్ చేయండి", ownUse: "నా స్వంత బయోడేటాను ఉపయోగించండి",
+  personal: "వ్యక్తిగత వివరాలు", firstName: "మొదటి పేరు", lastName: "ఇంటి పేరు", street: "వీధి, ఇంటి నంబర్", zipCity: "పిన్ కోడ్, నగరం", country: "దేశం",
+  phone: "ఫోన్ / WhatsApp", email: "ఈమెయిల్", birthDate: "పుట్టిన తేదీ (ఐచ్ఛికం)", birthDatePh: "DD.MM.YYYY", nationality: "పౌరసత్వం (ఐచ్ఛికం)",
+  targetJob: "కోరుకునే వృత్తి (బయోడేటా శీర్షిక)", targetJobPh: "ఉదా. Pflegefachkraft (నర్స్)",
+  photo: "దరఖాస్తు ఫోటో (ఐచ్ఛికం)", photoUpload: "ఫోటో అప్‌లోడ్ చేయండి", photoReplace: "ఫోటో మార్చండి", remove: "తీసివేయండి", showPhoto: "బయోడేటాలో ఫోటో చూపించండి",
+  photoHint: "జర్మనీలో ఫోటో పెట్టడం సాధారణం, కానీ తప్పనిసరి కాదు. సాదా బ్యాక్‌గ్రౌండ్‌లో మంచి వెలుతురులో తీసిన ముఖ చిత్రం ఉత్తమం.",
+  designTitle: "డిజైన్ మరియు రంగు", designLead: "మీ బయోడేటా మరియు కవర్ లెటర్ ఇలా కనిపిస్తాయి. అన్ని డిజైన్లు జర్మన్ యజమానులకు తగినవే, కవర్ లెటర్ దానంతట అదే సరిపోతుంది.", designs: { klassisch: "క్లాసిక్", modern: "మోడర్న్", kompakt: "కాంపాక్ట్", elegant: "ఎలిగెంట్" }, designHints: { klassisch: "సాదా, నమ్మదగినది", modern: "రంగుల సైడ్ బార్", kompakt: "పైన రంగు పట్టీ, ఎక్కువ స్థలం", elegant: "సెరిఫ్ ఫాంట్, మధ్యలో" }, color: "రంగు", colors: ["ఆంత్రసైట్", "నేవీ", "ముదురు ఆకుపచ్చ", "బర్గండీ", "వంకాయ రంగు", "అంబర్"], saveToPreview: "సేవ్ చేసిన తర్వాత పై ప్రివ్యూలో కొత్త డిజైన్ కనిపిస్తుంది.",
+  about: "మీ గురించి", summary: "సంక్షిప్త పరిచయం", summaryHint: "2 నుండి 4 వాక్యాలు: వృత్తి, అనుభవం, మీ ముఖ్యమైన బలం. ఇది బయోడేటాలో పైన ఉంటుంది.",
+  motivation: "జర్మనీ ఎందుకు, ఈ వృత్తి ఎందుకు?", motivationHint: "మీ స్వంత మాటల్లో. మీ కవర్ లెటర్లు దీని నుండే తయారవుతాయి, కాబట్టి నిజాయితీగా, స్పష్టంగా రాయండి.",
+  strengths: "మీరు దేనిలో ప్రత్యేకంగా బాగా చేస్తారు? (ఐచ్ఛికం)", strengthsHint: "ఉదాహరణకు కొన్ని యంత్రాలు, రోగుల సమూహాలు లేదా పని విధానాలతో అనుభవం.",
+  experience: "పని అనుభవం", position: "హోదా", employer: "యజమాని", tasks: "పనులు",
+  education: "చదువు మరియు శిక్షణ", degree: "డిగ్రీ లేదా శిక్షణ", school: "పాఠశాల / విశ్వవిద్యాలయం", focus: "ముఖ్య విషయాలు (ఐచ్ఛికం)",
+  addEntry: "+ జోడించండి", newestFirst: "కొత్తది మొదట.", noEntries: "ఇంకా ఏమీ లేవు.", from: "నుండి", to: "వరకు", toPh: "ఈరోజు", cityCountry: "నగరం, దేశం", onePerLine: "ఒక వరుసకు ఒక విషయం.",
+  langSkills: "భాషలు మరియు నైపుణ్యాలు", langPh: "భాష", levelPh: "స్థాయి, ఉదా. B2 లేదా మాతృభాష", addLang: "+ భాష",
+  skills: "వృత్తి నైపుణ్యాలు", skillsHint: "ఒక వరుసకు ఒక నైపుణ్యం, ఉదా. గాయాల సంరక్షణ, ఫోర్క్‌లిఫ్ట్ లైసెన్స్, MS Office.",
+  driving: "డ్రైవింగ్ లైసెన్స్", drivingPh: "ఉదా. క్లాస్ B", available: "ఎప్పటి నుండి అందుబాటులో", availablePh: "వెంటనే లేదా MM/YYYY",
+  missing: "ఇంకా మిగిలి ఉంది:", save: "సేవ్ చేయండి", submit: "ఫైల్ పంపండి", submittedNote: "పంపారు. మార్పులను మీరు ఇంకా సేవ్ చేయవచ్చు.",
+  missingMap: { "Name": "పేరు", "Telefon oder E-Mail": "ఫోన్ లేదా ఈమెయిల్", "Wohnort": "నివాస స్థలం", "Wunschberuf": "కోరుకునే వృత్తి", "mindestens eine Berufserfahrung": "కనీసం ఒక పని అనుభవం", "mindestens eine Ausbildung bzw. Schule": "కనీసం ఒక చదువు లేదా శిక్షణ", "Sprachkenntnisse": "భాషలు", "Motivation (ein paar Sätze)": "ప్రేరణ (కొన్ని వాక్యాలు)" },
+};
+
 export function mappeText(locale: string): MappeText {
   if (locale === "fr") return fr;
   if (locale === "ar") return ar;
   if (locale === "hi") return hi;
+  if (locale === "sr") return sr;
+  if (locale === "te") return te;
   if (locale === "de") return de;
   return en;
 }

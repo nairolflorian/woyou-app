@@ -48,5 +48,6 @@ export function toolState(until: Date | null | undefined, now = new Date()) {
 }
 
 export function formatPrice(cents: number, locale = "de") {
-  return new Intl.NumberFormat(locale === "ar" ? "ar-MA" : locale, { style: "currency", currency: "EUR", maximumFractionDigits: cents % 100 ? 2 : 0 }).format(cents / 100);
+  // ar-MA: lateinische Ziffern; sr-Latn-RS: lateinische Schrift (nur "sr" wäre Kyrillisch); te-IN: lateinische Ziffern
+  return new Intl.NumberFormat(locale === "ar" ? "ar-MA" : locale === "sr" ? "sr-Latn-RS" : locale === "te" ? "te-IN" : locale, { style: "currency", currency: "EUR", maximumFractionDigits: cents % 100 ? 2 : 0 }).format(cents / 100);
 }

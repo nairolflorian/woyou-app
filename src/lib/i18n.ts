@@ -14,6 +14,8 @@ import dict_en from "@/i18n/en";
 import dict_fr from "@/i18n/fr";
 import dict_ar from "@/i18n/ar";
 import dict_hi from "@/i18n/hi";
+import dict_sr from "@/i18n/sr";
+import dict_te from "@/i18n/te";
 import dict_es from "@/i18n/es";
 import dict_ru from "@/i18n/ru";
 import dict_uk from "@/i18n/uk";
@@ -27,6 +29,8 @@ const DICTS: Record<Locale, Record<string, string>> = {
   fr: dict_fr,
   ar: dict_ar,
   hi: dict_hi,
+  sr: dict_sr,
+  te: dict_te,
   es: dict_es,
   ru: dict_ru,
   uk: dict_uk,

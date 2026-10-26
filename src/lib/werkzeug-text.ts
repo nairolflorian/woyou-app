@@ -1,16 +1,19 @@
 // Texte für das Bewerbungswerkzeug (Stellensuche, Meine Bewerbungen) und die zugehörigen Mails.
-// Deutsch, Englisch, Französisch, Arabisch (rechts nach links), Hindi; alle anderen Sprachen bekommen Englisch.
+// Deutsch, Englisch, Französisch, Arabisch (rechts nach links), Hindi, Serbisch (lateinisch), Telugu; alle anderen Sprachen bekommen Englisch.
 // Textregeln: ehrlich, kein Jobversprechen, keine langen Gedankenstriche, du-Form, menschlich.
 // Keine Server-Importe: wird auch in Client-Komponenten verwendet.
 
-export type WLang = "de" | "en" | "fr" | "ar" | "hi";
-export const wLang = (locale?: string | null): WLang => (locale === "de" || locale === "fr" || locale === "ar" || locale === "hi" ? locale : locale ? "en" : "de");
-// ar-MA und hi-IN schreiben Datum und Preise mit lateinischen Ziffern (wie in Marokko bzw. Indien üblich)
-export const dateLocaleOf = (l: WLang) => (l === "de" ? "de-DE" : l === "fr" ? "fr-FR" : l === "ar" ? "ar-MA" : l === "hi" ? "hi-IN" : "en-GB");
+export type WLang = "de" | "en" | "fr" | "ar" | "hi" | "sr" | "te";
+export const wLang = (locale?: string | null): WLang => (locale === "de" || locale === "fr" || locale === "ar" || locale === "hi" || locale === "sr" || locale === "te" ? locale : locale ? "en" : "de");
+// ar-MA, hi-IN und te-IN schreiben Datum und Preise mit lateinischen Ziffern (wie in Marokko bzw. Indien üblich).
+// Serbisch immer als sr-Latn-RS: nur "sr" liefert in Intl kyrillische Monatsnamen.
+export const dateLocaleOf = (l: WLang) => (l === "de" ? "de-DE" : l === "fr" ? "fr-FR" : l === "ar" ? "ar-MA" : l === "hi" ? "hi-IN" : l === "sr" ? "sr-Latn-RS" : l === "te" ? "te-IN" : "en-GB");
 /** Schreibrichtung, z. B. für Mails */
 export const dirOf = (l: WLang): "rtl" | "ltr" => (l === "ar" ? "rtl" : "ltr");
 /** Arabisch: „3 أشهر“, „شهرين“ usw. (Zahl + Monat in der richtigen Form) */
 export const arMonths = (n: number) => (n === 1 ? "شهر واحد" : n === 2 ? "شهرين" : n <= 10 ? `${n} أشهر` : `${n} شهرًا`);
+/** Serbisch: „1 mesec“, „3 meseca“, „5 meseci“ (Zahl + Monat in der richtigen Form) */
+export const srMonths = (n: number) => `${n} ${n % 10 === 1 && n % 100 !== 11 ? "mesec" : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? "meseca" : "meseci"}`;
 export const fillIn = (s: string, v: Record<string, string | number>) => s.replace(/\{(\w+)\}/g, (_, k) => String(v[k] ?? ""));
 
 export type TrackerStatus = "SAVED" | "APPLIED" | "REPLY" | "INTERVIEW" | "REJECTED" | "OFFER";
@@ -189,21 +192,85 @@ const hi: UI = {
   failed: "यह काम नहीं किया।", readOnly: "आपका टूल समाप्त हो गया है। अपने कवर लेटर आप अब भी डाउनलोड कर सकते हैं।", back: "मेरा खाता", navSearch: "नौकरी खोज", navTracker: "मेरे आवेदन", navMappe: "आवेदन फ़ाइल",
 };
 
-const UI_ALL: Record<WLang, UI> = { de, en, fr, ar, hi };
+// Übersetzung bitte von Muttersprachler:in prüfen lassen (Serbisch, lateinische Schrift)
+const sr: UI = {
+  searchTitle: "Pretraga poslova",
+  searchLead: "Ovde nalaziš aktuelne poslove sa berze poslova nemačke Savezne agencije za zapošljavanje (Bundesagentur für Arbeit) i drugih javnih berzi poslova. Pretraga je već popunjena tvojim podacima. Ti odlučuješ koje poslove čuvaš i gde se prijavljuješ.",
+  was: "Zanimanje", wasPh: "npr. Pflegefachkraft", wo: "Mesto ili poštanski broj", woPh: "prazno = cela Nemačka", radius: "Udaljenost",
+  hours: "Radno vreme", hoursAll: "svejedno", fulltime: "Puno radno vreme", parttime: "Skraćeno radno vreme", myGerman: "Moj nemački", germanUnknown: "nije navedeno",
+  onlyFitting: "Samo poslovi čiji zahtev za nemački odgovara mom nivou ili koji ga ne navode",
+  search: "Traži", searching: "Pretraga u toku …", fromProfile: "Predlozi iz tvog profila:", results: "{n} rezultata", noResults: "Nema rezultata. Probaj sa opštijim zanimanjem ili većom udaljenošću.", more: "Učitaj još rezultata",
+  save: "Sačuvaj", saved: "Sačuvano", openAd: "Pogledaj oglas", viaEmployerSite: "Prijava preko sajta poslodavca", withEmail: "Moguća prijava imejlom",
+  germanOk: "Traži se nemački {req}, odgovara ti", germanClose: "Traži se nemački {req}, za nijansu iznad", germanHigh: "Traži se nemački {req}, iznad tvog nivoa", germanReq: "Traži se nemački {req}", germanNone: "nema podatka o nemačkom",
+  published: "od {date}", km: "{n} km", source: "Izvor: {src}",
+  alsoSearch: "Traži i na ovim sajtovima:", alsoHint: "Sajtovi se otvaraju u novom prozoru. Odatle ništa ne čitamo i ništa ne preuzimamo automatski.",
+  searchError: "Pretraga trenutno nije uspela. Pokušaj ponovo za koji trenutak.",
+  lockedTitle: "Pretraga poslova je deo Startnog paketa", lockedLead: "Sa Startnim paketom dobijaš svoja dokumenta za prijavu prema nemačkom standardu i alat za prijave: pretragu poslova, propratno pismo za svaki posao i svoj pregled.", lockedCta: "Pogledaj Startni paket",
+  expiredTitle: "Tvoj alat za prijave je istekao", expiredLead: "Meseci sa alatom iz tvog Startnog paketa su prošli. Pretraga poslova i „Moje prijave“ su sada zaključani. Tvoja dokumenta pripadaju tebi: biografiju, šablon propratnog pisma i propratna pisma za tvoje poslove možeš i dalje da preuzmeš.", expiredCta: "Na moja dokumenta",
+  lettersTitle: "Tvoja propratna pisma za preuzimanje", lettersLead: "Za svaki posao za koji postoji tvoje propratno pismo možeš ga ovde i dalje preuzeti kao PDF ili Word, zajedno sa biografijom.", noLetters: "Još nema propratnih pisama ni za jedan posao. Biografiju i šablon propratnog pisma naći ćeš u svom delu.",
+  trackerTitle: "Moje prijave", trackerLead: "Tvoji sačuvani poslovi i kakvo je stanje kod svakog. Ovu listu vodiš samo ti. Ne kontaktiramo firme i ne čitamo odgovore.",
+  empty: "Još nemaš sačuvanih poslova. U pretrazi poslova naći ćeš odgovarajuće ponude.", toSearch: "Na pretragu poslova", toTracker: "Moje prijave ({n})", all: "Sve",
+  status: { SAVED: "sačuvano", APPLIED: "prijava poslata", REPLY: "stigao odgovor", INTERVIEW: "razgovor", REJECTED: "odbijenica", OFFER: "ponuda" },
+  statusLabel: "Stanje", appliedOn: "prijava poslata {date}", repliedOn: "odgovor {date}", interviewOn: "razgovor {date}",
+  notes: "Beleške", notesPh: "npr. kontakt osoba, broj telefona, šta je bilo važno na razgovoru", saveNotes: "Sačuvaj belešku", savedOk: "Sačuvano.", remove: "Ukloni sa liste", removeAsk: "Da li zaista želiš da ukloniš ovaj posao sa svoje liste?",
+  letterTitle: "Propratno pismo za ovaj posao", letterHint: "Propratno pismo sastavljamo iz tvojih podataka i oglasa. Pročitaj ga na miru i promeni ono što ne odgovara. Šalješ ga ti.",
+  generate: "Napravi propratno pismo", regenerate: "Napravi ponovo", generating: "Pravi se …", letterLang: "Jezik propratnog pisma",
+  pdf: "Propratno pismo (PDF)", word: "Propratno pismo (Word)", cv: "Biografija (PDF)",
+  mail: "Otvori u mom programu za imejl", mailHint: "Tvoj program za imejl se otvara sa primaocem, naslovom i kratkim tekstom. Propratno pismo i biografiju prvo preuzmi i priloži ih kao PDF. Odgovori stižu direktno u tvoje sanduče.",
+  noEmail: "U oglasu nema imejl adrese. Prijavi se preko sajta poslodavca.", employer: "Na stranicu poslodavca za prijave", markApplied: "Prijava je poslata",
+  addOwn: "Upiši posao", addOwnLead: "Imaš posao sa nekog drugog mesta, npr. sa portala ili sajta firme? Upiši ga ovde, pa ćeš sve imati na jednom mestu.",
+  ownTitle: "Naziv radnog mesta", ownCompany: "Firma", ownCity: "Mesto (nije obavezno)", ownUrl: "Link do oglasa (nije obavezno)", ownEmail: "Imejl za prijave (nije obavezno)", add: "Upiši",
+  failed: "To nije uspelo.", readOnly: "Tvoj alat je istekao. Propratna pisma možeš i dalje da preuzmeš.", back: "Moj deo", navSearch: "Pretraga poslova", navTracker: "Moje prijave", navMappe: "Fascikla za prijavu",
+};
+
+// Übersetzung bitte von Muttersprachler:in prüfen lassen (Telugu)
+const te: UI = {
+  searchTitle: "ఉద్యోగ శోధన",
+  searchLead: "ఇక్కడ మీకు జర్మనీ ఫెడరల్ ఉపాధి సంస్థ (Bundesagentur für Arbeit) జాబ్ బోర్డు మరియు ఇతర ప్రభుత్వ జాబ్ బోర్డుల నుండి తాజా ఉద్యోగాలు కనిపిస్తాయి. శోధనలో మీ వివరాలు ముందే నింపి ఉంటాయి. ఏ ఉద్యోగాలను సేవ్ చేయాలో, ఎక్కడ దరఖాస్తు చేయాలో మీరే నిర్ణయిస్తారు.",
+  was: "వృత్తి", wasPh: "ఉదా. Pflegefachkraft", wo: "నగరం లేదా పిన్ కోడ్", woPh: "ఖాళీ = జర్మనీ మొత్తం", radius: "పరిధి",
+  hours: "పని సమయం", hoursAll: "ఏదైనా", fulltime: "ఫుల్ టైమ్", parttime: "పార్ట్ టైమ్", myGerman: "నా జర్మన్", germanUnknown: "చెప్పలేదు",
+  onlyFitting: "నా స్థాయికి సరిపోయే జర్మన్ అడిగే ఉద్యోగాలు లేదా జర్మన్ గురించి ఏమీ చెప్పని ఉద్యోగాలు మాత్రమే",
+  search: "వెతకండి", searching: "వెతుకుతోంది …", fromProfile: "మీ ప్రొఫైల్ నుండి సూచనలు:", results: "{n} ఫలితాలు", noResults: "ఫలితాలు లేవు. మరింత సాధారణ వృత్తి పేరు లేదా పెద్ద పరిధితో ప్రయత్నించండి.", more: "మరిన్ని ఫలితాలు చూపించండి",
+  save: "సేవ్ చేయండి", saved: "సేవ్ అయింది", openAd: "ప్రకటన చూడండి", viaEmployerSite: "యజమాని వెబ్‌సైట్ ద్వారా దరఖాస్తు", withEmail: "ఈమెయిల్ ద్వారా దరఖాస్తు చేయవచ్చు",
+  germanOk: "జర్మన్ {req} కావాలి, మీ స్థాయికి సరిపోతుంది", germanClose: "జర్మన్ {req} కావాలి, మీ స్థాయికి దగ్గరగా", germanHigh: "జర్మన్ {req} కావాలి, మీ స్థాయి కంటే ఎక్కువ", germanReq: "జర్మన్ {req} కావాలి", germanNone: "జర్మన్ గురించి సమాచారం దొరకలేదు",
+  published: "{date} నుండి", km: "{n} కి.మీ.", source: "మూలం: {src}",
+  alsoSearch: "అక్కడ కూడా మీరే వెతకండి:", alsoHint: "ఈ వెబ్‌సైట్లు కొత్త విండోలో తెరుచుకుంటాయి. మేము అక్కడి నుండి ఏమీ చదవము, ఏమీ ఆటోమేటిక్‌గా తీసుకోము.",
+  searchError: "ఇప్పుడు శోధన పని చేయలేదు. దయచేసి కాసేపట్లో మళ్ళీ ప్రయత్నించండి.",
+  lockedTitle: "ఉద్యోగ శోధన స్టార్టర్ ప్యాకేజీలో భాగం", lockedLead: "స్టార్టర్ ప్యాకేజీతో మీకు జర్మన్ ప్రమాణాల ప్రకారం దరఖాస్తు పత్రాలు మరియు దరఖాస్తు టూల్ లభిస్తాయి: ఉద్యోగ శోధన, ప్రతి ఉద్యోగానికి కవర్ లెటర్, మీ స్వంత జాబితా.", lockedCta: "స్టార్టర్ ప్యాకేజీ చూడండి",
+  expiredTitle: "మీ దరఖాస్తు టూల్ గడువు ముగిసింది", expiredLead: "మీ స్టార్టర్ ప్యాకేజీలోని టూల్ నెలలు పూర్తయ్యాయి. ఉద్యోగ శోధన మరియు “నా దరఖాస్తులు” ఇప్పుడు లాక్ అయ్యాయి. మీ పత్రాలు మీవే: మీ బయోడేటా, కవర్ లెటర్ నమూనా మరియు మీ ఉద్యోగాల కవర్ లెటర్లను మీరు ఇంకా డౌన్‌లోడ్ చేసుకోవచ్చు.", expiredCta: "నా పత్రాలకు వెళ్ళండి",
+  lettersTitle: "డౌన్‌లోడ్ కోసం మీ కవర్ లెటర్లు", lettersLead: "మీరు కవర్ లెటర్ తయారు చేసిన ప్రతి ఉద్యోగానికి, దాన్ని ఇక్కడ ఇంకా PDF లేదా Word లో డౌన్‌లోడ్ చేసుకోవచ్చు, మీ బయోడేటాతో పాటు.", noLetters: "మీరు ఏ ఉద్యోగానికీ కవర్ లెటర్ తయారు చేయలేదు. మీ బయోడేటా మరియు కవర్ లెటర్ నమూనా మీ ఖాతాలో ఉన్నాయి.",
+  trackerTitle: "నా దరఖాస్తులు", trackerLead: "మీరు సేవ్ చేసిన ఉద్యోగాలు మరియు ప్రతి దానిలో మీరు ఎక్కడ ఉన్నారు. ఈ జాబితాను మీరు మాత్రమే నిర్వహిస్తారు. మేము కంపెనీలను సంప్రదించము, జవాబులు చదవము.",
+  empty: "మీరు ఇంకా ఏ ఉద్యోగాన్నీ సేవ్ చేయలేదు. ఉద్యోగ శోధనలో మీకు సరిపోయే ఉద్యోగాలు కనిపిస్తాయి.", toSearch: "ఉద్యోగ శోధనకు వెళ్ళండి", toTracker: "నా దరఖాస్తులు ({n})", all: "అన్నీ",
+  status: { SAVED: "సేవ్ చేశారు", APPLIED: "దరఖాస్తు చేశారు", REPLY: "జవాబు వచ్చింది", INTERVIEW: "ఇంటర్వ్యూ", REJECTED: "తిరస్కరణ", OFFER: "ఉద్యోగ ఆఫర్" },
+  statusLabel: "స్థితి", appliedOn: "{date} న దరఖాస్తు చేశారు", repliedOn: "{date} న జవాబు వచ్చింది", interviewOn: "{date} న ఇంటర్వ్యూ",
+  notes: "నోట్స్", notesPh: "ఉదా. సంప్రదించాల్సిన వ్యక్తి, ఫోన్ నంబర్, ఇంటర్వ్యూలో ముఖ్యమైన విషయాలు", saveNotes: "నోట్ సేవ్ చేయండి", savedOk: "సేవ్ అయింది.", remove: "జాబితా నుండి తీసివేయండి", removeAsk: "ఈ ఉద్యోగాన్ని నిజంగా మీ జాబితా నుండి తీసివేయాలా?",
+  letterTitle: "ఈ ఉద్యోగానికి కవర్ లెటర్", letterHint: "మీ వివరాలు మరియు ఉద్యోగ ప్రకటన నుండి మేము కవర్ లెటర్ తయారు చేస్తాము. దాన్ని నెమ్మదిగా చదివి, సరిగ్గా లేని వాటిని మార్చండి. దాన్ని మీరే పంపుతారు.",
+  generate: "కవర్ లెటర్ తయారు చేయండి", regenerate: "మళ్ళీ తయారు చేయండి", generating: "తయారవుతోంది …", letterLang: "కవర్ లెటర్ భాష",
+  pdf: "కవర్ లెటర్ (PDF)", word: "కవర్ లెటర్ (Word)", cv: "బయోడేటా (PDF)",
+  mail: "నా ఈమెయిల్ ప్రోగ్రామ్‌లో తెరవండి", mailHint: "మీ ఈమెయిల్ ప్రోగ్రామ్ స్వీకర్త, సబ్జెక్ట్ మరియు చిన్న సందేశంతో తెరుచుకుంటుంది. కవర్ లెటర్ మరియు బయోడేటాను ముందుగా డౌన్‌లోడ్ చేసి, మీరే PDF గా జత చేయండి. జవాబులు నేరుగా మీ ఇన్‌బాక్స్‌కు వస్తాయి.",
+  noEmail: "ప్రకటనలో ఈమెయిల్ చిరునామా లేదు. యజమాని వెబ్‌సైట్ ద్వారా దరఖాస్తు చేయండి.", employer: "యజమాని దరఖాస్తు పేజీకి వెళ్ళండి", markApplied: "నేను దరఖాస్తు చేశాను",
+  addOwn: "ఉద్యోగాన్ని మీరే జోడించండి", addOwnLead: "మీకు వేరే చోట ఉద్యోగం దొరికిందా, ఉదా. ఏదైనా జాబ్ పోర్టల్ లేదా కంపెనీ వెబ్‌సైట్‌లో? దాన్ని ఇక్కడ జోడించండి, అప్పుడు అంతా ఒకే చోట ఉంటుంది.",
+  ownTitle: "ఉద్యోగం పేరు", ownCompany: "కంపెనీ", ownCity: "నగరం (ఐచ్ఛికం)", ownUrl: "ప్రకటన లింక్ (ఐచ్ఛికం)", ownEmail: "దరఖాస్తు ఈమెయిల్ (ఐచ్ఛికం)", add: "జోడించండి",
+  failed: "అది పని చేయలేదు.", readOnly: "మీ టూల్ గడువు ముగిసింది. మీ కవర్ లెటర్లను మీరు ఇంకా డౌన్‌లోడ్ చేసుకోవచ్చు.", back: "నా ఖాతా", navSearch: "ఉద్యోగ శోధన", navTracker: "నా దరఖాస్తులు", navMappe: "దరఖాస్తు ఫైల్",
+};
+
+const UI_ALL: Record<WLang, UI> = { de, en, fr, ar, hi, sr, te };
 export const werkzeugText = (locale?: string | null): UI => UI_ALL[wLang(locale)];
 
 // ---------- Mails ----------
-// ar/hi: Übersetzung bitte von Muttersprachler:in prüfen lassen
-const SIGN: Record<WLang, string> = { de: "Viele Grüße\nDein WoYou-Team", en: "Best regards\nYour WoYou team", fr: "Bien cordialement\nL'équipe WoYou", ar: "مع أطيب التحيات\nفريق WoYou", hi: "शुभकामनाओं के साथ\nआपकी WoYou टीम" };
-const HELLO: Record<WLang, string> = { de: "Hallo", en: "Hi", fr: "Bonjour", ar: "مرحبًا", hi: "नमस्ते" };
+// ar/hi/sr/te: Übersetzung bitte von Muttersprachler:in prüfen lassen
+const SIGN: Record<WLang, string> = { de: "Viele Grüße\nDein WoYou-Team", en: "Best regards\nYour WoYou team", fr: "Bien cordialement\nL'équipe WoYou", ar: "مع أطيب التحيات\nفريق WoYou", hi: "शुभकामनाओं के साथ\nआपकी WoYou टीम", sr: "Srdačan pozdrav\nTvoj WoYou tim", te: "శుభాకాంక్షలతో\nమీ WoYou టీమ్" };
+const HELLO: Record<WLang, string> = { de: "Hallo", en: "Hi", fr: "Bonjour", ar: "مرحبًا", hi: "नमस्ते", sr: "Zdravo", te: "నమస్తే" };
 const hello = (l: WLang) => (name?: string | null) => `${HELLO[l]}${name ? ` ${name}` : ""}${l === "ar" ? "،" : ","}`;
 
 /** Mail an die Kundin bzw. den Kunden, wenn das Team die Mappe freigegeben hat */
 export function mappeMail(locale?: string | null) {
   const l = wLang(locale);
-  // Übersetzung bitte von Muttersprachler:in prüfen lassen (ar, hi)
+  // Übersetzung bitte von Muttersprachler:in prüfen lassen (ar, hi, sr, te)
   if (l === "ar") return { dir: dirOf(l), subject: "مستندات التقديم الخاصة بك جاهزة", hello: hello(l), button: "فتح البحث عن وظيفة", paras: ["راجعنا ملف التقديم الخاص بك. سيرتك الذاتية ونموذج رسالة التحفيز جاهزان، ويمكنك تحميلهما في أي وقت من حسابك.", "الآن يمكنك أن تبدأ: في البحث عن وظيفة تجد وظائف مناسبة، وتحفظ ما يعجبك منها، وتُنشئ لكل واحدة رسالة تحفيز. أنت تتقدّم بنفسك، من بريدك الإلكتروني أو عبر موقع صاحب العمل، وتصلك الردود مباشرة.", SIGN.ar] };
   if (l === "hi") return { dir: dirOf(l), subject: "आपके आवेदन दस्तावेज़ तैयार हैं", hello: hello(l), button: "नौकरी खोज खोलें", paras: ["हमने आपकी आवेदन फ़ाइल जाँच ली है। आपका बायोडाटा और कवर लेटर का नमूना तैयार है, आप इन्हें अपने खाते में कभी भी डाउनलोड कर सकते हैं।", "अब आप शुरू कर सकते हैं: नौकरी खोज में आपको उपयुक्त नौकरियाँ मिलेंगी। जो पसंद आएँ, उन्हें सहेजें और हर एक के लिए कवर लेटर बनाएँ। आवेदन आप ख़ुद करते हैं, अपने ईमेल से या नियोक्ता की वेबसाइट से, और जवाब सीधे आपको मिलते हैं।", SIGN.hi] };
+  if (l === "sr") return { dir: dirOf(l), subject: "Tvoja dokumenta za prijavu su spremna", hello: hello(l), button: "Otvori pretragu poslova", paras: ["Pregledali smo tvoju fasciklu za prijavu. Tvoja biografija i šablon propratnog pisma su spremni i možeš ih bilo kada preuzeti u svom delu.", "Sada možeš da kreneš: u pretrazi poslova nalaziš odgovarajuće poslove, čuvaš one koji ti se dopadaju i za svaki praviš propratno pismo. Prijavu šalješ ti, sa svoje imejl adrese ili preko sajta poslodavca, a odgovori stižu direktno tebi.", SIGN.sr] };
+  if (l === "te") return { dir: dirOf(l), subject: "మీ దరఖాస్తు పత్రాలు సిద్ధంగా ఉన్నాయి", hello: hello(l), button: "ఉద్యోగ శోధన తెరవండి", paras: ["మేము మీ దరఖాస్తు ఫైల్‌ను తనిఖీ చేశాము. మీ బయోడేటా మరియు కవర్ లెటర్ నమూనా సిద్ధంగా ఉన్నాయి, వాటిని మీరు మీ ఖాతాలో ఎప్పుడైనా డౌన్‌లోడ్ చేసుకోవచ్చు.", "ఇప్పుడు మీరు మొదలుపెట్టవచ్చు: ఉద్యోగ శోధనలో మీకు సరిపోయే ఉద్యోగాలు కనిపిస్తాయి. నచ్చిన వాటిని సేవ్ చేసి, ప్రతి దానికీ కవర్ లెటర్ తయారు చేయండి. దరఖాస్తు మీరే చేస్తారు, మీ స్వంత ఈమెయిల్ నుండి లేదా యజమాని వెబ్‌సైట్ ద్వారా, మరియు జవాబులు నేరుగా మీకే వస్తాయి.", SIGN.te] };
   if (l === "en") return { dir: dirOf(l), subject: "Your application documents are ready", hello: hello(l), button: "Open job search", paras: ["we have checked your application folder. Your CV and your cover letter template are ready, and you can download them in your area at any time.", "Now you can start: in the job search you find suitable jobs, save the ones you like and create a cover letter for each. You apply yourself, from your own email address or via the employer's website, and replies come straight to you.", SIGN.en] };
   if (l === "fr") return { dir: dirOf(l), subject: "Votre dossier de candidature est prêt", hello: hello(l), button: "Ouvrir la recherche", paras: ["nous avons vérifié votre dossier. Votre CV et votre modèle de lettre sont prêts, vous pouvez les télécharger à tout moment dans votre espace.", "Vous pouvez commencer : dans la recherche d'emploi, vous trouvez des offres adaptées, gardez celles qui vous plaisent et créez une lettre pour chacune. Vous postulez vous-même, depuis votre propre adresse e-mail ou sur le site de l'employeur, et les réponses vous arrivent directement.", SIGN.fr] };
   return { dir: dirOf(l), subject: "Deine Bewerbungsunterlagen sind fertig", hello: hello(l), button: "Stellensuche öffnen", paras: ["wir haben deine Bewerbungsmappe geprüft. Dein Lebenslauf und deine Anschreiben-Vorlage sind fertig, du kannst sie jederzeit in deinem Bereich herunterladen.", "Jetzt kannst du loslegen: In der Stellensuche findest du passende Stellen, merkst dir die, die dir gefallen, und erstellst für jede ein Anschreiben. Du bewirbst dich selbst, aus deinem eigenen E-Mail-Postfach oder über die Seite des Arbeitgebers, und bekommst die Antworten direkt.", SIGN.de] };
@@ -213,13 +280,19 @@ export function mappeMail(locale?: string | null) {
 export function bookingMail(locale?: string | null) {
   const l = wLang(locale);
   const base = { dir: dirOf(l), hello: hello(l), sign: SIGN[l] };
-  // Übersetzung bitte von Muttersprachler:in prüfen lassen (ar, hi)
+  // Übersetzung bitte von Muttersprachler:in prüfen lassen (ar, hi, sr, te)
   if (l === "ar") return { ...base, button: "إلى حسابي", paidSubject: "تم تأكيد حجزك", requestedSubject: "استلمنا طلبك",
     paid: (price: string, months: number) => [`شكرًا جزيلًا! وصلنا دفعك البالغ ${price} مقابل باقة البداية.`, `تم تفعيل أداة التقديم لمدة ${arMonths(months)}. ابدأ بملف التقديم: ارفع سيرتك الذاتية أو املأ بياناتك. نراجع كل شيء ونخبرك عندما تصبح مستنداتك جاهزة.`],
     requested: (price: string) => [`شكرًا على طلبك لباقة البداية (${price}).`, "سنتواصل معك خلال يومَي عمل ونرسل لك رابط الدفع. يمكنك من الآن أن تبدأ في ملف التقديم."] };
   if (l === "hi") return { ...base, button: "मेरे खाते पर जाएँ", paidSubject: "आपकी बुकिंग पक्की हो गई है", requestedSubject: "हमें आपका अनुरोध मिल गया है",
     paid: (price: string, months: number) => [`बहुत धन्यवाद! स्टार्टर पैकेज के लिए आपका ${price} का भुगतान हमें मिल गया है।`, `आपका आवेदन टूल ${months} ${months === 1 ? "महीने" : "महीनों"} के लिए चालू है। सबसे पहले अपनी आवेदन फ़ाइल से शुरू करें: अपना बायोडाटा अपलोड करें या अपनी जानकारी भरें। हम सब कुछ जाँचते हैं और दस्तावेज़ तैयार होने पर आपको बताते हैं।`],
     requested: (price: string) => [`स्टार्टर पैकेज (${price}) के अनुरोध के लिए धन्यवाद।`, "हम अगले 2 कार्यदिवसों में आपसे संपर्क करेंगे और भुगतान का लिंक भेजेंगे। आप अभी से अपनी आवेदन फ़ाइल शुरू कर सकते हैं।"] };
+  if (l === "sr") return { ...base, button: "Na moj deo", paidSubject: "Tvoja porudžbina je potvrđena", requestedSubject: "Primili smo tvoj zahtev",
+    paid: (price: string, months: number) => [`Hvala ti! Primili smo tvoju uplatu od ${price} za Startni paket.`, `Tvoj alat za prijave je otključan na ${srMonths(months)}. Najbolje je da počneš sa svojom fasciklom za prijavu: postavi biografiju ili popuni podatke. Sve proveravamo i javljamo ti kada su tvoja dokumenta spremna.`],
+    requested: (price: string) => [`Hvala ti na zahtevu za Startni paket (${price}).`, "Javićemo ti se u naredna 2 radna dana i poslati ti link za plaćanje. Sa fasciklom za prijavu možeš već sada da počneš."] };
+  if (l === "te") return { ...base, button: "నా ఖాతాకు వెళ్ళండి", paidSubject: "మీ బుకింగ్ నిర్ధారించబడింది", requestedSubject: "మీ అభ్యర్థన మాకు అందింది",
+    paid: (price: string, months: number) => [`చాలా ధన్యవాదాలు! స్టార్టర్ ప్యాకేజీ కోసం మీ ${price} చెల్లింపు మాకు అందింది.`, `మీ దరఖాస్తు టూల్ ${months} ${months === 1 ? "నెల" : "నెలల"} పాటు యాక్టివ్‌గా ఉంది. ముందుగా మీ దరఖాస్తు ఫైల్‌తో మొదలుపెట్టండి: మీ బయోడేటా అప్‌లోడ్ చేయండి లేదా మీ వివరాలు నింపండి. మేము అన్నీ తనిఖీ చేసి, పత్రాలు సిద్ధమైనప్పుడు మీకు తెలియజేస్తాము.`],
+    requested: (price: string) => [`స్టార్టర్ ప్యాకేజీ (${price}) కోసం మీ అభ్యర్థనకు ధన్యవాదాలు.`, "తదుపరి 2 పని దినాల్లో మేము మిమ్మల్ని సంప్రదించి చెల్లింపు లింక్ పంపుతాము. మీ దరఖాస్తు ఫైల్‌ను మీరు ఇప్పటి నుండే మొదలుపెట్టవచ్చు."] };
   if (l === "en") return { ...base, button: "Go to my area", paidSubject: "Your booking is confirmed", requestedSubject: "We received your request",
     paid: (price: string, months: number) => [`thank you! We received your payment of ${price} for the starter package.`, `Your application tool is unlocked for ${months} months. Best start with your application folder: upload your CV or fill in your details. We check everything and let you know when your documents are ready.`],
     requested: (price: string) => [`thank you for your request for the starter package (${price}).`, "We will contact you within 2 working days and send you the payment link. You can already start with your application folder."] };

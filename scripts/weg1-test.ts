@@ -343,7 +343,7 @@ async function main() {
     assert.match(de.priceNote, /deine Unterlagen behältst du/);
     assert.ok(de.faq.some((x) => /keine Verlängerung und kein Abo/.test(x.a)), "FAQ zu Kosten");
     assert.ok(de.faq.some((x) => /Was passiert nach 3 Monaten/.test(x.q)), "FAQ nach Ablauf");
-    for (const l of ["en", "fr", "ar", "hi"] as const) assert.equal(landingCopy(l).faq.length, de.faq.length, `FAQ ${l}`);
+    for (const l of ["en", "fr", "ar", "hi", "sr", "te"] as const) assert.equal(landingCopy(l).faq.length, de.faq.length, `FAQ ${l}`);
     const { accountText } = await import("../src/lib/account-text");
     assert.match(accountText("de").toolIncluded, /keine Verlängerung und kein Abo/);
     assert.match(accountText("de").toolExpiredLead, /weiter herunterladen/);
@@ -395,44 +395,80 @@ async function main() {
     }
   };
 
+  // Serbisch (nur lateinische Schrift, nie Kyrillisch) und Telugu: gleiche Schlüssel wie Deutsch, keine langen Gedankenstriche;
+  // sr: längere Texte dürfen nicht englisch geblieben sein; te: jeder Text mit Buchstaben enthält Telugu-Schrift
+  const TE = /[ఀ-౿]/, CYR = /[Ѐ-ӿ]/;
+  const checkSrTe = (name: string, de: unknown, en: unknown, sr: unknown, te: unknown, opts: { sameShape?: boolean } = {}) => {
+    if (opts.sameShape !== false) {
+      assert.deepEqual(shape(sr), shape(de), `${name}: sr hat andere Schlüssel als de`);
+      assert.deepEqual(shape(te), shape(de), `${name}: te hat andere Schlüssel als de`);
+    }
+    const enText = new Map(leaves(en));
+    const ls = leaves(sr), lt = leaves(te);
+    assert.ok(ls.length > 0 && lt.length > 0, `${name}: leer`);
+    for (const [p, v] of ls) {
+      assert.ok(!/[–—]/.test(v), `${name}/sr ${p}: langer Gedankenstrich`);
+      assert.ok(!CYR.test(v), `${name}/sr ${p}: Kyrillisch statt lateinischer Schrift: ${v}`);
+      if (v.split(/\s+/).length >= 4) assert.notEqual(v, enText.get(p), `${name}/sr ${p}: nicht übersetzt: ${v}`);
+    }
+    for (const [p, v] of lt) {
+      assert.ok(!/[–—]/.test(v), `${name}/te ${p}: langer Gedankenstrich`);
+      if (/[A-Za-zÀ-ÿ]/.test(v.replace(/WoYou|Stripe|KarriereKind GmbH|PDF|Word|WhatsApp|HR|Pflegefachkraft|Bundesagentur für Arbeit|anerkennung-in-deutschland\.de|DD\.MM\.YYYY|[A-C][12]|\{\w+\}/g, ""))) assert.ok(TE.test(v), `${name}/te ${p}: nicht übersetzt: ${v}`);
+    }
+  };
+
   await test("Selbstversand-Texte: alle Sprachen vollständig, ohne lange Gedankenstriche und ohne Versand durch WoYou", async () => {
     const { VERSAND_TEXTS } = await import("../src/lib/versand-text");
     for (const l of ["en", "fr"] as const) assert.deepEqual(shape(VERSAND_TEXTS[l]), shape(VERSAND_TEXTS.de), `versandText ${l}`);
     checkLang("versandText", VERSAND_TEXTS.de, VERSAND_TEXTS.ar, VERSAND_TEXTS.hi);
+    checkSrTe("versandText", VERSAND_TEXTS.de, VERSAND_TEXTS.en, VERSAND_TEXTS.sr, VERSAND_TEXTS.te);
     for (const [l, o] of Object.entries(VERSAND_TEXTS)) for (const [p, v] of leaves(o)) assert.ok(!/[–—]/.test(v), `${l} ${p}`);
     assert.match(VERSAND_TEXTS.de.sendLead, /eigenen Postfach/);
     assert.match(VERSAND_TEXTS.de.profileLead, /kein Passwort/);
   });
-  await test("Arabisch und Hindi: Bewerbungswerkzeug (Oberfläche und Mails)", async () => {
+  await test("Arabisch, Hindi, Serbisch und Telugu: Bewerbungswerkzeug (Oberfläche und Mails)", async () => {
     const w = await import("../src/lib/werkzeug-text");
     assert.equal(w.wLang("ar"), "ar"); assert.equal(w.wLang("hi"), "hi"); assert.equal(w.wLang("es"), "en"); assert.equal(w.wLang(null), "de");
     assert.equal(w.dirOf("ar"), "rtl"); assert.equal(w.dirOf("hi"), "ltr");
     checkLang("werkzeugText", w.werkzeugText("de"), w.werkzeugText("ar"), w.werkzeugText("hi"));
+    assert.equal(w.wLang("sr"), "sr"); assert.equal(w.wLang("te"), "te"); assert.equal(w.dirOf("sr"), "ltr"); assert.equal(w.dirOf("te"), "ltr");
+    checkSrTe("werkzeugText", w.werkzeugText("de"), w.werkzeugText("en"), w.werkzeugText("sr"), w.werkzeugText("te"));
+    assert.equal(w.srMonths(1), "1 mesec"); assert.equal(w.srMonths(3), "3 meseca"); assert.equal(w.srMonths(5), "5 meseci"); assert.equal(w.srMonths(12), "12 meseci"); assert.equal(w.srMonths(22), "22 meseca");
     const strip = <T extends { dir: string }>(o: T) => { const { dir, ...rest } = o; void dir; return rest; };
     const mailParts = (m: (l: string) => object, l: string) => { const o = m(l) as Record<string, unknown>; const { lang, dateLocale, ...rest } = o; void lang; void dateLocale; return strip(rest as { dir: string }); };
     assert.equal("purchaseMail" in w, false, "Mails zu Verlängerung/Abo gibt es nicht mehr");
     for (const [n, f] of [["mappeMail", w.mappeMail], ["bookingMail", w.bookingMail]] as const)
       checkLang(n, mailParts(f, "de"), mailParts(f, "ar"), mailParts(f, "hi"));
+    for (const [n, f] of [["mappeMail", w.mappeMail], ["bookingMail", w.bookingMail]] as const)
+      checkSrTe(n, mailParts(f, "de"), mailParts(f, "en"), mailParts(f, "sr"), mailParts(f, "te"));
+    assert.equal(w.mappeMail("sr").hello("Milica"), "Zdravo Milica,");
     assert.equal(w.mappeMail("ar").dir, "rtl");
     assert.equal(w.mappeMail("ar").hello("Fatima"), "مرحبًا Fatima،");
     assert.equal(w.arMonths(3), "3 أشهر");
   });
-  await test("Arabisch und Hindi: Startseite, Buchung, Kundenbereich, Mappe, Selbstcheck", async () => {
+  await test("Arabisch, Hindi, Serbisch und Telugu: Startseite, Buchung, Kundenbereich, Mappe, Selbstcheck", async () => {
     const { landingCopy } = await import("../src/lib/landing-copy");
     checkLang("landingCopy", landingCopy("de"), landingCopy("ar"), landingCopy("hi"));
+    checkSrTe("landingCopy", landingCopy("de"), landingCopy("en"), landingCopy("sr"), landingCopy("te"));
     const { serviceCopy } = await import("../src/lib/services");
     checkLang("serviceCopy", serviceCopy("de"), serviceCopy("ar"), serviceCopy("hi"));
+    checkSrTe("serviceCopy", serviceCopy("de"), serviceCopy("en"), serviceCopy("sr"), serviceCopy("te"));
     const { accountText } = await import("../src/lib/account-text");
     checkLang("accountText", accountText("de"), accountText("ar"), accountText("hi"));
+    checkSrTe("accountText", accountText("de"), accountText("en"), accountText("sr"), accountText("te"));
     const { mappeText } = await import("../src/lib/mappe-i18n");
     const changed = (l: string) => { const m = mappeText(l); return { intro: m.intro, submittedMsg: m.submittedMsg, cvSaved: m.cvSaved, ownHint: m.ownHint }; };
     checkLang("mappeText (geänderte Schlüssel)", changed("de"), changed("ar"), changed("hi"));
+    const noMap = (l: string) => { const { missingMap, ...rest } = mappeText(l); void missingMap; return rest; };
+    checkSrTe("mappeText", noMap("de"), noMap("en"), noMap("sr"), noMap("te"));
     const { evaluate } = await import("../src/lib/selfcheck");
     const green = { job: "Koch", degree: "vocational", german: "B1", recognition: "unknown", country: "Marokko" } as const;
     const helper = { ...green, job: "Lagerhelfer", german: "A2" } as const;
     checkLang("Selbstcheck", [evaluate(green, "de").reasons, evaluate(helper, "de").reasons], [evaluate(green, "ar").reasons, evaluate(helper, "ar").reasons], [evaluate(green, "hi").reasons, evaluate(helper, "hi").reasons]);
+    const all = (l: "de" | "en" | "sr" | "te") => [green, helper, { ...green, german: "none" }, { ...green, job: "Pflegefachkraft", recognition: "no" }, { ...green, german: "A2" }, { ...green, job: "Altenpflege", recognition: "pending" }, { ...green, degree: "none" }].map((x) => evaluate(x as typeof green, l).reasons);
+    checkSrTe("Selbstcheck", all("de"), all("en"), all("sr"), all("te"));
   });
-  await test("Arabisch und Hindi: Marketing-Mails für jeden Schritt (Quelltext)", async () => {
+  await test("Arabisch, Hindi, Serbisch und Telugu: Marketing-Mails für jeden Schritt (Quelltext)", async () => {
     const fs = await import("node:fs");
     const s = fs.readFileSync("src/lib/marketing.ts", "utf8");
     const count = (re: RegExp) => (s.match(re) ?? []).length;
@@ -444,15 +480,30 @@ async function main() {
     for (const l of s.split("\n").filter((x) => /^ {6}hi: \(v\) =>/.test(x))) assert.ok(HI.test(l) && !/[–—]/.test(l), l.slice(0, 60));
     assert.match(s, /^ {2}ar: "[^"]*[؀-ۿ]/m, "Abmeldetext ar fehlt");
     assert.match(s, /^ {2}hi: "[^"]*[ऀ-ॿ]/m, "Abmeldetext hi fehlt");
+    assert.equal(count(/^ {6}sr: \(v\) =>/gm), de, "nicht jeder Schritt hat sr");
+    assert.equal(count(/^ {6}te: \(v\) =>/gm), de, "nicht jeder Schritt hat te");
+    for (const l of s.split("\n").filter((x) => /^ {6}sr: \(v\) =>/.test(x))) assert.ok(/Zdravo/.test(l) && !CYR.test(l) && !/[–—]/.test(l), l.slice(0, 60));
+    for (const l of s.split("\n").filter((x) => /^ {6}te: \(v\) =>/.test(x))) assert.ok(TE.test(l) && !/[–—]/.test(l), l.slice(0, 60));
+    assert.match(s, /^ {2}sr: "Ne želiš/m, "Abmeldetext sr fehlt");
+    assert.match(s, /^ {2}te: "[^"]*[ఀ-౿]/m, "Abmeldetext te fehlt");
     assert.match(s, /layout\([^\n]*dirOf\(lang\)\)/, "Mail ohne Schreibrichtung");
   });
-  await test("Arabisch und Hindi: Preise und Datum mit lesbaren Ziffern", async () => {
+  await test("Arabisch, Hindi, Serbisch und Telugu: Preise und Datum mit lesbaren Ziffern", async () => {
     const { dateLocaleOf } = await import("../src/lib/werkzeug-text");
     const ar = formatPrice(19900, "ar"), hi = formatPrice(2950, "hi");
     assert.ok(/199/.test(ar) && ar.includes("€"), ar);
     assert.ok(/29[.,]50/.test(hi) && hi.includes("€"), hi);
     assert.ok(/22.*10.*2026/.test(new Date(2026, 9, 22).toLocaleDateString(dateLocaleOf("ar"))));
     assert.ok(/22.*10.*2026/.test(new Date(2026, 9, 22).toLocaleDateString(dateLocaleOf("hi"))));
+    const sr = formatPrice(2950, "sr"), te = formatPrice(19900, "te");
+    assert.ok(/29,50/.test(sr) && sr.includes("€") && !CYR.test(sr), sr);
+    assert.ok(/199/.test(te) && te.includes("€"), te);
+    assert.equal(dateLocaleOf("sr"), "sr-Latn-RS", "Serbisch nur lateinisch");
+    assert.equal(new Date(2026, 9, 22).toLocaleDateString(dateLocaleOf("sr"), { month: "long" }), "oktobar");
+    assert.ok(/22.*10.*2026/.test(new Date(2026, 9, 22).toLocaleDateString(dateLocaleOf("te"))));
+    const fs = await import("node:fs");
+    assert.ok(!CYR.test(fs.readFileSync("src/i18n/sr.ts", "utf8")), "Kyrillisch in src/i18n/sr.ts");
+    assert.ok(TE.test(fs.readFileSync("src/i18n/te.ts", "utf8")), "Telugu fehlt in src/i18n/te.ts");
   });
 
   await test("Bilder: Fotos lokal und groß genug, nichts von Unsplash im Browser, Muster in hoher Auflösung", async () => {
