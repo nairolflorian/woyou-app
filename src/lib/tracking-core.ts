@@ -102,7 +102,13 @@ export function trackingErlaubt(pathname: string): boolean {
 }
 
 /** Adresse für Google: nur Pfad und Werbeparameter, keine anderen Parameter (z. B. Stripe-Sitzung). */
-const ERLAUBTE_PARAMETER = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "gclid", "gbraid", "wbraid", "fbclid", "land"];
+// b = Buchungs-ID auf der Danke-Seite; geht ohnehin als event_id bzw. transaction_id mit dem Kauf-Ereignis raus
+const ERLAUBTE_PARAMETER = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "gclid", "gbraid", "wbraid", "fbclid", "land", "b"];
+// Meta liest die Adresse selbst aus (sie lässt sich nicht kürzen). Deshalb Meta-Aufrufe nur auf Adressen,
+// deren Parameter alle unbedenklich sind; z. B. nie mit Stripe-Sitzung (session_id) oder Abmelde-Schlüssel.
+export function nurErlaubteParameter(href: string): boolean {
+  try { return [...new URL(href).searchParams.keys()].every((k) => ERLAUBTE_PARAMETER.includes(k)); } catch { return false; }
+}
 export function sichereUrl(href: string): string {
   try {
     const u = new URL(href);

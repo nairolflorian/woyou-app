@@ -10,11 +10,12 @@ import { serviceCopy } from "@/lib/services";
 import { markBookingPaid } from "@/lib/bookings";
 import { paymentTestMode } from "@/lib/werkzeug";
 import { KaufEreignis } from "@/components/KaufEreignis";
+import { DankeAdresse } from "@/components/DankeAdresse";
 import { trackingAktiv } from "@/lib/tracking";
 
 export const dynamic = "force-dynamic";
 
-export default async function BookingThanksPage(props: { searchParams: Promise<{ session_id?: string; id?: string; test?: string }> }) {
+export default async function BookingThanksPage(props: { searchParams: Promise<{ session_id?: string; id?: string; test?: string; b?: string }> }) {
   const sp = await props.searchParams;
   const session = await getSession();
   if (!session.userId) redirect("/anmelden");
@@ -38,6 +39,11 @@ export default async function BookingThanksPage(props: { searchParams: Promise<{
       if (paid) paidBookingId = booking.id;
     }
   }
+  // Neu geladen nach dem Bereinigen der Adresse (?b=Buchungs-ID): nur die eigene, bezahlte Buchung
+  if (!paid && sp.b) {
+    const booking = await prisma.serviceBooking.findUnique({ where: { id: sp.b } });
+    if (booking && booking.candidateId === candidate.id && booking.paidAt) { paid = true; paidBookingId = booking.id; }
+  }
   // Lokaler Testmodus ohne Stripe (PAYMENT_TEST_MODE=on, nur next dev): Zahlung gilt als erfolgt
   if (sp.test && paymentTestMode()) {
     const booking = await prisma.serviceBooking.findUnique({ where: { id: sp.test } });
@@ -47,6 +53,7 @@ export default async function BookingThanksPage(props: { searchParams: Promise<{
   return (
     <>
       <SiteHeader />
+      {(sp.session_id || sp.test) && <DankeAdresse buchungId={paidBookingId} />}
       {paidBookingId && trackingAktiv() && <KaufEreignis buchungId={paidBookingId} />}
       <main id="main" className="flex-1 bg-[color:var(--color-surface)]">
         <div className="mx-auto max-w-xl px-6 py-20 text-center">

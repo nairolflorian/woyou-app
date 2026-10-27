@@ -1271,6 +1271,11 @@ async function trackingTests() {
     assert.ok(!/email|phone|name"?:"(?!startpaket|selbstcheck)|first|last/i.test(alle.replace(/"name":"[A-Za-z_]+"/g, "")), "keine persönlichen Felder");
     assert.equal(T.sichereUrl("https://woyou.de/bewerbungsservice/danke?session_id=cs_test_123&utm_source=facebook&email=a@b.de"), "https://woyou.de/bewerbungsservice/danke?utm_source=facebook");
     assert.equal(T.sichereUrl("https://woyou.de/rs"), "https://woyou.de/rs");
+    // Meta nur ohne bedenkliche Parameter (liest die Adresse selbst)
+    assert.equal(T.nurErlaubteParameter("https://woyou.de/rs?utm_source=facebook&land=RS"), true);
+    assert.equal(T.nurErlaubteParameter("https://woyou.de/bewerbungsservice/danke?session_id=cs_test_123"), false);
+    assert.equal(T.nurErlaubteParameter("https://woyou.de/abmelden?u=abc&t=xyz"), false);
+    assert.equal(T.nurErlaubteParameter("https://woyou.de/bewerbungsservice/danke?b=ckbuchung1"), true);
     for (const p of ["/admin", "/admin/auswertung", "/abmelden", "/registrierung/telegram", "/druck/x"]) assert.equal(T.trackingErlaubt(p), false, p);
     for (const p of ["/", "/rs", "/selbstcheck", "/registrierung", "/bewerbungsservice/danke", "/profil", "/administration-hilfe"]) assert.equal(T.trackingErlaubt(p), true, p);
   });

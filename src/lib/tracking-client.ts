@@ -3,7 +3,7 @@
 //  b) keine Einwilligung vorliegt (Cookie woyou_consent nicht v1:all).
 // Ereignisse tragen nur feste Werte (siehe sauberesEreignis), nie Name, E-Mail, Telefon oder Freitext.
 import {
-  CONSENT_COOKIE, FREMD_COOKIE, consentAusCookieHeader, consentCookie, ereignisAufrufe, sauberesEreignis, sichereUrl,
+  CONSENT_COOKIE, FREMD_COOKIE, consentAusCookieHeader, consentCookie, ereignisAufrufe, nurErlaubteParameter, sauberesEreignis, sichereUrl,
   type ConsentWahl, type TrackEreignis, type TrackingIds,
 } from "@/lib/tracking-core";
 
@@ -88,14 +88,14 @@ export function seitenaufruf() {
   const w = window, t = w.__woyouTracking;
   if (!t?.geladen) return;
   if (t.ids.google && w.gtag) w.gtag("event", "page_view", { page_location: sichereUrl(w.location.href), page_title: document.title });
-  if (t.ids.meta && w.fbq) w.fbq("track", "PageView");
+  if (t.ids.meta && w.fbq && nurErlaubteParameter(w.location.href)) w.fbq("track", "PageView");
 }
 
 function senden(e: TrackEreignis) {
   const w = window, t = w.__woyouTracking;
   if (!t?.geladen) return;
   const a = ereignisAufrufe(e);
-  if (t.ids.meta && w.fbq) for (const m of a.meta) w.fbq(m.art, m.name, m.daten ?? {}, ...(m.eventID ? [{ eventID: m.eventID }] : []));
+  if (t.ids.meta && w.fbq && nurErlaubteParameter(w.location.href)) for (const m of a.meta) w.fbq(m.art, m.name, m.daten ?? {}, ...(m.eventID ? [{ eventID: m.eventID }] : []));
   if (t.ids.google && w.gtag) for (const g of a.google) w.gtag("event", g.name, g.daten);
 }
 
